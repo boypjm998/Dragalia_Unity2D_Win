@@ -11,7 +11,7 @@ public class AttackFromPlayer : MonoBehaviour
 
     //Damage Basic Attributes
     private float knockbackPower;
-    private Vector2 knockbackForce;
+    private float knockbackForce;
     private float dmgModifier;
     private int spGain;
     //public bool isSpGained;
@@ -80,7 +80,7 @@ public class AttackFromPlayer : MonoBehaviour
         ConnectCoroutine = null;
     }
 
-    public virtual void InitAttackBasicAttributes(float knockbackPower,Vector2 knockbackForce,float dmgModifier,int spGain,int firedir)
+    public virtual void InitAttackBasicAttributes(float knockbackPower,float knockbackForce,float dmgModifier,int spGain,int firedir)
     {
         this.knockbackPower = knockbackPower;
         this.knockbackForce = knockbackForce;
@@ -153,5 +153,51 @@ public class AttackFromPlayer : MonoBehaviour
 
         }
     }
+
+    public virtual void DamageCheckCollider(Collider2D hitinfo)
+    {
+        if (hitinfo != null)
+        {
+            if (hitinfo.CompareTag("Enemy") && hitFlags.Contains(hitinfo.transform.parent.GetInstanceID()))
+            {
+                //print(hitShakeIntensity);
+                PlayDestroyEffect(hitShakeIntensity);
+
+                Destroy(gameObject);
+
+                hitinfo.GetComponent<Enemy>().TakeDamage();
+
+
+                GameObject damageManager = GameObject.Find("DamageManager");
+                DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
+                int dmg;
+                if (Random.Range(0, 100) < 14)
+                {
+                    dmg = (int)(1699 * Random.Range(0.95f, 1.05f));
+                    dnm.DamagePopEnemy(hitinfo.transform, dmg, 2);
+                }
+                else
+                {
+                    dmg = (int)(998 * Random.Range(0.95f, 1.05f));
+                    dnm.DamagePopEnemy(hitinfo.transform, dmg, 1);
+                }
+
+                hitinfo.GetComponent<Enemy>().TakeDamage();
+
+                AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
+                if (container.NeedTotalDisplay())
+                    container.AddTotalDamage(dmg);
+
+            }
+
+        }
+    }
+
+
+
+
+
+
+
 
 }

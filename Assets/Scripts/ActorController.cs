@@ -10,32 +10,26 @@ public class ActorController : MonoBehaviour
     public float movespeed = 6.0f;
     public float rollspeed = 9.0f;
     public float jumpforce = 18.0f;
-    [SerializeField]
-    private Animator anim; 
+    public Animator anim; 
     public Rigidbody2D rigid;
     //private Vector2 movingVec;
-    [SerializeField]
+    
     public int facedir = 1;
     
-    [SerializeField]
-    private TargetAimer ta;
     
-    enum PlayerActionType
+    public TargetAimer ta;
+    
+    public enum PlayerActionType
     {
         MOVE = 1,
         JUMP = 2,
         ROLL = 3,
         ATTACK = 4
     }
-    private bool curValue;
-    private bool newValue;
 
 
-    public void InputClearBoolSignal(string s)
-    {
-        anim.SetBool(s, false);
-    }
-    private void Move()
+    
+    public virtual void Move()
     {
         if (pi.moveEnabled == false)
         {
@@ -52,30 +46,30 @@ public class ActorController : MonoBehaviour
 
         
     }
-    private void Jump()
+    public void Jump()
     {
         anim.SetBool("jump",true);   
     }
-    private void DoubleJump()
+    public void DoubleJump()
     {
         anim.SetBool("wjump", true);
     }
-    private void Roll()
+    public void Roll()
     {
         anim.SetBool("roll", true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
-    private void StdAtk()
+    public void StdAtk()
     {
         anim.SetBool("attack",true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
-    private void AirDashAtk()
+    public void AirDashAtk()
     {
         anim.SetBool("attack", true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
-    private void UseSkill(int id)
+    public virtual void UseSkill(int id)
     {
         
         switch (id)
@@ -117,21 +111,20 @@ public class ActorController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        pi = GetComponent<PlayerInput>();
-        rigid = GetComponent<Rigidbody2D>();
-        anim = rigid.GetComponent<Animator>();
+        //pi = GetComponent<PlayerInput>();
+        //rigid = GetComponent<Rigidbody2D>();
+        //anim = rigid.GetComponent<Animator>();
+        //
+        //rigid.transform.eulerAngles = new Vector3(0, 0, 0);
+        //facedir = 1;
+        //ta = gameObject.transform.parent.GetComponentInChildren<TargetAimer>();
+        //
+        //stat = GetComponent<StatusManager>();
+        //jumpforce = stat.jumpforce;
+        //movespeed = stat.movespeed;
+        //rollspeed = 9.0f;
 
-        rigid.transform.eulerAngles = new Vector3(0, 0, 0);
-        facedir = 1;
-        ta = gameObject.transform.parent.GetComponentInChildren<TargetAimer>();
 
-        stat = GetComponent<StatusManager>();
-        jumpforce = stat.jumpforce;
-        movespeed = stat.movespeed;
-        rollspeed = 9.0f;
-
-        curValue = true;
-        newValue = true;
     }
 
     // Update is called once per frame
@@ -180,7 +173,7 @@ public class ActorController : MonoBehaviour
     void FixedUpdate()
     {
         Move();
-        //checkObstacles();
+        
         
        
     }
@@ -199,7 +192,7 @@ public class ActorController : MonoBehaviour
 
     }
 
-    private IEnumerator HorizontalMoveInteria(float time, float groundSpeed,float airSpeed)
+    public IEnumerator HorizontalMoveInteria(float time, float groundSpeed,float airSpeed)
     {
         while (time > 0)
         {
@@ -220,7 +213,7 @@ public class ActorController : MonoBehaviour
 
     //主控角色在一定的时间内光滑水平位移，speed为移动速度，time为移动时间，acceration为加速度（大于0是减速）
     //参数为3个时，代表当退出某动画状态时中断位移。
-    private IEnumerator HorizontalMove(float speed,float time,string move)
+    public IEnumerator HorizontalMove(float speed,float time,string move)
     {
         
         while(time>0)
@@ -241,7 +234,7 @@ public class ActorController : MonoBehaviour
         
 
     }
-    private IEnumerator HorizontalMove(float speed, float time)
+    public IEnumerator HorizontalMove(float speed, float time)
     {
 
         while (time > 0)
@@ -256,7 +249,7 @@ public class ActorController : MonoBehaviour
 
 
     }
-    private IEnumerator HorizontalMove(float speed,float acceration, float time, string move)
+    public IEnumerator HorizontalMove(float speed,float acceration, float time, string move)
     {
         while (time > 0)
         {
@@ -277,7 +270,7 @@ public class ActorController : MonoBehaviour
 
 
     }
-    private IEnumerator HorizontalMove(float speed, float acceration, float time)
+    public IEnumerator HorizontalMove(float speed, float acceration, float time)
     {
         while (time > 0)
         {
@@ -306,12 +299,14 @@ public class ActorController : MonoBehaviour
         if (pi.DRight > 0.05f)
         {   
             rigid.transform.eulerAngles = new Vector3(0, 0, 0);
+            facedir = 1;
         }
             
         else if (pi.DRight < -0.05f)
         {
             
             rigid.transform.eulerAngles = new Vector3(0, 180, 0);
+            facedir = -1;
         }
     }
     public void SetFaceDir(int dir)
@@ -327,71 +322,19 @@ public class ActorController : MonoBehaviour
     #region Animation States Events
 
     //人物滚动时附加的位移效果
-    public void EventRoll()
+    public virtual void EventRoll()
     {
-        //还需要优化，不一定能打中最近的目标
-        Transform tarTrans = ta.GetNearestReachableTarget(16.0f, LayerMask.GetMask("Enemies"));
-        bool needTurnBack = TurnAroundCheck(tarTrans);
 
-        //SetVelocity(facedir*rollspeed,rigid.velocity.y);
-
-
-
-        if (needTurnBack)
-        {
-            float tarx = ta.GetNearestReachableTarget(16.0f, LayerMask.GetMask("Enemies")).position.x;
-            if (tarx < rigid.position.x)
-            {
-                SetFaceDir(-1);
-
-                StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "Roll"));
-
-            }
-
-            else if (tarx > rigid.position.x)
-            {
-                SetFaceDir(1);
-
-
-                StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "Roll"));
-
-            }
-
-            //StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "Roll"));
-        }
-        else if (tarTrans != null)
-        {
-            if ((Input.GetKey(pi.keyLeft) && facedir == 1) || (Input.GetKey(pi.keyRight) && facedir == -1))
-            {
-                StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "Roll"));
-            }
-            else
-            {
-                StartCoroutine(HorizontalMove(rollspeed, 0.4f, "Roll"));
-            }
-
-        }
-        else {
-            if (Input.GetKey(pi.keyLeft) && !Input.GetKey(pi.keyRight))
-            {
-                SetFaceDir(-1);
-            }
-            else if (Input.GetKey(pi.keyRight) && !Input.GetKey(pi.keyLeft))
-            {
-                SetFaceDir(1);
-            }
-            StartCoroutine(HorizontalMove(rollspeed, 0.4f, "Roll"));
-        }
-            
+        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "Roll"));  
 
     }
-    public void EventDash()
+    public virtual void EventDash()
     {
         //SetVelocity(facedir*rollspeed,rigid.velocity.y);
         StartCoroutine(HorizontalMove(rollspeed*3f, 10.0f, 0.1f, "dash"));
 
     }
-    public void InertiaMove(float time)
+    public virtual void InertiaMove(float time)
     {
         float speedrate = anim.GetFloat("forward");
         
@@ -401,7 +344,7 @@ public class ActorController : MonoBehaviour
     #endregion
 
     #region Messages Process Moudles
-    private void onJumpEnter()
+    public void onJumpEnter()
     {
         //print("onJump"); 
         rigid.velocity = new Vector2(rigid.velocity.x, jumpforce);
@@ -409,14 +352,14 @@ public class ActorController : MonoBehaviour
         anim.SetBool("jump", false);
     }
 
-    private void onDoubleJumpEnter()
+    public void onDoubleJumpEnter()
     {
         //print("onDoubleJump");
         rigid.velocity = new Vector2(rigid.velocity.x, jumpforce);
         anim.SetBool("wjump", false);
         //pi.rollEnabled = false;
     }
-    private void onJumpExit()
+    public void onJumpExit()
     {
         print("onJumpExit");
     }
@@ -435,7 +378,7 @@ public class ActorController : MonoBehaviour
         pi.rollEnabled = false;
         anim.SetBool("isGround", false);
     }
-    private void onRollEnter() 
+    public void onRollEnter() 
     {
         pi.attackEnabled = false;
         pi.jumpEnabled = false;
@@ -444,7 +387,7 @@ public class ActorController : MonoBehaviour
         //SetVelocity(movespeed * 2.5f* facedir, 0);
         Debug.Log("EnterRoll");
     }
-    private void onRollExit()
+    public void onRollExit()
     {
         pi.attackEnabled = true;
         pi.jumpEnabled = true;
@@ -462,7 +405,7 @@ public class ActorController : MonoBehaviour
     }
 
 
-    private void OnDashEnter()
+    public virtual void OnDashEnter()
     {
         ActionDisable((int)PlayerActionType.MOVE);
         ActionDisable((int)PlayerActionType.JUMP);
@@ -473,7 +416,7 @@ public class ActorController : MonoBehaviour
         
         //Debug.Log("OndashEnter");
     }
-    private void OnDashExit()
+    public virtual void OnDashExit()
     {
         ActionEnable((int)PlayerActionType.MOVE);//move
         ActionEnable((int)PlayerActionType.JUMP);//jump
@@ -483,32 +426,17 @@ public class ActorController : MonoBehaviour
     }
 
 
-    private void OnStandardAttackEnter()
+    public virtual void OnStandardAttackEnter()
     {
-        ActionDisable((int)PlayerActionType.MOVE);//move
-        ActionDisable((int)PlayerActionType.JUMP);//jump
-        pi.SetInputDisabled("move");
-        StartAttack();
-
-        //ActionEnable(3);//roll
-        //pi.jumpEnabled = false;
-        //pi.moveEnabled = false;
-        //pi.rollEnabled = true;
+     
        
     }
-    private void OnStandardAttackExit()
+    public virtual void OnStandardAttackExit()
     {
-        ActionEnable(2);
-        ActionEnable(1);
-        ExitAttack();
-        //pi.jumpEnabled = true;
-        //pi.moveEnabled = true;
-        //anim.SetLayerWeight(anim.GetLayerIndex("Attack Layer"), 0);
-        //anim.SetLayerWeight(anim.GetLayerIndex("Actor"), 1.0f);
-        //print("Exit");
+
     }
 
-    private void OnSkillEnter()
+    public virtual void OnSkillEnter()
     {
         pi.isSkill = true;
         pi.directionLock = false;
@@ -523,7 +451,7 @@ public class ActorController : MonoBehaviour
         
     }
 
-    private void OnSkillExit()
+    public virtual void OnSkillExit()
     {
         pi.isSkill = false;
         ActionEnable((int)PlayerActionType.MOVE);//move
@@ -596,25 +524,6 @@ public class ActorController : MonoBehaviour
         }
     }
 
-    private bool TurnAroundCheck(Transform targetTransform)
-    {
-        if (targetTransform == null)
-            return false;
-        if (targetTransform.position.x > rigid.transform.position.x)
-        {
-            if (facedir == 1)
-                return false;
-            else return true;
-        }
-        if (targetTransform.position.x < rigid.transform.position.y)
-        {
-            if (facedir == -1)
-                return false;
-            else return true;
-        }
-        return false;    
-       
-    }
     
 
 }

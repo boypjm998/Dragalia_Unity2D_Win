@@ -8,8 +8,8 @@ public class AttackContainer : MonoBehaviour
     private int currentFinishedNum;
     private bool needTotalDisplay;
     private int totalDamage;
-    
-    
+
+    //private int testBulletNum;
 
     public void InitAttackContainer(int attackTotalNum, bool needTotalDisplay)
     {
@@ -19,12 +19,24 @@ public class AttackContainer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //testBulletNum = 0;
         totalDamage = 0;
+
+        //AttackFromPlayer[] AttackSet = FindObjectsOfType<AttackFromPlayer>();
+        //foreach (var k in AttackSet)
+        //{
+        //    testBulletNum++;
+        //
+        //}
+        //print(testBulletNum);
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
+        
+
+
         if (transform.childCount == 0 && currentFinishedNum == attackTotalNum)
         {
             Destroy(gameObject, 0.1f);

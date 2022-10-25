@@ -67,9 +67,9 @@ public class Attack_c001 : MonoBehaviour
         GameObject projectile_clone2 = Instantiate(projectile1, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 2.5f), container.transform);
         GameObject projectile_clone3 = Instantiate(projectile1, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z - 2.5f), container.transform);
 
-        projectile1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, Vector2.zero, 0.24f, 0, ac.facedir);
-        projectile2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, Vector2.zero, 0.23f, 0, ac.facedir);
-        projectile3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, Vector2.zero, 0.23f, 0, ac.facedir);
+        projectile1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.24f, 0, ac.facedir);
+        projectile2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
+        projectile3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
     }
     private void ComboAttack1()
     {
@@ -81,7 +81,7 @@ public class Attack_c001 : MonoBehaviour
         shotpoint = attackPointObject.transform;
         GameObject projectile_clone1 = Instantiate(projectile2, shotpoint.position, transform.rotation, container.transform);
 
-        projectile1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, new Vector2(0.5f,0), 1.4f, 0, ac.facedir);
+        projectile1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.5f, 1.4f, 0, ac.facedir);
         //projectile_clone1.name = "Bullet1c";
         //Remember clear the signal after shoot.
 
@@ -214,7 +214,7 @@ public class Attack_c001 : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-            (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, Vector2.right, 1.88f, 0, ac.facedir));
+            (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, 1, 1.88f, 0, ac.facedir));
             
         }
 
@@ -250,7 +250,7 @@ public class Attack_c001 : MonoBehaviour
     }
 
     private GameObject HomingBulletInstantiate(GameObject prefab, Vector3 shotpoint, GameObject targetLayer, Vector2 angle,
-        float knockbackPower,Vector2 knockbackForce,float dmgModifier,int spGain,int firedir)
+        float knockbackPower,float knockbackForce,float dmgModifier,int spGain,int firedir)
     {
         var instance = Instantiate(prefab, shotpoint, transform.rotation, targetLayer.transform);
         var attr = instance.GetComponent<HomingProjectile>();

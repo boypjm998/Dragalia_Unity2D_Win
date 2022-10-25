@@ -95,31 +95,6 @@ public class HomingProjectile : AttackFromPlayer
                 
                 BulletCircleSplitDamageCheck(splitDistance);
 
-                /*
-                PlayDestroyEffect(hitinfo.collider.transform, hitShakeIntensity);
-
-                DestroyProjectile();
-                GameObject damageManager = GameObject.Find("DamageManager");
-                DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
-                int dmg;
-                if (Random.Range(0, 100) < 14)
-                {
-                    dmg = (int)(1699 * Random.Range(0.95f, 1.05f));
-                    dnm.DamagePopEnemy(hitinfo.collider.transform, dmg, 2);
-                }
-                else
-                {
-                    dmg = (int)(998 * Random.Range(0.95f, 1.05f));
-                    dnm.DamagePopEnemy(hitinfo.collider.transform, dmg, 1);
-                }
-
-                hitinfo.collider.GetComponent<Enemy>().TakeDamage();
-
-                AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
-                if(container.NeedTotalDisplay())
-                    container.AddTotalDamage(dmg);*/
-                
-
             }
         }
 
@@ -232,7 +207,7 @@ public class HomingProjectile : AttackFromPlayer
         foreach (Collider2D hitinfo in hitsinfo)
         {
             //print("Split:" + hitinfo.GetComponent<Collider2D>().name);
-            BulletDamageCheckCollider(hitinfo);
+            DamageCheckCollider(hitinfo);
         }
 
     }
