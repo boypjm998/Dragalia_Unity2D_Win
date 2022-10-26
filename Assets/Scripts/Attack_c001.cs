@@ -67,9 +67,9 @@ public class Attack_c001 : MonoBehaviour
         GameObject projectile_clone2 = Instantiate(projectile1, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 2.5f), container.transform);
         GameObject projectile_clone3 = Instantiate(projectile1, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z - 2.5f), container.transform);
 
-        projectile1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.24f, 0, ac.facedir);
-        projectile2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
-        projectile3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.24f, 0, ac.facedir);
+        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
+        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
     }
     private void ComboAttack1()
     {
@@ -81,7 +81,7 @@ public class Attack_c001 : MonoBehaviour
         shotpoint = attackPointObject.transform;
         GameObject projectile_clone1 = Instantiate(projectile2, shotpoint.position, transform.rotation, container.transform);
 
-        projectile1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.5f, 1.4f, 0, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.5f, 1.35f, 280, ac.facedir);
         //projectile_clone1.name = "Bullet1c";
         //Remember clear the signal after shoot.
 
@@ -97,103 +97,20 @@ public class Attack_c001 : MonoBehaviour
 
 
         GameObject projectile_clone1 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 20f), container.transform);
-        projectile_clone1.name = "Bullet1d";
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone2 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 13.3f), container.transform);
-        projectile_clone2.name = "Bullet2d";
+        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone3 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 6.6f), container.transform);
-        projectile_clone3.name = "Bullet3d";
+        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone4 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 0f), container.transform);
-        projectile_clone3.name = "Bullet4d";
+        projectile_clone4.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
         //Remember clear the signal after shoot.
 
     }
 
-    //private void TestDriveBuster()
-    //{
-    //    ta.TargetSwapByAttack();
-    //
-    //    GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
-    //    shotpoint = attackPointObject.transform;
-    //
-    //    //GameObject projectile_clone1 = Instantiate(projectileT, shotpoint.position+new Vector3(Random.Range(-1f,1f),Random.Range(0f,2f)), transform.rotation, RangedAttackFXLayer.transform);
-    //    //projectile_clone1.name = "Bullet1t";
-    //    //projectile_clone1.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.5f, 0.5f).normalized);
-    //    //projectile_clone1.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-    //    GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, RangedAttackFXLayer.transform);
-    //
-    //    List<GameObject> projectiles = new List<GameObject>();
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.6f, 0.4f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.7f, 0.3f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.8f, 0.2f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.88f, 0.12f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.96f, 0.04f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.96f, -.04f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.88f, -.12f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.8f, -.2f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.7f, -.3f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-    //    projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-    //        (ac.facedir * new Vector2(0.6f, 0 - .4f).normalized), 1, 1, 1.88f, 0, ac.facedir));
-
-
-
-        //GameObject projectile_clone2 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, 1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone2.name = "Bullet2t";
-        //projectile_clone2.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(1f, 0).normalized);
-        //projectile_clone2.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1,1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone3 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, 1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone3.name = "Bullet3t";
-        //projectile_clone3.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.6f, 0.4f).normalized);
-        //projectile_clone3.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone4 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, 1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone4.name = "Bullet4t";
-        //projectile_clone4.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.7f, 0.3f).normalized);
-        //projectile_clone4.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone5 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, 1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone5.name = "Bullet5t";
-        //projectile_clone5.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.8f, 0.2f).normalized);
-        //projectile_clone5.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone6 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(-.5f, .5f)), Quaternion.identity , RangedAttackFXLayer.transform);
-        //projectile_clone6.name = "Bullet1t";
-        //projectile_clone6.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.9f, 0.1f));
-        //projectile_clone6.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone7 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir*Random.Range(0f, -1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone7.name = "Bullet2t";
-        //projectile_clone7.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.9f, -0.1f).normalized);
-        //projectile_clone7.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone8 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, -1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone8.name = "Bullet3t";
-        //projectile_clone8.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.8f, -0.2f).normalized);
-        //projectile_clone8.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone9 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, -1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone9.name = "Bullet4t";
-        //projectile_clone9.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.7f, -0.3f).normalized);
-        //projectile_clone9.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-        //
-        //GameObject projectile_clone10 = Instantiate(projectileT, shotpoint.position + new Vector3(Random.Range(-1f, 1f), ac.facedir * Random.Range(0f, -1f)), Quaternion.identity, RangedAttackFXLayer.transform);
-        //projectile_clone10.name = "Bullet5t";
-        //projectile_clone10.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.6f, -0.4f).normalized);
-        //projectile_clone10.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
-
-    //}
 
     private void Skill1()
     {
@@ -217,7 +134,10 @@ public class Attack_c001 : MonoBehaviour
             (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, 1, 1.88f, 0, ac.facedir));
             
         }
-
+        foreach (GameObject obj in projectiles)
+        {
+            ;
+        }
       
 
 
@@ -230,7 +150,7 @@ public class Attack_c001 : MonoBehaviour
 
         GameObject dashEffect = Instantiate(projectile_m1, attackLayer.transform.position, transform.rotation,container.transform);
         dashEffect.name = "AirDashEffect";
-
+        dashEffect.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 2.5f, 0.8f, 150, ac.facedir);
     }
 
 

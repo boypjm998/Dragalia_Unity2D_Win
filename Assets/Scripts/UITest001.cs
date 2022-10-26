@@ -22,7 +22,7 @@ public class UITest001 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        spGaugeCDValue = 1.0f - ((float)sm.currentSP[0] / (float)sm.requiredSP[0]);
+        spGaugeCDValue = 1.0f - (sm.currentSP[0] / sm.requiredSP[0]);
         if (spGaugeCDValue < 0)
         {
             spGaugeCDValue = 0;

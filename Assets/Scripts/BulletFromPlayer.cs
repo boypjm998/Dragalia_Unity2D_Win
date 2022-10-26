@@ -35,9 +35,9 @@ public class BulletFromPlayer : AttackFromPlayer
 
     }
 
-    private void Update()
+    protected override void Start()
     {
-        
+        base.Start();
     }
 
 

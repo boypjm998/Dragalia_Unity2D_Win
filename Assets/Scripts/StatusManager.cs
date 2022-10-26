@@ -5,6 +5,7 @@ using UnityEngine;
 public class StatusManager : MonoBehaviour
 {
     // Record Character/Enemy's Status
+    public bool isPlayer;
 
     //Current Status
     public BasicCalculation.Affliction currentAffliction;
@@ -12,15 +13,16 @@ public class StatusManager : MonoBehaviour
 
     //SP
 
-    public int[] requiredSP;
-
-
-    public int[] currentSP;
+    public float[] requiredSP;
+    public float[] currentSP;
+    public bool[] skillRegenByAttack;
+    private float spRegenPerSecond = 200;
 
     //Basic Properties (三维)
     public int maxBaseHP;
     public int baseDef;
     public int baseAtk;
+    public int critRate;
 
     public int maxHP;
     public int currentHp;
@@ -35,31 +37,31 @@ public class StatusManager : MonoBehaviour
     //Player's following properties will be 0 normally.
     //But Enemies' are Most over 0.
     public int knockbackRes = 0;
-    public int burnRes = 0;
-    public int paralyzeRes = 0;
-    public int poisonRes = 0;
-    public int frostbiteRes = 0;
-    public int bogRes = 0;
-    public int stunRes = 0;
-    public int sleepRes = 0;
-    public int blindRes = 0;
-    public int frozenRes = 0;
+    private int burnRes = 0;
+    private int paralyzeRes = 0;
+    private int poisonRes = 0;
+    private int frostbiteRes = 0;
+    private int bogRes = 0;
+    private int stunRes = 0;
+    private int sleepRes = 0;
+    private int blindRes = 0;
+    private int frozenRes = 0;
     
     
 
 
     //Offensive Buff
-    private int attackBuffA;
-    private int attackBuffB;
+    [SerializeField]private int attackBuffA = 0;
+    [SerializeField]private int attackBuffB = 0;
     
-    private int skillDmgBuff;
-    private int spGainBuff;
+    [SerializeField]private int skillDmgBuff = 0;
+    [SerializeField]private int spGainBuff = 0;
     
-    private int critRateBuff;
-    private int critDmgBuff;
+    [SerializeField]private int critRateBuff = 0;
+    [SerializeField]private int critDmgBuff = 0;
     
-    private int breakPunisherBuff;
-    private int punisherBuff;
+    private int breakPunisherBuff = 0;
+    private int punisherBuff = 0;
     
     private int burnRateUpBuff;
     private int flashburnRateUpBuff;
@@ -70,31 +72,35 @@ public class StatusManager : MonoBehaviour
     private int knockbackPowerBuff;
     
     //Offensive Debuff
-    private int attackDebuff;
-    private int skillDmgDebuff;
-    private int critDmgDebuff;
-    private int spGainDebuff;
+    [SerializeField]private int attackDebuff = 0;
+    [SerializeField]private int skillDmgDebuff = 0;
+    [SerializeField]private int critDmgDebuff = 0;
+    [SerializeField]private int spGainDebuff = 0;
 
     //Defensive Buff & Debuff
-    private int defenseBuff;
-    private int defenseDebuff;
-    private int damageCut;
-    private int damageCutConst;
+    [SerializeField]private int defenseBuff = 0;
+    [SerializeField]private int defenseDebuff = 0;
+    [SerializeField]private int damageCut = 0;
+    [SerializeField]private int damageCutConst = 0;
     private int lifeShield;
-    private bool knockbackImmune;
+    private bool knockbackImmune = false;
     private int recoveryPotencyBuff;
     private int recoveryPotencyDebuff;
-    private int healBuffNum;
+    private int healBuffNum = 0;
 
 
     public int comboHitCount;
 
-    
-    
+
+    private void Awake()
+    {
+        skillRegenByAttack = new bool[4]{ true, true, true, true };
+    }
 
     void Start()
     {
         
+
         
     }
 
@@ -104,5 +110,111 @@ public class StatusManager : MonoBehaviour
         
     }
 
-    
+    void FixedUpdate()
+    {
+        if (isPlayer)
+        {
+            SpGainInStatus(0, spRegenPerSecond * Time.fixedDeltaTime);
+        }
+    }
+
+    public void SpGainInStatus(int id, float num)
+    {
+        //从0开始
+        if(skillRegenByAttack[id])
+            currentSP[id] += num;
+
+        if (currentSP[id] > requiredSP[id])
+        {
+            currentSP[id] = requiredSP[id];
+        }
+    }
+
+    public float GetAttackBuff()
+    {
+        //返回一个float.
+        var totalBuff = attackBuffA + attackBuffB - attackDebuff;
+        if (totalBuff > 200)
+        {
+            return 2;
+        }
+        else if (totalBuff < -50)
+        {
+            return -0.5f;
+        }
+        else {
+            return 0.01f*(float)totalBuff;
+        }
+        
+    }
+    public float GetDefenseBuff()
+    {
+        //返回一个float.
+        var totalBuff = defenseBuff - defenseDebuff;
+        if (totalBuff > 200)
+        {
+            return 2;
+        }
+        else if (totalBuff < -50)
+        {
+            return -0.5f;
+        }
+        else
+        {
+            return 0.01f * (float)totalBuff;
+        }
+
+    }
+
+    public int GetCritRateBuff()
+    {
+        return critRateBuff > 200 ? 200 : critRateBuff;
+    }
+    public float GetCritDamageBuff()
+    {
+        var totalBuff = critDmgBuff - critDmgDebuff;
+        if (totalBuff > 500)
+        {
+            return 5;
+        }
+        else if (totalBuff < -120)
+        {
+            return -1.2f;
+        }
+        else
+        {
+            return 0.01f * (float)totalBuff;
+        }
+
+
+    }
+    public float GetSkillDamageBuff()
+    {
+        var totalBuff = skillDmgBuff - skillDmgDebuff;
+        if (totalBuff > 200)
+        {
+            return 2;
+        }
+        else if (totalBuff < -50)
+        {
+            return -0.5f;
+        }
+        else
+        {
+            return 0.01f * (float)totalBuff;
+        }
+
+
+    }
+
+    public float GetDamageCut()
+    {
+        return damageCut > 100 ? 1 : (0.01f*(float)damageCut);
+    }
+
+    public float GetDamageCutConst()
+    {
+        return damageCutConst;
+    }
+
 }

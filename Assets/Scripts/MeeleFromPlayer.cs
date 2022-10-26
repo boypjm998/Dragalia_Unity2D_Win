@@ -12,7 +12,7 @@ public class MeeleFromPlayer : AttackFromPlayer
     // Start is called before the first frame update
     private void Awake()
     {
-
+        
         hitFlags = SearchEnemyList();
 
        
@@ -52,16 +52,18 @@ public class MeeleFromPlayer : AttackFromPlayer
 
             enemyTrans = collision.transform.parent;
 
+            int dmg = battleStageManager.PlayerHit(collision.gameObject, this);
+
             //´ýÓÅ»¯
-            GameObject damageManager = GameObject.Find("DamageManager");
-            DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
-            if (Random.Range(0, 100) < 12)
-            {
-                dnm.DamagePopEnemy(enemyTrans, (int)(0.75f * 1.7f* 998 * Random.Range(0.95f, 1.05f)),2);//crit
-            }
-            else {
-                dnm.DamagePopEnemy(enemyTrans, (int)(0.75f * 998 * Random.Range(0.95f, 1.05f)),1);
-            }
+            //GameObject damageManager = GameObject.Find("DamageManager");
+            //DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
+            //if (Random.Range(0, 100) < 12)
+            //{
+            //    dnm.DamagePopEnemy(enemyTrans, (int)(0.75f * 1.7f* 998 * Random.Range(0.95f, 1.05f)),2);//crit
+            //}
+            //else {
+            //    dnm.DamagePopEnemy(enemyTrans, (int)(0.75f * 998 * Random.Range(0.95f, 1.05f)),1);
+            //}
             
 
             GameObject eff = Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
@@ -79,7 +81,7 @@ public class MeeleFromPlayer : AttackFromPlayer
     }
     public override IEnumerator MeeleTimeStop(float time)
     {
-
+        
         Animator animAttack = GetComponentInParent<Animator>();
         Rigidbody2D rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
         Animator anim = playerpos.gameObject.GetComponentInParent<Animator>();

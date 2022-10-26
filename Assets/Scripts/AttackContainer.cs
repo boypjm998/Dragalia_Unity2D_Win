@@ -8,6 +8,7 @@ public class AttackContainer : MonoBehaviour
     private int currentFinishedNum;
     private bool needTotalDisplay;
     private int totalDamage;
+    public bool spGained;
 
     //private int testBulletNum;
 
@@ -15,10 +16,12 @@ public class AttackContainer : MonoBehaviour
     {
         this.attackTotalNum = attackTotalNum;
         this.needTotalDisplay = needTotalDisplay;
+        spGained = false;
     }
     // Start is called before the first frame update
     void Start()
     {
+        
         //testBulletNum = 0;
         totalDamage = 0;
 

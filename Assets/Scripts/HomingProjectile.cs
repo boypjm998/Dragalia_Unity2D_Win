@@ -56,8 +56,9 @@ public class HomingProjectile : AttackFromPlayer
 
     }
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         SetForward(angle);
         smoothRotateVector = new Vector3(smoothRotateVector.x * angle.x, smoothRotateVector.y * angle.y, 0);
         smoothPoint = transform.position + smoothRotateVector;
@@ -214,7 +215,7 @@ public class HomingProjectile : AttackFromPlayer
 
 
 
-    public virtual void BulletDamageCheckCollider(Collider2D hitinfo)
+    /*public virtual void BulletDamageCheckCollider(Collider2D hitinfo)
     {
         if (hitinfo != null)
         {
@@ -226,8 +227,9 @@ public class HomingProjectile : AttackFromPlayer
                 DestroyProjectile();
                 hitinfo.GetComponent<Enemy>().TakeDamage();
 
-                
-                GameObject damageManager = GameObject.Find("DamageManager");
+                int dmg = battleStageManager.PlayerHit(hitinfo.gameObject, this);
+
+                /*GameObject damageManager = GameObject.Find("DamageManager");
                 DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
                 int dmg;
                 if (Random.Range(0, 100) < 14)
@@ -241,7 +243,7 @@ public class HomingProjectile : AttackFromPlayer
                     dnm.DamagePopEnemy(hitinfo.transform, dmg, 1);
                 }
 
-                hitinfo.GetComponent<Enemy>().TakeDamage();
+                
 
                 AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
                 if (container.NeedTotalDisplay())
@@ -250,7 +252,7 @@ public class HomingProjectile : AttackFromPlayer
             }
 
         }
-    }
+    }*/
 
 
     private void OnDestroy()

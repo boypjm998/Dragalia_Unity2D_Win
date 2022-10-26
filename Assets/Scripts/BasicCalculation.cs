@@ -36,5 +36,57 @@ public static class BasicCalculation
         ABILITY = 5,
         OTHER = 6
     }
+
+    public static int CalculateDamageGeneral(StatusManager sourceStat, StatusManager targetStat, float modifier, AttackType atkType, ref bool isCrit)
+    {
+        //Source
+        //¹¥»÷
+        float atk = sourceStat.baseAtk * (1 + sourceStat.GetAttackBuff());
+
+        //±©»÷ ±¬ÉË
+
+        int critRate = sourceStat.critRate + sourceStat.GetCritRateBuff();
+        float critDmgModifier = 1;
+        isCrit = false;
+        if (Random.Range(0, 100) < critRate)
+        {
+            isCrit = true;
+            critDmgModifier += 0.7f + sourceStat.GetCritDamageBuff();
+        }
+
+        float skillDmgModifier = 1;
+        if (atkType == AttackType.SKILL)
+        {
+            skillDmgModifier += sourceStat.GetSkillDamageBuff();
+
+        }
+        
+        //Target
+        float tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
+        float dmgCutModifier = targetStat.GetDamageCut();
+        float dmgCutConst = targetStat.GetDamageCutConst();
+
+
+
+
+
+        //Calculate
+
+        float attackSource = atk * skillDmgModifier * critDmgModifier * modifier;
+        float defendTarget = tarDef * (1 - dmgCutModifier);
+
+        float damage = ((5f / 3f) * (attackSource / defendTarget)) - dmgCutConst;
+
+        if (damage < 0)
+        {
+            damage = 0;
+        }
+
+        Debug.Log(damage);
+        return (int)damage;
+
+    }
+
+
   
 }

@@ -5,17 +5,17 @@ using UnityEngine;
 public class AttackFromPlayer : MonoBehaviour
 {
     public GameObject self;
-
+    protected BattleStageManager battleStageManager;
 
 
 
     //Damage Basic Attributes
-    private float knockbackPower;
-    private float knockbackForce;
-    private float dmgModifier;
-    private int spGain;
-    //public bool isSpGained;
-    private int firedir;
+    protected float knockbackPower;
+    protected float knockbackForce;
+    protected float dmgModifier;
+    protected int spGain;
+    
+    protected int firedir;
     
     
 
@@ -30,14 +30,14 @@ public class AttackFromPlayer : MonoBehaviour
     public float defaultGravity;
     Coroutine ConnectCoroutine;
     static int DEFAULT_GRAVITY = 4;
-    private int comboGroupID;
-    private int totalDamage;
+    protected int comboGroupID;
+    protected int totalDamage;
     public BasicCalculation.AttackType attackType;
     public float hitShakeIntensity;
 
-    private void Awake()
+    protected virtual void Start()
     {
-        
+        battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
     }
 
     public virtual void ResetFlags()
@@ -87,6 +87,7 @@ public class AttackFromPlayer : MonoBehaviour
         this.dmgModifier = dmgModifier;
         this.spGain = spGain;
         this.firedir = firedir;
+        print(this.dmgModifier);
     }
 
     public virtual int GetFaceDir()
@@ -126,27 +127,14 @@ public class AttackFromPlayer : MonoBehaviour
                 PlayDestroyEffect(hitShakeIntensity);
                 hitFlags.Remove(hitinfo.collider.transform.parent.GetInstanceID());
                 Destroy(gameObject);
-                hitinfo.collider.GetComponent<Enemy>().TakeDamage();
 
-                //´ýÓÅ»¯
-                GameObject damageManager = GameObject.Find("DamageManager");
-                DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
-                int dmg;
-                if (Random.Range(0, 100) < 14)
-                {
-                    dmg = (int)(1699 * Random.Range(0.95f, 1.05f));
-                    dnm.DamagePopEnemy(hitinfo.collider.transform, dmg, 2);
-                }
-                else
-                {
-                    dmg = (int)(998 * Random.Range(0.95f, 1.05f));
-                    dnm.DamagePopEnemy(hitinfo.collider.transform, dmg, 1);
-                }
 
                 hitinfo.collider.GetComponent<Enemy>().TakeDamage();
+
+                int dmg = battleStageManager.PlayerHit(hitinfo.collider.gameObject, this);
 
                 AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
-                if (container.NeedTotalDisplay())
+                if (container.NeedTotalDisplay() || dmg>=0)
                     container.AddTotalDamage(dmg);
 
             }
@@ -167,22 +155,8 @@ public class AttackFromPlayer : MonoBehaviour
 
                 hitinfo.GetComponent<Enemy>().TakeDamage();
 
+                int dmg = battleStageManager.PlayerHit(hitinfo.gameObject, this);
 
-                GameObject damageManager = GameObject.Find("DamageManager");
-                DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
-                int dmg;
-                if (Random.Range(0, 100) < 14)
-                {
-                    dmg = (int)(1699 * Random.Range(0.95f, 1.05f));
-                    dnm.DamagePopEnemy(hitinfo.transform, dmg, 2);
-                }
-                else
-                {
-                    dmg = (int)(998 * Random.Range(0.95f, 1.05f));
-                    dnm.DamagePopEnemy(hitinfo.transform, dmg, 1);
-                }
-
-                hitinfo.GetComponent<Enemy>().TakeDamage();
 
                 AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
                 if (container.NeedTotalDisplay())
@@ -194,9 +168,15 @@ public class AttackFromPlayer : MonoBehaviour
     }
 
 
+    public float GetDmgModifier()
+    {
+        return dmgModifier;
+    }
 
-
-
+    public float GetSpGain()
+    {
+        return spGain;
+    }
 
 
 
