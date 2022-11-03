@@ -78,6 +78,12 @@ public class ActorController : MonoBehaviour
                 anim.Play("s1");
                 stat.currentSP[0] = 0;
                 break;
+
+            case 2:
+                anim.Play("s2");
+                stat.currentSP[1] = 0;
+                break;
+
             default:
                 break;
         }
@@ -111,24 +117,25 @@ public class ActorController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        //pi = GetComponent<PlayerInput>();
-        //rigid = GetComponent<Rigidbody2D>();
-        //anim = rigid.GetComponent<Animator>();
-        //
-        //rigid.transform.eulerAngles = new Vector3(0, 0, 0);
-        //facedir = 1;
-        //ta = gameObject.transform.parent.GetComponentInChildren<TargetAimer>();
-        //
-        //stat = GetComponent<StatusManager>();
-        //jumpforce = stat.jumpforce;
-        //movespeed = stat.movespeed;
-        //rollspeed = 9.0f;
 
 
     }
 
+    protected virtual void CheckSkill()
+    {
+        if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        {
+            UseSkill(1);
+        }
+
+        if (pi.skill[1] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        {
+            UseSkill(2);
+        }
+    }
+
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
   
 
@@ -157,10 +164,8 @@ public class ActorController : MonoBehaviour
                 AirDashAtk();
             }
         }
-        if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-        {
-            UseSkill(1);
-        }
+        
+
         if (pi.roll && pi.rollEnabled)
         {
             Roll();
@@ -296,13 +301,13 @@ public class ActorController : MonoBehaviour
     public void checkFaceDir()
     {
         
-        if (pi.DRight > 0.05f)
+        if (pi.DRight > 0.01f)
         {   
             rigid.transform.eulerAngles = new Vector3(0, 0, 0);
             facedir = 1;
         }
             
-        else if (pi.DRight < -0.05f)
+        else if (pi.DRight < -0.01f)
         {
             
             rigid.transform.eulerAngles = new Vector3(0, 180, 0);
@@ -341,6 +346,10 @@ public class ActorController : MonoBehaviour
         StartCoroutine(HorizontalMoveInteria(time ,1.8f * movespeed * speedrate, 1.5f * movespeed * speedrate));
         
     }
+
+
+
+
     #endregion
 
     #region Messages Process Moudles
@@ -395,6 +404,7 @@ public class ActorController : MonoBehaviour
         //if(anim.GetBool("attack")==false)
             //checkFaceDir(); 
         anim.SetBool("roll", false);
+        pi.SetInputEnabled("move");
         Debug.Log("ExitRoll");
     }
     public void OnFall()
@@ -436,6 +446,8 @@ public class ActorController : MonoBehaviour
 
     }
 
+    
+
     public virtual void OnSkillEnter()
     {
         pi.isSkill = true;
@@ -463,6 +475,30 @@ public class ActorController : MonoBehaviour
 
 
     #endregion
+
+    #region 攻击返回指令
+
+    public virtual void OnStandardAttackConnect() { }
+    public virtual void OnSkillConnect() { }
+    public virtual void OnForceConnect() { }
+    public virtual void OnOtherAttackConnect() { }
+
+    public virtual void OnStandardAttackConnect(AttackFromPlayer attackStat) { }
+    public virtual void OnSkillConnect(AttackFromPlayer attackStat) { }
+    public virtual void OnForceConnect(AttackFromPlayer attackStat) { }
+    public virtual void OnOtherAttackConnect(AttackFromPlayer attackStat) { }
+
+
+    #endregion
+
+
+
+
+
+
+
+
+
 
 
     //单独行动指令的开关

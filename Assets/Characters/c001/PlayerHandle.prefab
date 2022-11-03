@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 8598698706064260273}
   - component: {fileID: 8598698706064260267}
   - component: {fileID: 8598698706064260266}
-  - component: {fileID: 8598698706064260269}
+  - component: {fileID: 7478167033628123469}
   - component: {fileID: 8598698706064260264}
   - component: {fileID: 8598698706064260262}
   - component: {fileID: 8598698706064260270}
@@ -466,7 +466,7 @@ MonoBehaviour:
   inputAttackEnabled: 1
   inputJumpEnabled: 1
   inputRollEnabled: 1
---- !u!114 &8598698706064260269
+--- !u!114 &7478167033628123469
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -475,17 +475,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8598698706064260275}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a928203b7f8523b4fa4a09f17f446968, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a2b467d7ad2811428e3781691fcd9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pi: {fileID: 0}
   stat: {fileID: 0}
-  movespeed: 6.5
+  movespeed: 6
   rollspeed: 9
   jumpforce: 18
   anim: {fileID: 0}
   rigid: {fileID: 0}
-  facedir: 0
+  facedir: 1
   ta: {fileID: 0}
 --- !u!114 &8598698706064260264
 MonoBehaviour:
@@ -581,13 +581,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cbd2824cee9b814395f15014477ec08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPlayer: 1
   currentAffliction: 0
   maxSkillNum: 4
-  requiredSP: f40b0000f40b0000f40b0000f40b0000
-  currentSP: f40b0000000000000000000000000000
+  requiredSP:
+  - 3060
+  - 6120
+  - 3060
+  - 3060
+  currentSP:
+  - 0
+  - 0
+  - 0
+  - 0
+  skillRegenByAttack: 
   maxBaseHP: 4091
   baseDef: 8
   baseAtk: 6020
+  critRate: 12
   maxHP: 4091
   currentHp: 4091
   attackspeed: 1
@@ -596,15 +607,20 @@ MonoBehaviour:
   rollspeed: 9
   comboConnectMaxInterval: 3
   knockbackRes: 0
-  burnRes: 0
-  paralyzeRes: 0
-  poisonRes: 0
-  frostbiteRes: 0
-  bogRes: 0
-  stunRes: 0
-  sleepRes: 0
-  blindRes: 0
-  frozenRes: 0
+  attackBuffA: 0
+  attackBuffB: 0
+  skillDmgBuff: 0
+  spGainBuff: 0
+  critRateBuff: 0
+  critDmgBuff: 0
+  attackDebuff: 0
+  skillDmgDebuff: 0
+  critDmgDebuff: 0
+  spGainDebuff: 0
+  defenseBuff: 0
+  defenseDebuff: 0
+  damageCut: 0
+  damageCutConst: 0
   comboHitCount: 0
 --- !u!1 &8598698706170309169
 GameObject:

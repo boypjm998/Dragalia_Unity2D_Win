@@ -12,18 +12,35 @@ public class AttackFromPlayer : MonoBehaviour
     //Damage Basic Attributes
     protected float knockbackPower;
     protected float knockbackForce;
-    protected float dmgModifier;
+    protected float knockbackTime;
+    protected float[] dmgModifier;
     protected int spGain;
-    
+
     protected int firedir;
-    
-    
+
+    protected struct AttackAttrs 
+    {
+        public float kbpower;
+        public float kbforce;
+        public float kbtime;
+        public float[] dmgmod;
+
+        public void Create(float kbpower, float kbforce, float kbtime, float[] dmgmod)
+        {
+            this.kbforce = kbforce;
+            this.kbpower = kbpower;
+            this.kbtime = kbtime;
+            this.dmgmod = dmgmod;
+        }
+    }
+
+    protected List<AttackAttrs> nextAttackSet;
+    protected int attackID = 0;
 
 
-    
     public List<int> hitFlags;//遍历敌人做一个数组，每个敌人代表一个hitflag
 
-    
+
     public GameObject hitConnectEffect;
     public Collider2D attackCollider;
     public Transform playerpos;
@@ -38,11 +55,13 @@ public class AttackFromPlayer : MonoBehaviour
     protected virtual void Start()
     {
         battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
+        nextAttackSet = new List<AttackAttrs>();
     }
 
     public virtual void ResetFlags()
     {
         hitFlags.Clear();
+        
         GameObject enemyLayer = GameObject.Find("EnemyLayer");
         for (int i = 0; i < enemyLayer.transform.childCount; i++)
         {
@@ -80,15 +99,33 @@ public class AttackFromPlayer : MonoBehaviour
         ConnectCoroutine = null;
     }
 
-    public virtual void InitAttackBasicAttributes(float knockbackPower,float knockbackForce,float dmgModifier,int spGain,int firedir)
+    public virtual void InitAttackBasicAttributes(float knockbackPower, float knockbackForce, float knockbackTime, float dmgModifier, int spGain, int firedir)
+    {
+        
+
+
+        //multi-hit attacks can be trigger multiple damage.
+        this.knockbackPower = knockbackPower;
+        this.knockbackForce = knockbackForce;
+        this.dmgModifier = new float[1];
+        this.dmgModifier[0] = dmgModifier;
+        this.knockbackTime = knockbackTime;
+        this.spGain = spGain;
+        this.firedir = firedir;
+
+    }
+
+    public virtual void InitAttackBasicAttributes(float knockbackPower, float knockbackForce, float knockbackTime, float[] dmgModifier, int spGain, int firedir)
     {
         this.knockbackPower = knockbackPower;
         this.knockbackForce = knockbackForce;
         this.dmgModifier = dmgModifier;
+        this.knockbackTime = knockbackTime;
         this.spGain = spGain;
         this.firedir = firedir;
-        print(this.dmgModifier);
+
     }
+
 
     public virtual int GetFaceDir()
     {
@@ -134,7 +171,10 @@ public class AttackFromPlayer : MonoBehaviour
                 int dmg = battleStageManager.PlayerHit(hitinfo.collider.gameObject, this);
 
                 AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
-                if (container.NeedTotalDisplay() || dmg>=0)
+                
+                container.AttackOneHit();
+
+                if (container.NeedTotalDisplay() || dmg >= 0)
                     container.AddTotalDamage(dmg);
 
             }
@@ -159,6 +199,7 @@ public class AttackFromPlayer : MonoBehaviour
 
 
                 AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
+                container.AttackOneHit();
                 if (container.NeedTotalDisplay())
                     container.AddTotalDamage(dmg);
 
@@ -170,7 +211,17 @@ public class AttackFromPlayer : MonoBehaviour
 
     public float GetDmgModifier()
     {
-        return dmgModifier;
+        return dmgModifier[0];
+    }
+
+    public float GetDmgModifier(int id)
+    {
+        return dmgModifier[id];
+    }
+
+    public int GetHitCount()
+    {
+        return dmgModifier.Length;
     }
 
     public float GetSpGain()
@@ -178,6 +229,34 @@ public class AttackFromPlayer : MonoBehaviour
         return spGain;
     }
 
+    public void AppendAttackSets(float knockbackPower, float knockbackForce, float knockbackTime, float[] dmgModifier)
+    {
+        AttackAttrs newAttack = new AttackAttrs();
+        newAttack.Create(knockbackPower, knockbackForce, knockbackTime, dmgModifier);
+        nextAttackSet.Add(newAttack);
+    }
 
+    public void AppendAttackSets(float knockbackPower, float knockbackForce, float knockbackTime, float dmgModifier)
+    {
+        //single Attack
+
+        AttackAttrs newAttack = new AttackAttrs();
+        float[] dmgModifiers = new float[1];
+        dmgModifiers[0] = dmgModifier;
+        newAttack.Create(knockbackPower, knockbackForce, knockbackTime, dmgModifiers);
+        nextAttackSet.Add(newAttack);
+    }
+
+    protected void NextAttack()
+    {
+        if (nextAttackSet.Count > 0)
+        {
+            this.dmgModifier = nextAttackSet[0].dmgmod;
+            this.knockbackForce = nextAttackSet[0].kbforce;
+            this.knockbackPower = nextAttackSet[0].kbpower;
+            this.knockbackTime = nextAttackSet[0].kbtime;
+            nextAttackSet.RemoveAt(0);
+        }
+    }
 
 }

@@ -82,7 +82,7 @@ public static class BasicCalculation
             damage = 0;
         }
 
-        Debug.Log(damage);
+        //Debug.Log(damage);
         return (int)damage;
 
     }

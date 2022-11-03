@@ -92,7 +92,7 @@ public class PlayerInput : MonoBehaviour
         buttonRoll.Tick(Input.GetKey(keyRoll));
         buttonDown.Tick(Input.GetKey(keyDown));
         buttonSkill1.Tick(Input.GetKey(keySkill1));
-
+        buttonSkill2.Tick(Input.GetKey(keySkill2));
 
         //print(buttonDown.IsPressing && buttonDown.isExtending);
 
@@ -102,7 +102,7 @@ public class PlayerInput : MonoBehaviour
         checkStdAttack();
 
         CheckSkill1();
-
+        CheckSkill2();
     }
 
 
@@ -199,6 +199,22 @@ public class PlayerInput : MonoBehaviour
             skill[0] = false;
         }
         
+
+    }
+
+    void CheckSkill2()
+    {
+
+
+        if (stat.currentSP[1] >= stat.requiredSP[1] && buttonSkill2.OnPressed)
+        {
+            skill[1] = true;
+        }
+        else
+        {
+            skill[1] = false;
+        }
+
 
     }
 

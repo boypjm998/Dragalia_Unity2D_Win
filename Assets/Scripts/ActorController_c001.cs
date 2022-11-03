@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ActorController_c001 : ActorController
 {
-
+    AlchemicGauge alchemicGauge;
 
    
 
@@ -17,6 +17,12 @@ public class ActorController_c001 : ActorController
                 anim.Play("s1");
                 stat.currentSP[0] = 0;
                 break;
+
+            case 2:
+                anim.Play("s2");
+                stat.currentSP[1] = 0;
+                break;
+
             default:
                 break;
         }
@@ -40,51 +46,18 @@ public class ActorController_c001 : ActorController
         movespeed = stat.movespeed;
         rollspeed = 9.0f;
 
+        alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+
     }
 
+
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
 
-
-        if (rigid.transform.eulerAngles.y == 0)
-        {
-            facedir = 1;
-        }
-        else if (rigid.transform.eulerAngles.y == 180)
-        {
-            facedir = -1;
-        }
-        anim.SetFloat("forward", Mathf.Abs(pi.DRight));//动画的渐进效果
-        if (pi.jump && pi.jumpEnabled)
-        {
-            Jump();
-        }
-        if (pi.wjump && pi.jumpEnabled)
-        {
-            DoubleJump();
-        }
-        if (pi.stdAtk && pi.attackEnabled)
-        {
-            if (anim.GetBool("isGround") == true)
-                StdAtk();
-            else
-            {
-                AirDashAtk();
-            }
-        }
-        if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-        {
-            UseSkill(1);
-        }
-        if (pi.roll && pi.rollEnabled)
-        {
-            Roll();
-
-
-        }
-        //movingVec = rigid.transform.forward;
-        //print(movingVec);
+        base.Update();
+        CheckSkill();
+      
     }
     void FixedUpdate()
     {
@@ -94,16 +67,53 @@ public class ActorController_c001 : ActorController
 
     }
 
+    protected override void CheckSkill()
+    {
+
+
+        if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        {
+            if (alchemicGauge.IsCatridgeActive())
+            {
+
+            }
+            else
+            {
+                UseSkill(1);
+            }
+        }
+
+        if (pi.skill[1] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill && alchemicGauge.GetCatridgeNumber()>0)
+        {
+            if (alchemicGauge.IsCatridgeActive())
+            {
+
+            }
+            else
+            {
+                UseSkill(2);
+            }
+        }
+    }
+
+
+
     //Event functions and Setting functions
 
 
     //设置主控角色的速度
 
     #region Move Horizontally
-    
+
     #endregion
 
     #region Animation States Events
+
+    public void ActiveAlchemicEnhancement()
+    {
+        alchemicGauge.SetCatridgeActive();
+    }
+
 
     //人物滚动时附加的位移效果
     public override void EventRoll()
@@ -202,7 +212,43 @@ public class ActorController_c001 : ActorController
         //print("Exit");
     }
 
+    public override void OnStandardAttackConnect(AttackFromPlayer attackStat)
+    {
 
+        AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+        AttackContainer container = attackStat.GetComponentInParent<AttackContainer>();
+
+        if (container.hitConnectNum >= container.attackTotalNum)
+            return;
+
+        alchemicGauge.CPCharge(1);
+        if (stat.comboHitCount > 30)
+        {
+            alchemicGauge.CPCharge(2);
+        }
+
+
+
+    }
+
+    public override void OnOtherAttackConnect(AttackFromPlayer attackStat)
+    {
+        AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+
+        AttackContainer container = attackStat.GetComponentInParent<AttackContainer>();
+
+        if (container.hitConnectNum >= container.attackTotalNum)
+            return;
+
+
+        alchemicGauge.CPCharge(1);
+        if (stat.comboHitCount > 30)
+        {
+            alchemicGauge.CPCharge(2);
+        }
+
+        //翻滚充能1.
+    }
 
 
     #endregion
@@ -219,7 +265,7 @@ public class ActorController_c001 : ActorController
                 return false;
             else return true;
         }
-        if (targetTransform.position.x < rigid.transform.position.y)
+        if (targetTransform.position.x < rigid.transform.position.x)
         {
             if (facedir == -1)
                 return false;

@@ -30,6 +30,10 @@ public class AlchemicGauge : MonoBehaviour
     private bool startAnimIsStarted = false;
     private bool endAnimIsStarted = false;
 
+    private StatusManager stat;
+
+
+
     private void Awake()
     {
         
@@ -47,6 +51,8 @@ public class AlchemicGauge : MonoBehaviour
         gaugeRect = transform.Find("SliderRec").gameObject;
         gaugeRing = transform.Find("SliderRing").gameObject;
         catridges = transform.Find("Catridge").gameObject;
+        stat = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
+
         //numberImages will be set in the prefab.
         catridgeActive = false;
         startAnimIsFinished = false;
@@ -69,6 +75,7 @@ public class AlchemicGauge : MonoBehaviour
         else {
             if (!startAnimIsStarted)
             {
+                stat.SetRequiredSP(1, 3060);
                 startAnimIsStarted = true;
                 StartCoroutine(ActiveAnimation());
                 activeCatridgeCount = catridgeCount;
@@ -91,6 +98,7 @@ public class AlchemicGauge : MonoBehaviour
                 endAnimIsStarted = true;
                 StartCoroutine(InactiveAnimation());
                 activeCatridgeCount = 0;
+                stat.SetRequiredSP(1, 6120);
             }
         }
         
@@ -211,7 +219,7 @@ public class AlchemicGauge : MonoBehaviour
         while (cp > 0)
         {
             cp--;
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.01f);
         }
         
         StartCoroutine(CatridgeFillAnimate(catridgeCount));
@@ -220,7 +228,7 @@ public class AlchemicGauge : MonoBehaviour
         while (cp < 33)
         {
             cp++;
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.01f);
         }
         
         gaugeRect.GetComponent<Slider>().value = 15;
@@ -233,7 +241,7 @@ public class AlchemicGauge : MonoBehaviour
         while (cp > 0)
         {
             cp--;
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.01f);
         }
 
         number.GetComponent<Image>().sprite = number0Sprite;
@@ -319,6 +327,31 @@ public class AlchemicGauge : MonoBehaviour
 
         }
 
+    }
+
+    public void CPCharge(int q)
+    {
+        cp += q;
+    }
+
+    public bool IsCatridgeActive()
+    {
+        return catridgeActive;
+    }
+
+    public int GetActiveCatridgeNumber()
+    {
+        return activeCatridgeCount;
+    }
+
+    public int GetCatridgeNumber()
+    {
+        return catridgeCount;
+    }
+
+    public void SetCatridgeActive()
+    {
+        catridgeActive = true;
     }
 
 }

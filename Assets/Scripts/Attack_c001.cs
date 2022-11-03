@@ -60,16 +60,16 @@ public class Attack_c001 : MonoBehaviour
         shotpoint = attackPointObject.transform;
 
         GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, RangedAttackFXLayer.transform);
-        
+        container.GetComponent<AttackContainer>().InitAttackContainer(3, false);
 
         GameObject projectile_clone1 = Instantiate(projectile1, shotpoint.position, transform.rotation, container.transform);
        
         GameObject projectile_clone2 = Instantiate(projectile1, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 2.5f), container.transform);
         GameObject projectile_clone3 = Instantiate(projectile1, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z - 2.5f), container.transform);
 
-        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.24f, 0, ac.facedir);
-        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
-        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0.23f, 0, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0, 0.24f, 0, ac.facedir);
+        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0, 0.23f, 0, ac.facedir);
+        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0, 0, 0, 0.23f, 0, ac.facedir);
     }
     private void ComboAttack1()
     {
@@ -77,11 +77,12 @@ public class Attack_c001 : MonoBehaviour
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
 
         GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainer>().InitAttackContainer(1, false);
 
         shotpoint = attackPointObject.transform;
         GameObject projectile_clone1 = Instantiate(projectile2, shotpoint.position, transform.rotation, container.transform);
 
-        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.5f, 1.35f, 280, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.5f, 0.3f, 1.35f, 280, ac.facedir);
         //projectile_clone1.name = "Bullet1c";
         //Remember clear the signal after shoot.
 
@@ -97,16 +98,16 @@ public class Attack_c001 : MonoBehaviour
 
 
         GameObject projectile_clone1 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 20f), container.transform);
-        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone2 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 13.3f), container.transform);
-        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
+        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone3 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 6.6f), container.transform);
-        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
+        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone4 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 0f), container.transform);
-        projectile_clone4.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.8f, 300, ac.facedir);
+        projectile_clone4.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
         //Remember clear the signal after shoot.
 
     }
@@ -131,7 +132,7 @@ public class Attack_c001 : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-            (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, 1, 1.88f, 0, ac.facedir));
+            (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, 1,0.5f, 1.88f, 0, ac.facedir));
             
         }
         foreach (GameObject obj in projectiles)
@@ -143,6 +144,24 @@ public class Attack_c001 : MonoBehaviour
 
     }
 
+    private void Skill2()
+    {
+        //¼ÓBUFF
+
+        //
+        //AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+
+        //alchemicGauge.SetCatridgeActive();
+
+        
+
+
+
+        //
+    }
+
+
+
     private void AirDashAttack()
     {
         GameObject attackLayer = MeeleAttackFXLayer;
@@ -150,7 +169,7 @@ public class Attack_c001 : MonoBehaviour
 
         GameObject dashEffect = Instantiate(projectile_m1, attackLayer.transform.position, transform.rotation,container.transform);
         dashEffect.name = "AirDashEffect";
-        dashEffect.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 2.5f, 0.8f, 150, ac.facedir);
+        dashEffect.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 2.5f, 0.5f, 0.8f, 150, ac.facedir);
     }
 
 
@@ -170,12 +189,12 @@ public class Attack_c001 : MonoBehaviour
     }
 
     private GameObject HomingBulletInstantiate(GameObject prefab, Vector3 shotpoint, GameObject targetLayer, Vector2 angle,
-        float knockbackPower,float knockbackForce,float dmgModifier,int spGain,int firedir)
+        float knockbackPower,float knockbackForce,float knockbackTime, float dmgModifier,int spGain,int firedir)
     {
         var instance = Instantiate(prefab, shotpoint, transform.rotation, targetLayer.transform);
         var attr = instance.GetComponent<HomingProjectile>();
         attr.angle = angle;
-        attr.InitAttackBasicAttributes(knockbackPower,knockbackForce, dmgModifier, spGain, firedir);
+        attr.InitAttackBasicAttributes(knockbackPower,knockbackForce, knockbackTime, dmgModifier, spGain, firedir);
 
         return instance;
     }

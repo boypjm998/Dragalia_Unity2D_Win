@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 344648275110309343}
   - component: {fileID: 2678973344039926932}
   - component: {fileID: 2411587321663863035}
+  - component: {fileID: 3079111747503234606}
   m_Layer: 6
   m_Name: BagOKD
   m_TagString: Enemy
@@ -198,6 +199,50 @@ MonoBehaviour:
   normalStrength: 5
   normalSmoothing: 1
   computingNormal: 0
+--- !u!114 &3079111747503234606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344648275110309312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cbd2824cee9b814395f15014477ec08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentAffliction: 0
+  maxSkillNum: 4
+  requiredSP: []
+  currentSP: []
+  skillRegenByAttack: 
+  maxBaseHP: 99999
+  baseDef: 10
+  baseAtk: 0
+  critRate: 0
+  maxHP: 99999
+  currentHp: 99999
+  attackspeed: 1
+  movespeed: 6
+  jumpforce: 18
+  rollspeed: 9
+  comboConnectMaxInterval: 3
+  knockbackRes: 999
+  attackBuffA: 0
+  attackBuffB: 0
+  skillDmgBuff: 0
+  spGainBuff: 0
+  critRateBuff: 0
+  critDmgBuff: 0
+  attackDebuff: 0
+  skillDmgDebuff: 0
+  critDmgDebuff: 0
+  spGainDebuff: 0
+  defenseBuff: 0
+  defenseDebuff: 0
+  damageCut: 0
+  damageCutConst: 0
+  comboHitCount: 0
 --- !u!1 &7979397836191780119
 GameObject:
   m_ObjectHideFlags: 0

@@ -35,7 +35,9 @@ public class TotalDamageAnimator : MonoBehaviour
 
         matNum = tmp.spriteAsset.material;
         matNum.SetFloat("_Alpha", 0f);
-        matTxt.color = new Color(matTxt.color.r, matTxt.color.g, matTxt.color.b, 0);
+        //matTxt.color = new Color(matTxt.color.r, matTxt.color.g, matTxt.color.b, 0);
+        matTxt.SetFloat("_Alpha", 0f);
+
 
         fadeSpeed = 1 / fadeTime;
         fadeTime2 = fadeTime;
@@ -55,7 +57,8 @@ public class TotalDamageAnimator : MonoBehaviour
             fadeTime -= Time.deltaTime;
             var newAlpha = matNum.GetFloat("_Alpha") + fadeSpeed * Time.deltaTime > 1 ? 1 : matNum.GetFloat("_Alpha") + fadeSpeed * Time.deltaTime;
             matNum.SetFloat("_Alpha", newAlpha);
-            matTxt.color = new Color(matTxt.color.r, matTxt.color.g, matTxt.color.b, newAlpha);
+            matTxt.SetFloat("_Alpha", newAlpha);
+            //matTxt.color = new Color(matTxt.color.r, matTxt.color.g, matTxt.color.b, newAlpha);
         }
         else if (lastTime > 0)
         {
@@ -67,7 +70,8 @@ public class TotalDamageAnimator : MonoBehaviour
             fadeTime2 -= Time.deltaTime;
             var newAlpha = matNum.GetFloat("_Alpha") + fadeSpeed * Time.deltaTime < 0 ? 0 : matNum.GetFloat("_Alpha") - fadeSpeed * Time.deltaTime;
             matNum.SetFloat("_Alpha", newAlpha);
-            matTxt.color = new Color(matTxt.color.r, matTxt.color.g, matTxt.color.b, newAlpha);
+            matTxt.SetFloat("_Alpha", newAlpha);
+            //matTxt.color = new Color(matTxt.color.r, matTxt.color.g, matTxt.color.b, newAlpha);
         }
         else {
             Destroy(gameObject);

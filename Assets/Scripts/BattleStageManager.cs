@@ -53,50 +53,86 @@ public class BattleStageManager : MonoBehaviour
 
     public virtual int PlayerHit(GameObject target, AttackFromPlayer attackStat)
     {
+        GameObject player = GameObject.Find("PlayerHandle");
+
         //1、If target is not in invincible state.
         if (target.GetComponentInChildren<Collider2D>().isActiveAndEnabled == false)
         {
             return -1;
         }
 
+        //Attack Callback
+        switch (attackStat.attackType)
+        {
+            case BasicCalculation.AttackType.STANDARD:
+                player.GetComponent<ActorController>().OnStandardAttackConnect(attackStat);
+                break;
+            case BasicCalculation.AttackType.SKILL:
+                player.GetComponent<ActorController>().OnSkillConnect(attackStat);
+                break;
+            case BasicCalculation.AttackType.OTHER:
+                player.GetComponent<ActorController>().OnOtherAttackConnect(attackStat);
+                break;
 
-
-
-        //2、Calculate the damage deal to target.
-
-        bool isCrit = false;
-        GameObject player = GameObject.Find("PlayerHandle");
-        
-
-        int damage = 
-            BasicCalculation.CalculateDamageGeneral(
-            player.GetComponentInChildren<StatusManager>(),
-            target.GetComponentInChildren<StatusManager>(),
-            attackStat.GetDmgModifier(),
-            attackStat.attackType,
-            ref isCrit
-            );
-
-        int damageM = (int)(Mathf.Ceil(damage * Random.Range(0.95f, 1.05f)));
-        print(damageM);
-        //3、Special Effect
-
-
-
-
-        //4、Instantiate the damage number.
-
-        GameObject damageManager = GameObject.Find("DamageManager");
-        DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
-        
-        if (isCrit)
-        {  
-            dnm.DamagePopEnemy(target.transform, damageM, 2);
+            default:
+                break;
         }
-        else
-        {  
-            dnm.DamagePopEnemy(target.transform, damageM, 1);
+
+
+
+
+
+
+        int[] damageM = new int[attackStat.GetHitCount()];
+
+        int totalDamage = 0;
+
+        for (int i = 0; i < attackStat.GetHitCount(); i++)
+        {
+
+            //2、Calculate the damage deal to target.
+
+            bool isCrit = false;
+
+
+
+            int damage =
+                BasicCalculation.CalculateDamageGeneral(
+                player.GetComponentInChildren<StatusManager>(),
+                target.GetComponentInChildren<StatusManager>(),
+                attackStat.GetDmgModifier(i),
+                attackStat.attackType,
+                ref isCrit
+                );
+
+            damageM[i] = (int)(Mathf.Ceil(damage * Random.Range(0.95f, 1.05f)));
+
+            //3、Special Effect
+
+
+
+
+            //4、Instantiate the damage number.
+
+            GameObject damageManager = GameObject.Find("DamageManager");
+            DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
+
+            if (isCrit)
+            {
+                dnm.DamagePopEnemy(target.transform, damageM[i], 2);
+            }
+            else
+            {
+                dnm.DamagePopEnemy(target.transform, damageM[i], 1);
+            }
+
+            totalDamage += damageM[i];
+
+            player.GetComponent<StatusManager>().ComboConnect();
+
         }
+
+        
 
 
 
@@ -115,7 +151,7 @@ public class BattleStageManager : MonoBehaviour
 
 
 
-        return damageM;
+        return totalDamage;
 
     }
 

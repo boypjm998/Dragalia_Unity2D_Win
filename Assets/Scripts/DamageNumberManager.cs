@@ -286,11 +286,11 @@ public class DamageNumberManager : MonoBehaviour
         TextMeshPro tmp = num.GetComponentInChildren<TextMeshPro>();
         tmp.text = Text2SpriteAssetNumber(damage, 1);
 
-        if (Mathf.Abs(num.transform.position.y - camera.transform.position.y) > 3)
+        if (Mathf.Abs(num.transform.position.y - camera.transform.position.y) > 4)
         {
             num.transform.position = new Vector2(num.transform.position.x, camera.transform.position.y);
         }
-        if (Mathf.Abs(num.transform.position.x - camera.transform.position.x) > 5)
+        if (Mathf.Abs(num.transform.position.x - camera.transform.position.x) > 8)
         {
             num.transform.position = new Vector2(camera.transform.position.x, num.transform.position.y);
         }

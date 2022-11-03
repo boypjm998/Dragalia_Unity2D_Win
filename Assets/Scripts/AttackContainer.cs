@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class AttackContainer : MonoBehaviour
 {
-    private int attackTotalNum;
+    public int attackTotalNum { get; private set; }
     private int currentFinishedNum;
     private bool needTotalDisplay;
     private int totalDamage;
     public bool spGained;
+
+    public int hitConnectNum { get; private set; }
 
     //private int testBulletNum;
 
@@ -42,7 +44,7 @@ public class AttackContainer : MonoBehaviour
 
         if (transform.childCount == 0 && currentFinishedNum == attackTotalNum)
         {
-            Destroy(gameObject, 0.1f);
+            Destroy(gameObject, 0.5f);
         }
     }
     private void OnDestroy()
@@ -76,4 +78,11 @@ public class AttackContainer : MonoBehaviour
     {
         return needTotalDisplay;
     }
+    public void AttackOneHit()
+    {
+        hitConnectNum++;
+        print(hitConnectNum);
+    }
+
+
 }

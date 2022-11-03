@@ -89,7 +89,9 @@ public class StatusManager : MonoBehaviour
     private int healBuffNum = 0;
 
 
-    public int comboHitCount;
+    public int comboHitCount = 0;
+    private float lastComboRemainTime = 0;
+    private Coroutine comboRoutine = null;
 
 
     private void Awake()
@@ -107,15 +109,16 @@ public class StatusManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (isPlayer)
+        {
+            SpGainInStatus(0, spRegenPerSecond * Time.deltaTime);
+            SpGainInStatus(1, spRegenPerSecond * Time.deltaTime);
+        }
     }
 
     void FixedUpdate()
     {
-        if (isPlayer)
-        {
-            SpGainInStatus(0, spRegenPerSecond * Time.fixedDeltaTime);
-        }
+        
     }
 
     public void SpGainInStatus(int id, float num)
@@ -216,5 +219,31 @@ public class StatusManager : MonoBehaviour
     {
         return damageCutConst;
     }
+
+    private IEnumerator ComboCheck()
+    {
+        if (comboHitCount > 0)
+        {
+            yield return new WaitForSeconds(comboConnectMaxInterval);
+            comboHitCount = 0;
+            lastComboRemainTime = 0;
+        }
+    }
+
+    public void ComboConnect()
+    {
+        comboHitCount++;
+        lastComboRemainTime = comboConnectMaxInterval;
+        if(comboRoutine!=null)
+            StopCoroutine(comboRoutine);
+        comboRoutine = StartCoroutine(ComboCheck());
+    }
+
+    public void SetRequiredSP(int sidFromZero, float sp)
+    {
+        requiredSP[sidFromZero] = sp;
+    }
+
+
 
 }

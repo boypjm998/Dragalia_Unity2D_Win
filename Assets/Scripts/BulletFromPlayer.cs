@@ -75,7 +75,7 @@ public class BulletFromPlayer : AttackFromPlayer
     public virtual void BulletLinearSplitDamageCheck(float splitDistance)
     {
         RaycastHit2D[] hitsinfo = Physics2D.RaycastAll(transform.position, transform.right, splitDistance, targetLayers);
-        print(transform.position+" "+transform.forward);
+        //print(transform.position+" "+transform.forward);
         
         //print(transform.position.x + splitDistance);
         //print(transform.forward);

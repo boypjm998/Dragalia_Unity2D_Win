@@ -703,6 +703,20 @@ MonoBehaviour:
   - jump
   clearAtExit:
   - attack
+--- !u!114 &-4390413057095757758
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2729b32162f679344a84b50a1384b9c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onExitMessages:
+  - OnSkillExit
 --- !u!114 &-4388489349303750334
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -828,6 +842,28 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: forward
   m_TimeParameter: forward
+--- !u!1101 &-3444576882854455763
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions: []
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -8547316351776972097}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0
+  m_TransitionOffset: 0
+  m_ExitTime: 1
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1101 &-3342972525043217013
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -1250,6 +1286,36 @@ AnimatorController:
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
+--- !u!1102 &78887125117063719
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: s2
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions:
+  - {fileID: -3444576882854455763}
+  m_StateMachineBehaviours:
+  - {fileID: 1602277502159370042}
+  - {fileID: 5611759500787483362}
+  - {fileID: -4390413057095757758}
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: e1bd98d5b32dd284296d5ee3a8a0374e, type: 2}
+  m_Tag: 
+  m_SpeedParameter: forward
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: forward
+  m_TimeParameter: forward
 --- !u!114 &565974568614160043
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1383,6 +1449,21 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &1602277502159370042
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4534f627818d644f938c420ed9f93ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clearAtEnter:
+  - attack
+  clearAtExit: []
 --- !u!1102 &1717237890966993621
 AnimatorState:
   serializedVersion: 6
@@ -1816,6 +1897,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onEnterMessages:
   - OnDashEnter
+--- !u!114 &5611759500787483362
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b482cbca905713649b62439aefa0431a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onEnterMessages:
+  - OnSkillEnter
 --- !u!114 &5820269927952969079
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2134,12 +2229,15 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -8183623478091490857}
     m_Position: {x: 340, y: 70, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 78887125117063719}
+    m_Position: {x: 340, y: -50, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 50, y: 20, z: 0}
+  m_AnyStatePosition: {x: 210, y: 230, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 700, y: 170, z: 0}
   m_ParentStateMachinePosition: {x: 660, y: 10, z: 0}
