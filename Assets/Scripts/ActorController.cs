@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+
 
 public class ActorController : MonoBehaviour
 {
@@ -31,6 +34,7 @@ public class ActorController : MonoBehaviour
     
     public virtual void Move()
     {
+        
         if (pi.moveEnabled == false)
         {
             return;
@@ -147,7 +151,7 @@ public class ActorController : MonoBehaviour
         {
             facedir = -1;
         }
-        anim.SetFloat("forward", Mathf.Abs(pi.DRight));//¶¯»­µÄ½¥½øĞ§¹û
+        anim.SetFloat("forward", Mathf.Abs(pi.DRight));//ï¿½ï¿½ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½
         if (pi.jump && pi.jumpEnabled)
         {
             Jump();
@@ -186,7 +190,7 @@ public class ActorController : MonoBehaviour
     //Event functions and Setting functions
 
 
-    //ÉèÖÃÖ÷¿Ø½ÇÉ«µÄËÙ¶È
+    //è®¾ç½®ä¸»æ§è§’è‰²çš„é€Ÿåº¦ã€‚
 
     #region Move Horizontally
     public void SetVelocity(float vx, float vy)
@@ -215,9 +219,10 @@ public class ActorController : MonoBehaviour
         }
 
     }
-
-    //Ö÷¿Ø½ÇÉ«ÔÚÒ»¶¨µÄÊ±¼äÄÚ¹â»¬Ë®Æ½Î»ÒÆ£¬speedÎªÒÆ¶¯ËÙ¶È£¬timeÎªÒÆ¶¯Ê±¼ä£¬accerationÎª¼ÓËÙ¶È£¨´óÓÚ0ÊÇ¼õËÙ£©
-    //²ÎÊıÎª3¸öÊ±£¬´ú±íµ±ÍË³öÄ³¶¯»­×´Ì¬Ê±ÖĞ¶ÏÎ»ÒÆ¡£
+    
+    
+    //ä¸»æ§è§’è‰²åœ¨ä¸€å®šçš„æ—¶é—´å†…å…‰æ»‘æ°´å¹³ä½ç§»ï¼Œspeedä¸ºç§»åŠ¨é€Ÿåº¦ï¼Œtimeä¸ºç§»åŠ¨æ—¶é—´ï¼Œaccerationä¸ºåŠ é€Ÿåº¦ï¼ˆå¤§äº0æ˜¯å‡é€Ÿï¼‰
+    //å‚æ•°ä¸º3ä¸ªæ—¶ï¼Œä»£è¡¨å½“é€€å‡ºæŸåŠ¨ç”»çŠ¶æ€æ—¶ä¸­æ–­ä½ç§»ã€‚
     public IEnumerator HorizontalMove(float speed,float time,string move)
     {
         
@@ -226,14 +231,16 @@ public class ActorController : MonoBehaviour
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
             transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
-            time -= Time.fixedDeltaTime;           
-            if (anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move)==false)        
-            {               
-                if (rigid.velocity.x > movespeed)
+            time -= Time.fixedDeltaTime;
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
+            {
+                print("interrupt");
+                if (Mathf.Abs(rigid.velocity.x) > movespeed)
                     rigid.velocity = new Vector2(movespeed,rigid.velocity.y);
                 //pi.SetMoveEnabled();
                 yield break;
             }
+            
             yield return new WaitForFixedUpdate();
         }
         
@@ -262,11 +269,11 @@ public class ActorController : MonoBehaviour
             transform.position = new Vector2(transform.position.x + transform.right.x * speed * Time.fixedDeltaTime, transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
-            if (anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move) == false)
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
             {
-                if (rigid.velocity.x > movespeed)
+                if (Mathf.Abs(rigid.velocity.x) > movespeed)
                     rigid.velocity = new Vector2(movespeed, rigid.velocity.y); 
-                pi.SetMoveEnabled();
+                
                 yield break;
             }
             speed -= acceration * Time.fixedDeltaTime;
@@ -326,11 +333,11 @@ public class ActorController : MonoBehaviour
 
     #region Animation States Events
 
-    //ÈËÎï¹ö¶¯Ê±¸½¼ÓµÄÎ»ÒÆĞ§¹û
+    //äººç‰©æ»šåŠ¨æ—¶é™„åŠ çš„ä½ç§»æ•ˆæœ
     public virtual void EventRoll()
     {
 
-        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "Roll"));  
+        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));  
 
     }
     public virtual void EventDash()
@@ -476,7 +483,7 @@ public class ActorController : MonoBehaviour
 
     #endregion
 
-    #region ¹¥»÷·µ»ØÖ¸Áî
+    #region æ”»å‡»è¿”å›æŒ‡ä»¤
 
     public virtual void OnStandardAttackConnect() { }
     public virtual void OnSkillConnect() { }
@@ -501,10 +508,10 @@ public class ActorController : MonoBehaviour
 
 
 
-    //µ¥¶ÀĞĞ¶¯Ö¸ÁîµÄ¿ª¹Ø
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½Ö¸ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
     public void ActionEnable(int type)
     {
-        //0:È«²¿,1:ÒÆ¶¯£¬2:ÌøÔ¾£¬3:·­¹ö£¬4:¹¥»÷
+        //0:È«ï¿½ï¿½,1:ï¿½Æ¶ï¿½ï¿½ï¿½2:ï¿½ï¿½Ô¾ï¿½ï¿½3:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½4:ï¿½ï¿½ï¿½ï¿½
         if (type == 0)
         {
             pi.SetAttackEnabled();
@@ -533,7 +540,7 @@ public class ActorController : MonoBehaviour
 
     public void ActionDisable(int type)
     {
-        //0:È«²¿,1:ÒÆ¶¯£¬2:ÌøÔ¾£¬3:·­¹ö£¬4:¹¥»÷
+        //0:È«ï¿½ï¿½,1:ï¿½Æ¶ï¿½ï¿½ï¿½2:ï¿½ï¿½Ô¾ï¿½ï¿½3:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½4:ï¿½ï¿½ï¿½ï¿½
         if (type == 0)
         {
             pi.SetAttackDisabled();
@@ -561,6 +568,8 @@ public class ActorController : MonoBehaviour
     }
 
     
+
+
 
 }
 

@@ -22,6 +22,16 @@ public class ActorController_c001 : ActorController
                 anim.Play("s2");
                 stat.currentSP[1] = 0;
                 break;
+            
+            case 5:
+                anim.Play("s1_boost");
+                stat.currentSP[0] = 0;
+                break;
+            
+            case 6:
+                anim.Play("s2_boost");
+                stat.currentSP[1] = 0;
+                break;
 
             default:
                 break;
@@ -75,7 +85,8 @@ public class ActorController_c001 : ActorController
         {
             if (alchemicGauge.IsCatridgeActive())
             {
-
+                UseSkill(5);
+                alchemicGauge.CatridgeConsume();
             }
             else
             {
@@ -87,7 +98,8 @@ public class ActorController_c001 : ActorController
         {
             if (alchemicGauge.IsCatridgeActive())
             {
-
+                UseSkill(6);
+                alchemicGauge.CatridgeConsume();
             }
             else
             {
@@ -101,11 +113,9 @@ public class ActorController_c001 : ActorController
     //Event functions and Setting functions
 
 
-    //设置主控角色的速度
 
-    #region Move Horizontally
 
-    #endregion
+
 
     #region Animation States Events
 
@@ -146,17 +156,17 @@ public class ActorController_c001 : ActorController
 
             }
 
-            StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "Roll"));
+            StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "roll"));
         }
         else if (tarTrans != null)
         {
             if ((Input.GetKey(pi.keyLeft) && facedir == 1) || (Input.GetKey(pi.keyRight) && facedir == -1))
             {
-                StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "Roll"));
+                StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "roll"));
             }
             else
             {
-                StartCoroutine(HorizontalMove(rollspeed, 0.4f, "Roll"));
+                StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
             }
 
         }
@@ -170,7 +180,7 @@ public class ActorController_c001 : ActorController
             {
                 SetFaceDir(1);
             }
-            StartCoroutine(HorizontalMove(rollspeed, 0.4f, "Roll"));
+            StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
         }
 
 
@@ -221,11 +231,16 @@ public class ActorController_c001 : ActorController
         if (container.hitConnectNum >= container.attackTotalNum)
             return;
 
-        alchemicGauge.CPCharge(1);
-        if (stat.comboHitCount > 30)
+        if (!alchemicGauge.IsCatridgeActive())
         {
-            alchemicGauge.CPCharge(2);
+            alchemicGauge.CPCharge(1);
+            if (stat.comboHitCount > 30)
+            {
+                alchemicGauge.CPCharge(2);
+            }
         }
+
+        
 
 
 
@@ -241,10 +256,13 @@ public class ActorController_c001 : ActorController
             return;
 
 
-        alchemicGauge.CPCharge(1);
-        if (stat.comboHitCount > 30)
+        if (!alchemicGauge.IsCatridgeActive())
         {
-            alchemicGauge.CPCharge(2);
+            alchemicGauge.CPCharge(1);
+            if (stat.comboHitCount > 30)
+            {
+                alchemicGauge.CPCharge(2);
+            }
         }
 
         //翻滚充能1.

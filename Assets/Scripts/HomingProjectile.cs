@@ -255,11 +255,11 @@ public class HomingProjectile : AttackFromPlayer
     }*/
 
 
-    private void OnDestroy()
-    {
-        AttackContainer container = GetComponentInParent<AttackContainer>();
-        container.FinishHit();
-    }
+    //private void OnDestroy()
+    //{
+    //    AttackContainer container = GetComponentInParent<AttackContainer>();
+    //    container.FinishHit();
+    //}
 
 
 }

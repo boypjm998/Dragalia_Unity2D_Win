@@ -57,14 +57,14 @@ public class PlayerInput : MonoBehaviour
 
 
     [Header("Others")]
-    //是否允许信号作用
+    //??????????????
     public bool moveEnabled = true;
     public bool jumpEnabled = true;
     public bool rollEnabled = true;
     public bool attackEnabled = true;
     public bool directionLock = false;
 
-    //是否允许信号输入
+    //??????????????
     public bool inputMoveEnabled = true;
     public bool inputAttackEnabled = true;
     public bool inputJumpEnabled = true;
@@ -243,7 +243,7 @@ public class PlayerInput : MonoBehaviour
         return rollEnabled;
     }
 
-    //set方法
+    //set????
     public void SetMoveEnabled()
     {
         moveEnabled = true;
@@ -283,7 +283,7 @@ public class PlayerInput : MonoBehaviour
     #endregion
     public bool CheckCharacterClipState(Animator animator, int LayerId, string[] states)
     {
-        string currstate = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+        //string currstate = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
         AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
         
         //print(currstate);

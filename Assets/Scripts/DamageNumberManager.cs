@@ -55,9 +55,7 @@ public class DamageNumberManager : MonoBehaviour
             new Vector3(newDmgNumPosVec.x + Random.Range(-1f, 1f), newDmgNumPosVec.y + Random.Range(-0.5f, 0.5f) + 3f, newDmgNumPosVec.z),
             Quaternion.identity,
             dmgNumParent);
-
             GameObject crit = null;
-
             crit = 
             Instantiate(critPrefab,
             new Vector3(num.transform.position.x, num.transform.position.y-1.4f, num.transform.position.z),
@@ -66,8 +64,6 @@ public class DamageNumberManager : MonoBehaviour
             TextMeshPro critText = crit.GetComponentInChildren<TextMeshPro>();
             critText.fontSize = fontSize*0.9f;
         }
-
-
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
         //dmgText.text = "<sprite=9><sprite=9><sprite=8>";
         dmgText.text = Text2SpriteAssetNumber(dmg,dmgType);

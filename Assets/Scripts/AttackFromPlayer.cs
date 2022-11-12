@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,24 +18,15 @@ public class AttackFromPlayer : MonoBehaviour
     protected int spGain;
 
     protected int firedir;
+    [SerializeField] protected bool isMeele;
 
-    protected struct AttackAttrs 
-    {
-        public float kbpower;
-        public float kbforce;
-        public float kbtime;
-        public float[] dmgmod;
 
-        public void Create(float kbpower, float kbforce, float kbtime, float[] dmgmod)
-        {
-            this.kbforce = kbforce;
-            this.kbpower = kbpower;
-            this.kbtime = kbtime;
-            this.dmgmod = dmgmod;
-        }
-    }
+    //public List<BasicCalculation.BasicAttackInfo> nextAttackSet;
+    [SerializeField] protected List<float> nextDmgModifier;
+    [SerializeField] protected List<float> nextKnockbackPower;
+    [SerializeField] protected List<float> nextKnockbackForce;
+    [SerializeField] protected List<float> nextKnockbackTime;
 
-    protected List<AttackAttrs> nextAttackSet;
     protected int attackID = 0;
 
 
@@ -52,10 +44,19 @@ public class AttackFromPlayer : MonoBehaviour
     public BasicCalculation.AttackType attackType;
     public float hitShakeIntensity;
 
+    private void Awake()
+    {
+        nextDmgModifier = new List<float>();
+        nextKnockbackForce = new List<float>();
+        nextKnockbackPower = new List<float>();
+        nextKnockbackTime = new List<float>();
+    }
+
+
     protected virtual void Start()
     {
         battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
-        nextAttackSet = new List<AttackAttrs>();
+        
     }
 
     public virtual void ResetFlags()
@@ -174,7 +175,7 @@ public class AttackFromPlayer : MonoBehaviour
                 
                 container.AttackOneHit();
 
-                if (container.NeedTotalDisplay() || dmg >= 0)
+                if (container.NeedTotalDisplay() && dmg > 0)
                     container.AddTotalDamage(dmg);
 
             }
@@ -192,15 +193,17 @@ public class AttackFromPlayer : MonoBehaviour
                 PlayDestroyEffect(hitShakeIntensity);
 
                 Destroy(gameObject);
-
+                
+                //等到敌人模块做好之后要改***Enemy类目前只用来测试！！！！
                 hitinfo.GetComponent<Enemy>().TakeDamage();
+                //等到敌人模块做好之后要改***Enemy类目前只用来测试！！！！
 
                 int dmg = battleStageManager.PlayerHit(hitinfo.gameObject, this);
 
 
                 AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
                 container.AttackOneHit();
-                if (container.NeedTotalDisplay())
+                if (container.NeedTotalDisplay() && dmg > 0)
                     container.AddTotalDamage(dmg);
 
             }
@@ -229,34 +232,58 @@ public class AttackFromPlayer : MonoBehaviour
         return spGain;
     }
 
-    public void AppendAttackSets(float knockbackPower, float knockbackForce, float knockbackTime, float[] dmgModifier)
-    {
-        AttackAttrs newAttack = new AttackAttrs();
-        newAttack.Create(knockbackPower, knockbackForce, knockbackTime, dmgModifier);
-        nextAttackSet.Add(newAttack);
-    }
+    
 
     public void AppendAttackSets(float knockbackPower, float knockbackForce, float knockbackTime, float dmgModifier)
     {
+        
         //single Attack
-
-        AttackAttrs newAttack = new AttackAttrs();
-        float[] dmgModifiers = new float[1];
-        dmgModifiers[0] = dmgModifier;
-        newAttack.Create(knockbackPower, knockbackForce, knockbackTime, dmgModifiers);
-        nextAttackSet.Add(newAttack);
+        
+        
+        nextKnockbackForce.Add(knockbackForce);
+        nextKnockbackPower.Add(knockbackPower);
+        nextKnockbackTime.Add(knockbackTime);
+        nextDmgModifier.Add(dmgModifier);
+        
+        
     }
 
     protected void NextAttack()
     {
-        if (nextAttackSet.Count > 0)
+        print(nextDmgModifier.Count);
+        if (nextKnockbackForce.Count > 0)
         {
-            this.dmgModifier = nextAttackSet[0].dmgmod;
-            this.knockbackForce = nextAttackSet[0].kbforce;
-            this.knockbackPower = nextAttackSet[0].kbpower;
-            this.knockbackTime = nextAttackSet[0].kbtime;
-            nextAttackSet.RemoveAt(0);
+            this.knockbackForce = nextKnockbackForce[0];
+            nextKnockbackForce.RemoveAt(0);
         }
+
+        if (nextKnockbackPower.Count > 0)
+        {
+            this.knockbackPower = nextKnockbackPower[0];
+            nextKnockbackPower.RemoveAt(0);
+        }
+
+        if (nextKnockbackTime.Count > 0)
+        {
+            this.knockbackTime = nextKnockbackTime[0];
+            nextKnockbackTime.RemoveAt(0);
+        }
+
+        if (nextDmgModifier.Count > 0)
+        {
+            this.dmgModifier = new float[1];
+            this.dmgModifier[0] = nextDmgModifier[0];
+            nextDmgModifier.RemoveAt(0);
+        }
+        ResetFlags();
+
     }
 
+    protected virtual void OnDestroy()
+    {
+        AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
+        
+        container.FinishHit();
+        print(container.hitConnectNum);
+    }
 }

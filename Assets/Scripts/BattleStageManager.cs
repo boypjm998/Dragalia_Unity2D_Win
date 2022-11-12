@@ -22,10 +22,10 @@ public class BattleStageManager : MonoBehaviour
     {
         StatusManager statusManager = playerHandle.GetComponent<StatusManager>();
 
-        //1、处理buff
+        //1??????buff
 
 
-        //2、SP充能
+        //2??SP????
 
         for (int i = 0; i < statusManager.maxSkillNum; i++)
         {
@@ -39,10 +39,10 @@ public class BattleStageManager : MonoBehaviour
     {
         StatusManager statusManager = playerHandle.GetComponent<StatusManager>();
 
-        //1、处理buff
+        //1??????buff
 
 
-        //2、SP充能
+        //2??SP????
 
         
          statusManager.SpGainInStatus(skillID, sp);
@@ -55,7 +55,7 @@ public class BattleStageManager : MonoBehaviour
     {
         GameObject player = GameObject.Find("PlayerHandle");
 
-        //1、If target is not in invincible state.
+        //1.If target is not in invincible state.
         if (target.GetComponentInChildren<Collider2D>().isActiveAndEnabled == false)
         {
             return -1;
@@ -90,7 +90,7 @@ public class BattleStageManager : MonoBehaviour
         for (int i = 0; i < attackStat.GetHitCount(); i++)
         {
 
-            //2、Calculate the damage deal to target.
+            //2??Calculate the damage deal to target.
 
             bool isCrit = false;
 
@@ -107,12 +107,12 @@ public class BattleStageManager : MonoBehaviour
 
             damageM[i] = (int)(Mathf.Ceil(damage * Random.Range(0.95f, 1.05f)));
 
-            //3、Special Effect
+            //3??Special Effect
 
 
 
 
-            //4、Instantiate the damage number.
+            //4??Instantiate the damage number.
 
             GameObject damageManager = GameObject.Find("DamageManager");
             DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
@@ -136,7 +136,7 @@ public class BattleStageManager : MonoBehaviour
 
 
 
-        //5、Calculate the SP
+        //5??Calculate the SP
 
         AttackContainer container = attackStat.GetComponentInParent<AttackContainer>();
         if (!container.spGained)

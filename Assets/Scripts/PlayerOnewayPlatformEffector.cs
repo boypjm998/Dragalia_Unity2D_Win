@@ -27,7 +27,8 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
         anim = rigid.GetComponent<Animator>();
 
         //For Manacaster:
-        attackStates = new string[9]{ "combo","crunch", "recover","airdash","dash","s1","s2","s3","s4" };
+        attackStates = new string[12]
+            { "combo","crunch", "recover","airdash","dash","s1","s2","s3","s4","s1_boost","s2_boost","s3_boost" };
     }
 
     void Update()
@@ -65,6 +66,11 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         Physics2D.IgnoreCollision(playerCollider, platformCollider,false);
         
+    }
+
+    public GameObject GetCurrentAttachedGroundInfo()
+    {
+        return currentOnewayPlatform;
     }
 
 

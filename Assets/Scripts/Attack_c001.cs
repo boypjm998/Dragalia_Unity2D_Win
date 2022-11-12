@@ -19,8 +19,10 @@ public class Attack_c001 : MonoBehaviour
     public GameObject projectile3;//Dash
     public GameObject projectile_m1;//Airdash
 
-    public GameObject projectileT;//Test
+    //Test
     public GameObject projectile_s1;
+    public GameObject projectile_s1_boost;
+    public GameObject projectile_s2_boost;
 
     public Transform shotpoint;
 
@@ -28,14 +30,14 @@ public class Attack_c001 : MonoBehaviour
     private TargetAimer ta;
 
     public int testButton;
-    private ActorController ac;
+    private ActorController_c001 ac;
 
     // Start is called before the first frame update
     private void Awake()
     {
         ta = GetComponentInChildren<TargetAimer>();
         //Shotpoints = GameObject.Find("Shotpoints");
-        ac = GetComponent<ActorController>();
+        ac = GetComponent<ActorController_c001>();
         testButton = 0;
     }
 
@@ -135,29 +137,80 @@ public class Attack_c001 : MonoBehaviour
             (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, 1,0.5f, 1.88f, 0, ac.facedir));
             
         }
-        foreach (GameObject obj in projectiles)
+
+        StartCoroutine(ac.HorizontalMove(-ac.movespeed * 0.5f, 0.2f,"s1"));
+
+
+
+
+    }
+
+    private void Skill1_Boost()
+    {
+        ta.TargetSwapByAttack();
+        GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
+        shotpoint = attackPointObject.transform;
+        
+        GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, MeeleAttackFXLayer.transform);
+        container.GetComponent<AttackContainer>().InitAttackContainer(1, true);
+        
+        GameObject laser1 = Instantiate(projectile_s1_boost, shotpoint.position, transform.rotation, container.transform);
+        AttackFromPlayer atk1 = laser1.GetComponent<AttackFromPlayer>();
+        atk1.InitAttackBasicAttributes(1.5f, 2.0f, 0.8f, 3.84f, 0, ac.facedir);
+        for (int i = 0; i < 5; i++)
         {
-            ;
+            atk1.AppendAttackSets(1.5f,2.0f,0.8f,3.84f);
         }
-      
+        
 
+    }
 
+    private void Skill1_Boost_PushBack()
+    {
+        StartCoroutine(ac.HorizontalMove(-ac.movespeed * 0.6f, 0.5f, "s1_boost"));
     }
 
     private void Skill2()
     {
         //¼ÓBUFF
+        ac.ActiveAlchemicEnhancement();
 
         //
         //AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
 
         //alchemicGauge.SetCatridgeActive();
 
-        
+
 
 
 
         //
+    }
+
+    private void Skill2_Boost()
+    {
+        ta.TargetSwapByAttack();
+        
+        GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "DashAttack");
+        shotpoint = attackPointObject.transform;
+        GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, RangedAttackFXLayer.transform);
+        
+        container.GetComponent<AttackContainer>().InitAttackContainer(1, true);
+        
+        GameObject proj = Instantiate(projectile_s2_boost, shotpoint.position, Quaternion.identity, container.transform);
+        
+        
+        
+        
+        //attackInfo.InitAttackBasicAttributes(0, 0, 0, 2.35f, 0, ac.facedir);
+        //attackInfo.AppendAttackSets(1,1,1,23.54f);
+        
+        var currentPltformer = GetComponent<PlayerOnewayPlatformEffector>();
+        proj.GetComponent<Projectile_C001_1>().SetContactTarget(currentPltformer.currentOnewayPlatform);
+        proj.GetComponent<Projectile_C001_1>().InitProjectile(10*ac.facedir,15,30,ac.facedir);
+        
+
+
     }
 
 

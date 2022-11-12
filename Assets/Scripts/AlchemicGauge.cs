@@ -30,6 +30,8 @@ public class AlchemicGauge : MonoBehaviour
     private bool startAnimIsStarted = false;
     private bool endAnimIsStarted = false;
 
+    private Coroutine catFillRoutine;
+
     private StatusManager stat;
 
 
@@ -56,6 +58,8 @@ public class AlchemicGauge : MonoBehaviour
         //numberImages will be set in the prefab.
         catridgeActive = false;
         startAnimIsFinished = false;
+
+        catFillRoutine = null;
     }
 
     // Update is called once per frame
@@ -222,7 +226,7 @@ public class AlchemicGauge : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
         }
         
-        StartCoroutine(CatridgeFillAnimate(catridgeCount));
+        catFillRoutine = StartCoroutine(CatridgeFillAnimate(catridgeCount));
         number.GetComponent<Image>().sprite = numberLoadedSprite;
         
         while (cp < 33)
@@ -295,18 +299,32 @@ public class AlchemicGauge : MonoBehaviour
 
     private IEnumerator CatridgeUnloadAnimate(int catID)
     {
+        Slider slider1 = catridges.transform.GetChild(0).GetComponent<Slider>();
+        Slider slider2 = catridges.transform.GetChild(1).GetComponent<Slider>();
+        Slider slider3 = catridges.transform.GetChild(2).GetComponent<Slider>();
+
+        if (catFillRoutine != null)
+        {
+            StopCoroutine(catFillRoutine);
+            catFillRoutine = null;
+        }
+
         switch (catID)
         {
+            
+            
             case 1:
-                Slider slider1 = catridges.transform.GetChild(0).GetComponent<Slider>();
+                slider2.value = 0;
+                slider3.value = 0;
                 while (slider1.value > 0)
                 {
                     slider1.value -= 0.1f;
                     yield return new WaitForFixedUpdate();
                 }
                 break;
+            
             case 2:
-                Slider slider2 = catridges.transform.GetChild(1).GetComponent<Slider>();
+                slider3.value = 0;
                 while (slider2.value > 0)
                 {
                     slider2.value -= 0.1f;
@@ -314,7 +332,8 @@ public class AlchemicGauge : MonoBehaviour
                 }
                 break;
             case 3:
-                Slider slider3 = catridges.transform.GetChild(2).GetComponent<Slider>();
+                
+
                 while (slider3.value > 0)
                 {
                     slider3.value -= 0.1f;
@@ -352,6 +371,11 @@ public class AlchemicGauge : MonoBehaviour
     public void SetCatridgeActive()
     {
         catridgeActive = true;
+    }
+
+    public void CatridgeConsume()
+    {
+        catridgeCount--;
     }
 
 }

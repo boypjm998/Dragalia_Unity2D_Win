@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public static class BasicCalculation
 {
@@ -21,11 +22,22 @@ public static class BasicCalculation
     }
     public enum Affliction 
     {
-        NONE = 0,
-        BURN = 1,
-        POISON = 2,
-        PARALYZE = 3,
-        FROSTBITE = 4
+        None = 0,
+        Burn = 1,
+        Poison = 2,
+        Paralyze = 3,
+        Frostbite = 4
+    }
+
+    public struct BasicAttackInfo
+    {
+        public float kbpower;
+        public float kbforce;
+        public float kbtime;
+        public float[] dmgmod;
+
+        
+
     }
 
     public enum AttackType {
@@ -35,6 +47,52 @@ public static class BasicCalculation
         SKILL = 4,
         ABILITY = 5,
         OTHER = 6
+    }
+    
+    public enum BattleBuff
+    {
+        //Basic Buff
+        AtkBuff = 1,
+        DefBuff = 2,
+        CritRateBuff = 3,
+        CritDmgBuff = 4,
+        HotRecovery = 5,
+        RecoveryBuff = 6,
+        
+        //Basic Debuff
+        AtkDebuff = -1,
+        DefDebuff = -2,
+        CritRateDebuff = -3,
+        CritDmgDebuff = -4,
+        RecoveryDebuff = -6,
+        
+        //Special Buff
+        AlchemicCatridge = 101,
+        
+        //Special Debuff
+        
+        //Dot Affliction
+        Burn = 301,
+        Poison = 302,
+        Frostbite = 303,
+        Paralysis = 304,
+        
+        Scorchrend = 305,
+        Stormlash = 306,
+        Flashburn = 307,
+        ShadowBlight = 308,
+        
+        //Control Affliction
+        Stun = 311,
+        Sleep = 312,
+        Bog = 313,
+        Freeze = 314,
+        Blindness = 315,
+        Cursed = 316,
+        NoJump = 317,
+        NoRoll = 318,
+        
+
     }
 
     public static int CalculateDamageGeneral(StatusManager sourceStat, StatusManager targetStat, float modifier, AttackType atkType, ref bool isCrit)

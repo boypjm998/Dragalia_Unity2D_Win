@@ -42,7 +42,7 @@ public class AttackContainer : MonoBehaviour
         
 
 
-        if (transform.childCount == 0 && currentFinishedNum == attackTotalNum)
+        if (transform.childCount == 0 && currentFinishedNum >= attackTotalNum)
         {
             Destroy(gameObject, 0.5f);
         }
@@ -81,7 +81,26 @@ public class AttackContainer : MonoBehaviour
     public void AttackOneHit()
     {
         hitConnectNum++;
-        print(hitConnectNum);
+        //print(hitConnectNum);
+    }
+
+    public void AttackDelegator(GameObject attackProjectile, Transform targetTransform, float invokeNormalizedTime, Animator anim, string requiredMove,
+        float knockbackPower, float knockbackForce, float knockbackTime, float dmgModifier,int spgain, int firedir)
+    {
+        
+        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime <= invokeNormalizedTime)
+        {
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName(requiredMove))
+            {
+                return;
+            }
+        }
+
+
+        var newAttack = Instantiate(attackProjectile, targetTransform.position, transform.rotation, transform);
+        newAttack.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(knockbackPower, knockbackForce, knockbackTime, dmgModifier, spgain, firedir);
+
+
     }
 
 
