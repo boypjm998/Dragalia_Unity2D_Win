@@ -2,9 +2,7 @@
  
 2022/11/3
 
-1、炼金弹夹修改充能返回机制，防止多目标重复充能。
+期末超级忙啊！ 先休息一段时间！
 
-2、伊莉雅s2动画添加。
+1、写了一些BUFF的代码，还有伊莉雅S2的代码。
 
-1. Change the attack callback function of charging alchemic gauge so that it won't be charge multiple times in a hit.
-2. Add Ilia's s2 animation.
