@@ -9,5 +9,5 @@
 3、伊莉雅的S3，异界传送门实现。
 
 1、Some code of buff system. And Ilia's s2's code.
-2、Impliment of Ilia's s2_boost: Alchemic Grenade.
-3、Impliment of Ilia's s3: Otherworld Portal.
+2、Implement of Ilia's s2_boost: Alchemic Grenade.
+3、Implement of Ilia's s3: Otherworld Portal.
