@@ -49,7 +49,7 @@ public static class BasicCalculation
         OTHER = 6
     }
     
-    public enum BattleBuff
+    public enum BattleCondition
     {
         //Basic Buff
         AtkBuff = 1,
@@ -98,10 +98,13 @@ public static class BasicCalculation
     public static int CalculateDamageGeneral(StatusManager sourceStat, StatusManager targetStat, float modifier, AttackType atkType, ref bool isCrit)
     {
         //Source
-        //¹¥»÷
+        
+        //æ”»å‡» Attack
+        
         float atk = sourceStat.baseAtk * (1 + sourceStat.GetAttackBuff());
 
-        //±©»÷ ±¬ÉË
+        //æš´å‡» çˆ†ä¼¤ crit
+        
 
         int critRate = sourceStat.critRate + sourceStat.GetCritRateBuff();
         float critDmgModifier = 1;

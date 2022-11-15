@@ -12,6 +12,7 @@ public class PlayerInput : MonoBehaviour
     public string keyRight = "d";
     public string keyLeft = "a";
     public string keyDown = "s";
+    public string keyUp = "w";
     public string keyAttack = "j";
     public string keyJump = "k";
     public string keyRoll = "l";
@@ -23,6 +24,7 @@ public class PlayerInput : MonoBehaviour
     public MyInputMoudle buttonRight = new MyInputMoudle();
     public MyInputMoudle buttonLeft = new MyInputMoudle();
     public MyInputMoudle buttonDown = new MyInputMoudle();
+    public MyInputMoudle buttonUp = new MyInputMoudle();
     public MyInputMoudle buttonAttack = new MyInputMoudle();
     public MyInputMoudle buttonJump = new MyInputMoudle();
     public MyInputMoudle buttonRoll = new MyInputMoudle();
@@ -57,14 +59,14 @@ public class PlayerInput : MonoBehaviour
 
 
     [Header("Others")]
-    //??????????????
+    //允许信号作用
     public bool moveEnabled = true;
     public bool jumpEnabled = true;
     public bool rollEnabled = true;
     public bool attackEnabled = true;
     public bool directionLock = false;
 
-    //??????????????
+    //允许信号进入
     public bool inputMoveEnabled = true;
     public bool inputAttackEnabled = true;
     public bool inputJumpEnabled = true;
@@ -91,8 +93,10 @@ public class PlayerInput : MonoBehaviour
         buttonJump.Tick(Input.GetKey(keyJump));
         buttonRoll.Tick(Input.GetKey(keyRoll));
         buttonDown.Tick(Input.GetKey(keyDown));
+        buttonUp.Tick(Input.GetKey(keyUp));
         buttonSkill1.Tick(Input.GetKey(keySkill1));
         buttonSkill2.Tick(Input.GetKey(keySkill2));
+        buttonSkill3.Tick(Input.GetKey(keySkill3));
 
         //print(buttonDown.IsPressing && buttonDown.isExtending);
 
@@ -100,9 +104,12 @@ public class PlayerInput : MonoBehaviour
         checkJump();
         checkRoll();
         checkStdAttack();
-
+        
+        //PlayerInput.CheckSkill() -> ActorController.CheckSkill() -> ActorController.UseSkill(id)
+        CheckSpecialMove();
         CheckSkill1();
         CheckSkill2();
+        CheckSkill3();
     }
 
 
@@ -187,6 +194,11 @@ public class PlayerInput : MonoBehaviour
         return stdAtk;
     }
 
+    void CheckSpecialMove()
+    {
+        
+    }
+
     void CheckSkill1()
     {
         
@@ -217,6 +229,23 @@ public class PlayerInput : MonoBehaviour
 
 
     }
+    
+    void CheckSkill3()
+    {
+
+
+        if (stat.currentSP[2] >= stat.requiredSP[2] && buttonSkill3.OnPressed)
+        {
+            skill[2] = true;
+            
+        }
+        else
+        {
+            skill[2] = false;
+        }
+
+
+    }
 
 
 
@@ -243,7 +272,7 @@ public class PlayerInput : MonoBehaviour
         return rollEnabled;
     }
 
-    //set????
+    //set方法
     public void SetMoveEnabled()
     {
         moveEnabled = true;

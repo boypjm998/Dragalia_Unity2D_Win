@@ -87,6 +87,16 @@ public class ActorController : MonoBehaviour
                 anim.Play("s2");
                 stat.currentSP[1] = 0;
                 break;
+            
+            case 3:
+                anim.Play("s3");
+                stat.currentSP[2] = 0;
+                break;
+            
+            case 4:
+                anim.Play("s4");
+                stat.currentSP[3] = 0;
+                break;
 
             default:
                 break;
@@ -136,6 +146,18 @@ public class ActorController : MonoBehaviour
         {
             UseSkill(2);
         }
+        
+        if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        {
+            UseSkill(3);
+        }
+        
+        if (pi.skill[3] && !pi.hurt && !pi.isSkill)
+        {
+            UseSkill(4);
+        }
+        
+        
     }
 
     // Update is called once per frame
@@ -151,7 +173,7 @@ public class ActorController : MonoBehaviour
         {
             facedir = -1;
         }
-        anim.SetFloat("forward", Mathf.Abs(pi.DRight));//�����Ľ���Ч��
+        anim.SetFloat("forward", Mathf.Abs(pi.DRight));
         if (pi.jump && pi.jumpEnabled)
         {
             Jump();
@@ -508,10 +530,10 @@ public class ActorController : MonoBehaviour
 
 
 
-    //�����ж�ָ��Ŀ���
+    //单独行动指令的开关
     public void ActionEnable(int type)
     {
-        //0:ȫ��,1:�ƶ���2:��Ծ��3:������4:����
+        //0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
         if (type == 0)
         {
             pi.SetAttackEnabled();
@@ -540,7 +562,7 @@ public class ActorController : MonoBehaviour
 
     public void ActionDisable(int type)
     {
-        //0:ȫ��,1:�ƶ���2:��Ծ��3:������4:����
+        //0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
         if (type == 0)
         {
             pi.SetAttackDisabled();

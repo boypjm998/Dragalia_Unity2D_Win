@@ -27,7 +27,7 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
         anim = rigid.GetComponent<Animator>();
 
         //For Manacaster:
-        attackStates = new string[12]
+        attackStates = new string[]
             { "combo","crunch", "recover","airdash","dash","s1","s2","s3","s4","s1_boost","s2_boost","s3_boost" };
     }
 

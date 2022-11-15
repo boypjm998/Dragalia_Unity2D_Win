@@ -11,11 +11,11 @@ public class AttackFromPlayer : MonoBehaviour
 
 
     //Damage Basic Attributes
-    protected float knockbackPower;
-    protected float knockbackForce;
-    protected float knockbackTime;
-    protected float[] dmgModifier;
-    protected int spGain;
+    [SerializeField]protected float knockbackPower;
+    [SerializeField]protected float knockbackForce;
+    [SerializeField]protected float knockbackTime;
+    [SerializeField]protected float[] dmgModifier;
+    [SerializeField]protected int spGain;
 
     protected int firedir;
     [SerializeField] protected bool isMeele;
@@ -30,7 +30,7 @@ public class AttackFromPlayer : MonoBehaviour
     protected int attackID = 0;
 
 
-    public List<int> hitFlags;//±éÀúµĞÈË×öÒ»¸öÊı×é£¬Ã¿¸öµĞÈË´ú±íÒ»¸öhitflag
+    public List<int> hitFlags;//éå†æ•Œäººåšä¸€ä¸ªæ•°ç»„ï¼Œæ¯ä¸ªæ•Œäººä»£è¡¨ä¸€ä¸ªhitflag
 
 
     public GameObject hitConnectEffect;
@@ -71,7 +71,7 @@ public class AttackFromPlayer : MonoBehaviour
         }
     }
 
-    public virtual IEnumerator MeeleTimeStop(float time)//½üÕ½µÄ¿¨Èâ
+    public virtual IEnumerator MeeleTimeStop(float time)//è¿‘æˆ˜çš„å¡è‚‰
     {
 
         Animator animAttack = GetComponentInParent<Animator>();
@@ -136,6 +136,8 @@ public class AttackFromPlayer : MonoBehaviour
     public virtual void PlayDestroyEffect(float shakeIntensity)
     {
         CineMachineOperator.Instance.CamaraShake(shakeIntensity, .1f);
+        if(hitConnectEffect == null)
+            return;
         GameObject eff = Instantiate(hitConnectEffect, transform.position, Quaternion.identity);
         eff.name = "HitEffect0";
     }
@@ -194,9 +196,9 @@ public class AttackFromPlayer : MonoBehaviour
 
                 Destroy(gameObject);
                 
-                //µÈµ½µĞÈËÄ£¿é×öºÃÖ®ºóÒª¸Ä***EnemyÀàÄ¿Ç°Ö»ÓÃÀ´²âÊÔ£¡£¡£¡£¡
+                //ç­‰åˆ°æ•Œäººæ¨¡å—åšå¥½ä¹‹åè¦æ”¹***Enemyç±»ç›®å‰åªç”¨æ¥æµ‹è¯•ï¼ï¼ï¼ï¼
                 hitinfo.GetComponent<Enemy>().TakeDamage();
-                //µÈµ½µĞÈËÄ£¿é×öºÃÖ®ºóÒª¸Ä***EnemyÀàÄ¿Ç°Ö»ÓÃÀ´²âÊÔ£¡£¡£¡£¡
+                //ç­‰åˆ°æ•Œäººæ¨¡å—åšå¥½ä¹‹åè¦æ”¹***Enemyç±»ç›®å‰åªç”¨æ¥æµ‹è¯•ï¼ï¼ï¼ï¼
 
                 int dmg = battleStageManager.PlayerHit(hitinfo.gameObject, this);
 

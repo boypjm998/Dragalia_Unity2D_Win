@@ -8,7 +8,7 @@ public class StatusManager : MonoBehaviour
     public bool isPlayer;
 
     //Current Status
-    public BasicCalculation.Affliction currentAffliction;
+    //public BasicCalculation.Affliction currentAffliction;
     public int maxSkillNum = 4;
 
     //SP
@@ -18,7 +18,7 @@ public class StatusManager : MonoBehaviour
     public bool[] skillRegenByAttack;
     private float spRegenPerSecond = 200;
 
-    //Basic Properties (ÈýÎ¬)
+    //Basic Properties (ä¸‰ç»´)
     public int maxBaseHP;
     public int baseDef;
     public int baseAtk;
@@ -113,6 +113,7 @@ public class StatusManager : MonoBehaviour
         {
             SpGainInStatus(0, spRegenPerSecond * Time.deltaTime);
             SpGainInStatus(1, spRegenPerSecond * Time.deltaTime);
+            SpGainInStatus(2, spRegenPerSecond * Time.deltaTime);
         }
     }
 
@@ -123,7 +124,7 @@ public class StatusManager : MonoBehaviour
 
     public void SpGainInStatus(int id, float num)
     {
-        //´Ó0¿ªÊ¼
+        //ä»Ž0å¼€å§‹
         if(skillRegenByAttack[id])
             currentSP[id] += num;
 
@@ -135,7 +136,7 @@ public class StatusManager : MonoBehaviour
 
     public float GetAttackBuff()
     {
-        //·µ»ØÒ»¸öfloat.
+        //è¿”å›žä¸€ä¸ªfloat.
         var totalBuff = attackBuffA + attackBuffB - attackDebuff;
         if (totalBuff > 200)
         {
@@ -152,7 +153,7 @@ public class StatusManager : MonoBehaviour
     }
     public float GetDefenseBuff()
     {
-        //·µ»ØÒ»¸öfloat.
+        //è¿”å›žä¸€ä¸ªfloat.
         var totalBuff = defenseBuff - defenseDebuff;
         if (totalBuff > 200)
         {

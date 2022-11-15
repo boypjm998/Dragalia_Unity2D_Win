@@ -337,12 +337,12 @@ GameObject:
   - component: {fileID: 8598698706064260273}
   - component: {fileID: 8598698706064260267}
   - component: {fileID: 8598698706064260266}
-  - component: {fileID: 7478167033628123469}
   - component: {fileID: 8598698706064260264}
+  - component: {fileID: 7478167033628123469}
   - component: {fileID: 8598698706064260262}
+  - component: {fileID: 8598698705744945600}
   - component: {fileID: 8598698706064260270}
   - component: {fileID: 8598698706064260265}
-  - component: {fileID: 8598698705744945600}
   m_Layer: 3
   m_Name: PlayerHandle
   m_TagString: Player
@@ -437,6 +437,7 @@ MonoBehaviour:
   keyRight: d
   keyLeft: a
   keyDown: s
+  keyUp: w
   keyAttack: j
   keyJump: k
   keyRoll: l
@@ -466,6 +467,36 @@ MonoBehaviour:
   inputAttackEnabled: 1
   inputJumpEnabled: 1
   inputRollEnabled: 1
+--- !u!114 &8598698706064260264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8598698706064260275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06ce489a54feb704499bd19451f97767, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Shotpoints: {fileID: 8598698705589210774}
+  RangedAttackFXLayer: {fileID: 0}
+  MeeleAttackFXLayer: {fileID: 8598698705630116535}
+  attackContainer: {fileID: 497525783265369579, guid: 20655c64630fcbd419fffcbc147c5e39, type: 3}
+  projectile1: {fileID: 6017278169156030481, guid: 974d7d233b0ea224590ce6adaa2e7278, type: 3}
+  projectile2: {fileID: 5842669881630562263, guid: e39db2f6ac13f624e8e3300c8f3aef1a, type: 3}
+  projectile3: {fileID: 3928483398152051950, guid: 06b8e06ecf2c7b1458bc21b17e4727b8, type: 3}
+  projectile_m1: {fileID: 4176649666536326855, guid: eda1222257f1da14899c28fc55f3d73d, type: 3}
+  projectile_s1: {fileID: 6525411714413843190, guid: da9e38449a28bfb408f609114ef392ee, type: 3}
+  projectile_s1_boost: {fileID: 6414330507012090249, guid: da3183bd9e6bf6741aa0a5286a023423, type: 3}
+  projectile_s2_boost: {fileID: 7695913588168608737, guid: 4e6920ba51738f742ba5959c54fc85bf, type: 3}
+  projectile_s3: {fileID: 3260100563582749043, guid: 63f2ab4f63eeea8449b316a8e44fe715, type: 3}
+  projectile_s3_boost: {fileID: 0}
+  portal: {fileID: 11837177500775277, guid: 5579af1d67f45574aa835f81cf01e1f5, type: 3}
+  OtherWldGate: {fileID: 0}
+  shotpoint: {fileID: 8598698704807470430}
+  ta: {fileID: 0}
+  testButton: 0
 --- !u!114 &7478167033628123469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -487,31 +518,6 @@ MonoBehaviour:
   rigid: {fileID: 0}
   facedir: 1
   ta: {fileID: 0}
---- !u!114 &8598698706064260264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8598698706064260275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06ce489a54feb704499bd19451f97767, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Shotpoints: {fileID: 8598698705589210774}
-  RangedAttackFXLayer: {fileID: 0}
-  MeeleAttackFXLayer: {fileID: 8598698705630116535}
-  attackContainer: {fileID: 497525783265369579, guid: 20655c64630fcbd419fffcbc147c5e39, type: 3}
-  projectile1: {fileID: 6017278169156030481, guid: 974d7d233b0ea224590ce6adaa2e7278, type: 3}
-  projectile2: {fileID: 5842669881630562263, guid: e39db2f6ac13f624e8e3300c8f3aef1a, type: 3}
-  projectile3: {fileID: 3928483398152051950, guid: 06b8e06ecf2c7b1458bc21b17e4727b8, type: 3}
-  projectile_m1: {fileID: 4176649666536326855, guid: eda1222257f1da14899c28fc55f3d73d, type: 3}
-  projectileT: {fileID: 6525411714413843190, guid: da9e38449a28bfb408f609114ef392ee, type: 3}
-  projectile_s1: {fileID: 6525411714413843190, guid: da9e38449a28bfb408f609114ef392ee, type: 3}
-  shotpoint: {fileID: 8598698704807470430}
-  ta: {fileID: 0}
-  testButton: 0
 --- !u!114 &8598698706064260262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -528,6 +534,58 @@ MonoBehaviour:
   anim: {fileID: 0}
   playerCollider: {fileID: 0}
   pi: {fileID: 0}
+--- !u!114 &8598698705744945600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8598698706064260275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cbd2824cee9b814395f15014477ec08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 1
+  maxSkillNum: 4
+  requiredSP:
+  - 3060
+  - 6120
+  - 4800
+  - 12000
+  currentSP:
+  - 3000
+  - 6120
+  - 3000
+  - 0
+  skillRegenByAttack: 
+  maxBaseHP: 4091
+  baseDef: 8
+  baseAtk: 6020
+  critRate: 12
+  maxHP: 4091
+  currentHp: 4091
+  attackspeed: 1
+  movespeed: 6
+  jumpforce: 18
+  rollspeed: 9
+  comboConnectMaxInterval: 3
+  knockbackRes: 0
+  attackBuffA: 0
+  attackBuffB: 0
+  skillDmgBuff: 0
+  spGainBuff: 0
+  critRateBuff: 0
+  critDmgBuff: 0
+  attackDebuff: 0
+  skillDmgDebuff: 0
+  critDmgDebuff: 0
+  spGainDebuff: 0
+  defenseBuff: 0
+  defenseDebuff: 0
+  damageCut: 0
+  damageCutConst: 0
+  comboHitCount: 0
 --- !u!95 &8598698706064260270
 Animator:
   serializedVersion: 4
@@ -569,59 +627,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &8598698705744945600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8598698706064260275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cbd2824cee9b814395f15014477ec08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isPlayer: 1
-  currentAffliction: 0
-  maxSkillNum: 4
-  requiredSP:
-  - 3060
-  - 6120
-  - 3060
-  - 3060
-  currentSP:
-  - 0
-  - 0
-  - 0
-  - 0
-  skillRegenByAttack: 
-  maxBaseHP: 4091
-  baseDef: 8
-  baseAtk: 6020
-  critRate: 12
-  maxHP: 4091
-  currentHp: 4091
-  attackspeed: 1
-  movespeed: 6
-  jumpforce: 18
-  rollspeed: 9
-  comboConnectMaxInterval: 3
-  knockbackRes: 0
-  attackBuffA: 0
-  attackBuffB: 0
-  skillDmgBuff: 0
-  spGainBuff: 0
-  critRateBuff: 0
-  critDmgBuff: 0
-  attackDebuff: 0
-  skillDmgDebuff: 0
-  critDmgDebuff: 0
-  spGainDebuff: 0
-  defenseBuff: 0
-  defenseDebuff: 0
-  damageCut: 0
-  damageCutConst: 0
-  comboHitCount: 0
 --- !u!1 &8598698706170309169
 GameObject:
   m_ObjectHideFlags: 0

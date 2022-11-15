@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Attack_c001 : MonoBehaviour
 {
@@ -23,6 +25,10 @@ public class Attack_c001 : MonoBehaviour
     public GameObject projectile_s1;
     public GameObject projectile_s1_boost;
     public GameObject projectile_s2_boost;
+    public GameObject projectile_s3;
+    public GameObject projectile_s3_boost;
+    public GameObject portal;
+    public GameObject OtherWldGate;
 
     public Transform shotpoint;
 
@@ -42,17 +48,7 @@ public class Attack_c001 : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
-        //if (Input.GetKey("u") && testButton==0)
-        //{
-        //    testButton = 30;
-        //    TestDriveBuster();
-        //}
-        //if (testButton > 0)
-        //    testButton--;
-    }
+    
 
     private void rollAttack()
     {
@@ -172,7 +168,7 @@ public class Attack_c001 : MonoBehaviour
 
     private void Skill2()
     {
-        //¼ÓBUFF
+        //ï¿½ï¿½BUFF
         ac.ActiveAlchemicEnhancement();
 
         //
@@ -210,6 +206,52 @@ public class Attack_c001 : MonoBehaviour
         proj.GetComponent<Projectile_C001_1>().InitProjectile(10*ac.facedir,15,30,ac.facedir);
         
 
+
+    }
+
+    private void Skill3()
+    {
+        ta.TargetSwapByAttack();
+        
+        GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
+        shotpoint = attackPointObject.transform;
+        
+        GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, MeeleAttackFXLayer.transform);
+        container.GetComponent<AttackContainer>().InitAttackContainer(1, true);
+        
+        GameObject laser = Instantiate(projectile_s3,
+            new Vector3(shotpoint.position.x+ac.facedir,shotpoint.position.y),
+            transform.rotation, container.transform);
+        
+        //Inits are in the prefab.
+        
+    }
+    
+    private void Skill3_PushBack()
+    {
+        StartCoroutine(ac.HorizontalMove(-ac.movespeed * 1.5f, -20f, 0.4f,"s3"));
+    }
+
+    private void Skill3_GateOpen()
+    {
+        Vector3 gatePosition = new Vector3(transform.position.x + 12*ac.facedir, transform.position.y);
+        var battleManager = FindObjectOfType<BattleStageManager>();
+
+        if (gatePosition.x >= battleManager.mapBorderR)
+        {
+            gatePosition.x = battleManager.mapBorderR - 0.1f;
+        }else if (gatePosition.x <= battleManager.mapBorderL)
+        {
+            gatePosition.x = battleManager.mapBorderL + 0.1f;
+        }
+
+        var portalSet = FindObjectsOfType<AdventurerSpecial_Portal>();
+        if (portalSet.Length > 0)
+        {
+            Destroy(portalSet[0].gameObject);
+        }
+
+        Instantiate(portal, gatePosition, Quaternion.identity, RangedAttackFXLayer.transform);
 
     }
 

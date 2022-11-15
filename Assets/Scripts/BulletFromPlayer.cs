@@ -5,13 +5,13 @@ using UnityEngine;
 public class BulletFromPlayer : AttackFromPlayer
 {
     //speed of bullet,
-    //·­¹ö¹¥»÷ÊÇ1.5,ÆÕÍ¨¹¥»÷ÊÇ2.4
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1.5,ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2.4
     public float speed;
-    //·­¹ö¹¥»÷µÄ×Óµ¯Î¬³Ö0.45s£¬ÆÕÍ¨¹¥»÷0.4s
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Î¬ï¿½ï¿½0.45sï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½0.4s
     public float lifeTime;
-    //×Óµ¯³¤¶È
+    //ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½
     public float hitDistance;
-    //ÉËº¦±¶ÂÊ,·­¹ö¹¥»÷Îª0.23f. DashºÏ¼Æ0.80f
+    //ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0.23f. Dashï¿½Ï¼ï¿½0.80f
     //private float dmgModifier;
 
     //public GameObject hitConnectEffect;
@@ -67,6 +67,8 @@ public class BulletFromPlayer : AttackFromPlayer
     public override void PlayDestroyEffect(float shakeIntensity)
     {
         CineMachineOperator.Instance.CamaraShake(shakeIntensity, .1f);
+        if(hitConnectEffect == null)
+            return;
         GameObject eff = Instantiate(hitConnectEffect, transform.position, Quaternion.identity);
         eff.name = "HitEffect0";
         
@@ -100,7 +102,7 @@ public class BulletFromPlayer : AttackFromPlayer
                 DestroyProjectile();
                 hitinfo.collider.GetComponent<Enemy>().TakeDamage();
 
-                //´ýÓÅ»¯
+                //ï¿½ï¿½ï¿½Å»ï¿½
                 GameObject damageManager = GameObject.Find("DamageManager");
                 DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
                 int dmg;

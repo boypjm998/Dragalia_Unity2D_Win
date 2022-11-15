@@ -23,6 +23,11 @@ public class ActorController_c001 : ActorController
                 stat.currentSP[1] = 0;
                 break;
             
+            case 3:
+                anim.Play("s3");
+                stat.currentSP[2] = 0;
+                break;
+            
             case 5:
                 anim.Play("s1_boost");
                 stat.currentSP[0] = 0;
@@ -66,7 +71,9 @@ public class ActorController_c001 : ActorController
     {
 
         base.Update();
+        CheckTransport();
         CheckSkill();
+        
       
     }
     void FixedUpdate()
@@ -75,6 +82,25 @@ public class ActorController_c001 : ActorController
 
 
 
+    }
+
+    protected void CheckTransport()
+    {
+        if (pi.buttonUp.OnPressed)
+        {
+            
+            string[] canTransformStates = { "idle", "walk", "fall", "jump", "jump2", "roll" };
+            bool canTransform = pi.CheckCharacterClipState(anim, 0, canTransformStates);
+            if (!pi.hurt && canTransform)
+            {
+                var portals = FindObjectOfType<AdventurerSpecial_Portal>();
+                if (portals != null)
+                    portals.Transport(transform);
+            }
+        }
+
+
+        
     }
 
     protected override void CheckSkill()
@@ -106,6 +132,21 @@ public class ActorController_c001 : ActorController
                 UseSkill(2);
             }
         }
+        
+        if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        {
+            if (alchemicGauge.IsCatridgeActive())
+            {
+                UseSkill(7);
+                alchemicGauge.CatridgeConsume();
+            }
+            else
+            {
+                UseSkill(3);
+            }
+        }
+        
+        
     }
 
 
@@ -125,10 +166,10 @@ public class ActorController_c001 : ActorController
     }
 
 
-    //人物滚动时附加的位移效果
+    //浜虹墿婊氬姩鏃堕檮鍔犵殑浣嶇Щ鏁堟灉
     public override void EventRoll()
     {
-        //还需要优化，不一定能打中最近的目标
+        //杩橀渶瑕佷紭鍖栵紝涓嶄竴瀹氳兘鎵撲腑鏈�杩戠殑鐩爣
         Transform tarTrans = ta.GetNearestReachableTarget(16.0f, LayerMask.GetMask("Enemies"));
         bool needTurnBack = TurnAroundCheck(tarTrans);
 
@@ -265,7 +306,7 @@ public class ActorController_c001 : ActorController
             }
         }
 
-        //翻滚充能1.
+        //缈绘粴鍏呰兘1.
     }
 
 

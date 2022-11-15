@@ -8,33 +8,33 @@ public class TargetAimer : MonoBehaviour
     public float aimSizeX;
     public float aimSizeY;
     [SerializeField]
-    private GameObject CameraFollowTarget; //Íæ¼ÒÄ¿±ê
+    private GameObject CameraFollowTarget; //ç©å®¶ç›®æ ‡
     [SerializeField]
-    public GameObject EnemyWatched; //ÊÓÏßÆ«ÏòµÄµĞÈËÄ¿±ê
-    private PolygonCollider2D TargetSearchScale; //Ëø¶¨·¶Î§´¥·¢Æ÷
+    public GameObject EnemyWatched; //è§†çº¿åå‘çš„æ•Œäººç›®æ ‡
+    private PolygonCollider2D TargetSearchScale; //é”å®šèŒƒå›´è§¦å‘å™¨
     [SerializeField]
-    private CinemachineVirtualCamera cinemachineVirtualCamera; //ÉãÏñÍ·
+    private CinemachineVirtualCamera cinemachineVirtualCamera; //æ‘„åƒå¤´
     [SerializeField] 
-    private CinemachineCameraOffset cinemachineCameraOffset; //ÉãÏñÍ·Æ«ÒÆÁ¿
+    private CinemachineCameraOffset cinemachineCameraOffset; //æ‘„åƒå¤´åç§»é‡
     
     private bool TargetFixed;
 
     [SerializeField]
-    private List<GameObject> EnemyInRange; //ÔÚ¾¯½ä·¶Î§µÄµĞÈËÁĞ±í
+    private List<GameObject> EnemyInRange; //åœ¨è­¦æˆ’èŒƒå›´çš„æ•Œäººåˆ—è¡¨
     [SerializeField]
-    List<GameObject> ObjectReachable; //ÔÚ¹¥»÷·¶Î§ÄÚµÄµØ·½
+    List<GameObject> ObjectReachable; //åœ¨æ”»å‡»èŒƒå›´å†…çš„åœ°æ–¹
 
     [SerializeField]
-    private float cameraMoveSpeed;//ÉãÏñÍ·ÒÆ¶¯ËÙ¶È
-    public float lookAheadDistanceX;//ÊÓÏßX·½Ïò×î´ó¾àÀë
-    public float lookAheadDistanceY;//ÊÓÏßY·½Ïò×î´ó¾àÀë
+    private float cameraMoveSpeed;//æ‘„åƒå¤´ç§»åŠ¨é€Ÿåº¦
+    public float lookAheadDistanceX;//è§†çº¿Xæ–¹å‘æœ€å¤§è·ç¦»
+    public float lookAheadDistanceY;//è§†çº¿Yæ–¹å‘æœ€å¤§è·ç¦»
     //private Coroutine cameraMoveRoutine;
-    private float maxCameraMoveSpeed;//ÉãÏñÍ·ÒÆ¶¯×î´óËÙ¶È
+    private float maxCameraMoveSpeed;//æ‘„åƒå¤´ç§»åŠ¨æœ€å¤§é€Ÿåº¦
     private float velocityCameraMoveSpeed;
     [SerializeField]
-    private bool stopFlagX;//ÉãÏñÍ·X·½ÏòÍ£Ö¹Î»ÒÆflag
+    private bool stopFlagX;//æ‘„åƒå¤´Xæ–¹å‘åœæ­¢ä½ç§»flag
     [SerializeField]
-    private bool stopFlagY;//ÉãÏñÍ·Y·½ÏòÍ£Ö¹Î»ÒÆflag
+    private bool stopFlagY;//æ‘„åƒå¤´Yæ–¹å‘åœæ­¢ä½ç§»flag
 
 
     public bool TestButton;
@@ -83,16 +83,18 @@ public class TargetAimer : MonoBehaviour
             maxCameraMoveSpeed = 0;
             
         }
-        //ÉãÏñÍ·»º¶¯
+
+        
+        //æ‘„åƒå¤´ç¼“åŠ¨
         cameraMoveSpeed = Mathf.SmoothDamp(cameraMoveSpeed, maxCameraMoveSpeed, ref velocityCameraMoveSpeed, 1.0f);
 
         if (EnemyWatched != null)
         {
-            float offsetX =  CheckTargetXDistance();//»ñÈ¡ÉãÏñÍ·ËùĞèÆ«ÒÆÁ¿
+            float offsetX =  CheckTargetXDistance();//è·å–æ‘„åƒå¤´æ‰€éœ€åç§»é‡
             float offsetY =  CheckTargetYDistance();
             int moveDirX; 
             int moveDirY;
-            //print("ÉãÏñÍ·ËùĞèÆ«ÒÆÁ¿:"+offsetX);
+            
 
             if (offsetX > 0)
                 moveDirX = 1;
@@ -101,14 +103,14 @@ public class TargetAimer : MonoBehaviour
             if (offsetY > 0)
                 moveDirY = 1;
             else moveDirY = -1;
-            //Èç¹ûÉãÏñÍ·µÄÖĞĞÄÆ«ÒÆÁ¿Ğ¡ÓÚÄ¿±êÆ«ÒÆÁ¿£¬ÒÆ¶¯ÉãÏñÍ·
+            //å¦‚æœæ‘„åƒå¤´çš„ä¸­å¿ƒåç§»é‡å°äºç›®æ ‡åç§»é‡ï¼Œç§»åŠ¨æ‘„åƒå¤´
             if (Mathf.Abs(offsetX) > 0.1f || Mathf.Abs(offsetY) > 0.1f)
             {
 
                 //if( Mathf.Abs(lookAheadDistanceX - Mathf.Abs(cinemachineCameraOffset.m_Offset.x) + CameraFollowTarget.transform.position.x) > Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x))
                 
-                //µĞÈË²»ÔÚÊÓÏß·¶Î§ÄÚ£¬ÒÆ¶¯ÉãÏñÍ·
-                if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) != Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x) - lookAheadDistanceX)
+                //æ•Œäººä¸åœ¨è§†çº¿èŒƒå›´å†…ï¼Œç§»åŠ¨æ‘„åƒå¤´
+                if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) - (Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x) - lookAheadDistanceX) > 0.1f)
                 {
                     cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x + cameraMoveSpeed * Time.deltaTime * moveDirX,
@@ -117,7 +119,7 @@ public class TargetAimer : MonoBehaviour
 
                 }
                 else {
-                    //print("²»¶¯");
+                    
                     stopFlagX = true;
                 }
 
@@ -142,7 +144,7 @@ public class TargetAimer : MonoBehaviour
         }
         else {
             
-            //µĞÈËÏûÊ§£¬¾µÍ·¹éÎ»£¬Í¬ÉÏ
+            //æ•Œäººæ¶ˆå¤±ï¼Œé•œå¤´å½’ä½ï¼ŒåŒä¸Š
             stopFlagY = false;
             stopFlagX = false;
             if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) < 0.1f)
@@ -394,7 +396,7 @@ public class TargetAimer : MonoBehaviour
     }
 
 
-    //ÉäÏß¼ì²â£¬»ñÈ¡×î½üÄÜ¹¥»÷µ½µÄµĞÈË
+    //å°„çº¿æ£€æµ‹ï¼Œè·å–æœ€è¿‘èƒ½æ”»å‡»åˆ°çš„æ•Œäºº
     public Transform GetNearestReachableTarget(float range, LayerMask targetLayers)
     {
         
@@ -436,7 +438,7 @@ public class TargetAimer : MonoBehaviour
         //return EnemyInRange[0].transform;
     }
 
-    //Í¨¹ı¹¥»÷À´ÇĞ»»Ä¿±ê
+    //é€šè¿‡æ”»å‡»æ¥åˆ‡æ¢ç›®æ ‡
     public void TargetSwapByAttack()
     {
         if (EnemyInRange.Count==0)

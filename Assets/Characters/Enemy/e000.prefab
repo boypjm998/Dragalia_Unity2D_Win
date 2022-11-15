@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 2678973344039926932}
   - component: {fileID: 2411587321663863035}
   - component: {fileID: 3079111747503234606}
+  - component: {fileID: 4881158849058173948}
   m_Layer: 6
   m_Name: BagOKD
   m_TagString: Enemy
@@ -211,6 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cbd2824cee9b814395f15014477ec08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPlayer: 0
   currentAffliction: 0
   maxSkillNum: 4
   requiredSP: []
@@ -243,6 +245,27 @@ MonoBehaviour:
   damageCut: 0
   damageCutConst: 0
   comboHitCount: 0
+--- !u!50 &4881158849058173948
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344648275110309312}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &7979397836191780119
 GameObject:
   m_ObjectHideFlags: 0
