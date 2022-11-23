@@ -6,12 +6,20 @@ public abstract class BattleCondition
 {
     protected Sprite buffIcon;
     
-    protected int buffID;
-    protected int maxStackNum = 100;
+    public int buffID { get; protected set; }
+    public int maxStackNum { get; protected set; } = BasicCalculation.MAXCONDITIONSTACKNUMBER;
     protected bool dispellable = true;
-    protected float effect;
-    protected buffEffectDisplayType DisplayType;
-    protected bool addToTotal = true; //特殊buff，比如50加攻的地狱模式使用后，不额外显示50加攻。
+    public float effect { get; protected set; }
+    public buffEffectDisplayType DisplayType { get; protected set; }
+    public bool displayInBar { get; protected set; } = true; //是否显示在buff栏中
+
+    public int specialID = -1;
+
+    public bool canStack { get; protected set; } = true;
+
+    public float lastTime { set; get; }
+
+    public float duration { protected set; get; } //duration is -1 means no time limit.
 
     
 
@@ -19,13 +27,22 @@ public abstract class BattleCondition
     {
         Value = 0,
         StackNumber = 1,
-        None = 2
+        Level = 2,
+        None = 3
     }
-    
 
-    public virtual void GetIcon()
+
+    public abstract Sprite GetIcon();
+
+    public void SetUniqueBuffInfo(int spID)
     {
+        this.canStack = false;
+        this.specialID = spID;
+    }
 
+    public void HideInspector()
+    {
+        this.displayInBar = false;
     }
 
     protected virtual void OnBuffEnable()
@@ -35,11 +52,13 @@ public abstract class BattleCondition
     protected virtual void OnBuffDisable()
     {
     }
+    
+    
 
-    protected abstract void BuffStart();
+    public abstract void BuffStart();
 
-    protected abstract void BuffExpired();
+    public abstract void BuffExpired();
 
-    protected abstract void BuffDispell();
+    public abstract void BuffDispell();
 
 }

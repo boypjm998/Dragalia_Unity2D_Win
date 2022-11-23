@@ -32,7 +32,7 @@ public class AlchemicGauge : MonoBehaviour
 
     private Coroutine catFillRoutine;
 
-    private StatusManager stat;
+    private PlayerStatusManager stat;
 
 
 
@@ -53,7 +53,7 @@ public class AlchemicGauge : MonoBehaviour
         gaugeRect = transform.Find("SliderRec").gameObject;
         gaugeRing = transform.Find("SliderRing").gameObject;
         catridges = transform.Find("Catridge").gameObject;
-        stat = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
+        stat = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
 
         //numberImages will be set in the prefab.
         catridgeActive = false;

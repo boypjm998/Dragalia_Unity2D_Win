@@ -11,7 +11,7 @@ public class SkillUIBase : MonoBehaviour
 
     protected GameObject unableIcon;
     
-    protected StatusManager sm;
+    protected PlayerStatusManager sm;
 
     protected float spGaugeCDValue;
 
@@ -20,7 +20,7 @@ public class SkillUIBase : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        sm = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
+        sm = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
         cooldownGauge = transform.Find("CD").GetComponent<Slider>();
         skillIcon = transform.Find("IconBody").Find("Mask").GetChild(0).gameObject;
         unableIcon = transform.Find("IconBody").Find("UnableIcon").gameObject;

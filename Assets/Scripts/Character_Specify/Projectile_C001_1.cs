@@ -20,8 +20,9 @@ public class Projectile_C001_1 : ProjectileControllerTest
         
     }
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         startVelocityY = verticalVelocity;
     }
 

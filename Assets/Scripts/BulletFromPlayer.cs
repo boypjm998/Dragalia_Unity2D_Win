@@ -5,17 +5,15 @@ using UnityEngine;
 public class BulletFromPlayer : AttackFromPlayer
 {
     //speed of bullet,
-    //����������1.5,��ͨ������2.4
+    //翻滚攻击是1.5,普通攻击是2.4
     public float speed;
-    //�����������ӵ�ά��0.45s����ͨ����0.4s
+    //翻滚攻击是0.45s,普通攻击是0.4s
     public float lifeTime;
-    //�ӵ�����
+    //溅射范围
     public float hitDistance;
-    //�˺�����,��������Ϊ0.23f. Dash�ϼ�0.80f
+    //攻击倍率。
     //private float dmgModifier;
-
-    //public GameObject hitConnectEffect;
-
+    
     public LayerMask targetLayers;
 
     public RaycastHit2D hitinfo;
@@ -44,8 +42,10 @@ public class BulletFromPlayer : AttackFromPlayer
     // Update is called once per frame
     void FixedUpdate()
     {
-
         hitinfo = Physics2D.Raycast(transform.position, transform.right, 0.5f, targetLayers);
+        
+
+
         //print(transform.forward);
         if (hitinfo.collider != null)
         {
@@ -102,7 +102,7 @@ public class BulletFromPlayer : AttackFromPlayer
                 DestroyProjectile();
                 hitinfo.collider.GetComponent<Enemy>().TakeDamage();
 
-                //���Ż�
+                
                 GameObject damageManager = GameObject.Find("DamageManager");
                 DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
                 int dmg;

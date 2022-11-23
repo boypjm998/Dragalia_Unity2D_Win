@@ -18,6 +18,7 @@ public class TargetAimer : MonoBehaviour
     private CinemachineCameraOffset cinemachineCameraOffset; //摄像头偏移量
     
     private bool TargetFixed;
+    private GameObject mainCamera;
 
     [SerializeField]
     private List<GameObject> EnemyInRange; //在警戒范围的敌人列表
@@ -63,6 +64,7 @@ public class TargetAimer : MonoBehaviour
         EnemyWatched = null;
         //cameraMoveRoutine = null;
         InitCameraFollowAttributes();
+        mainCamera = GameObject.Find("Main Camera");
         
     }
 
@@ -110,7 +112,8 @@ public class TargetAimer : MonoBehaviour
                 //if( Mathf.Abs(lookAheadDistanceX - Mathf.Abs(cinemachineCameraOffset.m_Offset.x) + CameraFollowTarget.transform.position.x) > Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x))
                 
                 //敌人不在视线范围内，移动摄像头
-                if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) - (Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x) - lookAheadDistanceX) > 0.1f)
+                if(Mathf.Abs(mainCamera.transform.position.x - EnemyWatched.transform.position.x) > lookAheadDistanceX)
+                //if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) - (Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x) - lookAheadDistanceX) > 0.1f)
                 {
                     cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x + cameraMoveSpeed * Time.deltaTime * moveDirX,
@@ -122,8 +125,9 @@ public class TargetAimer : MonoBehaviour
                     
                     stopFlagX = true;
                 }
-
-                if (Mathf.Abs(cinemachineCameraOffset.m_Offset.y) < Mathf.Abs(EnemyWatched.transform.position.y - CameraFollowTarget.transform.position.y) - lookAheadDistanceY)
+                
+                if(Mathf.Abs(mainCamera.transform.position.y - EnemyWatched.transform.position.y) > lookAheadDistanceY)
+                //if (Mathf.Abs(cinemachineCameraOffset.m_Offset.y) - (Mathf.Abs(EnemyWatched.transform.position.y - CameraFollowTarget.transform.position.y) - lookAheadDistanceY) > 0.1f)
                 {
                     cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x,

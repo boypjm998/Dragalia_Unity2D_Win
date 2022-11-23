@@ -6,7 +6,7 @@ public class PlayerInput : MonoBehaviour
 {
     // Start is called before the first frame update
     //variables
-    private StatusManager stat;
+    private PlayerStatusManager stat;
 
     [Header("Key Settings")]
     public string keyRight = "d";
@@ -76,7 +76,7 @@ public class PlayerInput : MonoBehaviour
 
     private void Awake()
     {
-        stat = transform.GetComponent<StatusManager>();
+        stat = transform.GetComponent<PlayerStatusManager>();
         for (int i = 0; i < 4; i++)
         {
             skill[i] = false;
@@ -97,6 +97,7 @@ public class PlayerInput : MonoBehaviour
         buttonSkill1.Tick(Input.GetKey(keySkill1));
         buttonSkill2.Tick(Input.GetKey(keySkill2));
         buttonSkill3.Tick(Input.GetKey(keySkill3));
+        buttonSkill4.Tick(Input.GetKey(keySkill4));
 
         //print(buttonDown.IsPressing && buttonDown.isExtending);
 
@@ -110,6 +111,7 @@ public class PlayerInput : MonoBehaviour
         CheckSkill1();
         CheckSkill2();
         CheckSkill3();
+        CheckSkill4();
     }
 
 
@@ -242,6 +244,23 @@ public class PlayerInput : MonoBehaviour
         else
         {
             skill[2] = false;
+        }
+
+
+    }
+    
+    void CheckSkill4()
+    {
+
+
+        if (stat.currentSP[3] >= stat.requiredSP[3] && buttonSkill4.OnPressed)
+        {
+            skill[3] = true;
+            
+        }
+        else
+        {
+            skill[3] = false;
         }
 
 

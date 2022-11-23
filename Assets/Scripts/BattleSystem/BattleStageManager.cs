@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class BattleStageManager : MonoBehaviour
 {
+    private GameObject player;
 
+    private DamageNumberManager dnm;
     public float mapBorderL { get; private set; }
     public float mapBorderR { get; private set; }
 
@@ -13,7 +15,10 @@ public class BattleStageManager : MonoBehaviour
     void Start()
     {
         GetMapBorderInfo();
-
+        player = GameObject.Find("PlayerHandle");
+        
+        GameObject damageManager = GameObject.Find("DamageManager");
+        dnm = damageManager.GetComponent<DamageNumberManager>();
 
     }
 
@@ -34,16 +39,16 @@ public class BattleStageManager : MonoBehaviour
 
     public void SpChargeAll(GameObject playerHandle, float sp)
     {
-        StatusManager statusManager = playerHandle.GetComponent<StatusManager>();
+        PlayerStatusManager playerStatusManager = playerHandle.GetComponent<PlayerStatusManager>();
 
-        //1、技速BUFF
+        //1、计算技速BUFF
 
 
         //2、自充sp
 
-        for (int i = 0; i < statusManager.maxSkillNum; i++)
+        for (int i = 0; i < playerStatusManager.maxSkillNum; i++)
         {
-            statusManager.SpGainInStatus(i, sp);
+            playerStatusManager.SpGainInStatus(i, sp);
         }
 
 
@@ -51,20 +56,17 @@ public class BattleStageManager : MonoBehaviour
 
     public void SpCharge(GameObject playerHandle, float sp,int skillID)
     {
-        StatusManager statusManager = playerHandle.GetComponent<StatusManager>();
+        PlayerStatusManager playerStatusManager = playerHandle.GetComponent<PlayerStatusManager>();
 
-
-
+    
+         playerStatusManager.SpGainInStatus(skillID, sp);
         
-         statusManager.SpGainInStatus(skillID, sp);
-        
-
 
     }
 
     public virtual int PlayerHit(GameObject target, AttackFromPlayer attackStat)
     {
-        GameObject player = GameObject.Find("PlayerHandle");
+        //GameObject player = GameObject.Find("PlayerHandle");
 
         //1.If target is not in invincible state.
         if (target.GetComponentInChildren<Collider2D>().isActiveAndEnabled == false)
@@ -109,7 +111,7 @@ public class BattleStageManager : MonoBehaviour
 
             int damage =
                 BasicCalculation.CalculateDamageGeneral(
-                player.GetComponentInChildren<StatusManager>(),
+                player.GetComponentInChildren<PlayerStatusManager>(),
                 target.GetComponentInChildren<StatusManager>(),
                 attackStat.GetDmgModifier(i),
                 attackStat.attackType,
@@ -125,8 +127,7 @@ public class BattleStageManager : MonoBehaviour
 
             //4.Instantiate the damage number.
 
-            GameObject damageManager = GameObject.Find("DamageManager");
-            DamageNumberManager dnm = damageManager.GetComponent<DamageNumberManager>();
+            
 
             if (isCrit)
             {
@@ -139,7 +140,7 @@ public class BattleStageManager : MonoBehaviour
 
             totalDamage += damageM[i];
 
-            player.GetComponent<StatusManager>().ComboConnect();
+            player.GetComponent<PlayerStatusManager>().ComboConnect();
 
         }
 
@@ -166,7 +167,19 @@ public class BattleStageManager : MonoBehaviour
 
     }
 
-    
+    public virtual int TargetHeal(GameObject target, float healPotency, float healPotencyPercentage)
+    {
+        var stat = target.GetComponent<StatusManager>();
+        //1. 计算回血Part1
+        int damage = BasicCalculation.CalculateHPRegenGeneral(stat, healPotency, healPotencyPercentage);
+        
+        int damageM = (int)(Mathf.Ceil(damage * Random.Range(0.95f, 1.05f)));
+        
+        dnm.HealPop(damageM,target.transform);
+
+        return damageM;
+
+    }
 
 
 }

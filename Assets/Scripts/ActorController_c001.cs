@@ -28,6 +28,11 @@ public class ActorController_c001 : ActorController
                 stat.currentSP[2] = 0;
                 break;
             
+            case 4:
+                anim.Play("s4");
+                stat.currentSP[3] = 0;
+                break;
+            
             case 5:
                 anim.Play("s1_boost");
                 stat.currentSP[0] = 0;
@@ -36,6 +41,11 @@ public class ActorController_c001 : ActorController
             case 6:
                 anim.Play("s2_boost");
                 stat.currentSP[1] = 0;
+                break;
+            
+            case 7:
+                anim.Play("s3_boost");
+                stat.currentSP[2] = 0;
                 break;
 
             default:
@@ -56,7 +66,7 @@ public class ActorController_c001 : ActorController
         facedir = 1;
         ta = gameObject.transform.parent.GetComponentInChildren<TargetAimer>();
 
-        stat = GetComponent<StatusManager>();
+        stat = GetComponent<PlayerStatusManager>();
         jumpforce = stat.jumpforce;
         movespeed = stat.movespeed;
         rollspeed = 9.0f;
@@ -113,6 +123,7 @@ public class ActorController_c001 : ActorController
             {
                 UseSkill(5);
                 alchemicGauge.CatridgeConsume();
+                stat.RemoveTimerBuff(101);
             }
             else
             {
@@ -126,6 +137,7 @@ public class ActorController_c001 : ActorController
             {
                 UseSkill(6);
                 alchemicGauge.CatridgeConsume();
+                stat.RemoveTimerBuff(101);
             }
             else
             {
@@ -139,6 +151,7 @@ public class ActorController_c001 : ActorController
             {
                 UseSkill(7);
                 alchemicGauge.CatridgeConsume();
+                stat.RemoveTimerBuff(101);
             }
             else
             {
@@ -146,6 +159,10 @@ public class ActorController_c001 : ActorController
             }
         }
         
+        if (pi.skill[3] && !pi.hurt && !pi.isSkill)
+        {
+            UseSkill(4);
+        }
         
     }
 

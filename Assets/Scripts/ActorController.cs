@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -9,7 +8,7 @@ public class ActorController : MonoBehaviour
 {
     
     public PlayerInput pi;
-    public StatusManager stat;
+    public PlayerStatusManager stat;
     public float movespeed = 6.0f;
     public float rollspeed = 9.0f;
     public float jumpforce = 18.0f;
@@ -500,6 +499,53 @@ public class ActorController : MonoBehaviour
         ActionEnable((int)PlayerActionType.ROLL);//roll
         ActionEnable((int)PlayerActionType.ATTACK);
         pi.SetInputEnabled("move");
+    }
+
+    public virtual void OnGravityWeaken()
+    {
+        rigid.gravityScale = 1;
+        SetVelocity(rigid.velocity.x,0);
+    }
+    
+    public virtual void OnGravityRecover()
+    {
+        rigid.gravityScale = 4;
+    }
+
+    protected void OnHurtEnter()
+    {
+        pi.SetInputDisabled("roll");
+        pi.SetInputDisabled("jump");
+        pi.SetInputDisabled("attack");
+        pi.SetInputDisabled("move");
+        pi.directionLock = false;
+        ActionDisable((int)PlayerActionType.MOVE);
+        ActionDisable((int)PlayerActionType.JUMP);
+        ActionDisable((int)PlayerActionType.ROLL);
+        ActionDisable((int)PlayerActionType.ATTACK);
+        SetVelocity(rigid.velocity.x,0);
+        anim.speed = 1;
+
+    }
+    
+    protected void OnHurtExit()
+    {
+        pi.SetInputEnabled("roll");
+        pi.SetInputEnabled("jump");
+        pi.SetInputEnabled("attack");
+        pi.SetInputEnabled("move");
+        pi.directionLock = false;
+        ActionEnable((int)PlayerActionType.MOVE);
+        ActionEnable((int)PlayerActionType.JUMP);
+        ActionEnable((int)PlayerActionType.ROLL);
+        ActionEnable((int)PlayerActionType.ATTACK);
+        anim.speed = 1;
+
+    }
+
+    protected void SetAnimSpeed(float percentage)
+    {
+        anim.speed = percentage;
     }
 
 

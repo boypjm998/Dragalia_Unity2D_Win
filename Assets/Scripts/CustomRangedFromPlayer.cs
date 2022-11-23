@@ -8,7 +8,8 @@ public class CustomRangedFromPlayer : AttackFromPlayer
     void Awake()
     {
         hitFlags = SearchEnemyList();
-        attackCollider = GetComponent<Collider2D>();
+        if(attackCollider==null)
+            attackCollider = GetComponent<Collider2D>();
     }
     protected override void Start()
     {
@@ -26,13 +27,12 @@ public class CustomRangedFromPlayer : AttackFromPlayer
     {
         Transform enemyTrans;
         //Debug.Log(collision.gameObject.GetInstanceID());
-        print("Ranged stay!!!!");
+        
         
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
-
-            //print(collision.name);
-
+            CauseDamage(collision);
+            /*
             hitFlags.Remove(collision.transform.parent.GetInstanceID());
 
             enemyTrans = collision.transform.parent;
@@ -44,12 +44,13 @@ public class CustomRangedFromPlayer : AttackFromPlayer
             GameObject eff = Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
             eff.name = "HitEffect1";
             CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
+            
             collision.gameObject.GetComponent<Enemy>().TakeDamage();
             
             AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
             container.AttackOneHit();
             if (container.NeedTotalDisplay() && dmg > 0)
-                container.AddTotalDamage(dmg);
+                container.AddTotalDamage(dmg);*/
             
             
             

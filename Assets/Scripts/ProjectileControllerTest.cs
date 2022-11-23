@@ -12,7 +12,7 @@ public abstract class ProjectileControllerTest : MonoBehaviour
     [SerializeField] protected GameObject contactTarget;
     protected Collider2D _collider;
     protected int firedir;
-    protected float lifeTime = 10f;
+    [SerializeField] protected float lifeTime = 10f;
     
 
     private void Awake()
@@ -20,9 +20,9 @@ public abstract class ProjectileControllerTest : MonoBehaviour
         
     }
 
-    void Start()
+    protected virtual void Start()
     {
-        Destroy(gameObject,lifeTime);
+        MyDestroySelf(lifeTime);
     }
 
     // Update is called once per frame
@@ -41,7 +41,14 @@ public abstract class ProjectileControllerTest : MonoBehaviour
 
     protected abstract void DoProjectileMove();
 
-    public abstract void SetContactTarget(GameObject obj);
+    public virtual void SetContactTarget(GameObject obj)
+    {
+    }
+
+    protected virtual void MyDestroySelf(float time)
+    {
+        Destroy(gameObject,time);
+    }
 
 
 }

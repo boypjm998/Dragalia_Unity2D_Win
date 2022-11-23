@@ -10,8 +10,16 @@ public class DamageNumberManager : MonoBehaviour
     public GameObject normDamageNumPrefab;
     public GameObject critDamageNumPrefab;
     public GameObject critPrefab;
+    public GameObject healNumPrefab;
     [SerializeField]
     private GameObject totalDamagePrefab;
+
+
+    public void HealPop(int dmg,Transform targetTrans)
+    {
+        Transform dmgNumParent = transform.GetChild(0);
+        GenerateHealNumber(dmg,targetTrans.position,dmgNumParent);
+    }
 
     public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType)
     {
@@ -144,7 +152,11 @@ public class DamageNumberManager : MonoBehaviour
         int count = 0;
         foreach(Transform t in _parent)
         {
-            if (t.GetComponentInChildren<InstancePropertyUI>().GetGenerateParent() == target)
+            var inst = t.GetComponentInChildren<InstancePropertyUI>();
+            if(inst == null)
+                continue;
+            if (inst.GetGenerateParent() == target)
+                //if (t.GetComponentInChildren<InstancePropertyUI>().GetGenerateParent() == target)
             {
                 count++;
             }
@@ -291,6 +303,16 @@ public class DamageNumberManager : MonoBehaviour
             num.transform.position = new Vector2(camera.transform.position.x, num.transform.position.y);
         }
 
+
+    }
+
+    private void GenerateHealNumber(int dmg, Vector3 pos, Transform _parent)
+    {
+        var num = Instantiate(healNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+            Quaternion.identity, _parent.transform);
+        
+        TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
+        dmgText.text = dmg.ToString();
 
     }
 

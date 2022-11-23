@@ -288,4 +288,32 @@ public class AttackFromPlayer : MonoBehaviour
         container.FinishHit();
         print(container.hitConnectNum);
     }
+
+    public virtual void CauseDamage(Collider2D collision)
+    {
+        hitFlags.Remove(collision.transform.parent.GetInstanceID());
+
+        Transform enemyTrans = collision.transform.parent;
+
+        int dmg = battleStageManager.PlayerHit(collision.gameObject, this);
+
+
+        if (hitConnectEffect != null)
+        {
+            Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
+        }
+
+        CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
+            
+        collision.gameObject.GetComponent<Enemy>().TakeDamage();
+            
+        AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
+        container.AttackOneHit();
+        if (container.NeedTotalDisplay() && dmg > 0)
+            container.AddTotalDamage(dmg);
+    }
+
+
+
+
 }

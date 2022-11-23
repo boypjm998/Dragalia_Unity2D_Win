@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CustomMeeleFromPlayer : AttackFromPlayer
@@ -23,7 +22,10 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     {
         
         hitFlags = SearchEnemyList();
-        attackCollider = GetComponent<Collider2D>();
+        
+        if(attackCollider==null)
+            attackCollider = GetComponent<Collider2D>();
+        
         playerpos = GameObject.Find("PlayerHandle").transform;
         Rigidbody2D rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
     }
@@ -59,9 +61,9 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
 
-            //print(collision.name);
+            CauseDamage(collision);
 
-            hitFlags.Remove(collision.transform.parent.GetInstanceID());
+            /*hitFlags.Remove(collision.transform.parent.GetInstanceID());
 
             enemyTrans = collision.transform.parent;
 
@@ -78,6 +80,7 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
             container.AttackOneHit();
             if (container.NeedTotalDisplay() && dmg > 0)
                 container.AddTotalDamage(dmg);
+            */
             
             
             if(ConnectCoroutine==null && isMeele==true)

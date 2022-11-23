@@ -9,6 +9,7 @@ public class AttackContainer : MonoBehaviour
     private bool needTotalDisplay;
     private int totalDamage;
     public bool spGained;
+    public List<int> AfflictionCheckCompleteSet;
 
     public int hitConnectNum { get; private set; }
 

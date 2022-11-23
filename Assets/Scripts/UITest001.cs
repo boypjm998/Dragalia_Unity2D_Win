@@ -7,14 +7,14 @@ public class UITest001 : MonoBehaviour
 {
     GameObject skillIcon;
     Image skillImage;
-    StatusManager sm;
+    PlayerStatusManager sm;
     float spGaugeCDValue;
     Slider cooldownGauge;
     
     // Start is called before the first frame update
     void Start()
     {
-        sm = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
+        sm = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
         cooldownGauge = transform.Find("CD").GetComponent<Slider>();
         //print(spGaugeValue);
     }
