@@ -39,6 +39,7 @@ public class Attack_c001 : AttackManager
     // Start is called before the first frame update
     private void Awake()
     {
+        //RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
         ta = GetComponentInChildren<TargetAimer>();
         //Shotpoints = GameObject.Find("Shotpoints");
         ac = GetComponent<ActorController_c001>();
@@ -71,6 +72,9 @@ public class Attack_c001 : AttackManager
     private void ComboAttack1()
     {
         ta.TargetSwapByAttack();
+        
+
+
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
 
         GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, RangedAttackFXLayer.transform);
@@ -79,7 +83,7 @@ public class Attack_c001 : AttackManager
         shotpoint = attackPointObject.transform;
         GameObject projectile_clone1 = Instantiate(projectile2, shotpoint.position, transform.rotation, container.transform);
 
-        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.5f, 0.3f, 1.35f, 280, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(100, 3f, 0.3f, 1.35f, 280, ac.facedir);
         //projectile_clone1.name = "Bullet1c";
         //Remember clear the signal after shoot.
 
@@ -95,16 +99,16 @@ public class Attack_c001 : AttackManager
 
 
         GameObject projectile_clone1 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 20f), container.transform);
-        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
+        projectile_clone1.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(100, 15f, 0.3f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone2 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 13.3f), container.transform);
-        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
+        projectile_clone2.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(100, 15f, 0.3f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone3 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 6.6f), container.transform);
-        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
+        projectile_clone3.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(100, 15f, 0.3f, 0.8f, 300, ac.facedir);
 
         GameObject projectile_clone4 = Instantiate(projectile3, shotpoint.position, Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + 0f), container.transform);
-        projectile_clone4.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 0.6f, 0.5f, 0.8f, 300, ac.facedir);
+        projectile_clone4.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(100, 15f, 0.3f, 0.8f, 300, ac.facedir);
         //Remember clear the signal after shoot.
 
     }
@@ -113,14 +117,11 @@ public class Attack_c001 : AttackManager
     private void Skill1()
     {
         ta.TargetSwapByAttack();
+        
 
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
         shotpoint = attackPointObject.transform;
 
-        //GameObject projectile_clone1 = Instantiate(projectileT, shotpoint.position+new Vector3(Random.Range(-1f,1f),Random.Range(0f,2f)), transform.rotation, RangedAttackFXLayer.transform);
-        //projectile_clone1.name = "Bullet1t";
-        //projectile_clone1.GetComponent<HomingProjectile>().angle = (ac.facedir * new Vector2(0.5f, 0.5f).normalized);
-        //projectile_clone1.GetComponent<HomingProjectile>().InitAttackBasicAttributes(0, 1, 0, ac.facedir);
         GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, RangedAttackFXLayer.transform);
         container.GetComponent<AttackContainer>().InitAttackContainer(10, true);
         List<GameObject> projectiles = new List<GameObject>();
@@ -129,7 +130,12 @@ public class Attack_c001 : AttackManager
         for (int i = 0; i < 10; i++)
         {
             projectiles.Add(HomingBulletInstantiate(projectile_s1, shotpoint.position + new Vector3(Random.Range(-.5f, .5f), ac.facedir * Random.Range(-.5f, .5f)), container,
-            (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 1, 1,0.5f, 1.88f, 0, ac.facedir));
+            (ac.facedir * new Vector2(angleX[i], angleY[i]).normalized), 120, 3,0.5f, 1.88f, 0, ac.facedir));
+            
+            projectiles[i].GetComponent<AttackFromPlayer>().
+                AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Flashburn,
+                    41.6f,21f,BattleCondition.buffEffectDisplayType.StackNumber,
+                    BasicCalculation.MAXCONDITIONSTACKNUMBER));
             
         }
 
@@ -146,6 +152,7 @@ public class Attack_c001 : AttackManager
         _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15,BattleCondition.buffEffectDisplayType.Value);
         ta.TargetSwapByAttack();
         
+        
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
         shotpoint = attackPointObject.transform;
         
@@ -157,8 +164,12 @@ public class Attack_c001 : AttackManager
         atk1.InitAttackBasicAttributes(1.5f, 2.0f, 0.8f, 3.84f, 0, ac.facedir);
         for (int i = 0; i < 5; i++)
         {
-            atk1.AppendAttackSets(1.5f,2.0f,0.8f,3.84f);
+            atk1.AppendAttackSets(120,6.0f,0.8f,3.84f);
+       
         }
+        atk1.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Flashburn,
+                41.6f,21f,BattleCondition.buffEffectDisplayType.StackNumber,
+                BasicCalculation.MAXCONDITIONSTACKNUMBER));
         
 
     }
@@ -171,17 +182,15 @@ public class Attack_c001 : AttackManager
     private void Skill2()
     {
         var gauge = FindObjectOfType<AlchemicGauge>();
-        for (int i = 0; i < gauge.GetCatridgeNumber(); i++)
-        {
-            _statusManager.ObtainTimerBuff
-                ((int)BasicCalculation.BattleCondition.AlchemicCatridge,
-                    -1,BattleCondition.buffEffectDisplayType.StackNumber,3);
+        
+        _statusManager.ObtainTimerBuffs
+        ((int)BasicCalculation.BattleCondition.AlchemicCatridge,
+            -1,BattleCondition.buffEffectDisplayType.StackNumber,gauge.GetCatridgeNumber(),
+            3);
             //_statusManager.ObtainTimerBuff(1,25,3,BattleCondition.buffEffectDisplayType.Value,100);
             //_statusManager.ObtainTimerBuff(3,30,15,BattleCondition.buffEffectDisplayType.Value,100);
             //_statusManager.ObtainTimerBuff(4,30,-1,BattleCondition.buffEffectDisplayType.Value,100);
             //_statusManager.ObtainTimerBuff(2,25,8,BattleCondition.buffEffectDisplayType.Value,100);
-        
-        }
 
         ac.ActiveAlchemicEnhancement();
 
@@ -247,7 +256,7 @@ public class Attack_c001 : AttackManager
 
     private void Skill3_GateOpen()
     {
-        Vector3 gatePosition = new Vector3(transform.position.x + 12*ac.facedir, transform.position.y);
+        Vector3 gatePosition = new Vector3(transform.position.x + 12*ac.facedir, transform.position.y+0.3f);
         var battleManager = FindObjectOfType<BattleStageManager>();
 
         if (gatePosition.x >= battleManager.mapBorderR)
@@ -272,6 +281,8 @@ public class Attack_c001 : AttackManager
     {
         //_statusManager.RemoveTimerBuff(101);
         ta.TargetSwapByAttack();
+        
+        
         _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15,BattleCondition.buffEffectDisplayType.Value);
         
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
@@ -308,7 +319,7 @@ public class Attack_c001 : AttackManager
 
         GameObject dashEffect = Instantiate(projectile_m1, attackLayer.transform.position, transform.rotation,container.transform);
         dashEffect.name = "AirDashEffect";
-        dashEffect.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(1, 2.5f, 0.5f, 0.8f, 150, ac.facedir);
+        dashEffect.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(100, 7.5f, 0.5f, 0.8f, 150, ac.facedir);
     }
 
 

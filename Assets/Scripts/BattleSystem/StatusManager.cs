@@ -15,21 +15,18 @@ public class StatusManager : MonoBehaviour
     public int currentHp;
 
     public int knockbackRes = 0;
-    protected int burnRes = 0;
-    protected int paralyzeRes = 0;
-    protected int poisonRes = 0;
-    protected int frostbiteRes = 0;
-    protected int bogRes = 0;
-    protected int stunRes = 0;
-    protected int sleepRes = 0;
-    protected int blindRes = 0;
-    protected int frozenRes = 0;
+    
 
     private BattleStageManager _battleStageManager;
+    private BattleEffectManager _battleEffectManager;
 
 
     public Coroutine healRoutine = null;
-    
+
+    public delegate void TestDelegate(BattleCondition condition);
+
+    public TestDelegate OnBuffEventDelegate;
+
     #region Buff Getter
 
     public float attackBuff
@@ -116,6 +113,10 @@ public class StatusManager : MonoBehaviour
 
     public List<BattleCondition> conditionList;
 
+    
+    
+    
+
     protected virtual void Awake()
     {
         conditionList = new List<BattleCondition>();
@@ -126,6 +127,7 @@ public class StatusManager : MonoBehaviour
     protected virtual void Start()
     {
         _battleStageManager = FindObjectOfType<BattleStageManager>();
+        _battleEffectManager = FindObjectOfType<BattleEffectManager>();
     }
 
     // Update is called once per frame
@@ -133,6 +135,7 @@ public class StatusManager : MonoBehaviour
     {
         ConditionTick();
         StatusLimitCheck();
+        
     }
 
     private void StatusLimitCheck()
@@ -433,6 +436,12 @@ public class StatusManager : MonoBehaviour
         return 0;
     }
 
+    public static bool IsDotAffliction(int buffID)
+    {
+        if (buffID > 300 && buffID < 310 && buffID != 303)
+            return true;
+        return false;
+    }
 
     //Get a new Timerbuff
     public virtual void ObtainTimerBuff(int buffID, float effect, float duration,
@@ -440,27 +449,64 @@ public class StatusManager : MonoBehaviour
     {
         RemoveBuffIfReachedLimit(buffID, maxStack);
         var buff = new TimerBuff(buffID, effect, duration, type, maxStack);
+        
+        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+        {
+            StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+        }
 
         conditionList.Add(buff);
+        
+        OnBuffEventDelegate?.Invoke(buff);
+
+        
     }
 
     public virtual void ObtainTimerBuff(int buffID, float duration, BattleCondition.buffEffectDisplayType type,
         int maxStack)
     {
-        RemoveBuffIfReachedLimit(buffID, maxStack);
+        
 
         var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
 
         conditionList.Add(buff);
+        
+        OnBuffEventDelegate?.Invoke(buff);
+        
+        
+        RemoveBuffIfReachedLimit(buffID, maxStack);
     }
 
     public virtual void ObtainTimerBuff(int buffID,float effect, float duration, BattleCondition.buffEffectDisplayType type)
     {
-        RemoveBuffIfReachedLimit(buffID);
+        
 
         var buff = new TimerBuff(buffID, effect, duration, type, BasicCalculation.MAXCONDITIONSTACKNUMBER);
 
         conditionList.Add(buff);
+        
+        OnBuffEventDelegate?.Invoke(buff);
+        
+        RemoveBuffIfReachedLimit(buffID);
+    }
+    
+    /// <summary>
+    ///   <para>给自身附加多层同类BUFF.</para>
+    /// </summary>
+    public virtual void ObtainTimerBuffs(int buffID, float duration, BattleCondition.buffEffectDisplayType type,
+        int stackNum, int maxStack)
+    {
+        
+
+        var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
+
+        for (int i = 0; i < stackNum; i++)
+        {
+            conditionList.Add(buff);
+        }
+        OnBuffEventDelegate?.Invoke(buff);
+        RemoveBuffIfReachedLimit(buffID, maxStack);
+        
     }
 
     // Get a new Unstackable Timerbuff
@@ -478,6 +524,9 @@ public class StatusManager : MonoBehaviour
         conditionList.Remove(buff);
     }
 
+    /// <summary>
+    ///   <para>返回同类buff的层数.</para>
+    /// </summary>
     public int GetConditionStackNumber(int buffID)
     {
         int cnt = 0;
@@ -492,6 +541,9 @@ public class StatusManager : MonoBehaviour
         return cnt;
     }
 
+    /// <summary>
+    ///   <para>返回同类BUFF总额度.</para>
+    /// </summary>
     public float GetConditionTotalValue(int buffID)
     {
         float value = 0;
@@ -506,11 +558,20 @@ public class StatusManager : MonoBehaviour
         return value;
     }
 
-    //Get all conditions of type, can used in buffstack calculation.
+    
+    /// <summary>
+    ///   <para>返回所有BuffID相同的Condition</para>
+    ///     <para>Get all conditions of same type, can used in buffstack calculation.</para>
+    /// </summary>
     public List<BattleCondition> GetConditionsOfType(int buffID)
     {
         return conditionList.Where(t => (t.buffID == buffID)).ToList();
     }
+    
+    /// <summary>
+    ///   <para>返回所有BuffID相同且组内ID相同的Condition</para>
+    ///     <para>Get all conditions of same type and special ID.</para>
+    /// </summary>
     public List<BattleCondition> GetExactConditionsOfType(int buffID,int spID)
     {
         //spid default is -1
@@ -533,6 +594,9 @@ public class StatusManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///   <para>移除角色一个最早的Condition</para>
+    /// </summary>
     public bool RemoveTimerBuff(int buffID)
     {
         //角色访问移除BUFF的唯一途径！
@@ -585,7 +649,7 @@ public class StatusManager : MonoBehaviour
             }
         }*/
 
-        if (totalBuffNum >= maxStack)
+        if (totalBuffNum > maxStack)
         {
             BattleCondition cond = null;
             foreach (var condition in conditionList)
@@ -623,6 +687,9 @@ public class StatusManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///   <para>使目标开始HOT回血</para>
+    /// </summary>
     public IEnumerator HotRecoveryTick() //HOT回血的效果.
     {
         yield return new WaitForSeconds(2.9f);
@@ -649,12 +716,52 @@ public class StatusManager : MonoBehaviour
         Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
     }
 
+    /// <summary>
+    ///   <para>目标立即回复生命值（float 回复倍率，float 百分比回复倍率）</para>
+    /// </summary>
     public void HPRegenImmediately(float potency,float potency2)
     {
         _battleStageManager.TargetHeal(gameObject,potency, potency2);
         var fx = GetComponent<AttackManager>().healbuff;
         Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
     }
+
+    /// <summary>
+    ///   <para>使目标开始DOT损失生命值</para>
+    /// </summary>
+    public IEnumerator DotTick(BasicCalculation.BattleCondition condition)
+    {
+        float tickInterval = 3.9f;
+        if ((int)condition > 300 && (int)condition < 305 && condition!=BasicCalculation.BattleCondition.Frostbite)
+        {
+            tickInterval = 2.9f;
+        }
+
+        yield return new WaitForSeconds(tickInterval);
+        while (GetConditionsOfType((int)condition).Count>0)
+        {
+            DotDamage(condition);
+            yield return new WaitForSeconds(tickInterval);
+        }
+        
+    }
+
+    protected void DotDamage(BasicCalculation.BattleCondition condition)
+    {
+        float modifier = GetConditionTotalValue((int)condition);
+
+        _battleStageManager.TargetDot(gameObject, condition);
+        
+        switch (condition)
+        {
+            case BasicCalculation.BattleCondition.Flashburn:
+                _battleEffectManager.SpawnEffect(gameObject,condition);
+                break;
+            default:
+                break;
+        }
+    }
+
 
 
 

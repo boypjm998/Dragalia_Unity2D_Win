@@ -25,7 +25,25 @@ public class Projectile_C001_3 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //blackholeDragger.
+        var hitinfos =
+            Physics2D.OverlapCircleAll
+                (blackholeDragger.transform.position,
+                blackholeDragger.radius,LayerMask.GetMask("Enemies"));
+        if (hitinfos.Length > 0)
+        {
+            foreach (var hitinfo in hitinfos)
+            {
+                if (hitinfo.GetComponentInParent<Enemy>().currentKBRes >= 100)
+                {
+                    continue;
+                }
+
+                var dir = -transform.InverseTransformPoint(hitinfo.transform.position).normalized;
+                hitinfo.transform.parent.position += dir * Time.deltaTime * 5f;
+            }
+        }
+
 
     }
 

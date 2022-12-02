@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AttackManager : MonoBehaviour
 {
-    [SerializeField] 
-    protected GameObject RangedAttackFXLayer;
+    
+    public GameObject RangedAttackFXLayer;
     [SerializeField]
     protected GameObject MeeleAttackFXLayer;
     

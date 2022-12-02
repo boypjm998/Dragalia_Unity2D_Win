@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 
@@ -14,9 +15,9 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     private Image HPBarImage;
     private float currentHP;
     private float maxHP;
-    [SerializeField] private Color HPover50Color;
-    [SerializeField] private Color HPover30Color;
-    [SerializeField] private Color HPbelow30Color;
+    [SerializeField] private Color HPFullColor;
+    [SerializeField] private Color HPOver30Color;
+    [SerializeField] private Color HPBelow30Color;
     
     
     [SerializeField] private Image statusImage;
@@ -54,29 +55,38 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     {
         _slider.value = (float)statusManager.currentHp / (float)(statusManager.maxHP);
         HPText.text = statusManager.currentHp.ToString();
-        if (_slider.value >= 0.5)
+        if (_slider.value >= 1)
         {
-            HPBarImage.color = HPover50Color;
+            HPBarImage.color = HPFullColor;
         }else if (_slider.value < 0.3)
         {
-            HPBarImage.color = HPbelow30Color;
+            HPBarImage.color = HPBelow30Color;
         }
         else
         {
-            HPBarImage.color = HPover30Color;
+            HPBarImage.color = HPOver30Color;
         }
     }
 
     public void OnHPChange()
     {
-        
-        if (currentHP > statusManager.currentHp)
+        if (statusManager.currentHp > statusManager.maxHP)
+        {
+            statusManager.currentHp = statusManager.maxHP;
+        }
+
+        if ((int)currentHP > statusManager.currentHp)
         {
             if (HurtRoutine == null)
             {
                 HurtRoutine = StartCoroutine("ChangeImage");
             }
         }
+        else
+        {
+            currentHP = statusManager.currentHp;
+        }
+
         GetHPValue();
     }
 

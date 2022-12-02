@@ -76,10 +76,10 @@ public class Projectile_C001_1 : ProjectileControllerTest
     private void BurstEffect(Collider2D col)
     {
         Vector3 hitpoint = col.bounds.ClosestPoint(transform.position);
-        GameObject burst = Instantiate(destroyEffect,new Vector3(hitpoint.x,hitpoint.y+2.2f,hitpoint.z),Quaternion.identity,transform.parent);
+        GameObject burst = Instantiate(destroyEffect,new Vector3(hitpoint.x,hitpoint.y+3f,hitpoint.z),Quaternion.identity,transform.parent);
         CineMachineOperator.Instance.CamaraShake(8, .2f);
         Destroy(gameObject);
         burst.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0,0,0,2.35f,0,firedir);
-        burst.GetComponent<AttackFromPlayer>().AppendAttackSets(1, 1, 1.5f, 23.54f);
+        burst.GetComponent<AttackFromPlayer>().AppendAttackSets(200, 9, 1.5f, 23.54f);
     }
 }

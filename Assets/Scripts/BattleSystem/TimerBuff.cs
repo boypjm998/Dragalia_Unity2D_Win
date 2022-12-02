@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using UnityEngine;
 
+
 public class TimerBuff : BattleCondition
     {
         
@@ -52,8 +53,9 @@ public class TimerBuff : BattleCondition
             sb.Append(id);
 
             var sprite = Resources.Load<Sprite>(sb.ToString());
-            Debug.Log(sprite.name);
-            return sprite;
-            
+            if (sprite != null)
+                return sprite;
+            else return null;
+
         }
     }

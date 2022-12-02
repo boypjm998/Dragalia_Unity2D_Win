@@ -35,7 +35,7 @@ public class Projectile_C001_2 : ProjectileControllerTest
         if (col.CompareTag("Enemy"))
         {
             attackSet = GetComponent<AttackFromPlayer>();
-            attackSet.CauseDamage(col);
+            attackSet.CauseDamage(col.gameObject);
             BurstEffect();
         }
         if (col.CompareTag("Border"))

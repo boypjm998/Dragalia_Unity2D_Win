@@ -242,6 +242,7 @@ public class AlchemicGauge : MonoBehaviour
 
     private IEnumerator InactiveAnimation()
     {
+        catridgeActive = false;
         while (cp > 0)
         {
             cp--;
@@ -250,7 +251,7 @@ public class AlchemicGauge : MonoBehaviour
 
         number.GetComponent<Image>().sprite = number0Sprite;
 
-        catridgeActive = false;
+        
         catridgeCount = 0;
         cp = 0;
     }

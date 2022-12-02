@@ -11,6 +11,8 @@ public class DamageNumberManager : MonoBehaviour
     public GameObject critDamageNumPrefab;
     public GameObject critPrefab;
     public GameObject healNumPrefab;
+    public GameObject dotNumPrefab;
+    public GameObject playerDamageNumPrefab;
     [SerializeField]
     private GameObject totalDamagePrefab;
 
@@ -19,6 +21,12 @@ public class DamageNumberManager : MonoBehaviour
     {
         Transform dmgNumParent = transform.GetChild(0);
         GenerateHealNumber(dmg,targetTrans.position,dmgNumParent);
+    }
+    
+    public void DotPop(int dmg,Transform targetTrans, BasicCalculation.BattleCondition condition)
+    {
+        Transform dmgNumParent = transform.GetChild(0);
+        GenerateDotDmgNumber(dmg,targetTrans.position,dmgNumParent,condition);
     }
 
     public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType)
@@ -43,6 +51,8 @@ public class DamageNumberManager : MonoBehaviour
         {
             GenerateCriticalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent);
         }
+        
+        //print("出伤害");
         
 
 
@@ -84,6 +94,12 @@ public class DamageNumberManager : MonoBehaviour
         InstancePropertyUI dmgProperty = num.GetComponent<InstancePropertyUI>();
         dmgProperty.SetGenerateParent(enemyPos);
         */
+    }
+
+    public void DamagePopPlayer(Transform playerPos, int dmg)
+    {
+        Transform dmgNumParent = transform.GetChild(0);
+        GeneratePlayerDamageNumber(dmg, playerPos.position, dmgNumParent);
     }
 
     //伤害数字位置检测，防止一个区域伤害数字叠的太多导致重复遮挡
@@ -315,7 +331,30 @@ public class DamageNumberManager : MonoBehaviour
         dmgText.text = dmg.ToString();
 
     }
+    
+    private void GenerateDotDmgNumber(int dmg, Vector3 pos, Transform _parent, BasicCalculation.BattleCondition condition)
+    {
+        var num = Instantiate(dotNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+            Quaternion.identity, _parent.transform);
+        
+        TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
+        var sb = new StringBuilder();
+        
+        sb.Append($"<sprite={(int)condition-1}>");
+        sb.Append(dmg.ToString());
+        dmgText.text = sb.ToString();
+
+    }
 
 
+    private void GeneratePlayerDamageNumber(int dmg, Vector3 pos, Transform _parent)
+    {
+        var num = Instantiate(playerDamageNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+            Quaternion.identity, _parent.transform);
+        
+        TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
+        dmgText.text = dmg.ToString();
+
+    }
 
 }

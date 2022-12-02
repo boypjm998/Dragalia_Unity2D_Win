@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public static class BasicCalculation
@@ -31,7 +32,29 @@ public static class BasicCalculation
         HotRecovery = 5,
         RecoveryBuff = 6,
         MaxHPBuff = 7,
-        SkillDamageBuff = 8,
+        SkillDmgBuff = 8,
+        SkillHasteBuff = 9,
+        DamageCut = 10,
+        DamageCutConst = 11,
+        Shield = 12,
+        LifeShield = 13,
+        SPRegen = 14,
+        
+        BurnRes = 21,
+        PoisonRes = 22,
+        FrostbiteRes = 23,
+        ParalysisRes = 24,
+
+        ScorchrendRes = 25,
+        StormlashRes = 26,
+        FlashburnRes = 27,
+        ShadowBlightRes = 28,
+        
+        StunRes = 31,
+        SleepRes = 32,
+        BogRes = 33,
+        FreezeRes = 34,
+        BlindnessRes = 35,
 
         //Special Buff
         AlchemicCatridge = 101,
@@ -43,7 +66,10 @@ public static class BasicCalculation
         CritRateDebuff = 203,
         CritDmgDebuff = 204,
         RecoveryDebuff = 206,
-        SkillDamageDebuff = 208,
+        SkillDmgDebuff = 208,
+        SkillHasteDebuff = 209,
+
+        SPDegen = 214,
 
 
         //Special Debuff
@@ -69,6 +95,76 @@ public static class BasicCalculation
         NoJump = 317,
         NoRoll = 318
     }
+
+    public static string ConditionInfo_zh(BattleCondition cond)
+    {
+        switch (cond)
+        {
+            //Basic Conditions
+            case BattleCondition.AtkBuff:
+                return ("攻击力提升");
+            case BattleCondition.AtkDebuff:
+                return ("攻击力下降");
+            case BattleCondition.DefBuff:
+                return ("防御力提升");
+            case BattleCondition.DefDebuff:
+                return ("防御力下降");
+            case BattleCondition.HotRecovery:
+                return ("HP持续回复");
+            case BattleCondition.CritRateBuff:
+                return ("暴击率提升");
+            case BattleCondition.CritRateDebuff:
+                return ("暴击率下降");
+            case BattleCondition.CritDmgBuff:
+                return ("暴击威力提升");
+            case BattleCondition.CritDmgDebuff:
+                return ("暴击威力下降");
+            case BattleCondition.RecoveryBuff:
+                return ("回复效果提升");
+            case BattleCondition.RecoveryDebuff:
+                return ("回复效果下降");
+            case BattleCondition.SkillDmgBuff:
+                return ("技能伤害提升");
+            case BattleCondition.SkillDmgDebuff:
+                return ("技能伤害下降");
+
+            //Special conditions
+            case BattleCondition.AlchemicCatridge:
+                return ("炼金弹夹装填");
+
+            //Afflictions
+            case BattleCondition.Flashburn:
+                return ("闪热");
+            case BattleCondition.Scorchrend:
+                return ("劫火");
+            case BattleCondition.Burn:
+                return ("烧伤");
+            case BattleCondition.Blindness:
+                return ("黑暗");
+            case BattleCondition.ShadowBlight:
+                return ("暗殇");
+            case BattleCondition.Frostbite:
+                return ("冻伤");
+            case BattleCondition.Freeze:
+                return ("冰冻");
+            case BattleCondition.Stun:
+                return ("昏迷");
+            case BattleCondition.Sleep:
+                return ("睡眠");
+            case BattleCondition.Bog:
+                return ("湿身");
+            case BattleCondition.Paralysis:
+                return ("麻痹");
+            case BattleCondition.Poison:
+                return ("中毒");
+            case BattleCondition.Stormlash:
+                return ("裂风");
+
+
+            default: return ("");
+        }
+    }
+
 
     public static float BattleConditionLimit(int id)
     {
@@ -122,7 +218,7 @@ public static class BasicCalculation
         if (atkType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
 
         //Target
-        Debug.Log(targetStat);
+
         var tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
         var dmgCutModifier = targetStat.GetDamageCut();
         var dmgCutConst = targetStat.GetDamageCutConst();
@@ -143,8 +239,7 @@ public static class BasicCalculation
 
     public static int CalculateHPRegenGeneral(StatusManager targetStat, float modifier, float percentageModifier)
     {
-       
-        var atk = targetStat.baseAtk *(1+targetStat.attackBuff);
+        var atk = targetStat.baseAtk * (1 + targetStat.attackBuff);
         var hp = targetStat.maxHP;
         var potencybuff = targetStat.recoveryPotencyBuff;
 
@@ -153,6 +248,20 @@ public static class BasicCalculation
         var damagePart2 = hp * percentageModifier * 0.01 * (1 + potencybuff);
 
         return (int)(damagePart1 + damagePart2);
+    }
+
+    
+
+    public static float CalculateAttackInfo(StatusManager stat)
+    {
+        //stat.baseAtk * (1 + stat.attackBuff);
+        return stat.baseAtk * (1 + stat.attackBuff);
+    }
+
+    public static float CalculateDefenseInfo(StatusManager stat)
+    {
+        return stat.baseDef * (1 + stat.defenseBuff);
+        ;
     }
 
     private enum CharacterInfo
@@ -164,11 +273,54 @@ public static class BasicCalculation
         Sheila = 5
     }
 
-    public struct BasicAttackInfo
+    public enum KnockBackType
     {
-        public float kbpower;
-        public float kbforce;
-        public float kbtime;
-        public float[] dmgmod;
+       None = 0, //No Knockback Distance
+       FaceDirection = 1, 
+       FromCenterRay = 2, //The ray from the attack center to target
+       FromCenterFixed = 3, //Knockback target in a fixed direction related to the center position
+       FixedDirection = 4 //A Fixed Direction
+       //比如这个Fixed Vector是(1,0)那么左边的敌人就会收到（-1,0）的击退方向，右边的则是(1,0)。
     }
+    
+    
+    
+    
+    
+    
+    
+    public static float ParticleSystemLength(ParticleSystem ps)
+    {
+        float maxDuration = 0;
+
+        var main = ps.main;
+        return main.startLifetime.constant + main.duration;
+        
+        //if(ps.enableEmission){
+        //    if(ps.loop){
+        //        return -1f;
+        //    }
+        //    float dunration = 0f;
+        //    if(ps.emissionRate <=0){
+        //        dunration = ps.startDelay + ps.startLifetime;
+        //    }else{
+        //        dunration = ps.startDelay + Mathf.Max(ps.duration,ps.startLifetime); 
+        //    }
+        //    if (dunration > maxDuration) {
+        //        maxDuration = dunration;
+        //    }
+        //}
+        return maxDuration;
+    }
+
+    /// <summary>
+    /// 获取当前动画的最后一帧的标准时间。
+    /// </summary>
+    /// <returns></returns>
+    public static float GetLastAnimationNormalizedTime(Animator anim)
+    {
+        float totalFrame = (anim.GetCurrentAnimatorClipInfo(0)[0].clip.length*anim.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate);
+        return (1 - 1 / totalFrame);
+    }
+
 }
