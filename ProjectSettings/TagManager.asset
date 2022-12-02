@@ -8,6 +8,7 @@ TagManager:
   - platform
   - Enemy
   - Ground
+  - Border
   layers:
   - Default
   - TransparentFX
@@ -20,10 +21,10 @@ TagManager:
   - Ground
   - Camara
   - AttackPlayer
+  - AttackEnemy
+  - Sensor
   - 
-  - 
-  - 
-  - 
+  - MinimapIcon
   - 
   - 
   - 
@@ -45,6 +46,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: AttackFXBehind
+    uniqueID: 199403587
+    locked: 0
   - name: Enemy
     uniqueID: 1640711747
     locked: 0
@@ -53,6 +57,9 @@ TagManager:
     locked: 0
   - name: AttackFX
     uniqueID: 996571589
+    locked: 0
+  - name: BuffEffect
+    uniqueID: 3459766771
     locked: 0
   - name: Obstacles
     uniqueID: 850209669
