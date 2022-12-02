@@ -1,20 +1,15 @@
-# DL_BackUp_Win
+# DL_BackUp_Win (12/3）
 
 #####
-1. Combo UI的初步实现 
-2. Buff系统初步实现
-3. 伊莉雅的技能2-4全部实现
-4. Status Manager重做，同时重新编号buffID.
-5. TargetAimer 异常修复
-6. Hot奶效果实现
-7. 其他调整
+1. 敌人AI的简单追踪目标
+2. 敌人攻击交互的实现
+3. 增加新特性：击退抗性
+4. 新增类：DragaliaEnemyBehavior用来控制敌人时间轴。
 
 #####
-1. Implementation of Combo UI
-2. Implementation of Buff
-3. Implementation of Ilia's s2-s4
-4. Status Manager Remaked，and renumbered the buffID.
-5. TargetAimer bug fixed
-6. Implementation of hot HP regen
-7. Other adjustments.
+1. Implementation of enemy AI. (Chase target part)
+2. Implementation of enemy's attack.
+3. New feature: Knockback Resistance.
+4. New class: Dragalia Enemy Behavior. (To control the pattern of enemies)
+
 
