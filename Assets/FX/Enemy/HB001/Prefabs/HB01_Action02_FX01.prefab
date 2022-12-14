@@ -4851,7 +4851,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -4896,7 +4896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atkAwakeTime: 0.03
-  normailzedNextAttackTime: []
+  nextAttackTime: []
   _attackSource: 2
   totalTime: 0.25
 --- !u!1 &3551535956634036390
@@ -4946,20 +4946,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb737ca46abdb7b45a7360044a60ae0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chara_id: 1
+  skill_id: 0
+  attackType: 1
+  dmgModifier:
+  - 1.2
+  - 1.2
+  nextDmgModifier: []
+  nextKnockbackPower: []
+  nextKnockbackForce: []
+  nextKnockbackTime: []
+  enemySource: {fileID: 0}
   knockbackPower: 100
   knockbackForce: 6
   knockbackTime: 0.3
   knockbackDirection: {x: 1, y: 0}
   KBType: 1
-  dmgModifier:
-  - 1.2
-  - 1.2
   firedir: 0
   isMeele: 0
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
   withConditionChance: 
   withConditionNum: 
   withConditionFlags: 
@@ -4967,7 +4971,6 @@ MonoBehaviour:
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
   selfpos: {fileID: 0}
-  attackType: 1
   hitShakeIntensity: 5
   damageAutoReset: 0
   Avoidable: 1
@@ -5011,7 +5014,7 @@ PolygonCollider2D:
     m_Paths:
     - - {x: 0.7477404, y: 2.6408746}
       - {x: -1.730283, y: 3.4818096}
-      - {x: -0.95105654, y: 0.28824636}
-      - {x: -0.8785731, y: -2.5952857}
+      - {x: -2.504091, y: 1.0129955}
+      - {x: -1.5515544, y: -2.3623307}
       - {x: 2.7063832, y: -2.3460388}
       - {x: 3.0904248, y: -0.29332918}

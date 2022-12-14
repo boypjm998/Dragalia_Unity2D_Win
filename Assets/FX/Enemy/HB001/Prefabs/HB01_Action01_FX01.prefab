@@ -106,19 +106,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb737ca46abdb7b45a7360044a60ae0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chara_id: 1
+  skill_id: 0
+  attackType: 1
+  dmgModifier:
+  - 0.8
+  nextDmgModifier: []
+  nextKnockbackPower: []
+  nextKnockbackForce: []
+  nextKnockbackTime: []
+  enemySource: {fileID: 0}
   knockbackPower: 100
   knockbackForce: 8
   knockbackTime: 0.4
   knockbackDirection: {x: 1, y: 0}
   KBType: 1
-  dmgModifier:
-  - 0.8
   firedir: 0
   isMeele: 1
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
   withConditionChance: 
   withConditionNum: 
   withConditionFlags: 
@@ -126,7 +130,6 @@ MonoBehaviour:
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
   selfpos: {fileID: 0}
-  attackType: 1
   hitShakeIntensity: 5
   damageAutoReset: 0
   Avoidable: 0
