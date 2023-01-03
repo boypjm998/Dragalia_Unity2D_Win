@@ -9,7 +9,7 @@ public abstract class BattleCondition
     
     public int buffID { get; protected set; }
     public int maxStackNum { get; protected set; } = BasicCalculation.MAXCONDITIONSTACKNUMBER;
-    protected bool dispellable = true;
+    public bool dispellable = true;
     public float effect { get; protected set; }
     public buffEffectDisplayType DisplayType { get; protected set; }
     public bool displayInBar { get; protected set; } = true; //是否显示在buff栏中

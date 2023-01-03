@@ -8,7 +8,7 @@ public class AttackContainer : MonoBehaviour
     public int attackTotalNum { get; protected set; }
     protected int currentFinishedNum;
     private bool needTotalDisplay;
-    private int totalDamage;
+    protected int totalDamage;
     public bool spGained;
     public List<int> conditionCheckDone;
 

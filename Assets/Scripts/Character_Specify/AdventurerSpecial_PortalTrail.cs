@@ -18,6 +18,7 @@ public class AdventurerSpecial_PortalTrail : MonoBehaviour
 
     private void Start()
     {
+        Destroy(gameObject,0.5f);
         _tweener = transform.DOMove(target, 0.3f);
         _tweener.SetEase(Ease.OutExpo);
         _tweener.OnComplete(OnTweenComplete);
@@ -25,7 +26,7 @@ public class AdventurerSpecial_PortalTrail : MonoBehaviour
     
     void OnTweenComplete()
     {
-        Destroy(gameObject,0.2f);
+        //Destroy(gameObject,0.2f);
     }
 
     

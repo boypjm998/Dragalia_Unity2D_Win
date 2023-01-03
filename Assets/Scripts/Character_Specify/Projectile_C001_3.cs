@@ -34,7 +34,7 @@ public class Projectile_C001_3 : MonoBehaviour
         {
             foreach (var hitinfo in hitinfos)
             {
-                if (hitinfo.GetComponentInParent<Enemy>().currentKBRes >= 100)
+                if (hitinfo.GetComponentInParent<EnemyController>().currentKBRes >= 100)
                 {
                     continue;
                 }

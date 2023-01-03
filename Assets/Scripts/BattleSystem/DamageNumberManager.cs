@@ -13,6 +13,8 @@ public class DamageNumberManager : MonoBehaviour
     public GameObject healNumPrefab;
     public GameObject dotNumPrefab;
     public GameObject playerDamageNumPrefab;
+    public GameObject playerCritDamageNumPrefab;
+    public GameObject playerCritPrefab;
     [SerializeField]
     private GameObject totalDamagePrefab;
 
@@ -96,10 +98,17 @@ public class DamageNumberManager : MonoBehaviour
         */
     }
 
-    public void DamagePopPlayer(Transform playerPos, int dmg)
+    public void DamagePopPlayer(Transform playerPos, int dmg, bool isCrit)
     {
         Transform dmgNumParent = transform.GetChild(0);
-        GeneratePlayerDamageNumber(dmg, playerPos.position, dmgNumParent);
+        if (isCrit)
+        {
+            GeneratePlayerDamageNumberCrit(dmg, playerPos.position, dmgNumParent);
+        }
+        else
+        {
+            GeneratePlayerDamageNumber(dmg, playerPos.position, dmgNumParent);
+        }
     }
 
     //伤害数字位置检测，防止一个区域伤害数字叠的太多导致重复遮挡
@@ -354,6 +363,22 @@ public class DamageNumberManager : MonoBehaviour
         
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
         dmgText.text = dmg.ToString();
+
+    }
+    
+    private void GeneratePlayerDamageNumberCrit(int dmg, Vector3 pos, Transform _parent)
+    {
+        var num = Instantiate(playerCritDamageNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+            Quaternion.identity, _parent.transform);
+        
+        TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
+        dmgText.text = dmg.ToString();
+        
+        GameObject crit =
+            Instantiate(playerCritPrefab,
+                new Vector3(num.transform.position.x, num.transform.position.y - 1f, num.transform.position.z),
+                Quaternion.identity,
+                _parent.transform);
 
     }
 

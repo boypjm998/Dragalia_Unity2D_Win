@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Random = UnityEngine.Random;
 
-public class EnemyControllerHumanoid : Enemy
+public class EnemyControllerHumanoid : EnemyController
 {
     
     
@@ -15,7 +15,7 @@ public class EnemyControllerHumanoid : Enemy
     public float rollspeed = 9.0f;
     public float jumpforce = 20.0f;
     protected int jumpTime = 2;
-    private float jumpHeight = 4f;
+    private float jumpHeight = 5f;
     
     [SerializeField] protected float isMove = 0;
     public bool dodging = false;
@@ -27,7 +27,7 @@ public class EnemyControllerHumanoid : Enemy
     
     
     //private Animator anim;
-    public bool hurt;
+    
     
     public float _defaultgravityscale;
     private EnemyGroundSensor _groundSensor;
@@ -39,6 +39,7 @@ public class EnemyControllerHumanoid : Enemy
         rigid = GetComponentInChildren<Rigidbody2D>();
         MoveManager = GetComponent<EnemyMoveManager>();
         _groundSensor = GetComponentInChildren<EnemyGroundSensor>();
+        _behavior = GetComponent<DragaliaEnemyBehavior>();
     }
 
     protected override void Start()
@@ -236,7 +237,178 @@ public class EnemyControllerHumanoid : Enemy
         
 
     }
-    
+
+    public IEnumerator MoveTowardTargetOnGround(GameObject target, float maxFollowTime, float arriveDistanceX,float arriveDistanceY, float startFollowDistance)
+    {
+        if (VerticalMoveRoutine != null)
+            VerticalMoveRoutine = null;
+        
+        TurnMove(target);
+        if (CheckTargetDistance(target,arriveDistanceX,arriveDistanceY) && anim.GetBool("isGround"))
+        {
+            OnMoveFinished?.Invoke(true);
+            yield break;
+        }
+        
+        while (maxFollowTime > 0)
+        {
+            maxFollowTime -= Time.deltaTime;
+            //print(VerticalMoveRoutine == null?"null":VerticalMoveRoutine.ToString());
+            var distanceX = GetTargetDistanceX(target);
+            var distanceY = GetTargetDistanceY(target);
+
+            if (Mathf.Abs(distanceX) > arriveDistanceX)
+            {
+                TurnMove(target);
+                isMove = 1;
+
+                if (_groundSensor.currentPlatform == null &&
+                    _groundSensor.currentGround == null &&
+                    VerticalMoveRoutine == null &&
+                    distanceY > 0)
+                {
+                    VerticalMoveRoutine = StartCoroutine(TryJumpOver(target));
+                }
+
+            }
+            else if (VerticalMoveRoutine == null )
+            {
+                if ((distanceY > arriveDistanceY) && jumpTime > 0 )
+                {
+                    VerticalMoveRoutine = StartCoroutine(TryDoJump(target,arriveDistanceY));
+                }else if (jumpTime > 0 && CheckTargetStandOnSameGround(target) == 1)
+                {
+                    VerticalMoveRoutine = StartCoroutine(TryDoJump(target,0.1f));
+                }
+                else if (distanceY < -arriveDistanceY && _groundSensor.currentPlatform)
+                {
+                    VerticalMoveRoutine = StartCoroutine(TryDownPlatform(target));
+                }
+            }
+
+            if (CheckTargetDistance(target, arriveDistanceX, arriveDistanceY) && anim.GetBool("isGround"))
+            {
+                if (VerticalMoveRoutine != null)
+                {
+                    StopCoroutine(VerticalMoveRoutine);
+                    VerticalMoveRoutine = null;
+                }
+
+                
+                TurnMove(target);
+                isMove = 0;
+                currentKBRes = _statusManager.knockbackRes;
+                ActionTask = null; //只有行为树在用这个
+                OnMoveFinished?.Invoke(true);
+                
+                yield break;
+            }
+            yield return null;
+        }
+        isMove = 0;
+        currentKBRes = _statusManager.knockbackRes;
+        ActionTask = null; //只有行为树在用这个
+        OnMoveFinished?.Invoke(false);
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
+
+        
+
+    }
+    public IEnumerator MoveToSameGround(GameObject target, float maxFollowTime, float arriveDistanceX)
+    {
+        if (VerticalMoveRoutine != null)
+            VerticalMoveRoutine = null;
+        
+        TurnMove(target);
+        if (CheckTargetStandOnSameGround(target) == 0 && Mathf.Abs(GetTargetDistanceX(target)) <= arriveDistanceX)
+        {
+            OnMoveFinished?.Invoke(true);
+            yield break;
+        }
+        
+        while (maxFollowTime > 0)
+        {
+            maxFollowTime -= Time.deltaTime;
+            //print(VerticalMoveRoutine == null?"null":VerticalMoveRoutine.ToString());
+            var distanceX = GetTargetDistanceX(target);
+            var distanceY = GetTargetDistanceY(target);
+
+            if (Mathf.Abs(distanceX) > arriveDistanceX)
+            {
+                TurnMove(target);
+                isMove = 1;
+
+                if (_groundSensor.currentPlatform == null &&
+                    _groundSensor.currentGround == null &&
+                    VerticalMoveRoutine == null &&
+                    distanceY > 0)
+                {
+                    VerticalMoveRoutine = StartCoroutine(TryJumpOver(target));
+                }
+
+            }
+            else if (VerticalMoveRoutine == null )
+            {
+
+                if (CheckTargetStandOnSameGround(target)==1 && jumpTime > 0)
+                {
+                    if (!PlatformIsAccessible())
+                    {
+                        isMove = 1;
+                    }
+                    else
+                    {
+                        isMove = 0;
+                        VerticalMoveRoutine = StartCoroutine(TryDoJump(target,.1f));
+                    }
+
+                    
+                }else if (CheckTargetStandOnSameGround(target)==-1 && _groundSensor.currentPlatform)
+                {
+                    VerticalMoveRoutine = StartCoroutine(TryDownPlatform(target));
+                }
+            }
+
+            if (CheckTargetStandOnSameGround(target)==0 &&
+                anim.GetBool("isGround") == true &&
+                Mathf.Abs(distanceX) <= arriveDistanceX)
+            {
+                if (VerticalMoveRoutine != null)
+                {
+                    StopCoroutine(VerticalMoveRoutine);
+                    VerticalMoveRoutine = null;
+                }
+
+                
+                TurnMove(target);
+                isMove = 0;
+                currentKBRes = _statusManager.knockbackRes;
+                
+                OnMoveFinished?.Invoke(true);
+                
+                yield break;
+            }
+            yield return null;
+        }
+        isMove = 0;
+        currentKBRes = _statusManager.knockbackRes;
+        ActionTask = null; //只有行为树在用这个
+        OnMoveFinished?.Invoke(false);
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
+    }
+
+    /// <summary>
+    /// 检查与目标的距离，小于指定值返回true.
+    /// </summary>
+    /// <returns></returns>
     public bool CheckTargetDistance(GameObject target, float x, float y)
     {
         if (Mathf.Abs(target.transform.position.x - transform.position.x ) > x)
@@ -250,11 +422,81 @@ public class EnemyControllerHumanoid : Enemy
 
         return true;
     }
-    
-    
 
     /// <summary>
-    /// 如果可以进行下一次行动，返回true.
+    /// 检查目标是否和自己在同一个平面
+    /// </summary>
+    /// <returns>返回0为在同一平面，1为目标高于自身，-1为目标低于自身</returns>
+    public int CheckTargetStandOnSameGround(GameObject target)
+    {
+        GameObject myGround;
+        if (_groundSensor.currentGround != null)
+        {
+            myGround = _groundSensor.currentGround;
+        }else if (_groundSensor.currentPlatform != null)
+        {
+            myGround = _groundSensor.currentPlatform;
+        }
+        else
+        {
+            RaycastHit2D myRay = 
+                Physics2D.Raycast(transform.position, Vector2.down,
+                    999f,LayerMask.GetMask("Ground","Platforms"));
+        
+            myGround = myRay.collider.gameObject;
+        }
+
+        GameObject tarGround;
+        var targetSensor = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
+        if(targetSensor.GetCurrentAttachedGroundInfo()!=null)
+        {
+            tarGround = targetSensor.GetCurrentAttachedGroundInfo();
+        }else{
+            RaycastHit2D tarRay = 
+                Physics2D.Raycast(target.transform.position, Vector2.down,
+                    999f,LayerMask.GetMask("Ground","Platforms"));
+        
+            tarGround = tarRay.collider.gameObject;
+        }
+
+
+        if (tarGround == myGround)
+        {
+            return 0;
+        }
+        
+        if (Mathf.Abs(target.transform.position.y - transform.position.y) < 0.5f)
+        {
+            return 0;
+        }
+
+        if (Mathf.Abs(tarGround.transform.position.y - myGround.transform.position.y) < 0.5f)
+        {
+            return 0;
+        }
+        else if (tarGround.transform.position.y > myGround.transform.position.y)
+        {
+            return 1;
+        }
+        else if (tarGround.transform.position.y < myGround.transform.position.y)
+        {
+            return -1;
+        }
+        else
+        {
+            Debug.LogWarning("Error Value");
+            return 999;
+        }
+
+
+    }
+
+
+
+
+
+    /// <summary>
+    /// <para>弃用的</para>
     /// </summary>
     public bool CheckTaskStatus(bool needOnGround)
     {
@@ -290,16 +532,16 @@ public class EnemyControllerHumanoid : Enemy
             distanceY = GetTargetDistanceY(target);
         }
 
-        if (Math.Abs(distanceY) > jumpHeight * 2 && !PlatformIsAccessible(groundTargetAttached))
+        if (Math.Abs(distanceY) > jumpHeight * 2 && !PlatformIsAccessible())
         {
             VerticalMoveRoutine = null;
             yield break;
         }
         
-        print(distanceY);
+        //print(distanceY);
         if ((Math.Abs(distanceY) > jumpHeight))
         {
-            print("2段跳");
+            //print("2段跳");
             Jump();
             yield return new WaitUntil(() => rigid.velocity.y < 0.5f);
             yield return new WaitForFixedUpdate();
@@ -330,6 +572,7 @@ public class EnemyControllerHumanoid : Enemy
         }
         else VerticalMoveRoutine = null;
 
+        VerticalMoveRoutine = null;
 
     }
 
@@ -360,7 +603,7 @@ public class EnemyControllerHumanoid : Enemy
     {
         var groundListener = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
         
-        print(groundListener);
+        //print(groundListener);
 
         while (groundListener.GetCurrentAttachedGroundInfo() == null)
         {
@@ -369,7 +612,7 @@ public class EnemyControllerHumanoid : Enemy
 
         //yield return new WaitUntil(() => groundListener.GetCurrentAttachedGroundInfo()!=null);
         
-        print("可以下了！");
+        //print("可以下了！");
         
         GoDownPlatform();
 
@@ -403,7 +646,7 @@ public class EnemyControllerHumanoid : Enemy
     /// </summary>
     /// <param name="groundTarget">弃用</param>
     /// <returns></returns>
-    protected bool PlatformIsAccessible(GameObject groundTarget)
+    protected bool PlatformIsAccessible()
     {
         //var pos = groundTarget.GetComponent<Collider2D>().
         RaycastHit2D[] hitinfo =
@@ -412,9 +655,14 @@ public class EnemyControllerHumanoid : Enemy
                     LayerMask.GetMask("Platforms"));
 
         List<float> PlatformPosition = new List<float>();
-        
-        PlatformPosition.Add(hitinfo[0].collider.gameObject.transform.position.x - transform.position.x);
 
+        if (hitinfo.Length == 0)
+            return false;
+        
+        //PlatformPosition.Add(hitinfo[0].collider.gameObject.transform.position.x - transform.position.x);
+        PlatformPosition.Add(transform.position.y);
+
+        //Problem Exist
         foreach(var obj in hitinfo)
         {
             PlatformPosition.Add(obj.collider.gameObject.GetComponent<Collider2D>().bounds.max.y);
@@ -505,9 +753,9 @@ public class EnemyControllerHumanoid : Enemy
         }
 
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
-        if (currentKBRes > 99)
+        if (currentKBRes > 99 && currentKBRes < 200)
         {
-            StartCoroutine(ResetKBRes(_statusManager));
+            //StartCoroutine(ResetKBRes(_statusManager));
         }
         //Unimplemented
         
@@ -521,25 +769,37 @@ public class EnemyControllerHumanoid : Enemy
     
     protected void OnHurtEnter()
     {
+        
+        OnAttackInterrupt?.Invoke();
+        
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
         if (MoveManager._tweener!=null)
         {
             MoveManager._tweener.Kill();
         }
 
-        if (MoveManager.currentAttackMove != null)
+        if (_behavior.currentAttackAction != null)
         {
-            StopCoroutine(MoveManager.currentAttackMove);
-            MoveManager.currentAttackMove = null;
+            _behavior.StopCoroutine(_behavior.currentAttackAction);
+            _behavior.currentAttackAction = null;
         }
 
         rigid.gravityScale = 1;
+        SetVelocity(rigid.velocity.x,0);
         moveEnable = false;
         //SetVelocity(rigid.velocity.x,0);
         anim.speed = 1;
+        MoveManager.SetGroundCollider(true);
         var meeles = transform.Find("MeeleAttackFX");
         for (int i = 0; i < meeles.childCount; i++)
         {
-            meeles.GetChild(i).GetComponent<AttackContainer>().DestroyInvoke();
+
+            //meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
+            meeles.GetChild(i).GetComponent<EnemyAttackHintBar>()?.DestroySelf();
         }
 
     }
@@ -570,6 +830,20 @@ public class EnemyControllerHumanoid : Enemy
         }
         isAction = true;
         currentKBRes = 100;
+        //TurnMove(tar);
+    }
+    
+    public override void OnAttackEnter(int newKnockbackRes)
+    {
+        isMove = 0;
+        //moveEnable = false;
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
+        isAction = true;
+        currentKBRes = newKnockbackRes;
     }
     
     public override void OnAttackExit()
@@ -585,6 +859,8 @@ public class EnemyControllerHumanoid : Enemy
     protected IEnumerator ResetKBRes(StatusManager statusManager)
     {
         yield return new WaitForSeconds(5f);
+        
+        yield return new WaitUntil(() => currentKBRes < 200);
         currentKBRes = statusManager.knockbackRes;
     }
 

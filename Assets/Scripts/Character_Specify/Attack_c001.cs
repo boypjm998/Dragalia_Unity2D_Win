@@ -224,7 +224,7 @@ public class Attack_c001 : AttackManager
         
         var currentPltformer = GetComponent<PlayerOnewayPlatformEffector>();
         proj.GetComponent<Projectile_C001_1>().SetContactTarget(currentPltformer.currentOnewayPlatform);
-        proj.GetComponent<Projectile_C001_1>().InitProjectile(10*ac.facedir,15,30,ac.facedir);
+        proj.GetComponent<Projectile_C001_1>().InitProjectile(10*ac.facedir,12,45,ac.facedir);
         
 
 

@@ -610,14 +610,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0290a452b0af74a45aff78a329134811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxBaseHP: 2000000
+  displayedName: "\u5E2D\u83C8"
+  maxBaseHP: 450000
   baseDef: 10
   baseAtk: 1000
   critRate: 0
   maxHP: 2000000
   currentHp: 2000000
   knockbackRes: 0
-  defenseDebuff: 0
+  _conditionBar: {fileID: 0}
   damageCut: 0
   damageCutConst: 0
 --- !u!114 &2574266878565807511
@@ -646,20 +647,19 @@ MonoBehaviour:
   projectile7: {fileID: 6430155428857683784, guid: f1f83fafb9995bb4d82a881fcf60a1ed, type: 3}
   projectile8: {fileID: 1187280147450060853, guid: 8bba660d88a2b8d49aa5c95b97d5c1e0, type: 3}
   projectile9: {fileID: 3460936982066636668, guid: 78a01de260ebe394094678060caeeccc, type: 3}
-  projectile10: {fileID: 0}
-  projectile11: {fileID: 0}
-  projectile12: {fileID: 0}
-  projectile13: {fileID: 0}
-  projectile14: {fileID: 0}
-  projectile15: {fileID: 0}
-  projectile16: {fileID: 0}
-  projectile17: {fileID: 0}
-  projectile18: {fileID: 0}
-  projectile19: {fileID: 0}
-  projectile20: {fileID: 0}
+  projectile10: {fileID: 468327875114114387, guid: 7c57365f9d7887f4bb6a413de9147b3c, type: 3}
+  projectilePoolEX:
+  - {fileID: 6335136456527115297, guid: c1901f5483246e0418a1d2fb317b0a5a, type: 3}
+  - {fileID: 3403631099166150433, guid: 56bb0ab56a8647b4e8c9635dab5fd402, type: 3}
+  - {fileID: 4201768620681739123, guid: 81883c7c62149c54e84e11bd8dbaffba, type: 3}
+  - {fileID: 5859482246472526077, guid: fff18f49d7c10614c9e74df9d2cddf3a, type: 3}
+  - {fileID: 1259093740782740937, guid: 08a4475e3c1ec9146b7a845b36de2025, type: 3}
+  - {fileID: 1218359548770224817, guid: 517fa285b4c788942be21755a41b4687, type: 3}
   WarningPrefab:
   - {fileID: 3532243577954815203, guid: 78d03766be14f2a429b163f080b96da8, type: 3}
   - {fileID: 4568831194432189347, guid: ba85c34b192a4614c933a9bc720c851f, type: 3}
+  - {fileID: 7877905205732929544, guid: 38edbf41783bc4848aaec7272e31d6e0, type: 3}
+  - {fileID: 8119857919360295814, guid: 2a0a527d49901d94290b731e54ab4cde, type: 3}
 --- !u!114 &1783855141365854303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,9 +681,9 @@ MonoBehaviour:
   hurtEffectMaterial: {fileID: 2100000, guid: 1e1856dd1021d0448a4f07c6b3cf8317, type: 2}
   hurtEffectDuration: 0.1
   currentKBRes: 0
-  movespeed: 6
+  movespeed: 7.8
   rollspeed: 9
-  jumpforce: 18
+  jumpforce: 22
   isMove: 0
   dodging: 0
   moveEnable: 1
@@ -980,7 +980,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 1, y: 2.5}
   m_EdgeRadius: 0
 --- !u!1001 &8998483419760623536
 PrefabInstance:

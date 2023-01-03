@@ -5,26 +5,32 @@ using UnityEngine;
 public class CustomMeeleFromEnemy : AttackFromEnemy
 {
     // Start is called before the first frame update
-    
+    private EnemyController ac;
     
     protected override void Awake()
     {
         base.Awake();
-        if(attackCollider==null)
-            attackCollider = GetComponent<Collider2D>();
-        selfpos = transform.parent.parent.parent;
+        
     }
 
     void Start()
     {
-        
+        if(attackCollider==null)
+            attackCollider = GetComponent<Collider2D>();
+        selfpos = transform.parent.parent.parent;
+        if (enemySource == null)
+        {
+            enemySource = selfpos?.gameObject;
+        }
+
+        //print(enemySource);
+        ac = enemySource.GetComponent<EnemyController>();
+        if (isMeele)
+        {
+            ac.OnAttackInterrupt += DestroyContainer;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -57,8 +63,14 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        if(isMeele)
-            RecoverFromMeeleTimeStop(4);
+        ac.OnAttackInterrupt -= DestroyContainer;
+    }
+    
+    public void InstantDestroySelf()
+    {
+        hitFlags.Clear();
+        //RecoverFromMeeleTimeStop(4);
+        Destroy(gameObject);
     }
     
 }

@@ -1,25 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityTransform;
+using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.XR;
 
 public class EnemyMoveController_HB01 : EnemyMoveManager
 {
     
     // Start is called before the first frame update
 
-   
+    private BattleEffectManager _effectManager;
     private Animator anim;
-    
-    
+    private BattleStageManager _stageManager;
+    private VoiceController_HB01 voice;
+
+    [Header("Warnings")] 
+    [SerializeField] private GameObject[] WarningPrefab;
+
     void Start()
     {
+        voice = GetComponentInChildren<VoiceController_HB01>();
+        _stageManager = FindObjectOfType<BattleStageManager>();
         MeeleAttackFXLayer = transform.Find("MeeleAttackFX").gameObject;
         RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
         ac = GetComponent<EnemyControllerHumanoid>();
         anim = GetComponent<Animator>();
-        Behavior = GetComponent<DragaliaEnemyBehavior>();
+        _behavior = GetComponent<DragaliaEnemyBehavior>();
+        _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
+        _statusManager = GetComponent<StatusManager>();
     }
 
     // Update is called once per frame
@@ -54,17 +65,22 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// <returns></returns>
     public IEnumerator HB01_Action01()
     {
+        QuitMove();
+        
+        yield return new WaitUntil(() => !ac.hurt);
+        
+        ac.OnAttackEnter();
         anim.Play("comboDodge0");
-
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.SingleDodgeCombo);
+        var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.13f);
         
         ComboDodge1();
-
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("idle"));
-
-        currentAttackMove = null;
+        //yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("idle"));
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        QuitAttack();
         
-        OnAttackFinished?.Invoke(true);
+        //currentAttackMove = null;OnAttackFinished?.Invoke(true);
     }
 
     /// <summary>
@@ -73,50 +89,365 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// <returns></returns>
     public IEnumerator HB01_Action02()
     {
-        if (ac.VerticalMoveRoutine != null)
-        {
-            ac.StopCoroutine(ac.VerticalMoveRoutine);
-        }
-
-        yield return new WaitUntil(() => anim.GetBool("isGround"));
+        QuitMove();
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         
         ac.OnAttackEnter();
-        yield return new WaitForSeconds(0.5f);
+        
         
         anim.Play("warp");
         var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        _effectManager.SpawnTargetLockIndicator(_behavior.targetPlayer,1.2f);
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.WarpAttack);
+        
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        WarpAttack_Disappear(true);
+        var dir = LockFaceDir(_behavior.targetPlayer);
+        var pos = LockPosition(_behavior.targetPlayer);
         
-        Disappear(true);
-        var dir = LockFaceDir(Behavior.targetPlayer);
-        var pos = LockPosition(Behavior.targetPlayer);
         yield return new WaitForSeconds(.2f);
-        
-        Appear();
+        WarpAttack_Appear();
         anim.Play("comboDodge1");
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         SetGravityScale(0);
         BackWarp(pos,dir,3f,4.5f);
-        //pos = LockPosition(Behavior.targetPlayer);
+       
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.22f);
-        
         ComboDodge2_WarpAttack1(pos);
         SetGravityScale(4);
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.272f);
-
-        ComboDodge2_WarpAttack2();
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
         
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.272f);
+        ComboDodge2_WarpAttack2();
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
         QuitAttack();
 
     }
+
+
+    /// 普通的c1-c3
+    public IEnumerator HB01_Action03()
+    {
+        QuitMove();
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter();
+        ac.TurnMove(_behavior.targetPlayer);
+        
+        
+        var hint = GenerateWarningPrefab(WarningPrefab[0], transform, MeeleAttackFXLayer.transform);
+        var hintbar = hint.GetComponent<EnemyAttackHintBar>();
+
+        yield return new WaitForSeconds(hintbar.warningTime);
+        Destroy(hint); 
+        anim.Play("combo1");
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
+        float animTime;
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.21f);
+        Combo1();
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        anim.Play("combo2");
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.1f);
+        Combo2();
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        if (!anim.GetBool("isGround"))
+        {
+            anim.Play("fall");
+            yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("idle"));
+        }
+
+        yield return new WaitUntil(() => anim.GetBool("isGround"));
+        anim.Play("combo3");
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.5f);
+        Combo3();
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        QuitAttack();
+
+    }
+    
+    
+    /// Camine Rush 焰红突袭
+    public IEnumerator HB01_Action04()
+    {
+        QuitMove();
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter(999);
+        ac.TurnMove(_behavior.targetPlayer);
+        bossBanner.PrintSkillName_ZH("焰红突袭");
+        
+        
+        var hint = GenerateWarningPrefab(WarningPrefab[1], transform, MeeleAttackFXLayer.transform);
+        var hintbar = hint.GetComponent<EnemyAttackHintBar>();
+
+        yield return new WaitForSeconds(hintbar.warningTime);
+        Destroy(hint);
+        anim.Play("s1_rush");
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.CamineRush);
+        float animTime;
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.4f);
+        SetGravityScale(0);
+        var container = CamineRush_Part1();
+        
+        yield return new WaitForSeconds(0.05f);
+        Vector2 origin = RushForward();
+        CamineRush_Part2(container);
+        
+        
+        yield return new WaitForSeconds(0.2f);
+        RushBack(origin);
+        
+        yield return new WaitForSeconds(0.1f);
+        ac.SetFaceDir(-ac.facedir);
+        SetGravityScale(4);
+
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
+        anim.Play("s1_recover");
+        
+        
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        QuitAttack();
+    }
+
+    /// Combo 7
+    public IEnumerator HB01_Action05()
+    {
+        QuitMove();
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter();
+        ac.TurnMove(_behavior.targetPlayer);
+        
+        
+        _effectManager.SpawnExclamation(gameObject, 
+            new Vector3(transform.position.x,transform.position.y+3));
+
+        yield return new WaitForSeconds(0.8f);
+        anim.Play("combo7");
+        _statusManager.ObtainUnstackableTimerBuff((int)BasicCalculation.BattleCondition.BlazewolfsRush,
+            -1,-1,BattleCondition.buffEffectDisplayType.None,1);
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
+        var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= (5f/29f));
+        Combo7_Part1();
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= (17f/29f));
+        Combo7_Part1();
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        anim.Play("comboDodge1");
+        transform.position = new Vector3(transform.position.x, transform.position.y + 2.5f);
+        SetGravityScale(0);
+        
+        yield return new WaitForSeconds(0.2f);
+        Combo7_DashDownward();
+        
+        yield return new WaitForSeconds(0.05f);
+        Combo7_Part2();
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        SetGravityScale(4);
+        
+        //yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
+        QuitAttack();
+
+
+
+    }
+    
+    /// Combo4
+    public IEnumerator HB01_Action06()
+    {
+        QuitMove();
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter();
+        ac.TurnMove(_behavior.targetPlayer);
+        
+        
+        _effectManager.SpawnExclamation(gameObject, 
+            new Vector3(transform.position.x,transform.position.y+3));
+
+        yield return new WaitForSeconds(0.8f);
+        anim.Play("combo4");
+        SetGravityScale(0);
+        SetGroundCollider(false);
+        Combo4_Part1();
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
+        var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.69f);
+        anim.Play("comboDodge1");
+        transform.position = new Vector3(transform.position.x, transform.position.y + 2.5f);
+        
+        yield return new WaitForSeconds(0.2f);
+        Combo4_Landing();
+        
+        yield return new WaitForSeconds(0.05f);
+        Combo4_Part2();
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        SetGravityScale(4);
+        SetGroundCollider(true);
+        QuitAttack();
+
+    }
+
+    /// Combo5 - Combo6
+    public IEnumerator HB01_Action07()
+    {
+        QuitMove();
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter();
+        ac.TurnMove(_behavior.targetPlayer);
+        
+        
+        var hint = GenerateWarningPrefab(WarningPrefab[2], transform, MeeleAttackFXLayer.transform);
+        var hintbar = hint.GetComponent<EnemyAttackHintBar>();
+
+        yield return new WaitForSeconds(hintbar.warningTime);
+        Destroy(hint);
+        anim.Play("combo5");
+        SetGravityScale(0);
+        Combo5();
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
+        var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        anim.Play("combo6");
+        anim.speed = 0;
+
+        yield return new WaitForSeconds(0.15f);
+        anim.speed = 1;
+
+        yield return new WaitForSeconds(0.05f);
+        var oldPos = transform.position.x;
+        Combo6();
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        SetGravityScale(4);
+        transform.position = new Vector3(oldPos, transform.position.y);
+        QuitAttack();
+
+    }
+
+    /// S2: Flame Raid
+    public IEnumerator HB01_Action08()
+    {
+        QuitMove();
+
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter(999);
+        ac.TurnMove(_behavior.targetPlayer);
+        bossBanner.PrintSkillName_ZH("红焰强袭");
+
+        yield return new WaitForSeconds(1f);
+        var hint = GenerateWarningPrefab(WarningPrefab[3], transform, MeeleAttackFXLayer.transform);
+        var hintbar = hint.GetComponent<EnemyAttackHintBar>();
+        
+        yield return new WaitForSeconds(hintbar.warningTime);
+        anim.Play("s2");
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.FlameRaid);
+        float animTime;
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.15f);
+        Destroy(hint,0.3f);
+        FlameRaid();
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        QuitAttack();
+    }
+    
+    /// Bright Camine Rush
+    public IEnumerator HB01_Action09()
+    {
+        QuitMove();
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter(999);
+        ac.TurnMove(_behavior.targetPlayer);
+        bossBanner.PrintSkillName_ZH("闪耀焰红突袭");
+        
+        
+        var hint = GenerateWarningPrefab(WarningPrefab[1], transform, MeeleAttackFXLayer.transform);
+        var hintbar = hint.GetComponent<EnemyAttackHintBar>();
+        var hint2 = GenerateWarningPrefab(WarningPrefab[4], transform, MeeleAttackFXLayer.transform);
+        hint2.GetComponent<EnemyAttackHintBarChaser>().target = _behavior.targetPlayer;
+
+        yield return new WaitForSeconds(hintbar.warningTime);
+        Destroy(hint);
+        anim.Play("s1_rush");
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.BrightCamineRush);
+        float animTime;
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.4f);
+        SetGravityScale(0);
+        var container = CamineRush_Part1();
+        
+        yield return new WaitForSeconds(0.05f);
+        Vector2 origin = RushForward();
+        CamineRush_Part2(container);
+        
+        
+        yield return new WaitForSeconds(0.2f);
+        RushBack(origin);
+        
+        yield return new WaitForSeconds(0.1f);
+        ac.SetFaceDir(-ac.facedir);
+        SetGravityScale(4);
+
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
+        anim.Play("s1_recover");
+        
+        
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        QuitAttack();
+    }
+
+
+
+
+
+    #region DetailedAction
 
     /// <summary>
     /// 隐身
     /// </summary>
     /// <param name="invincible">是否进入无敌状态</param>
-    void Disappear(bool invincible)
+    void WarpAttack_Disappear(bool invincible)
     {
+        
+        if (invincible)
+        {
+            var col = transform.Find("HitSensor").GetComponent<Collider2D>();
+            col.enabled = false;
+        }
+        
+        var miniIcon = transform.Find("MinimapIcon").gameObject;
+        miniIcon.SetActive(false);
         
         var spriteRenderer1 = GetComponent<SpriteRenderer>();
         
@@ -124,19 +455,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         spriteRenderer1.color = 
             new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 0);
 
-        var miniIcon = transform.Find("MinimapIcon").gameObject;
-        miniIcon.SetActive(false);
-
-        if (invincible)
-        {
-            var col = transform.Find("HitSensor").GetComponent<Collider2D>();
-            col.enabled = false;
-        }
-
+        
 
     }
     
-    void Appear()
+    void WarpAttack_Appear()
     {
         
         var spriteRenderer1 = GetComponent<SpriteRenderer>();
@@ -206,15 +529,227 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         ac.rigid.gravityScale = value;
     }
 
-    void QuitAttack()
+    
+
+
+
+    void Combo1()
     {
-        ac.OnAttackExit();
-        anim.Play("idle");
-        currentAttackMove = null;
-        OnAttackFinished?.Invoke(true);
+
+        GameObject projectile_clone1 = Instantiate(projectile3, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        if (ac.facedir == -1)
+        {
+            var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
+            //ParticleSystem.MinMaxCurve curve;
+            partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
+        }
+        
+        
+        GameObject container = Instantiate(attackContainer, transform.position, Quaternion.identity, RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        GameObject projectile_clone2 = Instantiate(projectile4, transform.position, transform.rotation, container.transform);
+        projectile_clone2.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        projectile_clone2.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        if (ac.facedir == -1)
+        {
+            projectile_clone2.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+
+        }
+        
     }
 
+    void Combo2()
+    {
+        StraightDashMove();
+        //RushForward();
+        GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        GameObject projectile_clone1 = Instantiate(projectile5, transform.position, transform.rotation, container.transform);
+        projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        if (ac.facedir == -1)
+        {
+            var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
+            //ParticleSystem.MinMaxCurve curve;
+            partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
+        }
+    }
 
+    void Combo3()
+    {
+        GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        GameObject projectile_clone1 = Instantiate(projectile6, transform.position, transform.rotation, container.transform);
+        projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        if (ac.facedir == -1)
+        {
+            var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
+            //ParticleSystem.MinMaxCurve curve;
+            partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
+        }
+    }
+
+    void Combo4_Part1()
+    {
+        _statusManager.ObtainTimerBuff
+        ((int)BasicCalculation.BattleCondition.CritRateBuff,20,10,
+            BattleCondition.buffEffectDisplayType.Value);
+        _tweener = transform.DOMove(new Vector2(transform.position.x-1.5f*ac.facedir,transform.position.y + 4f),
+            0.1f).SetEase(Ease.OutCubic);
+        
+        GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
+            RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+
+        GameObject proj = Instantiate(projectilePoolEX[1], 
+            new Vector3(transform.position.x,transform.position.y+1), transform.rotation, container.transform);
+        proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        
+        if (ac.facedir == -1)
+        {
+            var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            foreach (var particle in particles)
+            {
+                var main = particle.main;
+                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            }
+        }
+    }
+
+    void Combo4_Part2()
+    {
+        GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
+            RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        
+        
+
+        GameObject proj = Instantiate(projectilePoolEX[2], 
+            new Vector3(transform.position.x,transform.position.y-2.5f),
+            transform.rotation, container.transform);
+        proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        
+        if (ac.facedir == -1)
+        {
+            var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            foreach (var particle in particles)
+            {
+                var main = particle.main;
+                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            }
+        }
+    }
+
+    void Combo4_Landing()
+    {
+        _tweener = transform.DOMove
+            (new Vector2(transform.position.x+1.5f*ac.facedir,transform.position.y-4f), 0.1f).SetEase(Ease.InCubic);
+        
+            
+    }
+
+    void Combo5()
+    {
+        GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
+            RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        
+        
+
+        GameObject proj = Instantiate(projectilePoolEX[3], 
+            new Vector3(transform.position.x+2f*ac.facedir,transform.position.y),
+            transform.rotation, container.transform);
+        proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        
+        if (ac.facedir == -1)
+        {
+            var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            foreach (var particle in particles)
+            {
+                var main = particle.main;
+                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            }
+        }
+    }
+    
+    void Combo6()
+    {
+        _tweener = transform.DOMoveX(transform.position.x + ac.facedir * 8, 0.1f);
+        
+        GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
+            RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        
+        
+
+        GameObject proj = Instantiate(projectilePoolEX[4], 
+            new Vector3(transform.position.x,transform.position.y),
+            transform.rotation, container.transform);
+        proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        
+        if (ac.facedir == -1)
+        {
+            var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            var shadow = particles[0].GetComponent<DOTweenSimpleController>();
+            shadow.moveDirection.x *= -1;
+
+            foreach (var particle in particles)
+            {
+                var main = particle.main;
+                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            }
+        }
+    }
+
+    void Combo7_Part1()
+    {
+        GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
+            MeeleAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+
+        GameObject proj = Instantiate(projectile10, transform.position, transform.rotation, container.transform);
+        if (ac.facedir == -1)
+        {
+            var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            foreach (var particle in particles)
+            {
+                var main = particle.main;
+                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            }
+        }
+
+    }
+
+    void Combo7_DashDownward()
+    {
+        _tweener = transform.DOMoveY(transform.position.y-2.5f, 0.3f).SetEase(Ease.OutExpo);
+    }
+
+    void Combo7_Part2()
+    {
+        GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
+            RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        
+        
+
+        GameObject proj = Instantiate(projectilePoolEX[0], transform.position, transform.rotation, container.transform);
+        proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        
+        if (ac.facedir == -1)
+        {
+            var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            foreach (var particle in particles)
+            {
+                var main = particle.main;
+                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            }
+        }
+    }
 
     void ComboDodge1()
     {
@@ -227,12 +762,14 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         GameObject projectile_clone1 = Instantiate(projectile1, transform.position, transform.rotation, container.transform);
 
         projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        //projectile_clone1.GetComponent<AttackFromEnemy>().AddWithCondition(new TimerBuff(999));
+        
 
         if (ac.facedir == -1)
         {
-            var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
+            var particle = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
             //ParticleSystem.MinMaxCurve curve;
-            partical.startRotationY = new ParticleSystem.MinMaxCurve(Mathf.PI);
+            particle.startRotationY = new ParticleSystem.MinMaxCurve(Mathf.PI);
         }
 
 
@@ -259,6 +796,204 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
             //ParticleSystem.MinMaxCurve curve;
             partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
+        }
+    }
+
+    GameObject CamineRush_Part1()
+    {
+        GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, RangedAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(2);
+        
+        //GameObject subcontainer = Instantiate(attackSubContainer, transform.position, transform.rotation, RangedAttackFXLayer.transform);
+        //subcontainer.GetComponent<AttackSubContainer>().InitAttackContainer(1,container);
+
+        var proj1 = 
+            Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
+        proj1.GetComponent<AttackFromEnemy>().
+            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
+        proj1.GetComponent<AttackFromEnemy>().
+            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+        
+        proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        if (ac.facedir == -1)
+        {
+            proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+        }
+        
+
+        return container;
+    }
+
+    void CamineRush_Part2(GameObject container)
+    {
+        var proj2 = 
+            Instantiate(projectile9, transform.position, transform.rotation, container.transform);
+        //proj2.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        proj2.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        proj2.GetComponent<AttackFromEnemy>().
+            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
+        proj2.GetComponent<AttackFromEnemy>().
+            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+
+        var proj3 = Instantiate(projectile8, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        
+        if (ac.facedir == -1)
+        {
+            var partical = proj3.GetComponentInChildren<ParticleSystem>().main;
+            //ParticleSystem.MinMaxCurve curve;
+            partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
+        }
+    }
+
+    void FlameRaid()
+    {
+        GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
+        
+        var proj1 = 
+            Instantiate(projectilePoolEX[5], transform.position, Quaternion.identity, container.transform);
+        proj1.GetComponent<AttackFromEnemy>().AddWithCondition(new TimerBuff(999));
+        proj1.GetComponent<AttackFromEnemy>().AddWithCondition
+            (new TimerBuff((int)BasicCalculation.BattleCondition.Burn,
+                72.7f,12f,BattleCondition.buffEffectDisplayType.None,1));
+        
+        proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
+        proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+    }
+
+    void StraightDashMove()
+    {
+        var target = _behavior.targetPlayer;
+        
+        if(Mathf.Abs(target.transform.position.x- transform.position.x) < 2 && Mathf.Abs(target.transform.position.y - transform.position.y) < 1f)
+            return;
+        
+        
+        
+        float tarX;
+        if (Mathf.Abs(target.transform.position.y - transform.position.y) < 1f)
+        {
+            if (target.transform.position.x - transform.position.x < 10 && ac.facedir==1 && target.transform.position.x > transform.position.x)
+            {
+                tarX = target.transform.position.x - ac.facedir;
+            }
+            else if(transform.position.x - target.transform.position.x < 10 && ac.facedir==-1 && target.transform.position.x < transform.position.x)
+            {
+                tarX = target.transform.position.x - ac.facedir;
+            }
+            else
+            {
+                tarX = transform.position.x + 10 * ac.facedir;
+            
+                if (tarX > _stageManager.mapBorderR)
+                    tarX = _stageManager.mapBorderR - 1;
+            
+                if (tarX < _stageManager.mapBorderL)
+                    tarX = _stageManager.mapBorderL + 1;
+            }
+        }
+        else
+        {
+            tarX = transform.position.x + 10 * ac.facedir;
+            
+            if (tarX > _stageManager.mapBorderR)
+                tarX = _stageManager.mapBorderR - 1;
+            
+            if (tarX < _stageManager.mapBorderL)
+                tarX = _stageManager.mapBorderL + 1;
+            
+        }
+
+        
+            //var target = hitinfo.collider.gameObject.GetComponent<BoxCollider2D>();
+            //var tarX = target.offset.x + (-(target.size.x + 1));
+        _tweener = transform.DOMoveX(tarX, 0.2f);
+        
+            
+        
+    }
+
+    Vector3 RushForward()
+    {
+        //Sequence sequence = DOTween.Sequence();
+        //SetGravityScale(0);
+        var origin = transform.position;
+        var target = transform.position + new Vector3(ac.facedir * 15, 0);
+        
+        if (target.x > _stageManager.mapBorderR)
+            target.x = _stageManager.mapBorderR - 1;
+            
+        if (target.x < _stageManager.mapBorderL)
+            target.x = _stageManager.mapBorderL + 1;
+
+        //print(target);
+        
+        _tweener = transform.DOMove(target, 0.25f);
+        _tweener.SetEase(Ease.OutExpo).OnComplete(DisappearRenderer);
+        //print(_tweener.active);
+
+        return origin;
+    }
+    void RushBack(Vector3 origin)
+    {
+        _tweener = transform.DOMove(origin, 0.1f).SetEase(Ease.OutExpo).OnComplete(AppearRenderer);
+        _tweener.Play();
+        
+    }
+
+    void DisappearRenderer()
+    {
+        var spriteRenderer1 = GetComponent<SpriteRenderer>();
+        
+        //spriteRenderer;
+        spriteRenderer1.color = 
+            new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 0);
+        
+    }
+    void AppearRenderer()
+    {
+        var spriteRenderer1 = GetComponent<SpriteRenderer>();
+        
+        //spriteRenderer;
+        spriteRenderer1.color = 
+            new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);
+        
+    }
+
+    
+
+    #endregion
+
+
+
+    GameObject GenerateWarningPrefab(GameObject prefab, Transform where, Transform _parent)
+    {
+        var clone = Instantiate(prefab, where.position, where.rotation, _parent);
+        return clone;
+    }
+    
+    void QuitAttack()
+    {
+        ac.OnAttackExit();
+        anim.Play("idle");
+        currentAttackMove = null; //只有行为树在用
+        _behavior.currentAttackAction = null;
+        
+        OnAttackFinished?.Invoke(true);
+    }
+
+    void QuitMove()
+    {
+        ac.currentKBRes = 100;
+        if (ac.VerticalMoveRoutine != null)
+        {
+            StopCoroutine(ac.VerticalMoveRoutine);
+            ac.VerticalMoveRoutine = null;
         }
     }
 

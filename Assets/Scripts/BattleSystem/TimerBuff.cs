@@ -17,12 +17,36 @@ public class TimerBuff : BattleCondition
             this.DisplayType = type;
             this.maxStackNum = maxStack > 100 ? 100 : maxStack;
             this.lastTime = duration;
+
+            if (buffID > 100 && buffID <= 200)
+                dispellable = false;
+
         }
         
-        
-        
+        public TimerBuff(int buffID, float effect, float duration, buffEffectDisplayType type, int maxStack, int spID)
+        {
+            this.buffID = buffID;
+            this.duration = duration;
+            this.effect = effect;
+            this.DisplayType = type;
+            this.maxStackNum = maxStack > 100 ? 100 : maxStack;
+            this.lastTime = duration;
+            this.specialID = spID;
+            
+            if (buffID > 100 && buffID <= 200)
+                dispellable = false;
+        }
 
-      
+        /// Dispell
+        public TimerBuff(int buffID)
+        {
+            if (buffID == 999)
+                this.buffID = 999;
+        }
+
+
+
+
         #endregion
 
        
@@ -48,7 +72,7 @@ public class TimerBuff : BattleCondition
         public override Sprite GetIcon()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("UI/General/BuffIcons/Icons/Icon_Buff_");
+            sb.Append("UI/InBattle/BuffIcons/Icons/Icon_Buff_");
             string id = this.buffID.ToString();
             sb.Append(id);
 

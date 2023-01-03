@@ -58,7 +58,9 @@ public static class BasicCalculation
 
         //Special Buff
         AlchemicCatridge = 101,
-
+        InfernoMode = 102,
+        HolyFaith = 103,
+        BlazewolfsRush = 104,
 
         //Basic Debuff
         AtkDebuff = 201,
@@ -68,32 +70,37 @@ public static class BasicCalculation
         RecoveryDebuff = 206,
         SkillDmgDebuff = 208,
         SkillHasteDebuff = 209,
+        Vulnerable = 210,
 
         SPDegen = 214,
 
 
         //Special Debuff
+        EvilsBane = 301,
 
         //Dot Affliction
-        Burn = 301,
-        Poison = 302,
-        Frostbite = 303,
-        Paralysis = 304,
+        Burn = 401,
+        Poison = 402,
+        Frostbite = 403,
+        Paralysis = 404,
 
-        Scorchrend = 305,
-        Stormlash = 306,
-        Flashburn = 307,
-        ShadowBlight = 308,
+        Scorchrend = 405,
+        Stormlash = 406,
+        Flashburn = 407,
+        ShadowBlight = 408,
 
         //Control Affliction
-        Stun = 311,
-        Sleep = 312,
-        Bog = 313,
-        Freeze = 314,
-        Blindness = 315,
-        Cursed = 316,
-        NoJump = 317,
-        NoRoll = 318
+        Stun = 411,
+        Sleep = 412,
+        Bog = 413,
+        Freeze = 414,
+        Blindness = 415,
+        Cursed = 416,
+        NoJump = 417,
+        NoRoll = 418,
+        
+        Dispell = 999
+        
     }
 
     public static string ConditionInfo_zh(BattleCondition cond)
@@ -127,10 +134,63 @@ public static class BasicCalculation
                 return ("技能伤害提升");
             case BattleCondition.SkillDmgDebuff:
                 return ("技能伤害下降");
+            case BattleCondition.LifeShield:
+                return ("生命护盾");
+            case BattleCondition.DamageCut:
+                return ("伤害减少");
+            case BattleCondition.DamageCutConst:
+                return ("伤害减少");
+            case BattleCondition.Shield:
+                return ("护盾");
+            case BattleCondition.SkillHasteBuff:
+                return ("技能槽获取提升");
+            case BattleCondition.SkillHasteDebuff:
+                return ("技能槽获取下降");
+            case BattleCondition.SPRegen:
+                return ("技能槽持续提升");
+            case BattleCondition.SPDegen:
+                return ("技能槽持续下降");
+            case BattleCondition.Vulnerable:
+                return ("所受伤害增加");
+            
+            case BattleCondition.ScorchrendRes:
+                return ("劫火抗性提升");
+            case BattleCondition.FlashburnRes:
+                return ("闪热抗性提升");
+            case BattleCondition.BurnRes:
+                return ("烧伤抗性提升");
+            case BattleCondition.ShadowBlightRes:
+                return ("暗殇抗性提升");
+            case BattleCondition.ParalysisRes:
+                return ("麻痹抗性提升");
+            case BattleCondition.FrostbiteRes:
+                return ("冻伤抗性提升");
+            case BattleCondition.StormlashRes:
+                return ("裂风抗性提升");
+            case BattleCondition.PoisonRes:
+                return ("中毒抗性提升");
+            case BattleCondition.FreezeRes:
+                return ("冰冻抗性提升");
+            case BattleCondition.StunRes:
+                return ("昏迷抗性提升");
+            case BattleCondition.SleepRes:
+                return ("睡眠抗性提升");
+            case BattleCondition.BlindnessRes:
+                return ("黑暗抗性提升");
 
-            //Special conditions
+            //Special buffs:
             case BattleCondition.AlchemicCatridge:
                 return ("炼金弹夹装填");
+            case BattleCondition.InfernoMode:
+                return ("地狱模式");
+            case BattleCondition.HolyFaith:
+                return ("圣洁信念");
+            case BattleCondition.BlazewolfsRush:
+                return ("巫女气焰");
+
+            //Special debuffs:
+            case BattleCondition.EvilsBane:
+                return ("破邪巫咒");
 
             //Afflictions
             case BattleCondition.Flashburn:
@@ -159,11 +219,20 @@ public static class BasicCalculation
                 return ("中毒");
             case BattleCondition.Stormlash:
                 return ("裂风");
+            case BattleCondition.Cursed:
+                return ("诅咒");
 
 
-            default: return ("");
+            default:
+            {
+                Debug.LogWarning("Buff text not found");
+                return ("");
+            }
         }
     }
+    
+
+    
 
 
     public static float BattleConditionLimit(int id)
@@ -207,7 +276,7 @@ public static class BasicCalculation
 
         var critRate = sourceStat.critRate + sourceStat.critRateBuff;
         float critDmgModifier = 1;
-        isCrit = false;
+        //isCrit = false;
         if (Random.Range(0, 100) < critRate)
         {
             isCrit = true;
@@ -237,6 +306,110 @@ public static class BasicCalculation
         return (int)damage;
     }
 
+    public static int CalculateDamagePlayer(StatusManager sourceStat, StatusManager targetStat, float modifier,
+        AttackFromPlayer atkStat, ref bool isCrit)
+    {
+        //Source
+
+        //攻击 Attack
+
+        var atk = sourceStat.baseAtk * (1 + sourceStat.attackBuff);
+
+        //暴击 爆伤 crit
+
+
+        var critRate = sourceStat.critRate + sourceStat.critRateBuff;
+
+        critRate += CheckSpecialCritEffect(sourceStat,targetStat,atkStat);
+        
+        float critDmgModifier = 1;
+        //isCrit = false;
+        if (Random.Range(0, 100) < critRate)
+        {
+            isCrit = true;
+            critDmgModifier += 0.7f + sourceStat.critDmgBuff;
+            critDmgModifier += CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat);
+        }
+
+        float skillDmgModifier = 1;
+        if (atkStat.attackType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
+
+        //Target
+
+        var tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
+        var dmgCutModifier = targetStat.GetDamageCut();
+        var dmgCutConst = targetStat.GetDamageCutConst();
+
+
+        //Calculate
+
+        var attackSource = atk * skillDmgModifier * critDmgModifier * modifier;
+        var defendTarget = tarDef * (1 + dmgCutModifier);
+
+        var damage = 5f / 3f * (attackSource / defendTarget) - dmgCutConst;
+
+        if (damage < 0) damage = 0;
+
+        //Debug.Log(damage);
+        return (int)damage;
+    }
+    public static int CalculateDamageEnemy(StatusManager sourceStat, StatusManager targetStat, float modifier,
+        AttackFromEnemy atkStat, ref bool isCrit)
+    {
+        //Source
+
+        //攻击 Attack
+
+        var atk = sourceStat.baseAtk * (1 + sourceStat.attackBuff);
+
+        //暴击 爆伤 crit
+
+
+        var critRate = sourceStat.critRate + sourceStat.critRateBuff;
+
+        critRate += CheckSpecialCritEffect(sourceStat,targetStat,atkStat);
+        
+        float critDmgModifier = 1;
+        //isCrit = false;
+        if (Random.Range(0, 100) < critRate)
+        {
+            isCrit = true;
+            critDmgModifier += 0.7f + sourceStat.critDmgBuff;
+            critDmgModifier += CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat);
+        }
+
+        float skillDmgModifier = 1;
+        if (atkStat.attackType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
+
+        //Target
+
+        var tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
+        var dmgCutModifier = targetStat.GetDamageCut();
+        var dmgCutConst = targetStat.GetDamageCutConst();
+
+
+        //Calculate
+
+        var attackSource = atk * skillDmgModifier * critDmgModifier * modifier;
+        var defendTarget = tarDef * (1 + dmgCutModifier);
+
+        var damage = 5f / 3f * (attackSource / defendTarget) - dmgCutConst;
+
+        if (damage < 0) damage = 0;
+
+        //Debug.Log(damage);
+        return (int)damage;
+    }
+    
+
+
+
+    /// <summary>
+    /// HP回复计算
+    /// </summary>
+    /// <param name="modifier">回血系数</param>
+    /// <param name="percentageModifier">百分比回血系数</param>
+    /// <returns></returns>
     public static int CalculateHPRegenGeneral(StatusManager targetStat, float modifier, float percentageModifier)
     {
         var atk = targetStat.baseAtk * (1 + targetStat.attackBuff);
@@ -250,7 +423,100 @@ public static class BasicCalculation
         return (int)(damagePart1 + damagePart2);
     }
 
+    #region CheckSpecialEffect
+
     
+
+    
+    public static int CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
+        AttackFromPlayer attackStat)
+    {
+        int extraCritModifier = 0;
+        switch (attackStat.chara_id)
+        {
+            case 5:
+            {
+                if (attackStat.skill_id == 2 &&
+                    targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
+                {
+                    extraCritModifier = 100;
+                }
+                break;
+            }
+        }
+        
+        
+        
+        
+        return extraCritModifier;
+    }
+    public static int CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
+        AttackFromEnemy attackStat)
+    {
+        int extraCritModifier = 0;
+        switch (attackStat.chara_id)
+        {
+            case 1:
+            {
+                if (attackStat.skill_id == 2 &&
+                    targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
+                {
+                    extraCritModifier = 100;
+                }
+                break;
+            }
+        }
+        
+        
+        
+        
+        return extraCritModifier;
+    }
+
+    public static float CheckSpecialCritDmgEffect(StatusManager sourceStat, StatusManager targetStat,
+        AttackFromPlayer attackStat)
+    {
+        float extraCritDmgModifier = 0;
+        switch (attackStat.chara_id)
+        {
+            case 5:
+            {
+                if (attackStat.attackType == AttackType.STANDARD &&
+                    targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
+                {
+                    extraCritDmgModifier += 0.2f;
+                }
+                break;
+            }
+            default: break;
+        }
+
+        return extraCritDmgModifier;
+    }
+    public static float CheckSpecialCritDmgEffect(StatusManager sourceStat, StatusManager targetStat,
+        AttackFromEnemy attackStat)
+    {
+        float extraCritDmgModifier = 0;
+        switch (attackStat.chara_id)
+        {
+            case 1:
+            {
+                if (attackStat.attackType == AttackType.STANDARD &&
+                    targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
+                {
+                    extraCritDmgModifier += 0.2f; 
+                }
+                break;
+            }
+            default: break;
+        }
+
+        return extraCritDmgModifier;
+    }
+    
+    #endregion
+
+
 
     public static float CalculateAttackInfo(StatusManager stat)
     {
@@ -261,7 +527,7 @@ public static class BasicCalculation
     public static float CalculateDefenseInfo(StatusManager stat)
     {
         return stat.baseDef * (1 + stat.defenseBuff);
-        ;
+        
     }
 
     private enum CharacterInfo
@@ -322,5 +588,7 @@ public static class BasicCalculation
         float totalFrame = (anim.GetCurrentAnimatorClipInfo(0)[0].clip.length*anim.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate);
         return (1 - 1 / totalFrame);
     }
+    
+    
 
 }

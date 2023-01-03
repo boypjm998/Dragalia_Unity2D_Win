@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ObjectInvokeDestroy : MonoBehaviour
 {
-    [SerializeField] private float destroyTime;
+    public float destroyTime;
     // Start is called before the first frame update
     void Start()
     {

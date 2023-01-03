@@ -1,22 +1,28 @@
+using System.Collections;
 using System.IO;
 using UnityEngine;
 
 public class BattleStageManager : MonoBehaviour
 {
+    public int chara_id;
     private AssetBundle assetBundle;
 
     private DamageNumberManager damageNumberManager;
 
     private DamageNumberManager dnm;
+    public GameObject buffLogPrefab;
     private GameObject player;
+    public GameObject boss;
     public float mapBorderL { get; private set; }
     public float mapBorderR { get; private set; }
     public float mapBorderT { get; private set; }
 
     private void Awake()
     {
+        LoadDependency("ui_general");
         LoadPlayer(1);
         //FindPlayer();
+        LinkBossStatus();
     }
 
 
@@ -27,18 +33,23 @@ public class BattleStageManager : MonoBehaviour
 
         var damageManager = GameObject.Find("DamageManager");
         dnm = damageManager.GetComponent<DamageNumberManager>();
+        
     }
 
     // Update is called once per frame
-    private void Update()
-    {
-    }
+    
 
     #region LoadAssets
 
     protected void FindPlayer()
     {
         player = GameObject.Find("PlayerHandle");
+    }
+
+    protected virtual void LoadDependency(string name)
+    {
+        AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, name));
+        
     }
 
     protected virtual void LoadPlayer(int characterID)
@@ -52,6 +63,11 @@ public class BattleStageManager : MonoBehaviour
 
 
         player.GetComponent<AttackManager>().RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
+
+        var buffLayer = player.transform.Find("BuffLayer");
+        var bufftxt = 
+            Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
+
     }
 
     #endregion
@@ -71,6 +87,18 @@ public class BattleStageManager : MonoBehaviour
             borderInfoR.GetComponent<BoxCollider2D>().size.x * 0.5f + borderInfoR.transform.position.x;
         mapBorderT = borderInfoT.GetComponent<BoxCollider2D>().offset.y -
                      borderInfoT.GetComponent<BoxCollider2D>().size.y * 0.5f + borderInfoT.transform.position.y;
+    }
+
+    /// <summary>
+    /// test link
+    /// </summary>
+    public virtual void LinkBossStatus()
+    {
+        //summon boss
+        var bossStat = GameObject.Find("UI").transform.Find("BossStatusBar").gameObject;
+        bossStat.GetComponentInChildren<UI_BossStatus>().SetBoss(boss);
+        bossStat.SetActive(true);
+        
     }
 
     public void SpChargeAll(GameObject playerHandle, float sp)
@@ -99,14 +127,11 @@ public class BattleStageManager : MonoBehaviour
     {
         //GameObject player = GameObject.Find("PlayerHandle");
         
-        print("进了playerhit");
+        //print("进了playerhit");
 
         //1.If target is not in invincible state.
         if (!target.transform.Find("HitSensor").GetComponent<Collider2D>().isActiveAndEnabled) return -1;
-        
-        
-        
-        print("有结果");
+
 
         //Attack Callback
         switch (attackStat.attackType)
@@ -135,14 +160,15 @@ public class BattleStageManager : MonoBehaviour
             //2.Calculate the damage deal to target.
 
             var isCrit = false;
+            
 
 
             var damage =
-                BasicCalculation.CalculateDamageGeneral(
+                BasicCalculation.CalculateDamagePlayer(
                     playerstat,
                     targetStat,
                     attackStat.GetDmgModifier(i),
-                    attackStat.attackType,
+                    attackStat,
                     ref isCrit
                 );
 
@@ -184,30 +210,43 @@ public class BattleStageManager : MonoBehaviour
                     if (StatusManager.IsDotAffliction(attackStat.withConditions[i].buffID))
                         newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(playerstat) /
                                     BasicCalculation.CalculateDefenseInfo(targetStat);
-                    print(newEffect);
+                    
 
-
-                    print("withcondition");
-                    targetStat.ObtainTimerBuff
-                    (attackStat.withConditions[i].buffID,
-                        newEffect,
-                        attackStat.withConditions[i].duration,
-                        attackStat.withConditions[i].DisplayType,
-                        attackStat.withConditions[i].maxStackNum);
+                    
+                    if (attackStat.withConditions[i].maxStackNum > 1)
+                    {
+                        targetStat.ObtainTimerBuff
+                        (attackStat.withConditions[i].buffID,
+                            newEffect,
+                            attackStat.withConditions[i].duration,
+                            attackStat.withConditions[i].DisplayType,
+                            attackStat.withConditions[i].maxStackNum);
+                    }
+                    else
+                    {
+                        targetStat.ObtainUnstackableTimerBuff
+                        (attackStat.withConditions[i].buffID,
+                            newEffect,
+                            attackStat.withConditions[i].duration,
+                            attackStat.withConditions[i].DisplayType,
+                            attackStat.withConditions[i].specialID
+                        );
+                    }
                 }
 
                 container.conditionCheckDone.Add(target.GetInstanceID());
             }
 
+        //KnockBack 击退
         var kbtemp = attackStat.knockbackDirection;
         kbtemp = attackStat.GetKBDirection(attackStat.KBType, target);
-        target.GetComponentInParent<Enemy>().
+        target.GetComponentInParent<EnemyController>().
             TakeDamage(attackStat.knockbackPower,
                 attackStat.knockbackTime, 
                 attackStat.knockbackForce, kbtemp);
 
         //5.Calculate the SP
-
+        
 
         if (!container.spGained)
         {
@@ -270,8 +309,14 @@ public class BattleStageManager : MonoBehaviour
         var targetStat = target.GetComponentInParent<PlayerStatusManager>();
         var damageM = new int[attackStat.GetHitCount()];
         var totalDamage = 0;
+        
+        //var selfstat = attackStat.enemySource;
+        //if (selfstat == null)
         var selfstat = self.GetComponentInChildren<StatusManager>();
-  
+        //}
+        
+        
+
 
         for (var i = 0; i < attackStat.GetHitCount(); i++)
         {
@@ -279,11 +324,11 @@ public class BattleStageManager : MonoBehaviour
 
             var isCrit = false;
             var damage =
-                BasicCalculation.CalculateDamageGeneral(
+                BasicCalculation.CalculateDamageEnemy(
                     selfstat,
                     targetStat,
                     attackStat.GetDmgModifier(i),
-                    attackStat.attackType,
+                    attackStat,
                     ref isCrit
                 );
 
@@ -296,9 +341,9 @@ public class BattleStageManager : MonoBehaviour
 
 
             if (isCrit)
-                dnm.DamagePopPlayer(target.transform, damageM[i]);
+                dnm.DamagePopPlayer(target.transform, damageM[i], true);
             else
-                dnm.DamagePopPlayer(target.transform, damageM[i]);
+                dnm.DamagePopPlayer(target.transform, damageM[i], false);
 
             totalDamage += damageM[i];
         }
@@ -311,29 +356,57 @@ public class BattleStageManager : MonoBehaviour
             {
                 for (var i = 0; i < attackStat.withConditionNum[0]; i++)
                 {
+                    if (attackStat.withConditions[i].buffID == 999)
+                    {
+                        targetStat.DispellTimerBuff();
+                        continue;
+                    }
+
+
                     var newEffect = attackStat.withConditions[i].effect;
                     print(newEffect);
                     if (StatusManager.IsDotAffliction(attackStat.withConditions[i].buffID))
                         newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(selfstat) /
                                     BasicCalculation.CalculateDefenseInfo(targetStat);
 
-                    targetStat.ObtainTimerBuff
-                    (attackStat.withConditions[i].buffID,
-                        newEffect,
-                        attackStat.withConditions[i].duration,
-                        attackStat.withConditions[i].DisplayType,
-                        attackStat.withConditions[i].maxStackNum);
+                    if (attackStat.withConditions[i].maxStackNum > 1)
+                    {
+                        targetStat.ObtainTimerBuff
+                        (attackStat.withConditions[i].buffID,
+                            newEffect,
+                            attackStat.withConditions[i].duration,
+                            attackStat.withConditions[i].DisplayType,
+                            attackStat.withConditions[i].maxStackNum);
+                    }
+                    else
+                    {
+                        targetStat.ObtainUnstackableTimerBuff
+                        (attackStat.withConditions[i].buffID,
+                            newEffect,
+                            attackStat.withConditions[i].duration,
+                            attackStat.withConditions[i].DisplayType,
+                            attackStat.withConditions[i].specialID
+                            );
+                    }
+
+
                 }
 
                 container.conditionCheckDone.Add(target.GetInstanceID());
             }
         
         //击退Knockback
-        var kbdirtemp = attackStat.knockbackDirection;
-        kbdirtemp = attackStat.GetKBDirection(attackStat.KBType, target);
-        target.GetComponentInParent<ActorController>().
-            TakeDamage(attackStat.knockbackTime,attackStat.knockbackForce,kbdirtemp);
+        if (attackStat.knockbackPower > 99)
+        {
+            var kbdirtemp = attackStat.knockbackDirection;
+            kbdirtemp = attackStat.GetKBDirection(attackStat.KBType, target);
+            target.GetComponentInParent<ActorController>().
+                TakeDamage(attackStat.knockbackTime,attackStat.knockbackForce,kbdirtemp);
+        }
 
+        
+
+        //Damage
         targetStat.currentHp -= totalDamage;
         
         return totalDamage;
@@ -368,6 +441,8 @@ public class BattleStageManager : MonoBehaviour
     {
         return null;
     }
+    
+    
 
 
 

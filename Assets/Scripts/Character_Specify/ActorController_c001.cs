@@ -5,12 +5,13 @@ using UnityEngine;
 public class ActorController_c001 : ActorController
 {
     AlchemicGauge alchemicGauge;
+    
 
    
 
     public override void UseSkill(int id)
     {
-
+        voiceController.PlaySkillVoice(id);
         switch (id)
         {
             case 1:
@@ -61,8 +62,13 @@ public class ActorController_c001 : ActorController
         base.Awake();
 
         alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+        voiceController = GetComponentInChildren<VoiceController_C001>();
+
+
 
     }
+
+    
 
 
     // Update is called once per frame
@@ -276,7 +282,14 @@ public class ActorController_c001 : ActorController
         ActionDisable((int)PlayerActionType.MOVE);//move
         ActionDisable((int)PlayerActionType.JUMP);//jump
         pi.SetInputDisabled("move");
+        
+        if(anim.GetBool("isAttack")==false)
+            voiceController.PlayAttackVoice(1);
+        
+        
         StartAttack();
+        
+        
 
         //ActionEnable(3);//roll
         //pi.jumpEnabled = false;
@@ -367,8 +380,63 @@ public class ActorController_c001 : ActorController
 
     }
 
+    public override void OnDashEnter()
+    {
+        base.OnDashEnter();
+        voiceController.PlayAttackVoice(0);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="moveID">1:普攻,2:s1,3:s2</param>
+    protected override void FaceDirectionAutoFix(int moveID)
+    {
+        switch (moveID)
+        {
+            case 1:
+            {
+                if (ta.GetNearestTargetInRangeDirection
+                    (facedir, 20f, 1f,
+                        LayerMask.GetMask("Enemies")) == null
+                    &&
+                    ta.GetNearestTargetInRangeDirection
+                    (-facedir, 20f, 1f,
+                        LayerMask.GetMask("Enemies")) != null)
+                {
+                    SetFaceDir(-facedir);
+                }
+
+                break;
+            }
+            case 2:
+                if (ta.GetNearestTargetInRangeDirection
+                    (facedir, 30f, 8f,
+                        LayerMask.GetMask("Enemies")) == null
+                    &&
+                    ta.GetNearestTargetInRangeDirection
+                    (-facedir, 20f, 8f,
+                        LayerMask.GetMask("Enemies")) != null)
+                {
+                    SetFaceDir(-facedir);
+                }
+                break;
+            case 3:
+                if (ta.GetNearestTargetInRangeDirection
+                    (facedir, 18f, 4f,
+                        LayerMask.GetMask("Enemies")) == null
+                    &&
+                    ta.GetNearestTargetInRangeDirection
+                    (-facedir, 18f, 4f,
+                        LayerMask.GetMask("Enemies")) != null)
+                {
+                    SetFaceDir(-facedir);
+                }
+                break;
+            default:
+                break;
 
 
-
-
+        }
+    }
 }

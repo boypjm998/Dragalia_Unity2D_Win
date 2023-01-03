@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomMeeleFromPlayer : AttackFromPlayer
 {
-   
+    protected ActorController ac;
 
     Coroutine ConnectCoroutine;
     
@@ -28,7 +28,11 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     {
         base.Start();
         playerpos = GameObject.Find("PlayerHandle").transform;
-        
+        ac = playerpos.GetComponent<ActorController>();
+        if (isMeele)
+        {
+            ac.OnAttackInterrupt += DestroyContainer;
+        }
     }
 
     // Update is called once per frame
@@ -45,8 +49,9 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
         hitFlags.Clear();
         RecoverFromMeeleTimeStop(4);
         Destroy(self);
-
     }
+    
+    
   
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -92,9 +97,8 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     protected override void OnDestroy()
     {
         base.OnDestroy();
+        ac.OnAttackInterrupt -= DestroyContainer;
         if(isMeele)
             RecoverFromMeeleTimeStop(4);
     }
-
-
 }

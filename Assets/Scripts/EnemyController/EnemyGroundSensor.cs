@@ -47,7 +47,7 @@ public class EnemyGroundSensor : MonoBehaviour
         } else {
             IsGround?.Invoke(false);
         }
-        print("EnemyPos:"+transform.parent.position.y);
+        //print("EnemyPos:"+transform.parent.position.y);
         
     }
     

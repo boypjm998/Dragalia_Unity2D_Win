@@ -1,30 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackFromPlayer : MonoBehaviour
+public class AttackFromPlayer : AttackBase
 {
-    private static readonly int DEFAULT_GRAVITY = 4;
+    protected static readonly int DEFAULT_GRAVITY = 4;
     public GameObject self;
 
 
-    [Header("Damage Basic Attributes")] [SerializeField]
+    [Header("Damage Basic Attributes")] 
+
     public float knockbackPower;
     public float knockbackForce;
     public float knockbackTime;
     public Vector2 knockbackDirection = Vector2.right;
     public BasicCalculation.KnockBackType KBType;
-
-    [SerializeField] protected float[] dmgModifier;
+    
     [SerializeField] protected int spGain;
     [SerializeField] protected bool isMeele;
 
 
     //public List<BasicCalculation.BasicAttackInfo> nextAttackSet;
-    [SerializeField] protected List<float> nextDmgModifier;
-    [SerializeField] protected List<float> nextKnockbackPower;
-    [SerializeField] protected List<float> nextKnockbackForce;
-    [SerializeField] protected List<float> nextKnockbackTime;
+    
     public List<int> withConditionChance;
     public List<int> withConditionNum; //一次上几个debuff？
     public List<int> withConditionFlags; //遍历敌人做一个数组，每个敌人代表一个condflag
@@ -36,7 +34,7 @@ public class AttackFromPlayer : MonoBehaviour
     public Transform playerpos;
     public float defaultGravity;
 
-    public BasicCalculation.AttackType attackType;
+    
     public float hitShakeIntensity;
     protected BattleStageManager battleStageManager;
     private Coroutine ConnectCoroutine;
@@ -45,8 +43,22 @@ public class AttackFromPlayer : MonoBehaviour
 
     public List<BattleCondition> withConditions { get; protected set; }
 
+
+    
+    
+    //public struct ConditionalEffect
+    //{
+    //    public int RequiredSelfCondID;
+    //    public int RequiredTargetCondID;
+    //    public BasicCalculation.BattleCondition EffectID;
+    //    public float EffectValue;
+    //    //
+    //}
+    //public List<ConditionalEffect> conditionalEffect;
+
     protected virtual void Awake()
     {
+        //specialEffect = new List<SpecialEffect>();
         nextDmgModifier = new List<float>();
         nextKnockbackForce = new List<float>();
         nextKnockbackPower = new List<float>();
@@ -56,12 +68,14 @@ public class AttackFromPlayer : MonoBehaviour
         hitFlags = SearchEnemyList();
         withConditionFlags = SearchEnemyList();
         playerpos = GameObject.Find("PlayerHandle").transform;
+        
     }
 
 
     protected virtual void Start()
     {
         battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
+        chara_id = battleStageManager.chara_id;
     }
 
     protected virtual void OnDestroy()
@@ -298,6 +312,7 @@ public class AttackFromPlayer : MonoBehaviour
         }
 
         ResetFlags();
+        //NextWithCondition();
     }
 
 
@@ -317,14 +332,7 @@ public class AttackFromPlayer : MonoBehaviour
                 Quaternion.identity);
 
         CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
-
-        //var kbtemp = knockbackDirection;
-
-        //kbtemp = GetKBDirection(KBType, target);
-
-        //target.GetComponentInParent<Enemy>().TakeDamage(knockbackPower, knockbackTime, knockbackForce, kbtemp);
-
-        //collision.gameObject.GetComponentInParent<Enemy>().TakeDamage(knockbackTime,knockbackForce,kbtemp);
+        
 
         var container = gameObject.GetComponentInParent<AttackContainer>();
         container.AttackOneHit();

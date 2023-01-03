@@ -15,7 +15,7 @@ public class ParticleAnimReciever : MonoBehaviour
     [SerializeField]protected float atkAwakeTime;
 
     protected ParticleSystem _particleSystem;
-    [SerializeField] protected List<float> normailzedNextAttackTime;
+    [SerializeField] protected List<float> nextAttackTime;
     protected AttackFromEnemy _attackFromEnemy;
     protected AttackFromPlayer _attackFromPlayer;
     [SerializeField] protected AttackSource _attackSource;
@@ -45,10 +45,15 @@ public class ParticleAnimReciever : MonoBehaviour
 
         //totalTime = BasicCalculation.ParticleSystemLength(_particleSystem);
         
-        if (normailzedNextAttackTime.Count > 0)
+        if (nextAttackTime.Count > 0)
         {
-            StartCoroutine(NextAttackRoutine());
+            //nextAttackTime.Sort();
+            foreach (var time in nextAttackTime)
+            {
+                Invoke("NextAttack",time);
+            }
         }
+        
         Invoke("AttackAwake",atkAwakeTime);
         Invoke("AttackSleep",totalTime);
 
@@ -67,42 +72,20 @@ public class ParticleAnimReciever : MonoBehaviour
         StopAllCoroutines();
     }
 
-    protected void NextAttack()
+
+    void NextAttack()
     {
-        if (_attackSource == AttackSource.Player)
+        switch (_attackSource)
         {
-            _attackFromPlayer.NextAttack();
-        }
-        if (_attackSource == AttackSource.Enemy)
-        {
-            _attackFromEnemy.NextAttack();
+            case AttackSource.Enemy:
+                _attackFromEnemy.NextAttack();
+                break;
+            case AttackSource.Player:
+                _attackFromPlayer.NextAttack();
+                break;
         }
     }
-
-    protected IEnumerator NextAttackRoutine()
-    {
-        normailzedNextAttackTime.Sort();
-        int i = 0;
-        while (normailzedNextAttackTime.Count>0)
-        {
-            if ((_particleSystem.time/totalTime) >= normailzedNextAttackTime[i])
-            {
-                switch (_attackSource)
-                {
-                    case AttackSource.Enemy:
-                        _attackFromEnemy.NextAttack();
-                        break;
-                    case AttackSource.Player:
-                        _attackFromPlayer.NextAttack();
-                        break;
-                }
-            }
-
-            yield return null;
-
-        }
-        
-    }
+    
 
     void AttackAwake()
     {

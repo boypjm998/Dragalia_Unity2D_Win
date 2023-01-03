@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,12 +11,15 @@ public abstract class EnemyMoveManager : MonoBehaviour
     public GameObject RangedAttackFXLayer;
     public GameObject BuffFXLayer;
     public GameObject attackContainer;
-    protected Enemy ac;
-    public Enemy.OnTask OnAttackFinished;
-    protected DragaliaEnemyBehavior Behavior;
-    public Coroutine currentAttackMove;
+    public GameObject attackSubContainer;
+    protected EnemyController ac;
+    public EnemyController.OnTask OnAttackFinished;
+    protected DragaliaEnemyBehavior _behavior;
+    public Coroutine currentAttackMove;//只有行为树在用
     public Tweener _tweener;
+    protected UI_BattleInfoCaster bossBanner;
 
+    [Header("Moves")]
     [SerializeField] protected GameObject projectile1;
     [SerializeField] protected GameObject projectile2;
     [SerializeField] protected GameObject projectile3;
@@ -26,19 +30,18 @@ public abstract class EnemyMoveManager : MonoBehaviour
     [SerializeField] protected GameObject projectile8;
     [SerializeField] protected GameObject projectile9;
     [SerializeField] protected GameObject projectile10;
-    [SerializeField] protected GameObject projectile11;
-    [SerializeField] protected GameObject projectile12;
-    [SerializeField] protected GameObject projectile13;
-    [SerializeField] protected GameObject projectile14;
-    [SerializeField] protected GameObject projectile15;
-    [SerializeField] protected GameObject projectile16;
-    [SerializeField] protected GameObject projectile17;
-    [SerializeField] protected GameObject projectile18;
-    [SerializeField] protected GameObject projectile19;
-    [SerializeField] protected GameObject projectile20;
+
+    [SerializeField] protected GameObject[] projectilePoolEX;
+
+    protected StatusManager _statusManager;
 
     public abstract void UseMove(int moveID);
-    
+
+
+    protected virtual void Awake()
+    {
+        bossBanner = GameObject.Find("BattleInfoCaster").GetComponent<UI_BattleInfoCaster>();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +53,20 @@ public abstract class EnemyMoveManager : MonoBehaviour
     void Update()
     {
         
+    }
+    
+    public void SetGroundCollider(bool flag)
+    {
+        if (flag)
+        {
+            var sensor = transform.Find("GroundSensor").GetComponent<BoxCollider2D>();
+            sensor.enabled = true;
+        }
+        else
+        {
+            var sensor = transform.Find("GroundSensor").GetComponent<BoxCollider2D>();
+            sensor.enabled = false;
+        }
     }
 
     

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CustomRangedFromPlayer : AttackFromPlayer
 {
+    
     // Start is called before the first frame update
     protected override void Awake()
     {

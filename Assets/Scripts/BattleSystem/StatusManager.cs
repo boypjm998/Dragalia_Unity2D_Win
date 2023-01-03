@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class StatusManager : MonoBehaviour
 {
+    public string displayedName;
+    
     //Base properties
     public int maxBaseHP;
     public int baseDef;
@@ -16,16 +18,22 @@ public class StatusManager : MonoBehaviour
 
     public int knockbackRes = 0;
     
+    
+    
 
-    private BattleStageManager _battleStageManager;
-    private BattleEffectManager _battleEffectManager;
+    protected BattleStageManager _battleStageManager;
+    protected BattleEffectManager _battleEffectManager;
 
 
     public Coroutine healRoutine = null;
+    public Dictionary<int, Coroutine> dotRoutineDict;
 
     public delegate void TestDelegate(BattleCondition condition);
-
     public TestDelegate OnBuffEventDelegate;
+    public TestDelegate OnBuffDispelledEventDelegate;
+    
+    [SerializeField]
+    protected UI_ConditionBar _conditionBar;
 
     #region Buff Getter
 
@@ -103,7 +111,6 @@ public class StatusManager : MonoBehaviour
 
     //Defensive Buff
     
-    [SerializeField] protected int defenseDebuff = 0;
     [SerializeField] protected int damageCut = 0;
     [SerializeField] protected int damageCutConst = 0;
     protected int lifeShield;
@@ -120,6 +127,7 @@ public class StatusManager : MonoBehaviour
     protected virtual void Awake()
     {
         conditionList = new List<BattleCondition>();
+        dotRoutineDict = new Dictionary<int, Coroutine>();
     }
 
 
@@ -128,6 +136,8 @@ public class StatusManager : MonoBehaviour
     {
         _battleStageManager = FindObjectOfType<BattleStageManager>();
         _battleEffectManager = FindObjectOfType<BattleEffectManager>();
+        maxHP = maxBaseHP;
+        currentHp = maxBaseHP;
     }
 
     // Update is called once per frame
@@ -384,9 +394,43 @@ public class StatusManager : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// 获取目标减伤百分比(减伤BUFF-破甲BUFF)
+    /// </summary>
+    /// <returns></returns>
     public float GetDamageCut()
     {
-        return damageCut > 100 ? 1 : (0.01f * (float)damageCut);
+        float totalbuff = 0;
+        //返回一个float.
+        foreach (var condition in conditionList)
+        {
+            if (condition.buffID == 10)
+            {
+                totalbuff += condition.effect;
+            }
+            else if (condition.buffID == 210)
+            {
+                totalbuff -= condition.effect;
+            }
+            else
+            {
+                totalbuff += GetSpecialDamageCut(condition.buffID);
+            }
+        }
+
+        if (totalbuff > 100)
+        {
+            return 1;
+        }
+        else if (totalbuff < -50)
+        {
+            return -0.5f;
+        }
+        else
+        {
+            return 0.01f * (float)totalbuff;
+        }
+        //return damageCut > 100 ? 1 : (0.01f * (float)damageCut);
     }
 
     public float GetDamageCutConst()
@@ -438,12 +482,12 @@ public class StatusManager : MonoBehaviour
 
     public static bool IsDotAffliction(int buffID)
     {
-        if (buffID > 300 && buffID < 310 && buffID != 303)
+        if (buffID > 400 && buffID < 410)
             return true;
         return false;
     }
 
-    //Get a new Timerbuff
+    ///Get a new Timerbuff
     public virtual void ObtainTimerBuff(int buffID, float effect, float duration,
         BattleCondition.buffEffectDisplayType type, int maxStack)
     {
@@ -452,12 +496,27 @@ public class StatusManager : MonoBehaviour
         
         if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
         {
-            StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+            if (dotRoutineDict.ContainsKey(buffID))
+            {
+                Coroutine oldRoutine;
+                dotRoutineDict.Remove(buffID,out oldRoutine);
+                StopCoroutine(oldRoutine);
+            }
+            var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+            dotRoutineDict.Add(buffID,newRoutine);
+        }
+        else
+        {
+            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
         }
 
         conditionList.Add(buff);
         
+        _conditionBar?.OnConditionAdd(buff);
+        
         OnBuffEventDelegate?.Invoke(buff);
+        
+        
 
         
     }
@@ -468,26 +527,48 @@ public class StatusManager : MonoBehaviour
         
 
         var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
+        
+        RemoveBuffIfReachedLimit(buffID, maxStack);
 
         conditionList.Add(buff);
         
         OnBuffEventDelegate?.Invoke(buff);
         
-        
-        RemoveBuffIfReachedLimit(buffID, maxStack);
+        _conditionBar?.OnConditionAdd(buff);
+
     }
 
     public virtual void ObtainTimerBuff(int buffID,float effect, float duration, BattleCondition.buffEffectDisplayType type)
     {
-        
 
         var buff = new TimerBuff(buffID, effect, duration, type, BasicCalculation.MAXCONDITIONSTACKNUMBER);
 
+        RemoveBuffIfReachedLimit(buffID);
+        
+        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+        {
+            if (dotRoutineDict.ContainsKey(buffID))
+            {
+                Coroutine oldRoutine;
+                dotRoutineDict.Remove(buffID,out oldRoutine);
+                StopCoroutine(oldRoutine);
+            }
+            var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+            dotRoutineDict.Add(buffID,newRoutine);
+        }
+        else
+        {
+            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+        }
+        
         conditionList.Add(buff);
+
+        _conditionBar?.OnConditionAdd(buff);
         
         OnBuffEventDelegate?.Invoke(buff);
         
-        RemoveBuffIfReachedLimit(buffID);
+        
+ 
     }
     
     /// <summary>
@@ -499,14 +580,22 @@ public class StatusManager : MonoBehaviour
         
 
         var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
+        
+        _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
 
         for (int i = 0; i < stackNum; i++)
         {
             conditionList.Add(buff);
         }
-        OnBuffEventDelegate?.Invoke(buff);
+        
         RemoveBuffIfReachedLimit(buffID, maxStack);
         
+        OnBuffEventDelegate?.Invoke(buff);
+        
+        _conditionBar?.OnConditionAdd(buff);
+        
+        
+  
     }
 
     // Get a new Unstackable Timerbuff
@@ -514,14 +603,53 @@ public class StatusManager : MonoBehaviour
         BattleCondition.buffEffectDisplayType type, int spID)
     {
         OverrideUnstackableBuff(buffID, spID);
+        
         var buff = new TimerBuff(buffID, effect, duration, type, 1);
+        
+        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+        {
+            if (dotRoutineDict.ContainsKey(buffID))
+            {
+                Coroutine oldRoutine;
+                dotRoutineDict.Remove(buffID,out oldRoutine);
+                StopCoroutine(oldRoutine);
+            }
+            var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+            dotRoutineDict.Add(buffID,newRoutine);
+        }
+        else
+        {
+            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+        }
+
         buff.SetUniqueBuffInfo(spID);
+        
         conditionList.Add(buff);
+        
+        _conditionBar?.OnConditionAdd(buff);
+        
+        OnBuffEventDelegate?.Invoke(buff);
+    }
+
+    public virtual void DispellTimerBuff()
+    {
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (conditionList[i].dispellable && conditionList[i].buffID <= 100)
+            {
+                OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
+                RemoveCondition(conditionList[i]);
+                //驱散特效
+                _battleEffectManager.SpawnEffect(gameObject,BasicCalculation.BattleCondition.Dispell);
+                return;
+            }
+        }
     }
 
     public virtual void RemoveCondition(BattleCondition buff)
     {
         conditionList.Remove(buff);
+        _conditionBar?.OnConditionRemove(buff.buffID);
     }
 
     /// <summary>
@@ -712,8 +840,10 @@ public class StatusManager : MonoBehaviour
         _battleStageManager.TargetHeal(gameObject,potency, potency2);
         
         //回血,还没实现回血的公式.
-        var fx = GetComponent<AttackManager>().healbuff;
-        Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
+        _battleEffectManager.SpawnHealEffect(gameObject);
+        
+        //var fx = GetComponent<AttackManager>().healbuff;
+        //Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
     }
 
     /// <summary>
@@ -722,8 +852,10 @@ public class StatusManager : MonoBehaviour
     public void HPRegenImmediately(float potency,float potency2)
     {
         _battleStageManager.TargetHeal(gameObject,potency, potency2);
-        var fx = GetComponent<AttackManager>().healbuff;
-        Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
+        //_battleEffectManager.SpawnHealEffect(gameObject);
+        
+        //var fx = GetComponent<AttackManager>().healbuff;
+        //Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
     }
 
     /// <summary>
@@ -732,7 +864,7 @@ public class StatusManager : MonoBehaviour
     public IEnumerator DotTick(BasicCalculation.BattleCondition condition)
     {
         float tickInterval = 3.9f;
-        if ((int)condition > 300 && (int)condition < 305 && condition!=BasicCalculation.BattleCondition.Frostbite)
+        if ((int)condition > 400 && (int)condition < 405 && condition!=BasicCalculation.BattleCondition.Frostbite)
         {
             tickInterval = 2.9f;
         }
@@ -746,20 +878,31 @@ public class StatusManager : MonoBehaviour
         
     }
 
-    protected void DotDamage(BasicCalculation.BattleCondition condition)
+    protected virtual void DotDamage(BasicCalculation.BattleCondition condition)
     {
         float modifier = GetConditionTotalValue((int)condition);
 
         _battleStageManager.TargetDot(gameObject, condition);
         
-        switch (condition)
-        {
-            case BasicCalculation.BattleCondition.Flashburn:
-                _battleEffectManager.SpawnEffect(gameObject,condition);
-                break;
-            default:
-                break;
-        }
+        _battleEffectManager.SpawnEffect(gameObject,condition);
+        
+        //switch (condition)
+        //{
+        //    case BasicCalculation.BattleCondition.Burn:
+        //        _battleEffectManager.SpawnEffect(gameObject,condition);
+        //        break;
+        //    case BasicCalculation.BattleCondition.Scorchrend:
+        //    case BasicCalculation.BattleCondition.Flashburn:
+        //        _battleEffectManager.SpawnEffect(gameObject,condition);
+        //        break;
+        //    default:
+        //        break;
+        //}
+    }
+
+    public void SetConditionBar(UI_ConditionBar bar)
+    {
+        _conditionBar = bar;
     }
 
 

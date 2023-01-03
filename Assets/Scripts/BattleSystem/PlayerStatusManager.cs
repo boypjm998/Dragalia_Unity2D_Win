@@ -22,7 +22,7 @@ public class PlayerStatusManager : StatusManager
     
     public float attackspeed = 1.0f;
     public float movespeed = 6.0f;
-    public float jumpforce = 18.0f;
+    public float jumpforce = 20.0f;
     public float rollspeed = 9.0f;
     public float comboConnectMaxInterval = 3.0f;
 
@@ -46,8 +46,8 @@ public class PlayerStatusManager : StatusManager
 
     [HideInInspector] public ComboIndicatorUI _comboIndicator;
 
-    [SerializeField]
-    private UI_ConditionBar _conditionBar;
+    //[SerializeField]
+    //private UI_ConditionBar _conditionBar;
 
 
     protected override void Awake()
@@ -155,17 +155,36 @@ public class PlayerStatusManager : StatusManager
 
     public override void ObtainTimerBuff(int buffID, float effect, float duration, BattleCondition.buffEffectDisplayType type, int maxStack)
         {
-            
-            
+            RemoveBuffIfReachedLimit(buffID, maxStack);
             var buff = new TimerBuff(buffID, effect, duration, type, maxStack);
-            
+        
+            if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+            {
+                if (dotRoutineDict.ContainsKey(buffID))
+                {
+                    Coroutine oldRoutine;
+                    dotRoutineDict.Remove(buffID,out oldRoutine);
+                    StopCoroutine(oldRoutine);
+                }
+                var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+                dotRoutineDict.Add(buffID,newRoutine);
+            }
+
             conditionList.Add(buff);
             
-            RemoveBuffIfReachedLimit(buffID);
-            
             _conditionBar.OnConditionAdd(buff);
-
+        
             OnBuffEventDelegate?.Invoke(buff);
+            
+            
+            //var buff = new TimerBuff(buffID, effect, duration, type, maxStack);
+            //
+            //conditionList.Add(buff);
+            //
+            //RemoveBuffIfReachedLimit(buffID);
+            //
+            //_conditionBar.OnConditionAdd(buff);
+            //OnBuffEventDelegate?.Invoke(buff);
             //BuffEvent buffOnEvent;
             
         }
@@ -176,10 +195,10 @@ public class PlayerStatusManager : StatusManager
     
             var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
             
-            conditionList.Add(buff);
-            
             RemoveBuffIfReachedLimit(buffID,maxStack);
             
+            conditionList.Add(buff);
+ 
             _conditionBar.OnConditionAdd(buff);
 
             OnBuffEventDelegate?.Invoke(buff);
@@ -188,17 +207,17 @@ public class PlayerStatusManager : StatusManager
         
         public override void ObtainTimerBuff(int buffID,float effect, float duration, BattleCondition.buffEffectDisplayType type)
         {
-            
+            base.ObtainTimerBuff(buffID, effect, duration, type);
     
-            var buff = new TimerBuff(buffID, effect, duration, type, BasicCalculation.MAXCONDITIONSTACKNUMBER);
-            
-            conditionList.Add(buff);
-            
-            RemoveBuffIfReachedLimit(buffID);
-            
-            _conditionBar.OnConditionAdd(buff);
-            
-            OnBuffEventDelegate?.Invoke(buff);
+            //var buff = new TimerBuff(buffID, effect, duration, type, BasicCalculation.MAXCONDITIONSTACKNUMBER);
+            //
+            //conditionList.Add(buff);
+            //
+            //RemoveBuffIfReachedLimit(buffID);
+            //
+            //_conditionBar.OnConditionAdd(buff);
+            //
+            //OnBuffEventDelegate?.Invoke(buff);
             
         }
         /// <summary>
@@ -209,6 +228,8 @@ public class PlayerStatusManager : StatusManager
             
     
             var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
+            
+            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
 
             for (int i = 0; i < stackNum; i++)
             {
@@ -222,16 +243,36 @@ public class PlayerStatusManager : StatusManager
             OnBuffEventDelegate?.Invoke(buff);
         }
         
-        /// <summary>
-        ///   <para>目标获得不可叠加的BUFF</para>
-        /// </summary>
-        public override void ObtainUnstackableTimerBuff(int buffID,float effect, float duration,
+        public override void ObtainUnstackableTimerBuff(int buffID, float effect, float duration,
             BattleCondition.buffEffectDisplayType type, int spID)
         {
-            OverrideUnstackableBuff(buffID,spID);
+            OverrideUnstackableBuff(buffID, spID);
+        
             var buff = new TimerBuff(buffID, effect, duration, type, 1);
+            
+            if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+            {
+                if (dotRoutineDict.ContainsKey(buffID))
+                {
+                    Coroutine oldRoutine;
+                    dotRoutineDict.Remove(buffID,out oldRoutine);
+                    StopCoroutine(oldRoutine);
+                }
+                var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
+                dotRoutineDict.Add(buffID,newRoutine);
+            }
+            else
+            {
+                _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+            }
+        
             buff.SetUniqueBuffInfo(spID);
+        
             conditionList.Add(buff);
+            
+            _conditionBar.OnConditionAdd(buff);
+        
+            OnBuffEventDelegate?.Invoke(buff);
         }
         
         /// <summary>

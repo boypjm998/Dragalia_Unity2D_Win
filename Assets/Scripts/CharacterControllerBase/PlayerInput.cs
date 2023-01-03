@@ -84,7 +84,10 @@ public class PlayerInput : MonoBehaviour
         {
             skill[i] = false;
         }
+        
     }
+    
+    
     
 
     // Update is called once per frame
@@ -101,6 +104,8 @@ public class PlayerInput : MonoBehaviour
         buttonSkill2.Tick(Input.GetKey(keySkill2));
         buttonSkill3.Tick(Input.GetKey(keySkill3));
         buttonSkill4.Tick(Input.GetKey(keySkill4));
+        
+        
 
         //print(buttonDown.IsPressing && buttonDown.isExtending);
 

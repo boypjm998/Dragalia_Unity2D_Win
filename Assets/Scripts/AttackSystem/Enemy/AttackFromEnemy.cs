@@ -3,25 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackFromEnemy : MonoBehaviour
+public class AttackFromEnemy : AttackBase
 {
     protected BattleStageManager battleStageManager;
     
+    public GameObject enemySource;
+    
     [Header("Damage Basic Attributes")]
-    public float knockbackPower;
+    public float knockbackPower = 100;
     public float knockbackForce;
     public float knockbackTime;
     public Vector2 knockbackDirection = Vector2.right;
     public BasicCalculation.KnockBackType KBType;
     
-    [SerializeField]protected float[] dmgModifier;
+    //[SerializeField]protected float[] dmgModifier;
     [HideInInspector] public int firedir;
-    [SerializeField] protected bool isMeele;
+    [SerializeField] public bool isMeele;
     
-    [SerializeField] protected List<float> nextDmgModifier;
-    [SerializeField] protected List<float> nextKnockbackPower;
-    [SerializeField] protected List<float> nextKnockbackForce;
-    [SerializeField] protected List<float> nextKnockbackTime;
+    //[SerializeField] protected List<float> nextDmgModifier;
+    //[SerializeField] protected List<float> nextKnockbackPower;
+    //[SerializeField] protected List<float> nextKnockbackForce;
+    //[SerializeField] protected List<float> nextKnockbackTime;
     
     public List<BattleCondition> withConditions { get; protected set; }
     public List<int> withConditionChance;
@@ -36,9 +38,9 @@ public class AttackFromEnemy : MonoBehaviour
     
     static int DEFAULT_GRAVITY = 4;
     public Coroutine ConnectCoroutine;
-
-    public BasicCalculation.AttackType attackType;
-    public float hitShakeIntensity;
+    
+    
+    public float hitShakeIntensity = 3;
 
     public float damageAutoReset = 0; //自动刷新
     
@@ -49,16 +51,16 @@ public class AttackFromEnemy : MonoBehaviour
         Forced = 2
     }
 
-    [SerializeField] protected AvoidableProperty Avoidable;
+    [SerializeField] protected AvoidableProperty Avoidable = AvoidableProperty.Red;
     
     
     // Start is called before the first frame update
     protected virtual void Awake()
     {
-        nextDmgModifier = new List<float>();
-        nextKnockbackForce = new List<float>();
-        nextKnockbackPower = new List<float>();
-        nextKnockbackTime = new List<float>();
+        //nextDmgModifier = new List<float>();
+        //nextKnockbackForce = new List<float>();
+        //nextKnockbackPower = new List<float>();
+        //nextKnockbackTime = new List<float>();
         withConditions = new List<BattleCondition>();
         //withConditionNum = new List<int>();
         hitFlags = SearchPlayerList();
@@ -144,7 +146,7 @@ public class AttackFromEnemy : MonoBehaviour
         
 
         int dmg = battleStageManager.EnemyHit
-            (collision.transform.parent.gameObject,selfpos.gameObject, this);
+            (collision.transform.parent.gameObject,enemySource, this);
 
 
         if (hitConnectEffect != null)
@@ -163,7 +165,7 @@ public class AttackFromEnemy : MonoBehaviour
         
         
         AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
-        container.AttackOneHit();
+        container?.AttackOneHit();
         
     }
 
@@ -229,8 +231,11 @@ public class AttackFromEnemy : MonoBehaviour
         {
             dmgModifier = new float[1];
             dmgModifier[0] = nextDmgModifier[0];
+            //print("下一个攻击");
+            //print(dmgModifier[0]);
             nextDmgModifier.RemoveAt(0);
         }
+        
 
         ResetFlags();
     }

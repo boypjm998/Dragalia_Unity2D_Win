@@ -46,7 +46,7 @@ public class OnGroundSensor : MonoBehaviour
         } else {
             SendMessageUpwards("isNotGround");
         }
-        print("PlayerPos:"+transform.parent.position.y);
+        //print("PlayerPos:"+transform.parent.position.y);
         
     }
 

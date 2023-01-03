@@ -6,18 +6,21 @@ using UnityEngine;
 
 public class ActorController : MonoBehaviour
 {
-    
+    protected AudioManagerPlayer voiceController;
     public PlayerInput pi;
     public PlayerStatusManager stat;
     public float movespeed = 6.0f;
     public float rollspeed = 9.0f;
-    public float jumpforce = 18.0f;
+    public float jumpforce = 20.0f;
     public Animator anim; 
     public Rigidbody2D rigid;
     //private Vector2 movingVec;
     
     public int facedir = 1;
     public bool dodging = false;
+    
+    public delegate void OnHurt();
+    public OnHurt OnAttackInterrupt;
     
     
     public TargetAimer ta;
@@ -74,6 +77,7 @@ public class ActorController : MonoBehaviour
     public void AirDashAtk()
     {
         anim.SetBool("attack", true);
+        voiceController.PlayAttackVoice(0);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
     public virtual void UseSkill(int id)
@@ -447,6 +451,7 @@ public class ActorController : MonoBehaviour
         pi.attackEnabled = false;
         pi.jumpEnabled = false;
         pi.moveEnabled = false;
+        voiceController.PlayDodgeVoice();
 
         dodging = true;
     }
@@ -549,6 +554,8 @@ public class ActorController : MonoBehaviour
 
     protected void OnHurtEnter()
     {
+        OnAttackInterrupt?.Invoke();
+        
         pi.SetInputDisabled("roll");
         pi.SetInputDisabled("jump");
         pi.SetInputDisabled("attack");
@@ -567,6 +574,7 @@ public class ActorController : MonoBehaviour
         {
             meeles.GetChild(i).GetComponent<AttackContainer>().DestroyInvoke();
         }
+        voiceController.PlayHurtVoice(stat);
 
     }
     
@@ -617,7 +625,7 @@ public class ActorController : MonoBehaviour
             StopCoroutine(KnockbackRoutine);
         }
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
-        print("Hurt");
+        //print("Hurt");
         //Unimplemented
 
     }
@@ -628,7 +636,25 @@ public class ActorController : MonoBehaviour
         pi.hurt = true;
         //anim.SetBool("hurt",true);
         SetVelocity(force * kbDir.x,force * kbDir.y);
-        yield return new WaitForSeconds(time);
+        
+        var totalTime = time;
+        while (time > 0)
+        {
+            time -= Time.deltaTime;
+            rigid.drag += Time.deltaTime * 2 / totalTime;
+            if (totalTime - time > 0.3f && rigid.gravityScale < 4)
+            {
+                rigid.gravityScale += (Time.deltaTime * 4);
+                
+            }
+            yield return null;
+            
+        }
+
+        rigid.drag = 0;
+        
+        
+        
         SetVelocity(0,rigid.velocity.y);
         //anim.SetBool("hurt",false);
         pi.hurt = false;
@@ -701,7 +727,10 @@ public class ActorController : MonoBehaviour
         }
     }
 
-    
+    protected virtual void FaceDirectionAutoFix(int moveID)
+    {
+        
+    }
 
 
 
