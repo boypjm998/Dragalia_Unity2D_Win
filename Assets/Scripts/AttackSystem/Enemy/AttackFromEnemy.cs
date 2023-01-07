@@ -57,6 +57,7 @@ public class AttackFromEnemy : AttackBase
     // Start is called before the first frame update
     protected virtual void Awake()
     {
+        _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
         //nextDmgModifier = new List<float>();
         //nextKnockbackForce = new List<float>();
         //nextKnockbackPower = new List<float>();
@@ -66,6 +67,9 @@ public class AttackFromEnemy : AttackBase
         hitFlags = SearchPlayerList();
         withConditionFlags = SearchPlayerList();
         battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
+        
+        if(damageAutoReset>0)
+            InvokeRepeating("NextAttack",damageAutoReset,damageAutoReset);
     }
 
     // Update is called once per frame
@@ -73,6 +77,7 @@ public class AttackFromEnemy : AttackBase
     {
         
     }
+    
 
     protected List<int> SearchPlayerList()
     {
@@ -91,7 +96,6 @@ public class AttackFromEnemy : AttackBase
     protected void ResetFlags()
     {
         hitFlags.Clear();
-
         hitFlags = SearchPlayerList();
     }
     
@@ -153,15 +157,12 @@ public class AttackFromEnemy : AttackBase
         {
             Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
         }
+        
+        _effectManager.PlayHitSoundEffect(transform.position);
+        //print("play");
+        
 
         CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
-
-        //var kbdirtemp = knockbackDirection;
-
-        //kbdirtemp = GetKBDirection(KBType, collision);
-        
-        //collision.gameObject.GetComponentInParent<ActorController>().TakeDamage(knockbackTime,knockbackForce,kbdirtemp);
-        
         
         
         AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
@@ -243,6 +244,7 @@ public class AttackFromEnemy : AttackBase
     protected virtual void OnDestroy()
     {
         GetComponentInParent<AttackContainer>()?.FinishHit();
+        CancelInvoke();
     }
     
     

@@ -10,7 +10,7 @@ public abstract  class AudioManagerGeneral : MonoBehaviour
     protected Coroutine voiceCDRoutine;
     public AudioClip[] myClips;
 
-    public string voiceAssetBundlePath;
+    [HideInInspector] public string voiceAssetBundlePath;
     
     
     

@@ -6,6 +6,7 @@ public class BattleStageManager : MonoBehaviour
 {
     public int chara_id;
     private AssetBundle assetBundle;
+    public string quest_name;
 
     private DamageNumberManager damageNumberManager;
 
@@ -16,6 +17,10 @@ public class BattleStageManager : MonoBehaviour
     public float mapBorderL { get; private set; }
     public float mapBorderR { get; private set; }
     public float mapBorderT { get; private set; }
+    
+    public bool isGameEnded { get; private set; }
+    
+    public bool isGamePaused { get; private set; }
 
     private void Awake()
     {
@@ -68,7 +73,10 @@ public class BattleStageManager : MonoBehaviour
         var bufftxt = 
             Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
 
+        //StartCoroutine(开场buff(player));
     }
+
+    
 
     #endregion
     
@@ -198,10 +206,18 @@ public class BattleStageManager : MonoBehaviour
             {
                 for (var i = 0; i < attackStat.withConditionNum[0]; i++)
                 {
-                    if (!CheckAffliction(attackStat.withConditionChance[i], 0))
+                    var condFlag = CheckAffliction(attackStat.withConditionChance[i],
+                        targetStat.GetAfflictionResistance
+                            ((BasicCalculation.BattleCondition)attackStat.withConditions[i].buffID));
+                    if (condFlag<1)
                     {
-                        continue;//检查异常抗性，这里还没有获取Resistance！！
-                        //之后要Get到抗性。
+                        DamageNumberManager.GenerateResistText(target.transform);
+                        continue;//检查异常抗性，这里还没有获取Resistance！！不一定是异常！
+                    }
+                    if(StatusManager.IsDotAffliction(attackStat.withConditions[i].buffID)
+                            ||StatusManager.IsControlAffliction(attackStat.withConditions[i].buffID))
+                    {
+                        targetStat.IncreaseAfflictionResistance(attackStat.withConditions[i].buffID);
                     }
 
 
@@ -220,7 +236,8 @@ public class BattleStageManager : MonoBehaviour
                             newEffect,
                             attackStat.withConditions[i].duration,
                             attackStat.withConditions[i].DisplayType,
-                            attackStat.withConditions[i].maxStackNum);
+                            attackStat.withConditions[i].maxStackNum,
+                            attackStat.withConditions[i].specialID);
                     }
                     else
                     {
@@ -364,7 +381,7 @@ public class BattleStageManager : MonoBehaviour
 
 
                     var newEffect = attackStat.withConditions[i].effect;
-                    print(newEffect);
+                    //print(newEffect);
                     if (StatusManager.IsDotAffliction(attackStat.withConditions[i].buffID))
                         newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(selfstat) /
                                     BasicCalculation.CalculateDefenseInfo(targetStat);
@@ -376,7 +393,8 @@ public class BattleStageManager : MonoBehaviour
                             newEffect,
                             attackStat.withConditions[i].duration,
                             attackStat.withConditions[i].DisplayType,
-                            attackStat.withConditions[i].maxStackNum);
+                            attackStat.withConditions[i].maxStackNum,
+                            attackStat.withConditions[i].specialID);
                     }
                     else
                     {
@@ -414,21 +432,32 @@ public class BattleStageManager : MonoBehaviour
 
     #endregion
 
-    protected bool CheckAffliction(int chance, int resistance)
+    /// <summary>
+    /// 检查异常上去没
+    /// </summary>
+    /// <param name="chance"></param>
+    /// <param name="resistance"></param>
+    /// <returns>-1:黄字,0:白字</returns>
+    protected int CheckAffliction(int chance, int resistance)
     {
+        print(chance+"chance");
         //检测异常状态是不是上的去
-        if (resistance >= 100)
+        if (resistance >= 100 || chance<=resistance)
         {
-            return false;
+            return -1;
         }
 
-        var rand = Random.Range(0, 100);
+        var p = Random.Range(0, 100);
         {
-            if (rand <= chance)
+            if (p < chance-resistance)
             {
-                return true;
+                return 1;
             }
-            else return false;
+            else
+            {
+                //DamageNumberManager.GenerateResistText();
+                return 0;
+            }
         }
 
 
@@ -441,8 +470,13 @@ public class BattleStageManager : MonoBehaviour
     {
         return null;
     }
-    
-    
+
+    public void SetGamePause(bool flag)
+    {
+        isGamePaused = flag;
+        Time.timeScale = flag ? 0 : 1;
+        
+    }
 
 
 

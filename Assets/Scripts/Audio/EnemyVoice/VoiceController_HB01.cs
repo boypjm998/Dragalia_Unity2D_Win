@@ -13,7 +13,8 @@ public class VoiceController_HB01 : AudioManagerGeneral
         CamineRush,
         FlameRaid,
         BrightCamineRush,
-        SavageFlameRaid
+        SavageFlameRaid,
+        ScarletInferno
     }
     void Start()
     {
@@ -83,6 +84,15 @@ public class VoiceController_HB01 : AudioManagerGeneral
                 case "skill_4":
                     myClips[13] = clip;
                     break;
+                case "skill_5":
+                    myClips[14] = clip;
+                    break;
+                case "skill_6":
+                    //ここで決める！
+                    myClips[15] = clip;
+                    break;
+                
+                
                 case "special_move_1":
                     myClips[20] = clip;
                     break;
@@ -141,6 +151,21 @@ public class VoiceController_HB01 : AudioManagerGeneral
             case myMoveList.FlameRaid:
             {
                 clip = myClips[11];
+                break;
+            }
+            case myMoveList.BrightCamineRush:
+            {
+                clip = myClips[13];
+                break;
+            }
+            case myMoveList.SavageFlameRaid:
+            {
+                clip = myClips[14];
+                break;
+            }
+            case myMoveList.ScarletInferno:
+            {
+                clip = myClips[15];
                 break;
             }
             default: clip = null;

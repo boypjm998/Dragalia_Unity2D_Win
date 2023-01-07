@@ -18,8 +18,10 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
 
     [SerializeField] private RectFillType fillType;
     
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+        
         Fill = transform.Find("Fill").gameObject;
         MaxFill = transform.Find("Back").gameObject;
         fillRenderer = Fill.GetComponent<SpriteRenderer>();
@@ -47,8 +49,9 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
         print("Completed");
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         _tweener.Kill();
     }
 }

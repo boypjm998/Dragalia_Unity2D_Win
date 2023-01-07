@@ -1,12 +1,12 @@
-# DL_BackUp_Win (12/3）
+# DL_BackUp_Win (2023/01/08）
 
 #####
-1. 实现了BOSS的一些攻击。
-2. Bug: 伊莉雅有时候会跳三下。
-3. BUFF图标根据类别排序。
+1. 席菈的试炼测试版基本完成。
+2. 实现了暂停菜单。
+3. 实现了一部分异常状态抗性和敌人受到异常状态后的叠加。
 
 #####
-1. Implementation of some moves of boss.
-2. Bug: Ilia's Jump sometimes triggers 3 times.
-3. Buff icon is sorted by type now.
+1. Sheila's Trail: Demo is finished.
+2. Pause Menu is added.
+3. Implementation of some affliction resistance. Also, enemies will add resistance after taking afflictions.
 

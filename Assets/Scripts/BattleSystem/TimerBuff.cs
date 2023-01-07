@@ -20,6 +20,7 @@ public class TimerBuff : BattleCondition
 
             if (buffID > 100 && buffID <= 200)
                 dispellable = false;
+            
 
         }
         

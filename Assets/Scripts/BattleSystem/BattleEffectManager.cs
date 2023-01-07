@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -7,19 +8,42 @@ using UnityEngine.U2D;
 
 public class BattleEffectManager : MonoBehaviour
 {
+    [Header("AfflictionEffect--异常状态特效")]
     [SerializeField] private Color flashburnColor;
     [SerializeField] private GameObject flashburnFXPrefab;
     [SerializeField] private Color burnColor;
     [SerializeField] private GameObject burnFXPrefab;
+    [SerializeField] private Color schorchrendColor;
+    [SerializeField] private GameObject scorchrendFXPrefab;
 
+    [Header("Basic Effect")]
     [SerializeField] private GameObject healFXPrefab;
-    
     [SerializeField] private GameObject dispellFXPrefab;
     [SerializeField] private GameObject buffFXPrefab;
     [SerializeField] private GameObject debuffFXPrefab;
 
+    [Header("Enemy BattleHint Effect")]
     [SerializeField] private GameObject targetLockPrefab;
     [SerializeField] private GameObject exclamationPrefab;
+    [SerializeField] private GameObject counterIconPrefab;
+    [SerializeField] private AudioClip hitEffectClip;
+    
+    
+    
+    
+    
+    private Camera camera;
+    private AudioSource soundEffectSource;
+    //private GameObject counterIcon;
+
+    
+    
+
+    private void Start()
+    {
+        soundEffectSource = transform.GetChild(0).gameObject.GetComponent<AudioSource>();
+        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+    }
 
 
     public void SpawnHealEffect(GameObject target)
@@ -65,6 +89,13 @@ public class BattleEffectManager : MonoBehaviour
                         StartCoroutine(LightEffectRoutine(light,burnColor,1,0.6f));
                     }
                     SpawnAnimation(target, burnFXPrefab);
+                    break;
+                case BasicCalculation.BattleCondition.Scorchrend:
+                    if (light.intensity == 0)
+                    {
+                        StartCoroutine(LightEffectRoutine(light,schorchrendColor,1,0.6f));
+                    }
+                    SpawnAnimation(target, scorchrendFXPrefab);
                     break;
             }
         }
@@ -124,6 +155,58 @@ public class BattleEffectManager : MonoBehaviour
             Instantiate(exclamationPrefab, position, Quaternion.identity, layer.transform);
         
     }
+
+    public void PlaySoundEffect(AudioClip clip, Vector2 position)
+    {
+        camera = Camera.current;
+        AudioSource.PlayClipAtPoint(clip,new Vector3(position.x,position.y,camera.transform.position.z));
+        
+    }
+    public void PlayHitSoundEffect(Vector2 position)
+    {
+        soundEffectSource.clip = hitEffectClip;
+        if(!soundEffectSource.isPlaying)
+            soundEffectSource.Play();
+        
+    }
+
+    public void DisplayCounterIcon(GameObject target, bool flag)
+    {
+        Transform bufflayer = target.transform.Find("BuffLayer");
+        GameObject icon;
+
+        if (flag)
+        {
+            var iconTransform = bufflayer.Find("CounterIcon");
+            if (iconTransform == null)
+            {
+                icon = Instantiate(counterIconPrefab,
+                        target.transform.position + Vector3.up*2,
+                        Quaternion.identity, bufflayer.transform);
+                icon.name = "CounterIcon";
+            }
+            else
+            {
+                icon = iconTransform.gameObject;
+            }
+            icon.SetActive(true);
+        }
+        else
+        {
+            var iconTransform = bufflayer.Find("CounterIcon");
+            if (iconTransform != null)
+            {
+                iconTransform.gameObject.SetActive(false);
+            }
+        }
+
+
+
+
+
+    }
+    
+    
 
 
 }

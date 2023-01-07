@@ -58,7 +58,7 @@ public class AttackFromPlayer : AttackBase
 
     protected virtual void Awake()
     {
-        //specialEffect = new List<SpecialEffect>();
+        _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
         nextDmgModifier = new List<float>();
         nextKnockbackForce = new List<float>();
         nextKnockbackPower = new List<float>();
@@ -333,6 +333,12 @@ public class AttackFromPlayer : AttackBase
 
         CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
         
+        
+        
+        _effectManager.PlayHitSoundEffect(new Vector2(0,0));
+        //print("PlaySound!");
+
+
 
         var container = gameObject.GetComponentInParent<AttackContainer>();
         container.AttackOneHit();

@@ -36,6 +36,7 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
 
     protected void FinishMove(bool distanceCheck)
     {
+        
         currentMoveAction = null;
         TaskSuccess = distanceCheck;
     }
@@ -43,6 +44,11 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     {
         currentAttackAction = null;
         TaskSuccess = distanceCheck;
+    }
+
+    public string GetCurrentState()
+    {
+        return ("State" + state + " ,Substate" + substate);
     }
 
 

@@ -1,4 +1,4 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +6,11 @@ using UnityEngine;
 
 public class StatusManager : MonoBehaviour
 {
+
     public string displayedName;
     
-    //Base properties
+    [Header("Basic Attributes")]
+    
     public int maxBaseHP;
     public int baseDef;
     public int baseAtk;
@@ -16,21 +18,25 @@ public class StatusManager : MonoBehaviour
     public int maxHP;
     public int currentHp;
 
+    [Space(10)]
+    [Header("Resistances")]
     public int knockbackRes = 0;
-    
-    
-    
+    protected int burnRes = 0;
+    protected int scorchrendRes = 0;
+    [SerializeField]protected int flashburnRes = 0;
+    //public int 
 
     protected BattleStageManager _battleStageManager;
     protected BattleEffectManager _battleEffectManager;
 
-
+    
     public Coroutine healRoutine = null;
     public Dictionary<int, Coroutine> dotRoutineDict;
 
     public delegate void TestDelegate(BattleCondition condition);
     public TestDelegate OnBuffEventDelegate;
     public TestDelegate OnBuffDispelledEventDelegate;
+    public TestDelegate OnBuffRemovedEventDelegate;
     
     [SerializeField]
     protected UI_ConditionBar _conditionBar;
@@ -54,6 +60,7 @@ public class StatusManager : MonoBehaviour
             if (conditionList.Count > 0)
                 return GetDefenseBuff();
             else return 0;
+            
         }
     }
     
@@ -395,6 +402,71 @@ public class StatusManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 访问抗性
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    public int GetAfflictionResistance(BasicCalculation.BattleCondition condition)
+    {
+        if (IsDotAffliction((int)condition) || IsControlAffliction((int)condition))
+        {
+            switch (condition)
+            {
+                case BasicCalculation.BattleCondition.Flashburn:
+                    return flashburnRes;
+                case BasicCalculation.BattleCondition.Burn:
+                    return burnRes;
+                case BasicCalculation.BattleCondition.Scorchrend:
+                    return scorchrendRes;
+                default:
+                    break;
+            }
+        }
+        //Debug.LogWarning("No Such Resistance");
+        return 0;
+        
+
+    }
+
+    public void IncreaseAfflictionResistance(int buffID)
+    {
+        BasicCalculation.BattleCondition condition = (BasicCalculation.BattleCondition)buffID;
+        switch (condition)
+        {
+            default:
+                break;
+            case BasicCalculation.BattleCondition.Scorchrend:
+                scorchrendRes += 5;
+                scorchrendRes = scorchrendRes >= 100 ? 99 : scorchrendRes;
+                break;
+            case BasicCalculation.BattleCondition.Flashburn:
+                flashburnRes += 5;
+                flashburnRes = flashburnRes >= 100 ? 99 : flashburnRes;
+                break;
+            case BasicCalculation.BattleCondition.Burn:
+                burnRes += 5;
+                burnRes = burnRes >= 100 ? 99 : burnRes;
+                break;
+            case BasicCalculation.BattleCondition.Paralysis:
+                break;
+            case BasicCalculation.BattleCondition.Poison:
+                break;
+            case BasicCalculation.BattleCondition.Stormlash:
+                break;
+            case BasicCalculation.BattleCondition.ShadowBlight:
+                break;
+            case BasicCalculation.BattleCondition.Frostbite:
+                break;
+            case BasicCalculation.BattleCondition.Freeze:
+                //freezeRes += 20;
+                break;
+                
+        }
+        
+
+    }
+
+    /// <summary>
     /// 获取目标减伤百分比(减伤BUFF-破甲BUFF)
     /// </summary>
     /// <returns></returns>
@@ -486,13 +558,19 @@ public class StatusManager : MonoBehaviour
             return true;
         return false;
     }
+    public static bool IsControlAffliction(int buffID)
+    {
+        if (buffID > 410 && buffID < 417)
+            return true;
+        return false;
+    }
 
     ///Get a new Timerbuff
     public virtual void ObtainTimerBuff(int buffID, float effect, float duration,
-        BattleCondition.buffEffectDisplayType type, int maxStack)
+        BattleCondition.buffEffectDisplayType type, int maxStack, int spID)
     {
-        RemoveBuffIfReachedLimit(buffID, maxStack);
-        var buff = new TimerBuff(buffID, effect, duration, type, maxStack);
+        RemoveBuffIfReachedLimit(buffID, maxStack,spID);
+        var buff = new TimerBuff(buffID, effect, duration, type, maxStack, spID);
         
         if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
         {
@@ -515,28 +593,8 @@ public class StatusManager : MonoBehaviour
         _conditionBar?.OnConditionAdd(buff);
         
         OnBuffEventDelegate?.Invoke(buff);
-        
-        
-
-        
-    }
-
-    public virtual void ObtainTimerBuff(int buffID, float duration, BattleCondition.buffEffectDisplayType type,
-        int maxStack)
-    {
-        
-
-        var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
-        
-        RemoveBuffIfReachedLimit(buffID, maxStack);
-
-        conditionList.Add(buff);
-        
-        OnBuffEventDelegate?.Invoke(buff);
-        
-        _conditionBar?.OnConditionAdd(buff);
-
-    }
+  }
+    
 
     public virtual void ObtainTimerBuff(int buffID,float effect, float duration, BattleCondition.buffEffectDisplayType type)
     {
@@ -566,20 +624,45 @@ public class StatusManager : MonoBehaviour
         _conditionBar?.OnConditionAdd(buff);
         
         OnBuffEventDelegate?.Invoke(buff);
-        
-        
- 
+
     }
-    
+
+    public void ObtainTimerBuff(BattleCondition condition)
+    {
+        RemoveBuffIfReachedLimit(condition.buffID, condition.maxStackNum,condition.specialID);
+
+        if (IsDotAffliction(condition.buffID) && GetConditionsOfType(condition.buffID).Count==0)
+        {
+            if (dotRoutineDict.ContainsKey(condition.buffID))
+            {
+                Coroutine oldRoutine;
+                dotRoutineDict.Remove(condition.buffID,out oldRoutine);
+                StopCoroutine(oldRoutine);
+            }
+            var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)(condition.buffID)));
+            dotRoutineDict.Add(condition.buffID,newRoutine);
+        }
+        else
+        {
+            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)(condition.buffID));
+        }
+
+        conditionList.Add(condition);
+        
+        _conditionBar?.OnConditionAdd(condition);
+        
+        OnBuffEventDelegate?.Invoke(condition);
+    }
+
     /// <summary>
     ///   <para>给自身附加多层同类BUFF.</para>
     /// </summary>
     public virtual void ObtainTimerBuffs(int buffID, float duration, BattleCondition.buffEffectDisplayType type,
-        int stackNum, int maxStack)
+        int stackNum, int maxStack, int spID)
     {
         
 
-        var buff = new TimerBuff(buffID, 0, duration, type, maxStack);
+        var buff = new TimerBuff(buffID, 0, duration, type, maxStack, spID);
         
         _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
 
@@ -602,7 +685,7 @@ public class StatusManager : MonoBehaviour
     public virtual void ObtainUnstackableTimerBuff(int buffID, float effect, float duration,
         BattleCondition.buffEffectDisplayType type, int spID)
     {
-        OverrideUnstackableBuff(buffID, spID);
+        OverrideUnstackableBuff(buffID, spID, effect,duration);
         
         var buff = new TimerBuff(buffID, effect, duration, type, 1);
         
@@ -637,8 +720,8 @@ public class StatusManager : MonoBehaviour
         {
             if (conditionList[i].dispellable && conditionList[i].buffID <= 100)
             {
-                OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
-                RemoveCondition(conditionList[i]);
+                //OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
+                RemoveConditionWithLog(conditionList[i]);
                 //驱散特效
                 _battleEffectManager.SpawnEffect(gameObject,BasicCalculation.BattleCondition.Dispell);
                 return;
@@ -650,6 +733,12 @@ public class StatusManager : MonoBehaviour
     {
         conditionList.Remove(buff);
         _conditionBar?.OnConditionRemove(buff.buffID);
+    }
+    public virtual void RemoveConditionWithLog(BattleCondition buff)
+    {
+        conditionList.Remove(buff);
+        _conditionBar?.OnConditionRemove(buff.buffID);
+        OnBuffDispelledEventDelegate?.Invoke(buff);
     }
 
     /// <summary>
@@ -795,17 +884,41 @@ public class StatusManager : MonoBehaviour
             }
         }
     }
+    protected virtual void RemoveBuffIfReachedLimit(int buffID, int maxStack, int spID)
+    {
+        int totalBuffNum = GetExactConditionsOfType(buffID,spID).Count;
+        if (totalBuffNum > maxStack)
+        {
+            BattleCondition cond = null;
+            foreach (var condition in conditionList)
+            {
+                if (condition.buffID == buffID)
+                {
+                    cond = condition;
+                    break;
+                }
+            }
 
-    protected virtual void OverrideUnstackableBuff(int buffID, int spID)
+            if (cond != null)
+            {
+                conditionList.Remove(cond);
+            }
+        }
+    }
+
+    protected virtual void OverrideUnstackableBuff(int buffID, int spID, float effect, float duration)
     {
         BattleCondition cond = null;
         foreach (var condition in conditionList)
         {
             if (condition.buffID == buffID)
             {
-                //conditionList.Remove(condition);
-                cond = condition;
-                break;
+                if (condition.effect <= effect || condition.lastTime < duration)
+                {
+                    cond = condition;
+                    break;
+                }
+
             }
         }
 

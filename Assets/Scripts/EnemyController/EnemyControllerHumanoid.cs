@@ -32,6 +32,8 @@ public class EnemyControllerHumanoid : EnemyController
     public float _defaultgravityscale;
     private EnemyGroundSensor _groundSensor;
 
+    private int debugRes;
+
     protected override void Awake()
     {
         base.Awake();
@@ -46,6 +48,7 @@ public class EnemyControllerHumanoid : EnemyController
     {
         base.Start();
         currentKBRes = _statusManager.knockbackRes;
+        debugRes = currentKBRes;
 
         EnemyGroundSensor.IsGround += GroundCheck;
 
@@ -63,9 +66,16 @@ public class EnemyControllerHumanoid : EnemyController
         }
 
         anim.SetFloat("forward", isMove);
-        //print(transform.position.y);
-        
-        
+        if (debugRes != currentKBRes)
+        {
+            
+            if(debugRes > 100 && currentKBRes < 100)
+                print(debugRes+"->"+currentKBRes);
+            debugRes = currentKBRes;
+        }
+
+
+
 
     }
 
@@ -155,7 +165,7 @@ public class EnemyControllerHumanoid : EnemyController
         }
 
         isMove = 0;
-        currentKBRes = _statusManager.knockbackRes;
+        currentKBRes = 999;
         ActionTask = null;
         OnMoveFinished?.Invoke(true);
 
@@ -169,6 +179,7 @@ public class EnemyControllerHumanoid : EnemyController
         TurnMove(target);
         if (CheckTargetDistance(target,arriveDistanceX,arriveDistanceY))
         {
+            SetKBRes(999);
             OnMoveFinished?.Invoke(true);
             yield break;
         }
@@ -216,7 +227,7 @@ public class EnemyControllerHumanoid : EnemyController
                 
                 TurnMove(target);
                 isMove = 0;
-                currentKBRes = _statusManager.knockbackRes;
+                currentKBRes = 999;
                 ActionTask = null; //只有行为树在用这个
                 OnMoveFinished?.Invoke(true);
                 
@@ -225,7 +236,7 @@ public class EnemyControllerHumanoid : EnemyController
             yield return null;
         }
         isMove = 0;
-        currentKBRes = _statusManager.knockbackRes;
+        currentKBRes = 999;
         ActionTask = null; //只有行为树在用这个
         OnMoveFinished?.Invoke(false);
         if (VerticalMoveRoutine != null)
@@ -246,6 +257,7 @@ public class EnemyControllerHumanoid : EnemyController
         TurnMove(target);
         if (CheckTargetDistance(target,arriveDistanceX,arriveDistanceY) && anim.GetBool("isGround"))
         {
+            SetKBRes(999);
             OnMoveFinished?.Invoke(true);
             yield break;
         }
@@ -297,7 +309,7 @@ public class EnemyControllerHumanoid : EnemyController
                 
                 TurnMove(target);
                 isMove = 0;
-                currentKBRes = _statusManager.knockbackRes;
+                currentKBRes = 999;
                 ActionTask = null; //只有行为树在用这个
                 OnMoveFinished?.Invoke(true);
                 
@@ -306,7 +318,7 @@ public class EnemyControllerHumanoid : EnemyController
             yield return null;
         }
         isMove = 0;
-        currentKBRes = _statusManager.knockbackRes;
+        currentKBRes = 999;
         ActionTask = null; //只有行为树在用这个
         OnMoveFinished?.Invoke(false);
         if (VerticalMoveRoutine != null)
@@ -326,6 +338,7 @@ public class EnemyControllerHumanoid : EnemyController
         TurnMove(target);
         if (CheckTargetStandOnSameGround(target) == 0 && Mathf.Abs(GetTargetDistanceX(target)) <= arriveDistanceX)
         {
+            SetKBRes(999);
             OnMoveFinished?.Invoke(true);
             yield break;
         }
@@ -386,7 +399,7 @@ public class EnemyControllerHumanoid : EnemyController
                 
                 TurnMove(target);
                 isMove = 0;
-                currentKBRes = _statusManager.knockbackRes;
+                currentKBRes = 999;
                 
                 OnMoveFinished?.Invoke(true);
                 
@@ -395,7 +408,7 @@ public class EnemyControllerHumanoid : EnemyController
             yield return null;
         }
         isMove = 0;
-        currentKBRes = _statusManager.knockbackRes;
+        currentKBRes = 999;
         ActionTask = null; //只有行为树在用这个
         OnMoveFinished?.Invoke(false);
         if (VerticalMoveRoutine != null)
@@ -465,12 +478,12 @@ public class EnemyControllerHumanoid : EnemyController
             return 0;
         }
         
-        if (Mathf.Abs(target.transform.position.y - transform.position.y) < 0.5f)
+        if (Mathf.Abs(target.transform.position.y - transform.position.y) < 1f)
         {
             return 0;
         }
 
-        if (Mathf.Abs(tarGround.transform.position.y - myGround.transform.position.y) < 0.5f)
+        if (Mathf.Abs(tarGround.transform.position.y - myGround.transform.position.y) < 1f)
         {
             return 0;
         }
@@ -729,19 +742,18 @@ public class EnemyControllerHumanoid : EnemyController
     public override void TakeDamage(float kbpower, float kbtime,float kbForce, Vector2 kbDir)
     {
         Flash();
-        if (currentKBRes - kbpower >= 200)
+        if (currentKBRes - kbpower >= 100)
         {
             return;
         }
 
         var rand = Random.Range(0, 100);
-        if (rand > kbpower-currentKBRes)
+        if (rand >= kbpower-currentKBRes)
         {
             return;
         }
-
         
-        
+        //print(rand+"小于"+(kbpower-currentKBRes));
 
         if (KnockbackRoutine != null)
         {
@@ -751,13 +763,10 @@ public class EnemyControllerHumanoid : EnemyController
         {
             currentKBRes += (int)(kbtime*5)+1;
         }
+        //print(rand+"小于"+(kbpower-currentKBRes));
 
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
-        if (currentKBRes > 99 && currentKBRes < 200)
-        {
-            //StartCoroutine(ResetKBRes(_statusManager));
-        }
-        //Unimplemented
+        
         
     
     }
@@ -784,8 +793,22 @@ public class EnemyControllerHumanoid : EnemyController
 
         if (_behavior.currentAttackAction != null)
         {
+            if (currentKBRes >= 100)
+            {
+                _effectManager.DisplayCounterIcon(gameObject,false);
+                DamageNumberManager.GenerateCounterText(transform);
+            
+                _statusManager.ObtainUnstackableTimerBuff
+                ((int)BasicCalculation.BattleCondition.Vulnerable,
+                    10,10,BattleCondition.buffEffectDisplayType.Value,99);
+                _statusManager.ObtainUnstackableTimerBuff
+                ((int)BasicCalculation.BattleCondition.AtkDebuff,
+                    30,7,BattleCondition.buffEffectDisplayType.Value,99);
+                print(_behavior.GetCurrentState());
+            }
             _behavior.StopCoroutine(_behavior.currentAttackAction);
             _behavior.currentAttackAction = null;
+            currentKBRes = _statusManager.knockbackRes;
         }
 
         rigid.gravityScale = 1;
@@ -814,6 +837,7 @@ public class EnemyControllerHumanoid : EnemyController
             StopCoroutine(VerticalMoveRoutine);
             VerticalMoveRoutine = null;
         }
+        TurnMove(_behavior.targetPlayer);
 
         
 
@@ -830,7 +854,7 @@ public class EnemyControllerHumanoid : EnemyController
         }
         isAction = true;
         currentKBRes = 100;
-        //TurnMove(tar);
+        _effectManager.DisplayCounterIcon(gameObject,true);
     }
     
     public override void OnAttackEnter(int newKnockbackRes)
@@ -844,25 +868,22 @@ public class EnemyControllerHumanoid : EnemyController
         }
         isAction = true;
         currentKBRes = newKnockbackRes;
+        
+        if(newKnockbackRes<200)
+            _effectManager.DisplayCounterIcon(gameObject,true);
     }
     
     public override void OnAttackExit()
     {
+        _effectManager.DisplayCounterIcon(gameObject,false);
         //isMove = 0;
         //moveEnable = false;
         isAction = false;
-        currentKBRes = _statusManager.knockbackRes;
+        //currentKBRes = _statusManager.knockbackRes;
         if (VerticalMoveRoutine != null)
             VerticalMoveRoutine = null;
     }
-
-    protected IEnumerator ResetKBRes(StatusManager statusManager)
-    {
-        yield return new WaitForSeconds(5f);
-        
-        yield return new WaitUntil(() => currentKBRes < 200);
-        currentKBRes = statusManager.knockbackRes;
-    }
+    
 
     public void SetKBRes(int value)
     {

@@ -22,6 +22,7 @@ public class PlayerInput : MonoBehaviour
     public string keySkill2 = "i";
     public string keySkill3 = "o";
     public string keySkill4 = "h";
+    //public string keyMenu = "Escape";
 
     public MyInputMoudle buttonRight = new MyInputMoudle();
     public MyInputMoudle buttonLeft = new MyInputMoudle();
@@ -34,6 +35,8 @@ public class PlayerInput : MonoBehaviour
     public MyInputMoudle buttonSkill2 = new MyInputMoudle();
     public MyInputMoudle buttonSkill3 = new MyInputMoudle();
     public MyInputMoudle buttonSkill4 = new MyInputMoudle();
+    
+    public MyInputMoudle buttonEsc = new MyInputMoudle();
 
 
     [Header("Output Signal")]
@@ -104,6 +107,8 @@ public class PlayerInput : MonoBehaviour
         buttonSkill2.Tick(Input.GetKey(keySkill2));
         buttonSkill3.Tick(Input.GetKey(keySkill3));
         buttonSkill4.Tick(Input.GetKey(keySkill4));
+        
+        buttonEsc.Tick(Input.GetKey(KeyCode.Escape));
         
         
 

@@ -37,6 +37,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
         currentCnt = _statusManager.conditionList.Count;
         _statusManager.OnBuffEventDelegate += Condition2Text; //delegate
         _statusManager.OnBuffDispelledEventDelegate += DispellCondition2Text;
+        //_statusManager.OnBuffRemovedEventDelegate += DispellCondition2Text;
         ConditionStr = new Queue<string>();
         ConditionStrInfo = new Queue<int>();
     }

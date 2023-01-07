@@ -16,11 +16,12 @@ public abstract class AttackBase : MonoBehaviour
     [SerializeField] protected List<float> nextKnockbackForce;
     [SerializeField] protected List<float> nextKnockbackTime;
 
-
+    [SerializeField] protected AudioClip hitSoundEffect;
+    protected BattleEffectManager _effectManager;
     protected void DestroyContainer()
     {
         var container = GetComponentInParent<AttackContainer>();
-        container.DestroyInvoke();
+        Destroy(container.gameObject);
         print("DestroyContainer");
     }
 

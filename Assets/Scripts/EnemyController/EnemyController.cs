@@ -34,6 +34,7 @@ public class EnemyController : MonoBehaviour
     protected SpriteRenderer spriteRenderer;
     [SerializeField]private SpriteRenderer animRenderer;
     protected Material originMaterial;
+    protected GameObject counterUI;
     protected Coroutine hurtEffectCoroutine;
     protected Coroutine KnockbackRoutine;
     public Coroutine VerticalMoveRoutine;
@@ -44,6 +45,7 @@ public class EnemyController : MonoBehaviour
     protected float hurtEffectDuration;
 
     protected StatusManager _statusManager;
+    protected BattleEffectManager _effectManager;
     
     public int currentKBRes;
     
@@ -56,6 +58,8 @@ public class EnemyController : MonoBehaviour
         spriteRenderer = TargetObject.GetComponent<SpriteRenderer>();
         _statusManager = GetComponentInParent<StatusManager>();
         animRenderer = GetComponentInParent<SpriteRenderer>();
+        _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
+        //counterUI = transform.Find("BuffLayer").Find("CounterUI").gameObject;
     }
     protected virtual void Awake()
     {

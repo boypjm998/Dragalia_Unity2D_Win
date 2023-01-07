@@ -13,10 +13,17 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
     [SerializeField] private float lag;
 
     public GameObject target;
+    public bool isRanged = true;
+
+    float currentRotateSpeed;
+    private void Start()
+    {
+        currentRotateSpeed = rotateSpeed;
+    }
 
     private void FixedUpdate()
     {
-        if (transform.rotation.eulerAngles.y == 180)
+        if (transform.rotation.eulerAngles.y == 180 && !isRanged)
         {
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x,
                 transform.rotation.eulerAngles.y + 180, transform.rotation.eulerAngles.z);
@@ -28,14 +35,36 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
         {
             transform.position += moveSpeed * Time.fixedDeltaTime * vector;
             var angle = Vector2.SignedAngle(transform.right, vector);
-            if (angle < 178 && angle>0 && !rotateWithoutCondition)
+            if (angle < 178 && angle>=0 && !rotateWithoutCondition)
             {
-                transform.Rotate(Vector3.forward*-rotateSpeed*Time.fixedDeltaTime);
+                if (angle < 120)
+                {
+                    currentRotateSpeed = 4 * rotateSpeed;
+                }
+                else
+                {
+                    currentRotateSpeed = rotateSpeed;
+                }
+
+                transform.Rotate(Vector3.forward*-currentRotateSpeed*Time.fixedDeltaTime);
                 
-                
-            }else if (angle > -178 && angle<0 && !rotateWithoutCondition)
+
+            }else if (angle > -178 && angle<=0 && !rotateWithoutCondition)
             {
-                transform.Rotate(Vector3.forward*rotateSpeed*Time.fixedDeltaTime);
+                if (angle > -120)
+                {
+                    currentRotateSpeed = 4 * rotateSpeed;
+                }
+                else
+                {
+                    currentRotateSpeed = rotateSpeed;
+                }
+                transform.Rotate(Vector3.forward*currentRotateSpeed*Time.fixedDeltaTime);
+                //currentRotateSpeed += rotateSpeed * 0.1f * Time.fixedDeltaTime;
+            }
+            else
+            {
+                currentRotateSpeed = rotateSpeed;
             }
             //print(transform.right);
             //print(Vector2.SignedAngle(transform.right, vector));

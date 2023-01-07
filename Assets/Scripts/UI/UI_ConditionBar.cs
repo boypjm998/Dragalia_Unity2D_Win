@@ -65,7 +65,7 @@ public class UI_ConditionBar : MonoBehaviour
         {
             InstantiateIcon(buff);
             StartCoroutine(SortBar());
-            print("sort");
+            //print("sort");
         }
         var icon = FindBuffInBar(buff.buffID);
             

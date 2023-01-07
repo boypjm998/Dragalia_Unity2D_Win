@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using TMPro;
 using System.Text;
 
 public class DamageNumberManager : MonoBehaviour
 {
-    public int fontSize = 12;
+    public int fontSize = 10;
     public GameObject normDamageNumPrefab;
     public GameObject critDamageNumPrefab;
     public GameObject critPrefab;
@@ -272,7 +273,7 @@ public class DamageNumberManager : MonoBehaviour
 
         GameObject crit =
             Instantiate(critPrefab,
-            new Vector3(num.transform.position.x, num.transform.position.y - 1.4f, num.transform.position.z),
+            new Vector3(num.transform.position.x, num.transform.position.y - 1.4f*(fontSize/12f), num.transform.position.z),
             Quaternion.identity,
             dmgNumParent);
             TextMeshPro critText = crit.GetComponentInChildren<TextMeshPro>();
@@ -380,6 +381,29 @@ public class DamageNumberManager : MonoBehaviour
                 Quaternion.identity,
                 _parent.transform);
 
+    }
+
+    public static void GenerateCounterText(Transform targetTransform)
+    {
+        var CounterText = Resources.Load<GameObject>("UI/InBattle/General/Counter/CounterText");
+        
+
+        GameObject txt =
+            Instantiate(CounterText,
+                targetTransform.position,
+                Quaternion.identity);
+        
+    }
+    public static void GenerateResistText(Transform targetTransform)
+    {
+        var CounterText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/ResistText");
+        
+
+        GameObject txt =
+            Instantiate(CounterText,
+                targetTransform.position+Vector3.up*3+Random.Range(-.5f,.5f)*new Vector3(1,0),
+                Quaternion.identity);
+        
     }
 
 }

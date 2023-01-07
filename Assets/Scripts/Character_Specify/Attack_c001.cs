@@ -186,7 +186,7 @@ public class Attack_c001 : AttackManager
         _statusManager.ObtainTimerBuffs
         ((int)BasicCalculation.BattleCondition.AlchemicCatridge,
             -1,BattleCondition.buffEffectDisplayType.StackNumber,gauge.GetCatridgeNumber(),
-            3);
+            3,-1);
             //_statusManager.ObtainTimerBuff(1,25,3,BattleCondition.buffEffectDisplayType.Value,100);
             //_statusManager.ObtainTimerBuff(3,30,15,BattleCondition.buffEffectDisplayType.Value,100);
             //_statusManager.ObtainTimerBuff(4,30,-1,BattleCondition.buffEffectDisplayType.Value,100);

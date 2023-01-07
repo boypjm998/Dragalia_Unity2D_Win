@@ -10,7 +10,10 @@ public class AttackContainerEnemy : AttackContainer
     
     void Start()
     {
-        
+        if (attackTotalNum == null)
+        {
+            attackTotalNum = 1;
+        }
     }
 
     // Update is called once per frame

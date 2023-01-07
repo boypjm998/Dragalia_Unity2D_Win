@@ -53,9 +53,7 @@ public class AttackContainer : MonoBehaviour
             return;
 
         GameObject.Find("DamageManager").GetComponent<DamageNumberManager>().SpawnTotalDamage(totalDamage);
-
         
-
     }
 
 
