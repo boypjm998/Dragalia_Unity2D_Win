@@ -52,7 +52,7 @@ public class AttackContainer : MonoBehaviour
         if (totalDamage == 0)
             return;
 
-        GameObject.Find("DamageManager").GetComponent<DamageNumberManager>().SpawnTotalDamage(totalDamage);
+        GameObject.Find("DamageManager").GetComponent<DamageNumberManager>()?.SpawnTotalDamage(totalDamage);
         
     }
 

@@ -48,7 +48,7 @@ public class TargetAimer : MonoBehaviour
         maxCameraMoveSpeed = 6.0f;
         lookAheadDistanceX = 14.0f;
         lookAheadDistanceY = 7.0f;
-        cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 20);
+        //cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 20);
         stopFlagX = true;
         stopFlagY = true;
         aimSizeX = Mathf.Abs(TargetSearchScale.points[0].x);
@@ -64,18 +64,21 @@ public class TargetAimer : MonoBehaviour
         EnemyInRange = new List<GameObject>();
         EnemyWatched = null;
         //cameraMoveRoutine = null;
+        
+        //print(cinemachineVirtualCamera);
+    }
+
+    private IEnumerator Start()
+    {
+        yield return new WaitForSeconds(0.5f);
+        
         mainCamera = GameObject.Find("Main Camera");
         cinemachineVirtualCamera = mainCamera.GetComponentInChildren<CinemachineVirtualCamera>();
         cinemachineCameraOffset = cinemachineVirtualCamera.GetComponent<CinemachineCameraOffset>();
         CameraFollowTarget = transform.parent.gameObject;
+        cinemachineVirtualCamera.transform.position = CameraFollowTarget.transform.position;
         cinemachineVirtualCamera.Follow = CameraFollowTarget.transform;
         InitCameraFollowAttributes();
-        //print(cinemachineVirtualCamera);
-    }
-
-    private void Start()
-    {
-        
         
     }
 
@@ -87,6 +90,8 @@ public class TargetAimer : MonoBehaviour
     // Update is called once per frame
     private void LateUpdate()
     {
+        if(mainCamera==null)
+           return;
         
         if (stopFlagX == false || stopFlagY == false)
         {
@@ -212,6 +217,10 @@ public class TargetAimer : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if(!enabled)
+            return;
+        
+        
         if (collision.CompareTag("Enemy") && collision.GetComponent<Transform>().gameObject != EnemyWatched)
         {
             EnemyInRange.Add(collision.GetComponent<Transform>().gameObject);
@@ -232,6 +241,8 @@ public class TargetAimer : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if(!enabled)
+            return;
         if (!collision.CompareTag("Enemy"))
             return;
         if (EnemyWatched != null )

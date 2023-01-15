@@ -61,6 +61,18 @@ public class PlayerStatusManager : StatusManager
     {
         base.Start();
         
+        //var kaimubuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 200, -1,
+        //    BattleCondition.buffEffectDisplayType.Value, 1, 50);
+        //kaimubuff.dispellable = false;
+        //var kaimubuff2 = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff, 500, -1,
+        //    BattleCondition.buffEffectDisplayType.Value, 1, 50);
+        //kaimubuff2.dispellable = false;
+        //var kaimubuff3 = new TimerBuff((int)BasicCalculation.BattleCondition.SkillDmgBuff, 200, -1,
+        //    BattleCondition.buffEffectDisplayType.Value, 1, 50);
+        //kaimubuff2.dispellable = false;
+        //ObtainTimerBuff(kaimubuff);
+        //ObtainTimerBuff(kaimubuff2);
+        //ObtainTimerBuff(kaimubuff3);
 
 
     }

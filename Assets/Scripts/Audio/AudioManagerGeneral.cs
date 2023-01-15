@@ -11,18 +11,22 @@ public abstract  class AudioManagerGeneral : MonoBehaviour
     public AudioClip[] myClips;
 
     [HideInInspector] public string voiceAssetBundlePath;
+    private GlobalController _globalController;
     
     
     
     protected virtual void LoadMyVoice()
     {
-        AssetBundle assetBundle = AssetBundle.LoadFromFile
-            (Path.Combine(Application.streamingAssetsPath, GetVoicePath(voiceAssetBundlePath)));
+        _globalController = FindObjectOfType<GlobalController>();
+        AssetBundle assetBundle = _globalController.GetBundle(voiceAssetBundlePath);
+        
+        //AssetBundle assetBundle = AssetBundle.LoadFromFile
+        //    (Path.Combine(Application.streamingAssetsPath, GetVoicePath(voiceAssetBundlePath)));
         var voicePack = assetBundle.LoadAllAssets<AudioClip>();
         DistributeMyVoice(voicePack);
     }
 
-    protected virtual string GetVoicePath(string assetBundleName)
+    protected static string GetVoicePath(string assetBundleName)
     {
         StringBuilder sb = new StringBuilder(assetBundleName);
 

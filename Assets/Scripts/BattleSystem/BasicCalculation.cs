@@ -588,7 +588,29 @@ public static class BasicCalculation
         float totalFrame = (anim.GetCurrentAnimatorClipInfo(0)[0].clip.length*anim.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate);
         return (1 - 1 / totalFrame);
     }
-    
-    
+
+    public static string ConvertID(string str, int id)
+    {
+        if (id < 10)
+        {
+            return $"{str}00{id}";
+        }
+
+        if (id < 100)
+        {
+            return $"{str}0{id}";
+        }
+
+        if (id < 1000)
+        {
+            return $"{str}{id}";
+        }
+
+        return "NULL";
+
+
+    }
+
+
 
 }

@@ -87,7 +87,7 @@ public class PlayerInput : MonoBehaviour
         {
             skill[i] = false;
         }
-        
+        //DisableAllInput();
     }
     
     
@@ -107,7 +107,6 @@ public class PlayerInput : MonoBehaviour
         buttonSkill2.Tick(Input.GetKey(keySkill2));
         buttonSkill3.Tick(Input.GetKey(keySkill3));
         buttonSkill4.Tick(Input.GetKey(keySkill4));
-        
         buttonEsc.Tick(Input.GetKey(KeyCode.Escape));
         
         
@@ -467,6 +466,21 @@ public class PlayerInput : MonoBehaviour
         if (flag == 1)
             directionLock = true;
         else directionLock = false;
+    }
+
+    public void DisableAllInput()
+    {
+        inputAttackEnabled = false;
+        inputJumpEnabled = false;
+        inputMoveEnabled = false;
+        inputRollEnabled = false;
+    }
+    public void EnableAllInput()
+    {
+        inputAttackEnabled = true;
+        inputJumpEnabled = true;
+        inputMoveEnabled = true;
+        inputRollEnabled = true;
     }
 
 }

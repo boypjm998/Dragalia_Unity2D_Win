@@ -54,6 +54,11 @@ public class EnemyControllerHumanoid : EnemyController
 
     }
 
+    private void OnDestroy()
+    {
+        EnemyGroundSensor.IsGround -= GroundCheck;
+    }
+
     protected void Update()
     {
         if (hurt)

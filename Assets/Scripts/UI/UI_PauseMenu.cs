@@ -6,15 +6,25 @@ using UnityEngine.UI;
 
 public class UI_PauseMenu : MonoBehaviour
 {
-    private UIManager _uiManager;
+    private BattleSceneUIManager _battleSceneUIManager;
     private void Start()
     {
-        _uiManager = transform.parent.GetComponent<UIManager>();
+        _battleSceneUIManager = transform.parent.GetComponent<BattleSceneUIManager>();
         var str = FindObjectOfType<BattleStageManager>().quest_name;
     }
 
     public void CloseMenu()
     {
-        _uiManager.ResumeGame();
+        _battleSceneUIManager.ResumeGame();
+    }
+
+    public void ReturnToMainMenu()
+    {
+        var buttons = GetComponentsInChildren<Button>();
+        foreach (var button in buttons)
+        {
+            button.interactable = false;
+        }
+        FindObjectOfType<GlobalController>().TestReturnMainMenu();
     }
 }

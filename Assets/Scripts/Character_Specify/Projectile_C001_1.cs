@@ -56,7 +56,7 @@ public class Projectile_C001_1 : ProjectileControllerTest
     
     private void OnTriggerEnter2D(Collider2D col)
     {
-        print("Enter "+col.gameObject.GetInstanceID());
+        //print("Enter "+col.gameObject.GetInstanceID());
 
         
 

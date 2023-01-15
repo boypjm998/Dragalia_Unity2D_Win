@@ -24,8 +24,8 @@ public class BattleStageManager : MonoBehaviour
 
     private void Awake()
     {
-        LoadDependency("ui_general");
-        LoadPlayer(1);
+        //LoadDependency("ui_general");
+        //LoadPlayer(1);
         //FindPlayer();
         LinkBossStatus();
     }
@@ -64,6 +64,8 @@ public class BattleStageManager : MonoBehaviour
         var plrlayer = GameObject.Find("Player");
         var plrclone = Instantiate(plr, new Vector3(4.5f, -6.5f, 0), transform.rotation, plrlayer.transform);
         plrclone.name = "PlayerHandle";
+        
+        
         player = plrclone;
 
 
@@ -76,7 +78,20 @@ public class BattleStageManager : MonoBehaviour
         //StartCoroutine(开场buff(player));
     }
 
-    
+    public void InitPlayer(GameObject plr)
+    {
+        player = plr;
+        
+        player.GetComponent<AttackManager>().RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
+
+        var buffLayer = player.transform.Find("BuffLayer");
+        var bufftxt = 
+            Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
+
+        //StartCoroutine(开场buff(player));
+    }
+
+
 
     #endregion
     

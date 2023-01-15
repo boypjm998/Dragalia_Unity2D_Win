@@ -19,15 +19,15 @@ public class EnemyGroundSensor : MonoBehaviour
 
     private void Awake()
     {
-        rigid = GetComponentInParent<Rigidbody2D>();
-        box = GetComponent<BoxCollider2D>();
+        
         
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        rigid = GetComponentInParent<Rigidbody2D>();
+        box = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame

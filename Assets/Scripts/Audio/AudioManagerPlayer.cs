@@ -27,8 +27,10 @@ public abstract class AudioManagerPlayer : MonoBehaviour
     public AudioClip[] Hurt;
 
     public AudioClip[] Dodge;
-    
-    
+
+    private GlobalController _globalController;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -43,8 +45,10 @@ public abstract class AudioManagerPlayer : MonoBehaviour
 
     protected void LoadMyVoice()
     {
-        AssetBundle assetBundle = AssetBundle.LoadFromFile
-            (Path.Combine(Application.streamingAssetsPath, GetVoicePath()));
+        _globalController = FindObjectOfType<GlobalController>();
+        AssetBundle assetBundle = _globalController.GetBundle(GetVoicePath());
+        //AssetBundle assetBundle = AssetBundle.LoadFromFile
+            //(Path.Combine(Application.streamingAssetsPath, GetVoicePath()));
         var voicePack = assetBundle.LoadAllAssets<AudioClip>();
         DistributeMyVoice(voicePack);
     }
