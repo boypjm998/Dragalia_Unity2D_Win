@@ -13,7 +13,10 @@ public abstract  class AudioManagerGeneral : MonoBehaviour
     [HideInInspector] public string voiceAssetBundlePath;
     private GlobalController _globalController;
     
-    
+    public enum MyMoveList
+    {
+        
+    }
     
     protected virtual void LoadMyVoice()
     {
@@ -36,13 +39,11 @@ public abstract  class AudioManagerGeneral : MonoBehaviour
 
     protected abstract void DistributeMyVoice(AudioClip[] clips);
 
-    public virtual void PlayMyVoice(int moveID)
-    {
-    }
+    
 
-    public virtual void PlayMyVoiceWithDialogBanner(int moveID)
+    public virtual void BroadCastMyVoice(int moveID)
     {
-        PlayMyVoice(moveID);
+        
         
     }
 }

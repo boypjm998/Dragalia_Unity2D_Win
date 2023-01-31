@@ -1,4 +1,7 @@
 
+using System.IO;
+using System.Text;
+using LitJson;
 using UnityEngine;
 
 public static class BasicCalculation
@@ -103,55 +106,67 @@ public static class BasicCalculation
         
     }
 
-    public static string ConditionInfo_zh(BattleCondition cond)
+    public static string ConditionInfo(BattleCondition cond, GlobalController.Language language)
+    {
+        switch (language)
+        {
+            case GlobalController.Language.ZHCN:
+                return ConditionInfo_ZH(cond);
+            case GlobalController.Language.JP:
+                return ConditionInfo_JP(cond);
+            default: return "";
+        }
+    }
+
+    public static string ConditionInfo_JP(BattleCondition cond)
     {
         switch (cond)
         {
             //Basic Conditions
             case BattleCondition.AtkBuff:
-                return ("攻击力提升");
+                return ("攻撃力{0}％アップ");
             case BattleCondition.AtkDebuff:
-                return ("攻击力下降");
+                return ("攻撃力{0}％ダウン");
             case BattleCondition.DefBuff:
-                return ("防御力提升");
+                return ("防御力{0}％アップ");
             case BattleCondition.DefDebuff:
-                return ("防御力下降");
+                return ("防御力{0}％ダウン");
             case BattleCondition.HotRecovery:
-                return ("HP持续回复");
+                return ("HP継続回復");
             case BattleCondition.CritRateBuff:
-                return ("暴击率提升");
+                return ("クリティカル率{0}％アップ");
             case BattleCondition.CritRateDebuff:
-                return ("暴击率下降");
+                return ("クリティカル率{0}％ダウン");
             case BattleCondition.CritDmgBuff:
-                return ("暴击威力提升");
+                return ("クリティカルダメージ{0}％アップ");
             case BattleCondition.CritDmgDebuff:
-                return ("暴击威力下降");
+                return ("クリティカルダメージ{0}％ダウン");
             case BattleCondition.RecoveryBuff:
-                return ("回复效果提升");
+                return ("回復スキル効果{0}％アップ");
             case BattleCondition.RecoveryDebuff:
-                return ("回复效果下降");
+                return ("回復スキル効果{0}％ダウン");
             case BattleCondition.SkillDmgBuff:
-                return ("技能伤害提升");
+                return ("スキルダメージ{0}％アップ");
             case BattleCondition.SkillDmgDebuff:
-                return ("技能伤害下降");
+                return ("スキルダメージ{0}％ダウン");
             case BattleCondition.LifeShield:
                 return ("生命护盾");
             case BattleCondition.DamageCut:
-                return ("伤害减少");
+                return ("受けるダメージ{0}%カット");
             case BattleCondition.DamageCutConst:
-                return ("伤害减少");
+                return ("受けるダメージ{0}ダウン");
             case BattleCondition.Shield:
-                return ("护盾");
+                return ("");
             case BattleCondition.SkillHasteBuff:
-                return ("技能槽获取提升");
+                return ("スキルブースト{0}%アップ");
             case BattleCondition.SkillHasteDebuff:
-                return ("技能槽获取下降");
+                return ("スキルブースト{0}%ダウン");
             case BattleCondition.SPRegen:
-                return ("技能槽持续提升");
+                return ("スキルゲージ継続上昇");
             case BattleCondition.SPDegen:
-                return ("技能槽持续下降");
+                return ("スキルゲージ継続減少");
             case BattleCondition.Vulnerable:
-                return ("所受伤害增加");
+                return ("受けるダメージ{0}%アップ");
             
             case BattleCondition.ScorchrendRes:
                 return ("劫火抗性提升");
@@ -177,6 +192,133 @@ public static class BasicCalculation
                 return ("睡眠抗性提升");
             case BattleCondition.BlindnessRes:
                 return ("黑暗抗性提升");
+
+            //Special buffs:
+            case BattleCondition.AlchemicCatridge:
+                return ("アルケミーカートリッジ装填");
+            case BattleCondition.InfernoMode:
+                return ("");
+            case BattleCondition.HolyFaith:
+                return ("");
+            case BattleCondition.BlazewolfsRush:
+                return ("巫女の気炎");
+
+            //Special debuffs:
+            case BattleCondition.EvilsBane:
+                return ("破邪の巫呪");
+
+            //Afflictions
+            case BattleCondition.Flashburn:
+                return ("閃熱");
+            case BattleCondition.Scorchrend:
+                return ("劫火");
+            case BattleCondition.Burn:
+                return ("火傷");
+            case BattleCondition.Blindness:
+                return ("黑暗");
+            case BattleCondition.ShadowBlight:
+                return ("暗殇");
+            case BattleCondition.Frostbite:
+                return ("冷傷");
+            case BattleCondition.Freeze:
+                return ("冰冻");
+            case BattleCondition.Stun:
+                return ("昏迷");
+            case BattleCondition.Sleep:
+                return ("睡眠");
+            case BattleCondition.Bog:
+                return ("湿身");
+            case BattleCondition.Paralysis:
+                return ("麻痹");
+            case BattleCondition.Poison:
+                return ("中毒");
+            case BattleCondition.Stormlash:
+                return ("裂風");
+            case BattleCondition.Cursed:
+                return ("诅咒");
+
+
+            default:
+            {
+                Debug.LogWarning("Buff text not found");
+                return ("");
+            }
+        }
+    }
+    public static string ConditionInfo_ZH(BattleCondition cond)
+    {
+        switch (cond)
+        {
+            //Basic Conditions
+            case BattleCondition.AtkBuff:
+                return ("攻击力提升{0}%");
+            case BattleCondition.AtkDebuff:
+                return ("攻击力下降{0}%");
+            case BattleCondition.DefBuff:
+                return ("防御力提升{0}%");
+            case BattleCondition.DefDebuff:
+                return ("防御力下降{0}%");
+            case BattleCondition.HotRecovery:
+                return ("HP持续回复");
+            case BattleCondition.CritRateBuff:
+                return ("暴击率提升{0}%");
+            case BattleCondition.CritRateDebuff:
+                return ("暴击率下降{0}%");
+            case BattleCondition.CritDmgBuff:
+                return ("暴击威力提升{0}%");
+            case BattleCondition.CritDmgDebuff:
+                return ("暴击威力下降{0}%");
+            case BattleCondition.RecoveryBuff:
+                return ("回复效果提升{0}%");
+            case BattleCondition.RecoveryDebuff:
+                return ("回复效果下降{0}%");
+            case BattleCondition.SkillDmgBuff:
+                return ("技能伤害提升{0}%");
+            case BattleCondition.SkillDmgDebuff:
+                return ("技能伤害下降{0}%");
+            case BattleCondition.LifeShield:
+                return ("生命护盾");
+            case BattleCondition.DamageCut:
+                return ("伤害减少{0}%");
+            case BattleCondition.DamageCutConst:
+                return ("伤害减少{0}");
+            case BattleCondition.Shield:
+                return ("护盾");
+            case BattleCondition.SkillHasteBuff:
+                return ("技能槽获取提升{0}%");
+            case BattleCondition.SkillHasteDebuff:
+                return ("技能槽获取下降{0}%");
+            case BattleCondition.SPRegen:
+                return ("技能槽持续提升");
+            case BattleCondition.SPDegen:
+                return ("技能槽持续下降");
+            case BattleCondition.Vulnerable:
+                return ("所受伤害增加{0}%");
+            
+            case BattleCondition.ScorchrendRes:
+                return ("劫火抗性提升{0}%");
+            case BattleCondition.FlashburnRes:
+                return ("闪热抗性提升{0}%");
+            case BattleCondition.BurnRes:
+                return ("烧伤抗性提升{0}%");
+            case BattleCondition.ShadowBlightRes:
+                return ("暗殇抗性提升{0}%");
+            case BattleCondition.ParalysisRes:
+                return ("麻痹抗性提升{0}%");
+            case BattleCondition.FrostbiteRes:
+                return ("冻伤抗性提升{0}%");
+            case BattleCondition.StormlashRes:
+                return ("裂风抗性提升{0}%");
+            case BattleCondition.PoisonRes:
+                return ("中毒抗性提升{0}%");
+            case BattleCondition.FreezeRes:
+                return ("冰冻抗性提升{0}%");
+            case BattleCondition.StunRes:
+                return ("昏迷抗性提升{0}%");
+            case BattleCondition.SleepRes:
+                return ("睡眠抗性提升{0}%");
+            case BattleCondition.BlindnessRes:
+                return ("黑暗抗性提升{0}%");
 
             //Special buffs:
             case BattleCondition.AlchemicCatridge:
@@ -246,7 +388,7 @@ public static class BasicCalculation
             case 3:
                 return 200;
             default:
-                return 999;
+                return 500;
         }
     }
 
@@ -439,7 +581,7 @@ public static class BasicCalculation
                 if (attackStat.skill_id == 2 &&
                     targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
                 {
-                    extraCritModifier = 100;
+                    extraCritModifier = 999;
                 }
                 break;
             }
@@ -461,7 +603,7 @@ public static class BasicCalculation
                 if (attackStat.skill_id == 2 &&
                     targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
                 {
-                    extraCritModifier = 100;
+                    extraCritModifier = 999;
                 }
                 break;
             }
@@ -611,6 +753,87 @@ public static class BasicCalculation
 
     }
 
+    /// <summary>
+    /// 输入六位数ID，返回字符串
+    /// </summary>
+    /// <param name="questID"></param>
+    /// <returns></returns>
+    public static string GetQuestNameZH(string questID)
+    {
+        //01 001 3:席菈的试炼 超级
+        var idStr = questID;
+        var sb = new StringBuilder();
+        //Debug.Log(questID);
+
+        switch (idStr[2..4])
+        {
+            case "001":
+                sb.Append("席菈的试炼 ");
+                break;
+                
+            default: break;
+        }
+
+        switch (idStr[5])
+        {
+            case '1':
+                sb.Append("中级");
+                break;
+            case '2':
+                sb.Append("高级");
+                break;
+            case '3':
+                sb.Append("超级");
+                break;
+            case '4':
+                sb.Append("绝级");
+                break;
+        }
+
+        return sb.ToString();
+    }
+    public static string GetQuestNameJP(string questID)
+    {
+        //01 001 3:シーラの試練 超級
+        var idStr = questID;
+        var sb = new StringBuilder();
+
+        switch (idStr[2..4])
+        {
+            case "001":
+                sb.Append("シーラの試練 ");
+                break;
+                
+            default: break;
+        }
+
+        switch (idStr[5])
+        {
+            case '1':
+                sb.Append("中級");
+                break;
+            case '2':
+                sb.Append("高級");
+                break;
+            case '3':
+                sb.Append("超級");
+                break;
+            case '4':
+                sb.Append("絶級");
+                break;
+        }
+
+        return sb.ToString();
+    }
+
+    public static JsonData ReadJsonData(string name)
+    {
+        string path = Application.streamingAssetsPath + "/"+ name;
+        StreamReader sr = new StreamReader(path);
+        var str = sr.ReadToEnd();
+        sr.Close();
+        return JsonMapper.ToObject(str);
+    }
 
 
 }

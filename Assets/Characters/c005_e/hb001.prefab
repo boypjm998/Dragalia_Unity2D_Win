@@ -611,13 +611,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayedName: "\u5E2D\u83C8"
-  maxBaseHP: 450000
+  maxBaseHP: 606400
   baseDef: 10
-  baseAtk: 1000
-  critRate: 0
-  maxHP: 2000000
-  currentHp: 2000000
+  baseAtk: 1200
+  critRate: 12
+  maxHP: 606400
+  currentHp: 606400
   knockbackRes: 0
+  burnRes: 0
+  poisonRes: 0
+  frostbiteRes: 20
+  paralysisRes: 0
+  scorchrendRes: 100
+  stormlashRes: 20
+  flashburnRes: 20
+  shadowblightRes: 20
+  stunRes: 100
+  sleepRes: 100
+  bogRes: 0
+  freezeRes: 0
+  blindnessRes: 0
+  cursedRes: 0
   _conditionBar: {fileID: 0}
   damageCut: 0
   damageCutConst: 0
@@ -655,11 +669,19 @@ MonoBehaviour:
   - {fileID: 5859482246472526077, guid: fff18f49d7c10614c9e74df9d2cddf3a, type: 3}
   - {fileID: 1259093740782740937, guid: 08a4475e3c1ec9146b7a845b36de2025, type: 3}
   - {fileID: 1218359548770224817, guid: 517fa285b4c788942be21755a41b4687, type: 3}
+  - {fileID: 720974525322376829, guid: 2ef96da69970e714c9a3934af0d44278, type: 3}
+  - {fileID: 826821734847981456, guid: c08ce2db66874a84f96fd471ab0535f7, type: 3}
+  - {fileID: 4832052809016439710, guid: fa030c6c3d26cfa44af4c5a7efcbc8e8, type: 3}
+  - {fileID: 2029448735241411035, guid: 60facc198ff5ee84e86fb68be5c80808, type: 3}
+  - {fileID: 5915087622024368002, guid: d354015028041c54ebdec46cffdcccad, type: 3}
   WarningPrefab:
   - {fileID: 3532243577954815203, guid: 78d03766be14f2a429b163f080b96da8, type: 3}
   - {fileID: 4568831194432189347, guid: ba85c34b192a4614c933a9bc720c851f, type: 3}
   - {fileID: 7877905205732929544, guid: 38edbf41783bc4848aaec7272e31d6e0, type: 3}
   - {fileID: 8119857919360295814, guid: 2a0a527d49901d94290b731e54ab4cde, type: 3}
+  - {fileID: 791404679166925572, guid: 74146624e348a86468a6010b6e481135, type: 3}
+  - {fileID: 3277773549315030496, guid: 86e1813c45f446145a798e4f984923f8, type: 3}
+  - {fileID: 7825320999426846779, guid: 4656b343d0bcdf8449a0fdcf7bb7ce89, type: 3}
 --- !u!114 &1783855141365854303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -674,7 +696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAction: 0
   rigid: {fileID: 0}
-  facedir: 1
+  facedir: -1
   hurt: 0
   TargetObject: {fileID: 2269329792474344151}
   animRenderer: {fileID: 0}
@@ -708,7 +730,7 @@ Rigidbody2D:
   m_GravityScale: 4
   m_Material: {fileID: 0}
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &2514417528296589088
@@ -919,11 +941,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69abc0cfe148f99479c20476b36dc094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  awakeTime: 3
+  awakeTime: 2
   state: 0
   substate: 0
   targetPlayer: {fileID: 0}
   isAction: 0
+  playerAlive: 1
 --- !u!1 &7731592384077309065
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,6 +1024,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2926342077925656211, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3167450572429707791, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1011,7 +1038,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3167450572429707791, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3167450572429707791, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
       propertyPath: m_LocalPosition.z

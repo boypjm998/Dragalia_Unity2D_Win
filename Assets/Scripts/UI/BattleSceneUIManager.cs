@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -18,9 +19,12 @@ public class BattleSceneUIManager : MonoBehaviour
         _stageManager = FindObjectOfType<BattleStageManager>();
         MenuButton = transform.Find("MenuButton").gameObject;
     }
+    
 
     private void Start()
     {
+        
+        //yield return GlobalController.currentGameState == GlobalController.GameState.Inbattle;
         // PauseMenu = transform.Find("PauseMenu").gameObject;
         // PauseMenu.SetActive(false);
         // _stageManager = FindObjectOfType<BattleStageManager>();
@@ -30,6 +34,9 @@ public class BattleSceneUIManager : MonoBehaviour
 
     private void Update()
     {
+        if(GlobalController.currentGameState == GlobalController.GameState.WaitForStart)
+            return;
+        
         if (pi.buttonEsc.OnPressed)
         {
             if (_stageManager.isGamePaused)

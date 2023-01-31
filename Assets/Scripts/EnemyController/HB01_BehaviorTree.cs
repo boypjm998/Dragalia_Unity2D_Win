@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -40,6 +41,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     IEnumerator Start()
     {
+        yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
         SearchTarget();
         state = 0;
         substate = 0;
@@ -59,14 +61,13 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         }
     }
 
-    private void Update()
-    {
-        //UpdateAttack();
-    }
+    
 
 
     protected override void UpdateAttack()
     {
+        
+
         CheckPhase();
         ExcutePhase();
     }
@@ -104,6 +105,8 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     private void DoAction(int state, int substate)
     {
+        if (playerAlive == false)
+            return;
         if (state == 0)
         {
             switch (substate)
@@ -133,6 +136,9 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
                     currentAction = StartCoroutine(ACT_FlameRaid(1));
                     break;
                 case 8:
+                    currentAction = StartCoroutine(ACT_SingleDodgeCombo(2));
+                    break;
+                case 9:
                     this.substate = 0;
                     break;
                 
@@ -143,12 +149,15 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
             switch (substate)
             {
                 case 0:
-                    currentAction = StartCoroutine(ACT_FlameRaid(0));
+                    currentAction = StartCoroutine(ACT_SingleDodgeCombo(2));
                     break;
                 case 1:
-                    currentAction = StartCoroutine(ACT_BrightCarmineRush(0,0));
+                    currentAction = StartCoroutine(ACT_FlameRaid(0));
                     break;
                 case 2:
+                    currentAction = StartCoroutine(ACT_BrightCarmineRush(0,0));
+                    break;
+                case 3:
                 {
                     var checkBuff =
                         status.GetConditionsOfType((int)BasicCalculation.BattleCondition.BlazewolfsRush);
@@ -163,7 +172,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
                     }
                     break;
                 }
-                case 3:
+                case 4:
                 {
                     var rand = Random.Range(0, 3);
                     if (rand == 0)
@@ -178,17 +187,17 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
                     }
                     break;
                 }
-                case 4:
+                case 5:
                     currentAction = StartCoroutine(ACT_ComboD(1));
                     break;
                    
-                case 5:
+                case 6:
                     currentAction = StartCoroutine(ACT_CarmineRush(0));
                     break;
-                case 6:
+                case 7:
                     currentAction = StartCoroutine(ACT_SavageFlameRaid(0,0));
                     break;
-                case 7:
+                case 8:
                 {
                     var checkBuff =
                         status.GetConditionsOfType((int)BasicCalculation.BattleCondition.BlazewolfsRush);
@@ -204,19 +213,19 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
                     break;
                 }
-                case 8:
+                case 9:
                     currentAction = StartCoroutine(ACT_ComboA(2));
                     break;
-                case 9:
+                case 10:
                     currentAction = StartCoroutine(ACT_ComboB(1));
                     break;
-                case 10:
+                case 11:
                     currentAction = StartCoroutine(ACT_ComboC(1));
                     break;
-                case 11:
+                case 12:
                     currentAction = StartCoroutine(ACT_ComboD(1));
                     break;
-                case 12:
+                case 13:
                     this.substate = 0;
                     break;
                 
@@ -242,12 +251,15 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
                     currentAction = StartCoroutine(ACT_ComboD(1));
                     break;
                 case 5:
-                    currentAction = StartCoroutine(ACT_CarmineRush(0));
+                    currentAction = StartCoroutine(ACT_BlazingEnhancement(2));
                     break;
                 case 6:
-                    currentAction = StartCoroutine(ACT_SavageFlameRaid(0,0));
+                    currentAction = StartCoroutine(ACT_CarmineRush(0));
                     break;
                 case 7:
+                    currentAction = StartCoroutine(ACT_SavageFlameRaid(0,0));
+                    break;
+                case 8:
                 {
                     var checkBuff =
                         status.GetConditionsOfType((int)BasicCalculation.BattleCondition.BlazewolfsRush);
@@ -263,25 +275,28 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
                     break;
                 }
-                case 8:
+                case 9:
                     currentAction = StartCoroutine(ACT_ComboA(2));
                     break;
-                case 9:
+                case 10:
                     currentAction = StartCoroutine(ACT_ComboB(2));
                     break;
-                case 10:
+                case 11:
                     currentAction = StartCoroutine(ACT_ComboC(2));
                     break;
-                case 11:
+                case 12:
                     currentAction = StartCoroutine(ACT_ComboD(1));
                     break;
-                case 12:
-                    currentAction = StartCoroutine(ACT_FlameRaid(0));
-                    break;
                 case 13:
-                    currentAction = StartCoroutine(ACT_BrightCarmineRush(0,0));
+                    currentAction = StartCoroutine(ACT_BlazingEnhancement(2));
                     break;
                 case 14:
+                    currentAction = StartCoroutine(ACT_FlameRaid(0));
+                    break;
+                case 15:
+                    currentAction = StartCoroutine(ACT_BrightCarmineRush(0,0));
+                    break;
+                case 16:
                 {
                     var checkBuff =
                         status.GetConditionsOfType((int)BasicCalculation.BattleCondition.BlazewolfsRush);
@@ -296,7 +311,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
                     }
                     break;
                 }
-                case 15:
+                case 17:
                     this.substate = 1;
                     break;
                 
@@ -672,6 +687,36 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
             
             currentAttackAction =
                 StartCoroutine(enemyAttackManager.HB01_Action11());
+            
+        }
+        yield return new WaitUntil(() => currentAttackAction == null);
+        enemyController.SetKBRes(status.knockbackRes);
+        //Wait For Attack Interval
+        yield return new WaitForSeconds(interval);
+        substate++;
+        isAction = false;
+        
+    }
+    private IEnumerator ACT_BlazingEnhancement(float interval)
+    {
+        isAction = true;
+        
+        TaskSuccess = true;
+
+        enemyController.SetKBRes(999);
+        TurnAction();
+        yield return null;
+        
+        if (TaskSuccess)
+        {
+            currentAttackAction =
+                StartCoroutine(enemyAttackManager.HB01_Action13());
+        }
+        else
+        {
+            
+            currentAttackAction =
+                StartCoroutine(enemyAttackManager.HB01_Action13());
             
         }
         yield return new WaitUntil(() => currentAttackAction == null);

@@ -63,4 +63,18 @@ public class StageCameraController : MonoBehaviour
             return overallCameraGameObject;
         }
     }
+
+    public static void SwitchMainCameraFollowObject(GameObject target)
+    {
+        var camera = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
+        camera.Follow = target.transform;
+
+    }
+    public static void SetMainCameraSize(int size)
+    {
+        var camera = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
+        camera.m_Lens.OrthographicSize = size;
+
+    }
+
 }

@@ -9,13 +9,16 @@ public class MyInputMoudle
     public bool OnPressed = false;
     public bool OnReleased = false;
     public bool isExtending = false;
+    public bool isDelaying = false;
 
     private bool curState = false;
     private bool lastState = false;
 
     private MyTimer exTimer = new MyTimer();
+    private MyTimer delayTimer = new MyTimer();
 
     private float extendingDuration = 0.2f;
+    public float delayingDuration = 0.6f;
 
     public void Tick(bool input)
     {
@@ -23,8 +26,11 @@ public class MyInputMoudle
         IsPressing = curState;
         OnPressed = false;
         OnReleased = false;
+        isExtending = false;
+        isDelaying = false;
 
         exTimer.Tick();
+        delayTimer.Tick();
 
 
 
@@ -34,6 +40,7 @@ public class MyInputMoudle
             if (curState)
             {
                 OnPressed = true;
+                StartTimer(delayTimer, delayingDuration);
             }
             else {
                 OnReleased = true;
@@ -47,8 +54,10 @@ public class MyInputMoudle
         {
             isExtending = true;
         }
-        else {
-            isExtending = false;
+
+        if (delayTimer.state == MyTimer.STATE.RUN)
+        {
+            isDelaying = true;
         }
 
 

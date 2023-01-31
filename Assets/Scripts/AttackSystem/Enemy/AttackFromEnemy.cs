@@ -147,7 +147,8 @@ public class AttackFromEnemy : AttackBase
         hitFlags.Remove(collision.transform.parent.GetInstanceID());
         withConditionFlags.Remove(collision.transform.parent.GetInstanceID());
         
-        
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
 
         int dmg = battleStageManager.EnemyHit
             (collision.transform.parent.gameObject,enemySource, this);
@@ -239,6 +240,18 @@ public class AttackFromEnemy : AttackBase
         
 
         ResetFlags();
+    }
+    
+    public void ResetWithConditionFlags()
+    {
+        withConditionFlags.Clear();
+
+        var enemyLayer = GameObject.Find("Player");
+        for (var i = 0; i < enemyLayer.transform.childCount; i++)
+            withConditionFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
+
+        var container = GetComponentInParent<AttackContainer>();
+        container.conditionCheckDone.Clear();
     }
 
     protected virtual void OnDestroy()

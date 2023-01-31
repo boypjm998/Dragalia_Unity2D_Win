@@ -183,7 +183,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName_ZH("焰红突袭");
+        bossBanner.PrintSkillName("HB01_Action04");
         
         
         var hint = GenerateWarningPrefab(WarningPrefab[1], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
@@ -357,7 +357,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName_ZH("红焰强袭");
+        bossBanner.PrintSkillName("HB01_Action08");
 
         yield return new WaitForSeconds(1f);
         var hint = GenerateWarningPrefab(WarningPrefab[3], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
@@ -385,7 +385,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName_ZH("闪耀焰红突袭");
+        bossBanner.PrintSkillName("HB01_Action09");
         
         var hint = GenerateWarningPrefab(WarningPrefab[1], transform.position,transform.rotation, RangedAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
@@ -464,7 +464,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName_ZH("炽烈红焰强袭");
+        bossBanner.PrintSkillName("HB01_Action10");
 
         yield return new WaitForSeconds(.5f);
         var hint = GenerateWarningPrefab(WarningPrefab[5], transform.position+Vector3.up,transform.rotation, MeeleAttackFXLayer.transform);
@@ -491,7 +491,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName_ZH("猩红咒焰");
+        bossBanner.PrintSkillName("HB01_Action11");
         StageCameraController.SwitchOverallCamera();
 
         yield return new WaitForSeconds(.5f);
@@ -509,6 +509,33 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return null;
         
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
+        QuitAttack();
+    }
+    
+    /// <summary>
+    /// Blazing Enhancement 闪焰强化
+    /// </summary>
+    public IEnumerator HB01_Action13()
+    {
+        QuitMove();
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter(999);
+        ac.TurnMove(_behavior.targetPlayer);
+        bossBanner.PrintSkillName("HB01_Action13");
+        //StageCameraController.SwitchOverallCamera();
+
+        yield return new WaitForSeconds(1f);
+        anim.Play("buff");
+        float animTime;
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Roll);
+        BlazingEnhancementBuff();
+        
+        
+        
+        yield return null;
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
         QuitAttack();
     }
 
@@ -1106,6 +1133,17 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
+    void BlazingEnhancementBuff()
+    {
+        var buff = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
+            200, 10, BattleCondition.buffEffectDisplayType.Value, 100, 1);
+        var buff_hard = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
+            100, -1, BattleCondition.buffEffectDisplayType.Value, 100, 2);
+        buff_hard.dispellable = false;
+        _statusManager.ObtainTimerBuff(buff);
+        _statusManager.ObtainTimerBuff(buff_hard);
+    }
+
     void StraightDashMove()
     {
         var target = _behavior.targetPlayer;
@@ -1241,6 +1279,16 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         {
             StopCoroutine(ac.VerticalMoveRoutine);
             ac.VerticalMoveRoutine = null;
+        }
+    }
+
+    public override void PlayVoice(int id)
+    {
+        switch (id)
+        {
+            case 0:
+                voice.BroadcastVoice(VoiceController_HB01.myMoveList.Defeat);
+                break;
         }
     }
 

@@ -106,19 +106,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 345be9eb718efa44a9e6a68bee7270e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 0}
-  knockbackPower: 200
-  knockbackForce: 0
-  knockbackTime: 0
-  knockbackDirection: {x: 1, y: 3}
-  KBType: 3
+  chara_id: 0
+  skill_id: 0
+  attackType: 4
   dmgModifier: []
-  spGain: 0
-  isMeele: 0
   nextDmgModifier: []
   nextKnockbackPower: []
   nextKnockbackForce: []
   nextKnockbackTime: []
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
+  knockbackPower: 200
+  knockbackForce: 0
+  knockbackTime: 0
+  knockbackDirection: {x: 1, y: 6}
+  KBType: 3
+  spGain: 0
+  isMeele: 0
   withConditionChance: 
   withConditionNum: 
   withConditionFlags: 
@@ -127,7 +131,6 @@ MonoBehaviour:
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
   defaultGravity: 0
-  attackType: 4
   hitShakeIntensity: 5
 --- !u!1001 &4360189856244068004
 PrefabInstance:

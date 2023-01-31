@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BehaviorDesigner.Runtime.Tasks.Movement;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityParticleSystem;
 using DG.Tweening;
 using UnityEngine;
@@ -42,11 +43,13 @@ public class EnemyControllerHumanoid : EnemyController
         MoveManager = GetComponent<EnemyMoveManager>();
         _groundSensor = GetComponentInChildren<EnemyGroundSensor>();
         _behavior = GetComponent<DragaliaEnemyBehavior>();
+        
     }
 
     protected override void Start()
     {
         base.Start();
+        _statusManager.OnHPBelow0 += OnDeath;
         currentKBRes = _statusManager.knockbackRes;
         debugRes = currentKBRes;
 
@@ -861,7 +864,69 @@ public class EnemyControllerHumanoid : EnemyController
         currentKBRes = 100;
         _effectManager.DisplayCounterIcon(gameObject,true);
     }
-    
+
+    protected override void OnDeath()
+    {
+        base.OnDeath();
+        StartCoroutine(DeathRoutine());
+    }
+
+    IEnumerator DeathRoutine()
+    {
+        GetComponentInChildren<AudioSource>().Stop();
+        transform.Find("MeeleAttackFX").gameObject.SetActive(false);
+        transform.Find("HitSensor").gameObject.SetActive(false);
+        anim.SetBool("defeat",true);
+        MoveManager.PlayVoice(0);//死亡
+        anim.SetBool("hurt",false);
+        OnAttackInterrupt?.Invoke();
+        
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
+        if (MoveManager._tweener!=null)
+        {
+            MoveManager._tweener.Kill();
+        }
+        rigid.gravityScale = 4;
+        SetVelocity(rigid.velocity.x,0);
+        moveEnable = false;
+        //SetVelocity(rigid.velocity.x,0);
+        anim.speed = 1;
+        MoveManager.SetGroundCollider(true);
+        MoveManager.enabled = false;
+        var meeles = transform.Find("MeeleAttackFX");
+        for (int i = 0; i < meeles.childCount; i++)
+        {
+
+            //meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
+            meeles.GetChild(i).GetComponent<EnemyAttackHintBar>()?.DestroySelf();
+        }
+
+        _behavior.enabled = false;
+        _statusManager.enabled = false;
+        _statusManager.StopAllCoroutines();
+        if (hurtEffectCoroutine != null)
+        {
+            StopCoroutine(hurtEffectCoroutine);
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
+            hurtEffectCoroutine = null;
+            
+        }
+
+        //yield return new WaitUntil(()=>!anim.GetCurrentAnimatorStateInfo(0).IsName("hurt"));
+        yield return null;
+        
+        anim.Play("defeat");
+        yield return null;
+        
+        yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f);
+        anim.speed = 0;
+        
+    }
+
     public override void OnAttackEnter(int newKnockbackRes)
     {
         isMove = 0;

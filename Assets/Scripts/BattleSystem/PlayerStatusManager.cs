@@ -25,19 +25,14 @@ public class PlayerStatusManager : StatusManager
     public float jumpforce = 20.0f;
     public float rollspeed = 9.0f;
     public float comboConnectMaxInterval = 3.0f;
+    public int remainReviveTimes = 9;
 
     private Coroutine calroutine; //Calculate Left Combo time
-    //public static event Action OnBuffEvent;
-    //Other Resistance
-    //Player's following properties will be 0 normally.
-    //But Enemies' are Most over 0.
     
     
-
-
-    //Offensive Buff
-    [SerializeField] protected int spGainBuff = 0;
-    [SerializeField] protected int spGainDebuff = 0;
+    
+    
+    
 
 
     public int comboHitCount = 0;
@@ -45,6 +40,7 @@ public class PlayerStatusManager : StatusManager
     private Coroutine comboRoutine = null;
 
     [HideInInspector] public ComboIndicatorUI _comboIndicator;
+    private ActorController ac;
 
     //[SerializeField]
     //private UI_ConditionBar _conditionBar;
@@ -54,25 +50,26 @@ public class PlayerStatusManager : StatusManager
     {
         base.Awake();
         skillRegenByAttack = new bool[4]{ true, true, true, true };
+        ac = GetComponent<ActorController>();
+        //_conditionBar = GameObject.Find("ConditionBar").GetComponent<UI_ConditionBar>();
+    }
+
+    public void GetPlayerConditionBar()
+    {
         _conditionBar = GameObject.Find("ConditionBar").GetComponent<UI_ConditionBar>();
+    }
+
+    public void ClearSP()
+    {
+        for (int i = 0; i < currentSP.Length; i++)
+        {
+            currentSP[i] = 0;
+        }
     }
 
     protected override void Start()
     {
         base.Start();
-        
-        //var kaimubuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 200, -1,
-        //    BattleCondition.buffEffectDisplayType.Value, 1, 50);
-        //kaimubuff.dispellable = false;
-        //var kaimubuff2 = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff, 500, -1,
-        //    BattleCondition.buffEffectDisplayType.Value, 1, 50);
-        //kaimubuff2.dispellable = false;
-        //var kaimubuff3 = new TimerBuff((int)BasicCalculation.BattleCondition.SkillDmgBuff, 200, -1,
-        //    BattleCondition.buffEffectDisplayType.Value, 1, 50);
-        //kaimubuff2.dispellable = false;
-        //ObtainTimerBuff(kaimubuff);
-        //ObtainTimerBuff(kaimubuff2);
-        //ObtainTimerBuff(kaimubuff3);
 
 
     }
@@ -85,7 +82,9 @@ public class PlayerStatusManager : StatusManager
         SpGainInStatus(1, spRegenPerSecond * Time.deltaTime);
         SpGainInStatus(2, spRegenPerSecond * Time.deltaTime);
         SpGainInStatus(3, spRegenPerSecond * Time.deltaTime);
+
         
+
     }
 
     void FixedUpdate()

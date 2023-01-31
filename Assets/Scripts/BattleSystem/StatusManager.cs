@@ -21,9 +21,21 @@ public class StatusManager : MonoBehaviour
     [Space(10)]
     [Header("Resistances")]
     public int knockbackRes = 0;
-    protected int burnRes = 0;
-    protected int scorchrendRes = 0;
+    [SerializeField]protected int burnRes = 0;
+    [SerializeField]protected int poisonRes = 0;
+    [SerializeField]protected int frostbiteRes = 0;
+    [SerializeField]protected int paralysisRes = 0;
+    [SerializeField]protected int scorchrendRes = 0;
+    [SerializeField]protected int stormlashRes = 0;
     [SerializeField]protected int flashburnRes = 0;
+    [SerializeField]protected int shadowblightRes = 0;
+    [SerializeField]protected int stunRes = 0;
+    [SerializeField]protected int sleepRes = 0;
+    [SerializeField]protected int bogRes = 0;
+    [SerializeField]protected int freezeRes = 0;
+    [SerializeField]protected int blindnessRes = 0;
+    [SerializeField]protected int cursedRes = 0;
+    
     //public int 
 
     protected BattleStageManager _battleStageManager;
@@ -36,8 +48,13 @@ public class StatusManager : MonoBehaviour
     public delegate void TestDelegate(BattleCondition condition);
     public TestDelegate OnBuffEventDelegate;
     public TestDelegate OnBuffDispelledEventDelegate;
-    public TestDelegate OnBuffRemovedEventDelegate;
-    
+
+    public delegate void SpecialBuffEventDelegate(string message);
+    public SpecialBuffEventDelegate OnSpecialBuffDelegate;
+
+    public delegate void StatusManagerVoidDelegate();
+    public StatusManagerVoidDelegate OnHPBelow0;
+
     [SerializeField]
     protected UI_ConditionBar _conditionBar;
 
@@ -150,9 +167,18 @@ public class StatusManager : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
+        HPCheck();
         ConditionTick();
         StatusLimitCheck();
         
+    }
+
+    protected virtual void HPCheck()
+    {
+        if (currentHp <= 0)
+        {
+            OnHPBelow0?.Invoke();
+        }
     }
 
     private void StatusLimitCheck()
@@ -413,11 +439,29 @@ public class StatusManager : MonoBehaviour
             switch (condition)
             {
                 case BasicCalculation.BattleCondition.Flashburn:
-                    return flashburnRes;
+                    return flashburnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FlashburnRes);
                 case BasicCalculation.BattleCondition.Burn:
-                    return burnRes;
+                    return burnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnRes);
                 case BasicCalculation.BattleCondition.Scorchrend:
-                    return scorchrendRes;
+                    return scorchrendRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ScorchrendRes);
+                case BasicCalculation.BattleCondition.Poison:
+                    return poisonRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes);
+                case BasicCalculation.BattleCondition.Freeze:
+                    return freezeRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FreezeRes);
+                case BasicCalculation.BattleCondition.Cursed:
+                    return cursedRes;
+                case BasicCalculation.BattleCondition.Paralysis:
+                    return paralysisRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ParalysisRes);
+                case BasicCalculation.BattleCondition.Frostbite:
+                    return frostbiteRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes);
+                case BasicCalculation.BattleCondition.Sleep:
+                    return sleepRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.SleepRes);
+                case BasicCalculation.BattleCondition.Stun:
+                    return stunRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunRes);
+                case BasicCalculation.BattleCondition.Blindness:
+                    return blindnessRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BlindnessRes);
+                case BasicCalculation.BattleCondition.Bog:
+                    return bogRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BogRes);
                 default:
                     break;
             }
@@ -448,19 +492,43 @@ public class StatusManager : MonoBehaviour
                 burnRes = burnRes >= 100 ? 99 : burnRes;
                 break;
             case BasicCalculation.BattleCondition.Paralysis:
+                paralysisRes += 5;
+                paralysisRes = paralysisRes >= 100 ? 99 : paralysisRes;
                 break;
             case BasicCalculation.BattleCondition.Poison:
+                poisonRes += 5;
+                poisonRes = poisonRes >= 100 ? 99 : poisonRes;
                 break;
             case BasicCalculation.BattleCondition.Stormlash:
+                stormlashRes += 5;
+                stormlashRes = stormlashRes >= 100 ? 99 : stormlashRes;
                 break;
             case BasicCalculation.BattleCondition.ShadowBlight:
+                shadowblightRes += 5;
+                shadowblightRes = shadowblightRes >= 100 ? 99 : shadowblightRes;
                 break;
             case BasicCalculation.BattleCondition.Frostbite:
+                frostbiteRes += 5;
+                frostbiteRes = frostbiteRes >= 100 ? 99 : frostbiteRes;
                 break;
             case BasicCalculation.BattleCondition.Freeze:
-                //freezeRes += 20;
+                freezeRes += 20;
                 break;
-                
+            case BasicCalculation.BattleCondition.Blindness:
+                blindnessRes += 20;
+                break;
+            case BasicCalculation.BattleCondition.Bog:
+                bogRes += 20;
+                break;
+            case BasicCalculation.BattleCondition.Stun:
+                stunRes += 20;
+                break;
+            case BasicCalculation.BattleCondition.Sleep:
+                sleepRes += 20;
+                break;
+            case BasicCalculation.BattleCondition.Cursed:
+                cursedRes += 20;
+                break;
         }
         
 
@@ -827,6 +895,29 @@ public class StatusManager : MonoBehaviour
 
     }
 
+    public virtual void ResetAllStatus()
+    {
+        
+        for (int i = conditionList.Count-1; i >= 0; i--)
+        {
+            print(i+"个BUFF");
+            if (conditionList[i].dispellable == false || (conditionList[i].buffID > 100 && conditionList[i].buffID < 200))
+            {
+                continue;
+            }
+            RemoveCondition(conditionList[i]);
+        }
+        OnSpecialBuffDelegate?.Invoke("Reset");
+    }
+    
+    public virtual void ResetAllStatusForced()
+    {
+        for (int i = conditionList.Count-1; i >= 0; i--)
+        {
+            RemoveCondition(conditionList[i]);
+        }
+        //OnSpecialBuffDelegate?.Invoke("Reset");
+    }
 
     //Buff override
     protected virtual void RemoveBuffIfReachedLimit(int buffID)
@@ -950,7 +1041,7 @@ public class StatusManager : MonoBehaviour
         float potency = GetRecoveryPotency();
         float potency2 = GetRecoveryPotencyPercentage();
 
-        _battleStageManager.TargetHeal(gameObject,potency, potency2);
+        _battleStageManager.TargetHeal(gameObject,potency, potency2,true);
         
         //回血,还没实现回血的公式.
         _battleEffectManager.SpawnHealEffect(gameObject);
@@ -964,7 +1055,18 @@ public class StatusManager : MonoBehaviour
     /// </summary>
     public void HPRegenImmediately(float potency,float potency2)
     {
-        _battleStageManager.TargetHeal(gameObject,potency, potency2);
+        _battleStageManager.TargetHeal(gameObject,potency, potency2,true);
+        //_battleEffectManager.SpawnHealEffect(gameObject);
+        
+        //var fx = GetComponent<AttackManager>().healbuff;
+        //Instantiate(fx, transform.position, transform.rotation, GetComponent<AttackManager>().BuffFXLayer.transform);
+    }
+    /// <summary>
+    ///   <para>目标立即回复生命值（float 回复倍率，float 百分比回复倍率）</para>
+    /// </summary>
+    public void HPRegenImmediatelyWithoutRandom(float potency,float potency2)
+    {
+        _battleStageManager.TargetHeal(gameObject,potency, potency2,false);
         //_battleEffectManager.SpawnHealEffect(gameObject);
         
         //var fx = GetComponent<AttackManager>().healbuff;

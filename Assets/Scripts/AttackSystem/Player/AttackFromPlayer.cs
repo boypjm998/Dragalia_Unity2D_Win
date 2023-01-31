@@ -323,6 +323,9 @@ public class AttackFromPlayer : AttackBase
     {
         hitFlags.Remove(target.transform.parent.GetInstanceID());
         withConditionFlags.Remove(target.transform.parent.GetInstanceID());
+        
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
 
         var dmg = battleStageManager.PlayerHit(target.transform.parent.gameObject, this);
 

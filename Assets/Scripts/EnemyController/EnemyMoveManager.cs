@@ -69,5 +69,10 @@ public abstract class EnemyMoveManager : MonoBehaviour
         }
     }
 
+    public virtual void PlayVoice(int id)
+    {
+        
+        
+    }
     
 }

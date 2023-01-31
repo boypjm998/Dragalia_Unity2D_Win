@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using LitJson;
 public class UI_BattleInfoCaster : MonoBehaviour
 {
+    private GlobalController _globalController;
     private GameObject BossSkillBanner;
 
     private TextMeshProUGUI _text;
@@ -20,8 +22,12 @@ public class UI_BattleInfoCaster : MonoBehaviour
     private GameObject DialogDisplayer;
     private Coroutine displayRoutine;
 
+    private JsonData BossSkillNameData;
+    private JsonData BossVoiceTextData;
+
     private void Awake()
     {
+        _globalController = FindObjectOfType<GlobalController>();
         BossSkillBanner = transform.Find("BossSkillBanner").gameObject;
         DialogDisplayer = transform.Find("DialogDisplayer").gameObject;
         _text = BossSkillBanner.GetComponentInChildren<TextMeshProUGUI>();
@@ -35,7 +41,8 @@ public class UI_BattleInfoCaster : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        BossSkillNameData = ReadBattleInfoData("/LevelInformation/BossSkillInfo.json");
+        //gameObject.
     }
 
     // Update is called once per frame
@@ -44,7 +51,37 @@ public class UI_BattleInfoCaster : MonoBehaviour
         
     }
 
-    public void PrintSkillName_ZH(string str)
+    public void PrintSkillName(string actionName)
+    {
+        string txt;
+        switch (_globalController.GameLanguage)
+        {
+            case GlobalController.Language.JP:
+            {
+                txt = BossSkillNameData[actionName]["JP"].ToString();
+                PrintSkillName_ZH(txt);
+                break;
+            }
+            case GlobalController.Language.ZHCN:
+            {
+                txt = BossSkillNameData[actionName]["ZHCN"].ToString();
+                PrintSkillName_ZH(txt);
+                break;
+            }
+            case GlobalController.Language.EN:
+            {
+                txt = BossSkillNameData[actionName]["EN"].ToString();
+                PrintSkillName_ZH(txt);
+                break;
+            }
+                
+
+        }
+
+        
+    }
+
+    private void PrintSkillName_ZH(string str)
     {
         
 
@@ -100,6 +137,14 @@ public class UI_BattleInfoCaster : MonoBehaviour
     void TweenFinished()
     {
         //finishedTween++;
+    }
+    
+    JsonData ReadBattleInfoData(string name)
+    {
+        string path = Application.streamingAssetsPath + "/"+ name;
+        StreamReader sr = new StreamReader(path);
+        var str = sr.ReadToEnd();
+        return JsonMapper.ToObject(str);
     }
 
 }

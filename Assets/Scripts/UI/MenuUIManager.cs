@@ -29,7 +29,7 @@ public class MenuUIManager : MonoBehaviour
         
     }
 
-    private void InitAllChildrenElements()
+    public void InitAllChildrenElements()
     {
         UIDict = new Dictionary<string, UISortingGroup>();
         var uiSortingGroups = FindObjectsOfType<UISortingGroup>();

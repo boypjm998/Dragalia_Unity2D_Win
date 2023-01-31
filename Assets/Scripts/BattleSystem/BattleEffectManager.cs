@@ -26,7 +26,11 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject targetLockPrefab;
     [SerializeField] private GameObject exclamationPrefab;
     [SerializeField] private GameObject counterIconPrefab;
+    
+    
+    [Header("Sound Effects")]
     [SerializeField] private AudioClip hitEffectClip;
+    [SerializeField] private AudioClip reviveSEClip;
     
     
     
@@ -167,6 +171,19 @@ public class BattleEffectManager : MonoBehaviour
         soundEffectSource.clip = hitEffectClip;
         if(!soundEffectSource.isPlaying)
             soundEffectSource.Play();
+        
+    }
+    
+    public void PlayReviveSoundEffect()
+    {
+        //camera = Camera.main;
+        soundEffectSource.PlayOneShot(reviveSEClip);
+        //AudioSource.PlayClipAtPoint(reviveSEClip, camera.transform.position);
+
+    }
+
+    public void PlayHealSoundEffect()
+    {
         
     }
 

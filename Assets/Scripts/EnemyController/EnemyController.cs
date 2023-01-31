@@ -191,5 +191,10 @@ public class EnemyController : MonoBehaviour
         return;
     }
 
+    protected virtual void OnDeath()
+    {
+        FindObjectOfType<BattleStageManager>().EnemyEliminated(gameObject);
+    }
+
 
 }

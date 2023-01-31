@@ -176,8 +176,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chara_id: 0
-  buffLogPrefab: {fileID: 7553018530641137342, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
+  quest_name: 
   boss: {fileID: 0}
+  timeLimit: 0
+  totalEnemyNum: 0
+  maxReviveTime: 3
+  crownReviveTime: 0
+  crownTimeLimit: 300
+  buffLogPrefab: {fileID: 7553018530641137342, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
+  gameFailedPrefab: {fileID: 2722878352171708836, guid: 410cdfceee400df46984c7ceaa63ad1b, type: 3}
+  gameClearPrefab: {fileID: 495785828030051020, guid: 425a88c6c1e7c1042aeb9079253cded6, type: 3}
+  gameFailedBGM: {fileID: 8300000, guid: 185e23b44399ced4f99eafe0f3cc9ab3, type: 3}
+  gameClearBGM: {fileID: 8300000, guid: b6ef56101a8aedd4eaacafb924ab769e, type: 3}
+  resultPage: {fileID: 7189568907353856948, guid: 379b8819306492440887c70d851aa7fc, type: 3}
 --- !u!114 &8905817584630699168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +215,7 @@ MonoBehaviour:
   exclamationPrefab: {fileID: 5392681824071123439, guid: fd6896f89cf8c0d41a41acf0cf798392, type: 3}
   counterIconPrefab: {fileID: 7588947929834200099, guid: 4fbdad96a869bdd41b0dbffbbfa778be, type: 3}
   hitEffectClip: {fileID: 8300000, guid: 9c40c20744e27e841b76838e3ef5060e, type: 3}
+  reviveSEClip: {fileID: 8300000, guid: 19b5ae4650e42724b8239a33b0661a35, type: 3}
 --- !u!82 &8905817584630699169
 AudioSource:
   m_ObjectHideFlags: 0
@@ -214,9 +226,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 61341747e894dd2468862e7cec7d5273, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 87250e557b2b61440b192375903778b7, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.7
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0

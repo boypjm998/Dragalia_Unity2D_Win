@@ -9,6 +9,7 @@ public class EnemyAttackTriggerController : MonoBehaviour
     [SerializeField] private float[] attackSleepTime;
 
     [SerializeField] private float[] nextAttackTime;
+    [SerializeField] private float[] nextConditionTime;
 
     [SerializeField] private Collider2D targetCollider;
     [SerializeField] private float destroyTime = 1;
@@ -55,6 +56,14 @@ public class EnemyAttackTriggerController : MonoBehaviour
             }
         }
         
+        if (nextConditionTime.Length > 0)
+        {
+            foreach (var time in nextConditionTime)
+            {
+                Invoke("NextCondition",time);
+            }
+        }
+        
         Destroy(gameObject,destroyTime);
 
     }
@@ -78,5 +87,14 @@ public class EnemyAttackTriggerController : MonoBehaviour
         targetCollider.enabled = false;
     }
 
+    void NextCondition()
+    {
+        _attackFromEnemy.ResetWithConditionFlags();
+    }
+
+    public void SetNextWithConditionTime(float[] times)
+    {
+        nextConditionTime = times;
+    }
 
 }

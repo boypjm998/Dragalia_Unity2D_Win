@@ -1,0 +1,271 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using BehaviorDesigner.Runtime.Tasks.Unity.UnityTransform;
+using UnityEngine;
+using LitJson;
+using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+
+public class UI_AdventurerSelectionMenu : MonoBehaviour
+{
+    public int currentSelectedCharaID = 1;
+
+    private JsonData CharacterInfo;
+    private JsonData CharacterSkillInfo;
+    private JsonData CharacterAbilityInfo;
+
+    private Image Portrait;
+    private TextMeshProUGUI characterName;
+    private Image[] skillIcons;
+    private Image[] abilityIcons;
+    private TextMeshProUGUI[] skillName;
+    private string[] skillPath;
+    private TextMeshProUGUI[] abilityName;
+    private string[] abPath;
+    private TextMeshProUGUI MaxHPValue;
+    private TextMeshProUGUI AttackValue;
+
+    private GlobalController _globalController;
+    private Sprite[] iconSprites1;
+    private Sprite[] iconSprites2;
+
+    private GameObject detailedInfoMenu;
+    private Image iconInDetailedInfoMenu;
+    private TextMeshProUGUI detailedMenuTitle;
+    private TextMeshProUGUI detailedItemName;
+    private TextMeshProUGUI description;
+    private string[] descriptionString;
+
+    public AssetBundle iconBundle;
+    
+
+    private void Awake()
+    {
+        
+        
+    }
+
+    void InitAllChildren()
+    {
+        detailedInfoMenu = GameObject.Find("DetailedInfoMenu");
+        iconInDetailedInfoMenu = detailedInfoMenu.transform.Find("Board").GetChild(0).GetComponent<Image>();
+        detailedMenuTitle = detailedInfoMenu.transform.Find("Title").GetComponentInChildren<TextMeshProUGUI>();
+        detailedItemName = detailedInfoMenu.transform.Find("Board").GetChild(1).GetComponent<TextMeshProUGUI>();
+        description = detailedInfoMenu.transform.Find("Scroll View").Find("Viewport")
+            .Find("Text").GetComponentInChildren<TextMeshProUGUI>();
+        
+        Portrait = transform.Find("Portrait").GetComponent<Image>();
+        characterName = transform.Find("Banner").GetComponentInChildren<TextMeshProUGUI>();
+        skillIcons = new Image[4];
+        skillName = new TextMeshProUGUI[4];
+        skillPath = new string[4];
+        abPath = new string[2];
+        abilityIcons = new Image[2];
+        abilityName = new TextMeshProUGUI[2];
+        descriptionString = new string[6];
+        
+        for (int i = 0; i < 4; i++)
+        {
+            skillIcons[i] = transform.Find("SkillInfo").GetChild(i).Find("Icon").GetComponent<Image>();
+            skillName[i] = transform.Find("SkillInfo").GetChild(i).GetComponentInChildren<TextMeshProUGUI>();
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            abilityIcons[i] = transform.Find("AbilityInfo").GetChild(i).Find("Icon").GetComponent<Image>();
+            abilityName[i] = transform.Find("AbilityInfo").GetChild(i).GetComponentInChildren<TextMeshProUGUI>();
+        }
+
+        MaxHPValue = transform.Find("StatInfo").Find("HP").Find("Value").GetComponent<TextMeshProUGUI>();
+        AttackValue = transform.Find("StatInfo").Find("ATK").Find("Value").GetComponent<TextMeshProUGUI>();
+    }
+
+    // Start is called before the first frame update
+    IEnumerator Start()
+    {
+        InitAllChildren();
+        _globalController = FindObjectOfType<GlobalController>();
+        //日语！！！！！！！！！！！！！！！！！
+        if (SceneManager.GetActiveScene().name == "MainMenu_JP")
+        {
+            CharacterInfo = ReadCharacterInfoData("CharacterInfo_JP.json");
+            CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo_JP.json");
+            CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo_JP.json");
+        }
+        else
+        {
+            CharacterInfo = ReadCharacterInfoData("CharacterInfo.json");
+            CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo.json");
+            CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo.json");
+        }
+
+        
+
+        yield return new WaitUntil(() => _globalController.loadingEnd);
+        var bundle = AssetBundle.GetAllLoadedAssetBundles();
+        
+        foreach (var ab in bundle)
+        {
+            if (ab.name == "iconsmall")
+                iconBundle = ab;
+        }
+
+        yield return null;
+        this.iconBundle =
+            _globalController.GetBundle
+                ("iconsmall");
+        
+        //var request = iconBundle.LoadAssetWithSubAssetsAsync<Sprite>("Icon_Skill_Sheet_pro");
+        //iconSprites1 = request.allAssets;
+        iconSprites1 = iconBundle.LoadAssetWithSubAssets<Sprite>("Icon_Skill_Sheet_pro");
+        iconSprites2 = iconBundle.LoadAssetWithSubAssets<Sprite>("Ability_Sheet");
+        //print(iconSprites1.Length);
+        ReloadDisplayedCharacter();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //print("AssetBundleNum:"+AssetBundle.GetAllLoadedAssetBundles().Count());
+    }
+
+    JsonData ReadCharacterInfoData(string name)
+    {
+        string path = Application.streamingAssetsPath + "/"+ name;
+        StreamReader sr = new StreamReader(path);
+        var str = sr.ReadToEnd();
+        return JsonMapper.ToObject(str);
+    }
+
+    public void ChangeCurrentSelectedCharacter(int newID)
+    {
+        if (newID != currentSelectedCharaID)
+        {
+            currentSelectedCharaID = newID;
+            ReloadDisplayedCharacter();
+        } 
+        //currentSelectedCharaID = newID;
+    }
+
+    private void ReloadDisplayedCharacter()
+    {
+        Resources.UnloadUnusedAssets();
+        Portrait.sprite = Resources.Load<Sprite>($"Portrait/portrait_c{currentSelectedCharaID}");
+        var text1 = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["WEAPON"].ToString();
+        switch (text1)
+        {
+            case "GUN":
+                text1 = "<sprite=8>";
+                break;
+            case "STAFF":
+                text1 = "<sprite=7>";
+                break;
+            case "WAND":
+                text1 = "<sprite=6>";
+                break;
+            case "BOW":
+                text1 = "<sprite=5>";
+                break;
+            case "LANCE":
+                text1 = "<sprite=4>";
+                break;
+            case "DAGGER":
+                text1 = "<sprite=3>";
+                break;
+            case "AXE":
+                text1 = "<sprite=2>";
+                break;
+            case "BLADE":
+                text1 = "<sprite=1>";
+                break;
+            case "SWORD":
+                text1 = "<sprite=0>";
+                break;
+            default:
+                text1 = "";
+                break;
+        }
+        var text2 = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["NAME"].ToString();
+        characterName.text = text1 + text2;
+
+        MaxHPValue.text = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["HP"].ToString();
+        AttackValue.text = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["ATK"].ToString();
+
+        
+        for (int i = 0; i < 4; i++)
+        {
+            skillPath[i] = 
+                CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["SK"+(i+1)].ToString();
+            //print(skillIcons[i]);
+            foreach (var vSprite in iconSprites1)
+            {
+                if (vSprite.name == CharacterSkillInfo[skillPath[i]]["ICON_PATH"].ToString())
+                    skillIcons[i].sprite = vSprite;
+            }
+            
+            
+            
+            //skillIcons[i].sprite = Array.Find(iconSprites1,
+            //    item => item.name == CharacterSkillInfo[skillPath[i]]["ICON_PATH"].ToString());
+            skillName[i].text = CharacterSkillInfo[skillPath[i]]["NAME"].ToString();
+            descriptionString[i] = CharacterSkillInfo[skillPath[i]]["DESCRIPTION"].ToString();
+        }
+        
+        //var abPath = new string[2];
+        for (int i = 0; i < 2; i++)
+        {
+            abPath[i] = 
+                CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["AB"+(i+1)].ToString();
+            abilityIcons[i].sprite = Array.Find(iconSprites2,
+                item => item.name == CharacterAbilityInfo[abPath[i]]["ICON_PATH"].ToString());
+            abilityName[i].text = CharacterAbilityInfo[abPath[i]]["NAME"].ToString();
+            descriptionString[i+4] = CharacterAbilityInfo[abPath[i]]["DESCRIPTION"].ToString();
+        }
+    }
+
+    public static string GetCharacterEntirePathUpper(int id)
+    {
+        if (id < 10)
+        {
+            return $"C00{id}";
+        }
+
+        if (id < 100)
+        {
+            return $"C0{id}";
+        }else return $"C{id}";
+    }
+
+    public void DisplayItemDetailedMenu(int id)
+    {
+        if (id > 4)
+        {
+            detailedMenuTitle.text = "能力详情";
+            //detailedMenuTitle.text = "アビリティ詳細";
+            detailedItemName.text = abilityName[id - 5].text;
+            iconInDetailedInfoMenu.sprite = abilityIcons[id - 5].sprite;
+            description.text = descriptionString[id-1];
+        }
+        else
+        {
+            detailedMenuTitle.text = "技能详情";
+            //detailedMenuTitle.text = "スキル詳細";
+            detailedItemName.text = skillName[id - 1].text;
+            iconInDetailedInfoMenu.sprite = skillIcons[id - 1].sprite;
+            description.text = descriptionString[id-1];
+        }
+
+
+
+    }
+
+    private void OnDestroy()
+    {
+        
+        //Destroy(iconBundle);
+    }
+}

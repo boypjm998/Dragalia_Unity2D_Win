@@ -48,7 +48,7 @@ public class TargetAimer : MonoBehaviour
         maxCameraMoveSpeed = 6.0f;
         lookAheadDistanceX = 14.0f;
         lookAheadDistanceY = 7.0f;
-        //cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 20);
+        cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 20);
         stopFlagX = true;
         stopFlagY = true;
         aimSizeX = Mathf.Abs(TargetSearchScale.points[0].x);
@@ -70,7 +70,8 @@ public class TargetAimer : MonoBehaviour
 
     private IEnumerator Start()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil
+            (() => GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         
         mainCamera = GameObject.Find("Main Camera");
         cinemachineVirtualCamera = mainCamera.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -425,9 +426,9 @@ public class TargetAimer : MonoBehaviour
     //射线检测，获取最近能攻击到的敌人
     public Transform GetNearestReachableTarget(float range, LayerMask targetLayers)
     {
-        
-        if (EnemyInRange.Count == 0)
-            return null;
+        //1/29修改
+        //if (EnemyInRange.Count == 0)
+        //    return null;
         ObjectReachable.Clear();
         RaycastHit2D hitinfo = Physics2D.Raycast(transform.parent.position, new Vector2(1, 0), range, targetLayers);
         RaycastHit2D hitinfoback = Physics2D.Raycast(transform.parent.position, new Vector2(-1,0), range, targetLayers);

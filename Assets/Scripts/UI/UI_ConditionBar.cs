@@ -84,11 +84,10 @@ public class UI_ConditionBar : MonoBehaviour
 
             if (buffnum <= 0)
             {
-                //print(icon.gameObject.name);
                 conditionIDList.Remove(buffID);
                 Destroy(icon.gameObject);
-                //Remove Icon
-                StartCoroutine(SortBar());
+                if(GlobalController.currentGameState == GlobalController.GameState.Inbattle)
+                    StartCoroutine(SortBar());
             }
 
             //Remember to clear the icon if stack is 0.

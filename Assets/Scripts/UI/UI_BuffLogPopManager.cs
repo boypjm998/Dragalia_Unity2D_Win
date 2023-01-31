@@ -19,6 +19,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
     private int currentCnt = 0;
     public Queue<string> ConditionStr;
     public Queue<int> ConditionStrInfo;
+    private GlobalController.Language _language;
 
     private void Awake()
     {
@@ -28,6 +29,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _language = FindObjectOfType<GlobalController>().GameLanguage;
         transform.rotation = Quaternion.identity;
         txtGameObject = transform.GetChild(0).gameObject;
         txt = txtGameObject.GetComponent<TextMeshPro>();
@@ -35,9 +37,11 @@ public class UI_BuffLogPopManager : MonoBehaviour
         txtGameObject.SetActive(false);
         _statusManager = GetComponentInParent<StatusManager>();
         currentCnt = _statusManager.conditionList.Count;
+        
         _statusManager.OnBuffEventDelegate += Condition2Text; //delegate
         _statusManager.OnBuffDispelledEventDelegate += DispellCondition2Text;
-        //_statusManager.OnBuffRemovedEventDelegate += DispellCondition2Text;
+        _statusManager.OnSpecialBuffDelegate += CustomText;
+            
         ConditionStr = new Queue<string>();
         ConditionStrInfo = new Queue<int>();
     }
@@ -64,7 +68,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
                var type = ConditionStrInfo.Dequeue();
                if (type > 400 && type<500)
                {
-                   txt.fontSize = 8;
+                   txt.fontSize = 7;
                    var num = _statusManager.GetConditionStackNumber(type);
                    if (num > 1)
                    {
@@ -93,14 +97,27 @@ public class UI_BuffLogPopManager : MonoBehaviour
         {
             sb.Append("<sprite=" + (condition.buffID-1) + ">");
         }
-        
 
-        sb.Append(BasicCalculation.ConditionInfo_zh((BasicCalculation.BattleCondition)condition.buffID));
         if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value)
         {
-            sb.Append(condition.effect);
-            sb.Append("%");
+            var formatStr = String.Format
+                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
+            sb.Append(formatStr);
         }
+        else
+        {
+            sb.Append(BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID,_language));
+        }
+        
+        
+        //if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value)
+        //{
+        //    String.Format
+        //    (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),
+        //        condition.effect);
+        //    sb.Append(condition.effect);
+        //    sb.Append("%");
+        //}
         //print(sb.ToString());
         EnqueueNewCondition(sb.ToString());
         ConditionStrInfo.Enqueue(condition.buffID);
@@ -111,24 +128,106 @@ public class UI_BuffLogPopManager : MonoBehaviour
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.Append(BasicCalculation.ConditionInfo_zh((BasicCalculation.BattleCondition)condition.buffID));
+        
+        
         if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value)
         {
-            sb.Append(condition.effect);
-            sb.Append("%");
+            var formatStr = String.Format
+                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
+            sb.Append(formatStr);
         }
+        else
+        {
+            sb.Append(BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID,_language));
+        }
+        
+        //sb.Append(BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID,_language));
+        //if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value)
+        //{
+        //    sb.Append(condition.effect);
+        //    sb.Append("%");
+        //}
 
-        sb.Append(" 解除");
+        if (_language != GlobalController.Language.EN)
+        {
+            sb.Append(" 解除");
+        }
+        else sb.Append(" Purged");
+
+        
         
         EnqueueNewCondition(sb.ToString());
         ConditionStrInfo.Enqueue(999);//驱散都是999
 
     }
 
+    /// <summary>
+    /// Reset
+    /// </summary>
+    /// <param name="message"></param>
+    private void CustomText(string message)
+    {
+        switch (_language)
+        {
+            case GlobalController.Language.ZHCN:
+                CustomText_ZH(message);
+                break;
+            case GlobalController.Language.JP:
+                CustomText_JP(message);
+                break;
+            default:
+                CustomText_EN(message);
+                break;
+                
+        }
+    }
+    private void CustomText_ZH(string message)
+    {
+        switch (message)
+        {
+            case "Reset":
+                EnqueueNewCondition("全状态重置");
+                ConditionStrInfo.Enqueue(1000);//Other
+                break;
+                
+        }
+    }
+
+    private void CustomText_JP(string message)
+    {
+        switch (message)
+        {
+            case "Reset":
+                EnqueueNewCondition("Empty");
+                ConditionStrInfo.Enqueue(1000);//Other
+                break;
+                
+        }
+    }
+    
+    private void CustomText_EN(string message)
+    {
+        switch (message)
+        {
+            case "Reset":
+                EnqueueNewCondition("Empty");
+                ConditionStrInfo.Enqueue(1000);//Other
+                break;
+                
+        }
+    }
+
+
+
     void SetActiveFalse()
     {
         txtGameObject.SetActive(false);   
     }
 
-
+    private void OnDestroy()
+    {
+        _statusManager.OnBuffEventDelegate -= Condition2Text; //delegate
+        _statusManager.OnBuffDispelledEventDelegate -= DispellCondition2Text;
+        _statusManager.OnSpecialBuffDelegate -= CustomText;
+    }
 }

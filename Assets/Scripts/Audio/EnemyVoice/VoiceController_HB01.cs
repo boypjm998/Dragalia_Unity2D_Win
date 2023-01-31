@@ -14,7 +14,10 @@ public class VoiceController_HB01 : AudioManagerGeneral
         FlameRaid,
         BrightCamineRush,
         SavageFlameRaid,
-        ScarletInferno
+        ScarletInferno,
+        Buff,
+        Roll,
+        Defeat
     }
     void Start()
     {
@@ -103,6 +106,9 @@ public class VoiceController_HB01 : AudioManagerGeneral
                     myClips[22] = clip;
                     break;
                 
+                case "enemy_defeat_1":
+                    myClips[29] = clip;
+                    break;
 
                 //UnImplemented
                 default:
@@ -168,6 +174,11 @@ public class VoiceController_HB01 : AudioManagerGeneral
                 clip = myClips[15];
                 break;
             }
+            case myMoveList.Roll:
+            {
+                clip = myClips[9];
+                break;
+            }
             default: clip = null;
                 break;
 
@@ -176,7 +187,18 @@ public class VoiceController_HB01 : AudioManagerGeneral
         voice.Play();
 
     }
-    
+
+    public void BroadcastVoice(myMoveList moveName)
+    {
+        switch (moveName)
+        {
+            case myMoveList.Defeat:
+                voice.PlayOneShot(myClips[29]);
+                break;
+        }
+        
+    }
+
     IEnumerator WaitForVoiceCooldown()
     {
         yield return new WaitForSecondsRealtime(1f);

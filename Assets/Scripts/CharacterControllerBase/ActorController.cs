@@ -64,17 +64,17 @@ public class ActorController : MonoBehaviour
     {
         anim.SetBool("wjump", true);
     }
-    public void Roll()
+    public virtual void Roll()
     {
         anim.SetBool("roll", true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
-    public void StdAtk()
+    public virtual void StdAtk()
     {
         anim.SetBool("attack",true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
-    public void AirDashAtk()
+    public virtual void AirDashAtk()
     {
         anim.SetBool("attack", true);
         voiceController.PlayAttackVoice(0);
@@ -150,8 +150,23 @@ public class ActorController : MonoBehaviour
         stat = GetComponent<PlayerStatusManager>();
         jumpforce = stat.jumpforce;
         movespeed = stat.movespeed;
-        rollspeed = 9.0f;
+        rollspeed = stat.rollspeed;
 
+        stat.OnHPBelow0 += CheckLife;
+
+    }
+
+    protected void CheckLife()
+    {
+        if (stat.remainReviveTimes > 0)
+        {
+            stat.remainReviveTimes--;
+            OnRevive();
+        }
+        else
+        {
+            OnDeath();
+        }
     }
 
     protected virtual void CheckSkill()
@@ -224,9 +239,8 @@ public class ActorController : MonoBehaviour
 
         if (pi.roll && pi.rollEnabled)
         {
-            Roll();
-            
-            
+            if (anim.GetBool("isGround") == true)
+                Roll();
         }
         //movingVec = rigid.transform.forward;
         //print(movingVec);
@@ -387,6 +401,14 @@ public class ActorController : MonoBehaviour
     //人物滚动时附加的位移效果
     public virtual void EventRoll()
     {
+        if (pi.buttonLeft.IsPressing && !pi.buttonRight.IsPressing)
+        {
+            SetFaceDir(-1);
+        }
+        else if(!pi.buttonLeft.IsPressing && pi.buttonRight.IsPressing)
+        {
+            SetFaceDir(1);
+        }
 
         StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));  
 
@@ -403,6 +425,23 @@ public class ActorController : MonoBehaviour
         
         StartCoroutine(HorizontalMoveInteria(time ,1.8f * movespeed * speedrate, 1.5f * movespeed * speedrate));
         
+    }
+
+    protected virtual IEnumerator InvincibleRoutine()
+    {
+        var renderer = GetComponent<SpriteRenderer>();
+        var hitsensor = transform.Find("HitSensor").GetComponent<Collider2D>();
+        renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.5f);
+        hitsensor.enabled = false;
+        stat.HPRegenImmediatelyWithoutRandom(0,100);
+        stat.currentHp = stat.maxHP;
+        
+        
+        yield return new WaitForSeconds(3f);
+        
+        renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1);
+        hitsensor.enabled = true;
+
     }
 
 
@@ -446,35 +485,31 @@ public class ActorController : MonoBehaviour
         anim.SetBool("isGround", false);
     }
 
-    public void onRollEnter()
+    public virtual void onRollEnter()
     {
         pi.attackEnabled = false;
         pi.jumpEnabled = false;
         pi.moveEnabled = false;
-        voiceController.PlayDodgeVoice();
-
+        voiceController?.PlayDodgeVoice();
+        //pi.LockDirection(1);
         dodging = true;
     }
 
-    public void onRollExit()
+    public virtual void onRollExit()
     {
         pi.attackEnabled = true;
         pi.jumpEnabled = true;
         pi.moveEnabled = true;
-
+        //pi.rollEnabled = true;
         dodging = false;
-        
-        
-        
-        //if(anim.GetBool("attack")==false)
-            //checkFaceDir(); 
+
         anim.SetBool("roll", false);
         pi.SetInputEnabled("move");
         //Debug.Log("ExitRoll");
     }
     public void OnFall()
     {
-        Debug.Log("OnfallEnter");
+        //Debug.Log("OnfallEnter");
         pi.SetJumpEnabled();
         pi.SetRollDisabled();
     }
@@ -594,6 +629,83 @@ public class ActorController : MonoBehaviour
 
     }
 
+    protected virtual void OnRevive()
+    {
+        stat.ResetAllStatus();
+        stat.ClearSP();
+        BattleEffectManager effectManager = FindObjectOfType<BattleEffectManager>();
+        effectManager.PlayReviveSoundEffect();
+        StartCoroutine(InvincibleRoutine());
+    }
+
+    protected virtual void OnDeath()
+    {
+        pi.SetInputDisabled("roll");
+        pi.SetInputDisabled("jump");
+        pi.SetInputDisabled("attack");
+        pi.SetInputDisabled("move");
+        
+        pi.isSkill = false;
+        rigid.gravityScale = 4;
+        ActionDisable((int)PlayerActionType.MOVE);
+        ActionDisable((int)PlayerActionType.JUMP);
+        ActionDisable((int)PlayerActionType.ROLL);
+        ActionDisable((int)PlayerActionType.ATTACK);
+        
+        OnAttackInterrupt?.Invoke();
+        
+        
+        stat.ResetAllStatusForced();
+        stat.enabled = false;
+        transform.Find("HitSensor").GetComponent<Collider2D>().enabled = false;
+        pi.enabled = false;
+        var enemies = FindObjectsOfType<DragaliaEnemyBehavior>();
+        foreach (var enemy in enemies)
+        {
+            enemy.playerAlive = false;
+        }
+
+        pi.hurt = false;
+        anim.speed = 1;
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+            KnockbackRoutine = null;
+        }
+        SetVelocity(0,0);
+
+        //播放死亡动画
+
+        StartCoroutine(DeathRoutine());
+        
+        //this.enabled = false;
+        
+        
+    }
+
+    protected IEnumerator DeathRoutine()
+    {
+        yield return null;
+        anim.Play("die");
+        anim.SetFloat("forward",0);
+
+        stat.enabled = false;
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime>0.95f);
+
+        anim.speed = 0;
+
+        var stats = FindObjectsOfType<PlayerStatusManager>();
+
+        foreach (var status in stats)
+        {
+            if(status.currentHp > 0 || status.remainReviveTimes>0)
+                yield break;
+        }
+        GlobalController.BattleFinished(false);
+        
+    }
+
     protected void SetAnimSpeed(float percentage)
     {
         anim.speed = percentage;
@@ -668,7 +780,8 @@ public class ActorController : MonoBehaviour
 
 
 
-    //单独行动指令的开关
+    ///单独行动指令的开关
+    ///0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
     public void ActionEnable(int type)
     {
         //0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
@@ -694,13 +807,14 @@ public class ActorController : MonoBehaviour
         }
         else if (type == 4)
         {
-            pi.SetMoveEnabled();
+            pi.SetAttackEnabled();
         }
     }
 
+    ///0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
     public void ActionDisable(int type)
     {
-        //0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
+        
         if (type == 0)
         {
             pi.SetAttackDisabled();
@@ -723,13 +837,24 @@ public class ActorController : MonoBehaviour
         }
         else if (type == 4)
         {
-            pi.SetMoveDisabled();
+            pi.SetAttackDisabled();
         }
     }
 
     protected virtual void FaceDirectionAutoFix(int moveID)
     {
         
+    }
+
+    protected virtual void CheckSignal()
+    {
+        if (anim.GetBool("attack"))
+        {
+            if (anim.GetBool("isGround"))
+            {
+                StdAtk();
+            }else AirDashAtk();
+        }
     }
 
 

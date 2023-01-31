@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class UI_AdventurerStatusInfo : MonoBehaviour
 {
     private StatusManager statusManager;
+    
 
     protected Coroutine HurtRoutine = null;
     protected Slider _slider;
@@ -31,6 +32,7 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var characterID = GlobalController.currentCharacterID;
         statusManager = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
         _slider = GetComponentInChildren<Slider>();
         statusImage = transform.Find("CharacterIcon").GetComponent<Image>();
@@ -38,6 +40,7 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
         HPBarImage = transform.Find("HPbar").Find("Fill").GetComponent<Image>();
         currentHP = statusManager.currentHp;
         maxHP = statusManager.maxHP;
+        GetHPValue();
     }
 
     // Update is called once per frame

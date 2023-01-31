@@ -19,6 +19,7 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     public Coroutine currentAction = null;
     protected bool TaskSuccess;
     public bool isAction;
+    public bool playerAlive = true;
     
     protected abstract void UpdateAttack();
     protected abstract void ExcutePhase();
@@ -31,6 +32,11 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         //enemyAttackManager = GetComponent<EnemyMoveManager>();
         status = GetComponent<StatusManager>();
         isAction = false;
+        
+    }
+
+    protected virtual void Update()
+    {
         
     }
 

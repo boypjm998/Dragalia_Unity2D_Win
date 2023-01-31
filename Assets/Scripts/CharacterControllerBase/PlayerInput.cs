@@ -10,7 +10,8 @@ public class PlayerInput : MonoBehaviour
     private PlayerStatusManager stat;
     private ActorController ac;
 
-    [Header("Key Settings")]
+    [Header("Key Settings")] 
+    public bool standardAttackContinious = true;
     public string keyRight = "d";
     public string keyLeft = "a";
     public string keyDown = "s";
@@ -224,7 +225,16 @@ public class PlayerInput : MonoBehaviour
             return false;
         }
 
-        stdAtk = buttonAttack.IsPressing;
+        if (standardAttackContinious)
+        {
+            stdAtk = buttonAttack.IsPressing;
+        }
+        else
+        {
+            stdAtk = buttonAttack.OnPressed;
+        }
+
+
         return stdAtk;
     }
 
