@@ -11,6 +11,7 @@ public class PlayerInput : MonoBehaviour
     private ActorController ac;
 
     [Header("Key Settings")] 
+    [SerializeField]private float accTime = 0.1f;
     public bool standardAttackContinious = true;
     public string keyRight = "d";
     public string keyLeft = "a";
@@ -89,6 +90,7 @@ public class PlayerInput : MonoBehaviour
             skill[i] = false;
         }
         //DisableAllInput();
+        LoadKeySetting();
     }
     
     
@@ -141,7 +143,8 @@ public class PlayerInput : MonoBehaviour
 
 
         targetDRight = (buttonRight.IsPressing ? 1.0f : 0) - (buttonLeft.IsPressing ? 1.0f : 0);
-        DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, 0.15f);
+        //DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, accTime);
+        DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, accTime);
 
         if (inputMoveEnabled == false)
         {
@@ -491,6 +494,22 @@ public class PlayerInput : MonoBehaviour
         inputJumpEnabled = true;
         inputMoveEnabled = true;
         inputRollEnabled = true;
+    }
+
+    private void LoadKeySetting()
+    {
+        keyAttack = GlobalController.keyAttack;
+        keySkill1 = GlobalController.keySkill1;
+        keySkill2 = GlobalController.keySkill2;
+        keySkill3 = GlobalController.keySkill3;
+        keySkill4 = GlobalController.keySkill4;
+        keyLeft = GlobalController.keyLeft;
+        keyRight = GlobalController.keyRight;
+        keyUp = GlobalController.keySpecial;
+        keyDown = GlobalController.keyDown;
+        keyRoll = GlobalController.keyRoll;
+        keyJump = GlobalController.keyJump;
+
     }
 
 }

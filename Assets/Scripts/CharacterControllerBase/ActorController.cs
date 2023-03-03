@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 
 public class ActorController : MonoBehaviour
 {
+    public int defaultGravity = 4;
     protected AudioManagerPlayer voiceController;
     public PlayerInput pi;
     public PlayerStatusManager stat;
@@ -40,6 +42,10 @@ public class ActorController : MonoBehaviour
     /// </summary>
     public virtual void Move()
     {
+        if(pi.enabled == false)
+        {
+            return;
+        }
         
         if (pi.moveEnabled == false)
         {
@@ -77,7 +83,7 @@ public class ActorController : MonoBehaviour
     public virtual void AirDashAtk()
     {
         anim.SetBool("attack", true);
-        voiceController.PlayAttackVoice(0);
+        //voiceController.PlayAttackVoice(0);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
     public virtual void UseSkill(int id)
@@ -199,14 +205,24 @@ public class ActorController : MonoBehaviour
     {
   
 
-        if (rigid.transform.eulerAngles.y == 0)
+        //if (rigid.transform.eulerAngles.y == 0)
+        //{
+        //    facedir = 1;
+        //}
+        //else if (rigid.transform.eulerAngles.y == 180)
+        //{
+        //    facedir = -1;
+        //}
+        if(rigid.transform.localScale.x == 1)
         {
             facedir = 1;
         }
-        else if (rigid.transform.eulerAngles.y == 180)
+        else if (rigid.transform.localScale.x == -1)
         {
             facedir = -1;
         }
+        
+        
         anim.SetFloat("forward", Mathf.Abs(pi.DRight));
 
         if (pi.hurt)
@@ -272,11 +288,12 @@ public class ActorController : MonoBehaviour
         while (time > 0)
         {
             if (anim.GetBool("isGround") == true)
-            { 
-                transform.position = new Vector2(transform.position.x + transform.right.x * groundSpeed * Time.fixedDeltaTime, transform.position.y); 
+            {
+                transform.position = new Vector2(transform.position.x + facedir * groundSpeed * Time.fixedDeltaTime, transform.position.y); 
+                //transform.position = new Vector2(transform.position.x + transform.right.x * groundSpeed * Time.fixedDeltaTime, transform.position.y); 
             }
             else { 
-                transform.position = new Vector2(transform.position.x + transform.right.x * airSpeed * Time.fixedDeltaTime, transform.position.y);
+                transform.position = new Vector2(transform.position.x + facedir * airSpeed * Time.fixedDeltaTime, transform.position.y);
             }
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
@@ -295,7 +312,8 @@ public class ActorController : MonoBehaviour
         while(time>0)
         {
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
+            transform.position = new Vector3(transform.position.x+ facedir * speed * Time.fixedDeltaTime,transform.position.y,transform.position.z);
+            //transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
             if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
@@ -317,8 +335,8 @@ public class ActorController : MonoBehaviour
 
         while (time > 0)
         {
-            
-            transform.position = new Vector2(transform.position.x + transform.right.x * speed * Time.fixedDeltaTime, transform.position.y);
+            //transform.right->facedir
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime, transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
             
@@ -332,7 +350,7 @@ public class ActorController : MonoBehaviour
         while (time > 0)
         {
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector2(transform.position.x + transform.right.x * speed * Time.fixedDeltaTime, transform.position.y);
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime, transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
             if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
@@ -352,8 +370,8 @@ public class ActorController : MonoBehaviour
     {
         while (time > 0)
         {
-            //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector2(transform.position.x + transform.right.x * speed * Time.fixedDeltaTime, transform.position.y);
+            //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));trsfm.right->facedir
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime, transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
             
@@ -377,22 +395,28 @@ public class ActorController : MonoBehaviour
         {
             //if (pi.DRight > 0.01f) 
             case false when pi.buttonRight.IsPressing:
-                rigid.transform.eulerAngles = new Vector3(0, 0, 0);
-                facedir = 1;
+                //rigid.transform.eulerAngles = new Vector3(0, 0, 0);
+                SetFaceDir(1);
                 break;
             //else if (pi.DRight < -0.01f)
             case true when !pi.buttonRight.IsPressing:
-                rigid.transform.eulerAngles = new Vector3(0, 180, 0);
-                facedir = -1;
+                //rigid.transform.eulerAngles = new Vector3(0, 180, 0);
+                SetFaceDir(-1);
                 break;
         }
     }
     public void SetFaceDir(int dir)
     {
+        facedir = dir;
+        print(facedir);
         if (dir==1)
-            rigid.transform.eulerAngles = new Vector3(0, 0, 0);
+            rigid.transform.localScale = new Vector3(1, 1, 1);
+            //rigid.transform.eulerAngles = new Vector3(0, 0, 0);
         else if (dir==-1)
-            rigid.transform.eulerAngles = new Vector3(0, 180, 0);
+            rigid.transform.localScale = new Vector3(-1, 1, 1);
+            //rigid.transform.eulerAngles = new Vector3(0, 180, 0);
+            
+        facedir = dir;
     }
     #endregion
 
@@ -422,6 +446,9 @@ public class ActorController : MonoBehaviour
     public virtual void InertiaMove(float time)
     {
         float speedrate = anim.GetFloat("forward");
+        
+        if(speedrate<0.1f && anim.GetBool("isGround"))
+            speedrate = 0.5f;
         
         StartCoroutine(HorizontalMoveInteria(time ,1.8f * movespeed * speedrate, 1.5f * movespeed * speedrate));
         
@@ -490,7 +517,7 @@ public class ActorController : MonoBehaviour
         pi.attackEnabled = false;
         pi.jumpEnabled = false;
         pi.moveEnabled = false;
-        voiceController?.PlayDodgeVoice();
+        //voiceController?.PlayDodgeVoice();
         //pi.LockDirection(1);
         dodging = true;
     }
@@ -584,10 +611,10 @@ public class ActorController : MonoBehaviour
     
     public virtual void OnGravityRecover()
     {
-        rigid.gravityScale = 4;
+        rigid.gravityScale = defaultGravity;
     }
 
-    protected void OnHurtEnter()
+    public void OnHurtEnter()
     {
         OnAttackInterrupt?.Invoke();
         
@@ -613,7 +640,7 @@ public class ActorController : MonoBehaviour
 
     }
     
-    protected void OnHurtExit()
+    public void OnHurtExit()
     {
         pi.SetInputEnabled("roll");
         pi.SetInputEnabled("jump");
@@ -635,6 +662,8 @@ public class ActorController : MonoBehaviour
         stat.ClearSP();
         BattleEffectManager effectManager = FindObjectOfType<BattleEffectManager>();
         effectManager.PlayReviveSoundEffect();
+        BattleEffectManager.BWEffect();
+        
         StartCoroutine(InvincibleRoutine());
     }
 
@@ -646,7 +675,7 @@ public class ActorController : MonoBehaviour
         pi.SetInputDisabled("move");
         
         pi.isSkill = false;
-        rigid.gravityScale = 4;
+        rigid.gravityScale = defaultGravity;
         ActionDisable((int)PlayerActionType.MOVE);
         ActionDisable((int)PlayerActionType.JUMP);
         ActionDisable((int)PlayerActionType.ROLL);
@@ -685,7 +714,14 @@ public class ActorController : MonoBehaviour
 
     protected IEnumerator DeathRoutine()
     {
+        
+        pi.enabled = false;
+        pi.moveEnabled = false;
+        pi.inputMoveEnabled = false;
+        
         yield return null;
+
+       
         anim.Play("die");
         anim.SetFloat("forward",0);
 
@@ -732,6 +768,9 @@ public class ActorController : MonoBehaviour
 
     public void TakeDamage(float kbtime,float kbForce, Vector2 kbDir)
     {
+        if(stat.knockbackRes >= 100)
+            return;
+        
         if (KnockbackRoutine != null)
         {
             StopCoroutine(KnockbackRoutine);
@@ -754,7 +793,7 @@ public class ActorController : MonoBehaviour
         {
             time -= Time.deltaTime;
             rigid.drag += Time.deltaTime * 2 / totalTime;
-            if (totalTime - time > 0.3f && rigid.gravityScale < 4)
+            if (totalTime - time > 0.3f && rigid.gravityScale < defaultGravity)
             {
                 rigid.gravityScale += (Time.deltaTime * 4);
                 
@@ -841,7 +880,7 @@ public class ActorController : MonoBehaviour
         }
     }
 
-    protected virtual void FaceDirectionAutoFix(int moveID)
+    public virtual void FaceDirectionAutoFix(int moveID)
     {
         
     }

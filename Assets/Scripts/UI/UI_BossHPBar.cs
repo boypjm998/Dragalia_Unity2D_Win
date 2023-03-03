@@ -79,10 +79,15 @@ public class UI_BossHPBar : MonoBehaviour
         {
             if (HPChangeRoutine != null)
             {
-                StopCoroutine(HPChangeRoutine);
-                HPChangeRoutine = null;
+                //StopCoroutine(HPChangeRoutine);
+                //HPChangeRoutine = null;
             }
-            HPChangeRoutine = StartCoroutine("HPFillAnimation");
+            else
+            {
+                HPChangeRoutine = StartCoroutine("HPFillAnimation");
+            }
+
+            
         }
         else
         {

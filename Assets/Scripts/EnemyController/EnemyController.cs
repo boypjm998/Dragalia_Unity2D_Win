@@ -6,6 +6,8 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     //Stats of Enemy
+    [SerializeField] protected bool isSummonEnemy = false;
+    
 
     protected Animator anim;
     public Coroutine ActionTask = null;
@@ -193,6 +195,11 @@ public class EnemyController : MonoBehaviour
 
     protected virtual void OnDeath()
     {
+        if (isSummonEnemy)
+        {
+            return;
+        }
+
         FindObjectOfType<BattleStageManager>().EnemyEliminated(gameObject);
     }
 

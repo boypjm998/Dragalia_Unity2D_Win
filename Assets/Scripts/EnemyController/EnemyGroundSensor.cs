@@ -27,7 +27,8 @@ public class EnemyGroundSensor : MonoBehaviour
     void Start()
     {
         rigid = GetComponentInParent<Rigidbody2D>();
-        box = GetComponent<BoxCollider2D>();
+        if(box==null)
+            box = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame

@@ -8,6 +8,7 @@ public class StatusManager : MonoBehaviour
 {
 
     public string displayedName;
+    public int dialogIconID;
     
     [Header("Basic Attributes")]
     

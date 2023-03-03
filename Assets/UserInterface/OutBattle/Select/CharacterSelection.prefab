@@ -2660,8 +2660,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2439586900632357454}
   m_HandleRect: {fileID: 2859445561849510411}
   m_Direction: 0
-  m_Value: 0.000000073096
-  m_Size: 0.43771043
+  m_Value: 0
+  m_Size: 0.43771046
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4686,6 +4686,7 @@ GameObject:
   - component: {fileID: 8632643039914911342}
   - component: {fileID: 1693331772}
   - component: {fileID: 1693331773}
+  - component: {fileID: 1693331774}
   m_Layer: 5
   m_Name: CharacterSelection
   m_TagString: Untagged
@@ -4729,9 +4730,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LayerID: 1
-  sortingGroupID: 0
+  sortingGroupID: 1003
   isActive: 0
   initialPosition: {x: 0, y: 0}
+  initialLocalPosition: {x: 0, y: 0}
+  hideTime: 0.3
   _hideDirection: 1
   _hideLocalPosition: {x: 0, y: 200}
 --- !u!114 &1693331773
@@ -4746,6 +4749,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82cf576bbfde2744091b4f91dcf52a31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  upperMenu: {fileID: 0}
+--- !u!225 &1693331774
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8632643039914911343}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8632643040014885656
 GameObject:
   m_ObjectHideFlags: 0

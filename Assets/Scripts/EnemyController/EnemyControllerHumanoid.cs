@@ -711,10 +711,12 @@ public class EnemyControllerHumanoid : EnemyController
 
     protected virtual IEnumerator KnockBackEffect(float time,float force, Vector2 kbDir)
     {
+        SetVelocity(0,0);
         kbDir = kbDir.normalized;
         hurt = true;
         anim.SetBool("hurt",true);
         SetVelocity(force * kbDir.x,force * kbDir.y);
+        //print(kbDir);
         var totalTime = time;
         while (time > 0)
         {
@@ -773,6 +775,7 @@ public class EnemyControllerHumanoid : EnemyController
         }
         //print(rand+"小于"+(kbpower-currentKBRes));
 
+        //print(kbForce);
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
         
         
@@ -820,9 +823,8 @@ public class EnemyControllerHumanoid : EnemyController
         }
 
         rigid.gravityScale = 1;
-        SetVelocity(rigid.velocity.x,0);
-        moveEnable = false;
         //SetVelocity(rigid.velocity.x,0);
+        moveEnable = false;
         anim.speed = 1;
         MoveManager.SetGroundCollider(true);
         var meeles = transform.Find("MeeleAttackFX");
@@ -873,6 +875,8 @@ public class EnemyControllerHumanoid : EnemyController
 
     IEnumerator DeathRoutine()
     {
+        SetKBRes(999);
+        _effectManager.DisplayCounterIcon(gameObject,false);
         GetComponentInChildren<AudioSource>().Stop();
         transform.Find("MeeleAttackFX").gameObject.SetActive(false);
         transform.Find("HitSensor").gameObject.SetActive(false);
@@ -897,6 +901,8 @@ public class EnemyControllerHumanoid : EnemyController
         anim.speed = 1;
         MoveManager.SetGroundCollider(true);
         MoveManager.enabled = false;
+        MoveManager.StopAllCoroutines();
+        _behavior.StopAllCoroutines();
         var meeles = transform.Find("MeeleAttackFX");
         for (int i = 0; i < meeles.childCount; i++)
         {

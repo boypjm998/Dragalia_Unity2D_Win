@@ -15,6 +15,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
     private GameObject txtGameObject;
     private Animator anim;
     private StatusManager _statusManager;
+    private Transform _transform;
 
     private int currentCnt = 0;
     public Queue<string> ConditionStr;
@@ -29,14 +30,27 @@ public class UI_BuffLogPopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _language = FindObjectOfType<GlobalController>().GameLanguage;
+        try
+        {
+            _language = FindObjectOfType<GlobalController>().GameLanguage;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            print("not found");
+            _language = GlobalController.Language.ZHCN;
+        }
+        
         transform.rotation = Quaternion.identity;
         txtGameObject = transform.GetChild(0).gameObject;
         txt = txtGameObject.GetComponent<TextMeshPro>();
         anim = txtGameObject.GetComponent<Animator>();
+       
         txtGameObject.SetActive(false);
         _statusManager = GetComponentInParent<StatusManager>();
         currentCnt = _statusManager.conditionList.Count;
+        
+         _transform = _statusManager.transform;
         
         _statusManager.OnBuffEventDelegate += Condition2Text; //delegate
         _statusManager.OnBuffDispelledEventDelegate += DispellCondition2Text;
@@ -49,7 +63,14 @@ public class UI_BuffLogPopManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       transform.rotation = Quaternion.identity;
+        if(_transform.localScale.x == -1)
+            transform.localScale = new Vector3(-1,1,1);
+        else
+        {
+            transform.localScale = new Vector3(1,1,1);
+        }
+
+        transform.rotation = Quaternion.identity;
 
        if (ConditionStr.Count == 0 && txtGameObject.activeSelf)
        {

@@ -68,8 +68,7 @@ public class AttackFromEnemy : AttackBase
         withConditionFlags = SearchPlayerList();
         battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
         
-        if(damageAutoReset>0)
-            InvokeRepeating("NextAttack",damageAutoReset,damageAutoReset);
+        
     }
 
     // Update is called once per frame
@@ -168,6 +167,9 @@ public class AttackFromEnemy : AttackBase
         
         AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
         container?.AttackOneHit();
+        
+        if(damageAutoReset>0)
+            Invoke("NextAttack",damageAutoReset);
         
     }
 

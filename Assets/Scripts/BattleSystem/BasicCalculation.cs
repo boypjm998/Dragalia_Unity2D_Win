@@ -387,8 +387,48 @@ public static class BasicCalculation
                 return 200;
             case 3:
                 return 200;
-            default:
+            case 4:
                 return 500;
+            case 6:
+                return 200;
+            case 7:
+                return 30;
+            case 8:
+                return 200;
+            case 9:
+                return 200;
+            case 10:
+                return 100;
+            case 11:
+                return 9999999;
+            case 12:
+                return 200;
+            case 13:
+                return 99999;
+            case 14:
+                return 99999;
+            
+            case 201:
+                return 50;
+            case 202:
+                return 50;
+            case 203:
+                return 100;
+            case 204:
+                return 500;
+            case 206:
+                return 200;
+            case 210:
+                return 100;
+            case 214:
+                return 99999;
+            
+            
+            
+            
+            
+            default:
+                return 200;
         }
     }
 
@@ -718,7 +758,6 @@ public static class BasicCalculation
         //        maxDuration = dunration;
         //    }
         //}
-        return maxDuration;
     }
 
     /// <summary>
@@ -835,5 +874,14 @@ public static class BasicCalculation
         return JsonMapper.ToObject(str);
     }
 
+    public static string ToTimerFormat(float seconds)
+    {
+        if (seconds <= 0)
+            return "00:00";
+        
+        var min = (int)Mathf.Floor(seconds / 60);
+        var sec = (int)seconds % 60;
+        return $"{min:D2}:{sec:D2}";
+    }
 
 }

@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using UnityEngine;
 
-
+[Serializable]
 public class TimerBuff : BattleCondition
     {
         

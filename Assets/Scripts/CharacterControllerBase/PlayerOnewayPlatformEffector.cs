@@ -26,7 +26,9 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
 
     protected virtual void Awake()
     {
-        playerCollider = transform.Find("GroundSensor").GetComponentInChildren<BoxCollider2D>();
+        if(playerCollider== null)
+            playerCollider = transform.Find("GroundSensor").GetComponentInChildren<BoxCollider2D>();
+        //playerCollider = transform.Find("GroundSensor").GetComponentInChildren<BoxCollider2D>();
         pi = GetComponent<PlayerInput>();
         rigid = GetComponent<Rigidbody2D>();
         anim = rigid.GetComponentInChildren<Animator>();

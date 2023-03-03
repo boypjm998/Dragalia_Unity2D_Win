@@ -1,10 +1,10 @@
-# DL_2D_Win_v0.4.0 (2023/01/31）
+# DL_2D_Win_v0.1.1-Beta (2023/03/04）
 
 #####
-1. 测试关卡“席菈的试炼”已经可以玩了，还有一些小问题没有处理。
+1. 感谢大佬的解包动画，目前正在将人物进行重做，将角色2D贴图置换为3D模型。
 
 
 #####
-1. Test scene: Sheila's trail can be played now, though some bugs are waited for fixed.
+1. Remake characters, from 2D sprite sheets to 3D models.
 
 

@@ -37,7 +37,7 @@ public class BattleStageManager : MonoBehaviour
     public AudioClip gameClearBGM;
     public GameObject resultPage;
     
-    private GameObject player;
+    [SerializeField]private GameObject player;
     public GameObject lastEnemyEliminated { get; private set; }
     
     public float mapBorderL { get; private set; }
@@ -210,6 +210,7 @@ public class BattleStageManager : MonoBehaviour
         if (!target.transform.Find("HitSensor").GetComponent<Collider2D>().isActiveAndEnabled) return -1;
 
 
+        print(target.name + attackStat);
         //Attack Callback
         switch (attackStat.attackType)
         {
@@ -537,7 +538,7 @@ public class BattleStageManager : MonoBehaviour
     /// <returns>-1:黄字,0:白字</returns>
     protected int CheckAffliction(int chance, int resistance)
     {
-        print(chance+"chance");
+        //print(chance+"chance");
         //检测异常状态是不是上的去
         if (resistance >= 100 || chance<=resistance)
         {
@@ -615,14 +616,13 @@ public class BattleStageManager : MonoBehaviour
         //var fxs = GameObject.Find("AttackFXPlayer");
         
         
-        
         Time.timeScale = 0.5f;
         GameObject.Find("CharacterInfo").SetActive(false);
         //
         StageCameraController.SwitchMainCamera();
         StageCameraController.SwitchMainCameraFollowObject(lastEnemyEliminated);
         StageCameraController.SetMainCameraSize(6);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(.8f);
 
         Time.timeScale = 1;
         StageCameraController.SwitchMainCameraFollowObject(player);
@@ -644,6 +644,13 @@ public class BattleStageManager : MonoBehaviour
         player.GetComponent<Animator>().SetFloat("forward",0);
         yield return null;
         player.GetComponent<Animator>().Play("idle");
+        player.GetComponent<ActorController>().enabled = false;
+        
+        var attacks = FindObjectsOfType<AttackContainer>();
+        foreach (var attack in attacks)
+        {
+            attack.DestroyInvoke();
+        }
         
         //fxs?.SetActive(false);
         var music = GetComponent<AudioSource>();
@@ -657,6 +664,9 @@ public class BattleStageManager : MonoBehaviour
             waitTime += 0.02f;
             yield return new WaitForSeconds(0.02f);
         }
+        
+        player.GetComponent<Animator>().SetFloat("forward",0);
+        player.GetComponent<Animator>().Play("idle");
         Destroy(clearGameObject);
         var UILayer = GameObject.Find("UI");
         var resultPage = Instantiate(this.resultPage, UILayer.transform);
@@ -681,7 +691,7 @@ public class BattleStageManager : MonoBehaviour
         newQuestState.best_clear_time = (double)Mathf.Round((float)newQuestState.best_clear_time*10f) / 10f;
         // 存储文件的路径  
 
-        print(newQuestState.best_clear_time);
+        //print(newQuestState.best_clear_time);
         
         string path = Application.streamingAssetsPath + "/savedata/testSaveData.json";
         StreamReader sr = new StreamReader(path);
@@ -743,8 +753,8 @@ public class BattleStageManager : MonoBehaviour
         savedata.crown_1 = newQuestState.crown_1;
         savedata.crown_2 = newQuestState.crown_2;
         savedata.crown_3 = newQuestState.crown_3;
-        print(savedata.best_clear_time);
-        print(newRecord);
+        //print(savedata.best_clear_time);
+        //print(newRecord);
         //print(savedata.best_clear_time);
                 
             

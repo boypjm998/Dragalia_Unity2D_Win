@@ -16,15 +16,12 @@ public class GlobalController : MonoBehaviour
     private Transform cameraTransform;
     private GameObject UIFXContainer;
     public int clickEffCD = 0;
-
     public enum Language
     {
         ZHCN,
         JP,
         EN
     }
-
-    public Language GameLanguage;
 
     public enum GameState
     {
@@ -34,14 +31,49 @@ public class GlobalController : MonoBehaviour
         End //有一方判定死亡
     }
 
-    public static GameState currentGameState { private set; get; }
+    public static GameState currentGameState { protected set; get; }
     public Dictionary<string, AssetBundle> loadedBundles;
-    private JsonData QuestInfo;
+    protected JsonData QuestInfo;
+    public delegate void OnGlobalControllerAwake();
+    public static OnGlobalControllerAwake onGlobalControllerAwake;
 
-    private Coroutine loadingRoutine;
+    #region GameOption
+
+    public Language GameLanguage;
+    public static int currentCharacterID = 1;
+    
+    public static string keyRight = "d";
+    public static string keyLeft = "a";
+    public static string keyDown = "s";
+    public static string keySpecial = "w";
+    public static string keyAttack = "j";
+    public static string keyJump = "k";
+    public static string keyRoll = "l";
+    public static string keySkill1 = "u";
+    public static string keySkill2 = "i";
+    public static string keySkill3 = "o";
+    public static string keySkill4 = "h";
+    
+    #endregion
+    
+    #region GameCheckpoint
+
+    public static int lastQuestSpot = -1;
+    
+
+    #endregion
+    
+    
+    
+    
+    
+    
+    
+
+    protected Coroutine loadingRoutine;
     [SerializeField] private GameObject LoadingScreen;
     [SerializeField] private GameObject clickEff;
-    public static int currentCharacterID = 1;
+    
     public static string questID = "000000";
     public bool loadingEnd = true;
     
@@ -62,13 +94,19 @@ public class GlobalController : MonoBehaviour
 
     void Start()
     {
-        if (GetBundle("iconsmall") == null)
+        if (GetBundle("iconsmall") == null || GetBundle("allin1") == null)
         {
             var ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/iconsmall");
             loadedBundles.Add("iconsmall",ab);
+            ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/allin1");
+            loadedBundles.Add("allin1",ab);
         }
         cameraTransform = GameObject.Find("Main Camera").transform;
         currentGameState = GameState.Outbattle;
+        onGlobalControllerAwake?.Invoke();
+        
+        
+        
     }
 
     private void Update()
@@ -120,19 +158,50 @@ public class GlobalController : MonoBehaviour
         AssetBundleCreateRequest ar = null;
 
         JsonData currentQuestInfo = QuestInfo[$"QUEST_{questID}"];
+
+        List<String> requiredBundleList = new List<string>();
         
-
-
-
-
-
-
-
-
         var needLoad = SearchPlayerRelatedAssets(1);
         
+        List<AssetBundle> assetBundles = new List<AssetBundle>();
+        int index = 0;
         
-        AssetBundle assetBundle,assetBundle2;
+        requiredBundleList.Add(needLoad[0]);
+        requiredBundleList.Add(needLoad[1]);
+        requiredBundleList.Add(needLoad[2]);
+        requiredBundleList.Add("ui_general");
+        requiredBundleList.Add("eff_general");
+        requiredBundleList.Add("allin1");
+        requiredBundleList.Add("118effbundle");
+        requiredBundleList.Add("boss_ability_icon");
+        requiredBundleList.Add("voice_c005");
+        
+        //print(requiredBundleList.ToArray());
+        
+
+        foreach (var abpath in requiredBundleList)
+        {
+            if (!loadedBundles.ContainsKey(abpath))
+            {
+                ar =
+                    AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, abpath));
+                yield return ar;
+                loadedBundles.Add(abpath,ar.assetBundle);
+                assetBundles.Add(ar.assetBundle);
+            }
+            else
+            {
+                assetBundles.Add(loadedBundles[abpath]);
+            }
+
+            //index++;
+        }
+        
+        
+        
+        
+        
+        /*
         if (!loadedBundles.ContainsKey(needLoad[0]))
         {
             ar =
@@ -145,6 +214,7 @@ public class GlobalController : MonoBehaviour
         {
             assetBundle = loadedBundles[needLoad[0]];
         }
+        
         //load UI_dependencies
         if (!loadedBundles.ContainsKey("ui_general"))
         {
@@ -164,6 +234,24 @@ public class GlobalController : MonoBehaviour
             //assetBundle2 = ar.assetBundle;
         }
         
+        if (!loadedBundles.ContainsKey("eff_general"))
+        {
+            ar =
+                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "eff_general"));
+            yield return ar;
+            loadedBundles.Add("eff_general",ar.assetBundle);
+            //assetBundle2 = ar.assetBundle;
+        }
+        
+        if (!loadedBundles.ContainsKey("118effbundle"))
+        {
+            ar =
+                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "118effbundle"));
+            yield return ar;
+            loadedBundles.Add("118effbundle",ar.assetBundle);
+            //assetBundle2 = ar.assetBundle;
+        }
+        
         
         
         
@@ -178,12 +266,6 @@ public class GlobalController : MonoBehaviour
             loadedBundles.Add("voice_c005",ar.assetBundle);
             //assetBundle2 = ar.assetBundle;
         }
-        
-        
-        
-        
-        
-        
         if (!loadedBundles.ContainsKey(needLoad[1]))
         {
             ar =
@@ -192,7 +274,19 @@ public class GlobalController : MonoBehaviour
             loadedBundles.Add(needLoad[1],ar.assetBundle);
             //assetBundle2 = ar.assetBundle;
         }
+        if (!loadedBundles.ContainsKey(needLoad[2]))
+        {
+            ar =
+                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, needLoad[2]));
+            yield return ar;
+            loadedBundles.Add(needLoad[2],ar.assetBundle);
+            //assetBundle2 = ar.assetBundle;
+        }*/
 
+        
+        
+        //Load ab file end
+        
         currentGameState = GameState.WaitForStart;
         AsyncOperation ao = SceneManager.LoadSceneAsync("BattleScene");
         DontDestroyOnLoad(this.gameObject);
@@ -222,7 +316,7 @@ public class GlobalController : MonoBehaviour
         
         
         //加载玩家部分
-        var plr = assetBundle.LoadAsset<GameObject>("PlayerHandle");
+        var plr = assetBundles[0].LoadAsset<GameObject>("PlayerHandle");
         var plrlayer = GameObject.Find("Player");
         var plrclone = 
             Instantiate(plr, new Vector3(-4.5f, -2f, 0), transform.rotation, plrlayer.transform);
@@ -287,7 +381,7 @@ public class GlobalController : MonoBehaviour
         print(bundles.Count());
         foreach (var ab in bundles)
         {
-            if (ab.name == "iconsmall")
+            if (ab.name == "iconsmall" || ab.name == "allin1")
             {
                 continue;
             }
@@ -315,6 +409,13 @@ public class GlobalController : MonoBehaviour
         cameraTransform = Camera.main.transform;
         UIFXContainer = GameObject.Find("UIFXContainer");
         
+        onGlobalControllerAwake?.Invoke();
+        var menuUIManager = FindObjectOfType<MenuUIManager>();
+        menuUIManager.menuLevelStack.Push(101);
+        yield return null;
+        menuUIManager.ToNextUIState(1010);
+        
+        
         anim.SetBool("loaded",true);
         
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
@@ -323,9 +424,10 @@ public class GlobalController : MonoBehaviour
         //print(loadedBundles.ContainsKey("Iconsmall"));
         loadingEnd = true;
         currentGameState = GameState.Outbattle;
+        onGlobalControllerAwake?.Invoke();
+        MenuUIManager.SetMaxMenuLevel(1);
 
-        
-        
+
         loadingRoutine = null;
     }
 
@@ -351,10 +453,11 @@ public class GlobalController : MonoBehaviour
 
     string[] SearchPlayerRelatedAssets(int id)
     {
-        var needLoad = new string[3];
+        var needLoad = new string[4];
         needLoad[0] = BasicCalculation.ConvertID("c", id);
         needLoad[1] = BasicCalculation.ConvertID("voice_c", id);
-        needLoad[2] = BasicCalculation.ConvertID("ui_c", id);
+        needLoad[2] = BasicCalculation.ConvertID("eff_c", id);
+        needLoad[3] = BasicCalculation.ConvertID("ui_c", id);
         return needLoad;
     }
 

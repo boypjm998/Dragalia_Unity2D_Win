@@ -51,6 +51,7 @@ public class PlayerStatusManager : StatusManager
         base.Awake();
         skillRegenByAttack = new bool[4]{ true, true, true, true };
         ac = GetComponent<ActorController>();
+        
         //_conditionBar = GameObject.Find("ConditionBar").GetComponent<UI_ConditionBar>();
     }
 

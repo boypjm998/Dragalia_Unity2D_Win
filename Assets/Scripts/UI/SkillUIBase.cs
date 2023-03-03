@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +19,8 @@ public class SkillUIBase : MonoBehaviour
 
     protected Slider cooldownGauge;
 
+    protected GameObject keyHint;
+
     // Start is called before the first frame update
     protected virtual void Start()
     {
@@ -24,6 +28,29 @@ public class SkillUIBase : MonoBehaviour
         cooldownGauge = transform.Find("CD").GetComponent<Slider>();
         skillIcon = transform.Find("IconBody").Find("Mask").GetChild(0).gameObject;
         unableIcon = transform.Find("IconBody").Find("UnableIcon").gameObject;
+        keyHint = transform.Find("SkillText").gameObject;
+
+        string skillButton;
+        switch (this.sid)
+        {
+            case 1:
+                skillButton = GlobalController.keySkill1.ToUpper();
+                break;
+            case 2:
+                skillButton = GlobalController.keySkill2.ToUpper();
+                break;
+            case 3:
+                skillButton = GlobalController.keySkill3.ToUpper();
+                break;
+            case 4:
+                skillButton = GlobalController.keySkill4.ToUpper();
+                break;
+            default:
+                skillButton = "UNDEFINED";
+                break;
+        }
+
+        keyHint.GetComponentInChildren<TextMeshProUGUI>().text = skillButton;
     }
 
     // Update is called once per frame
@@ -86,10 +113,12 @@ public class SkillUIBase : MonoBehaviour
         if (spGaugeCDValue > 0)
         {
             skillIcon.transform.GetChild(1).gameObject.SetActive(true);
+            keyHint.SetActive(false);
         }
         else
         {
             skillIcon.transform.GetChild(1).gameObject.SetActive(false);
+            keyHint.SetActive(true);
         }
     }
 

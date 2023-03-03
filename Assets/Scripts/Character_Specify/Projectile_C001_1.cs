@@ -80,6 +80,8 @@ public class Projectile_C001_1 : ProjectileControllerTest
         CineMachineOperator.Instance.CamaraShake(8, .2f);
         Destroy(gameObject);
         burst.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0,0,0,2.35f,0,firedir);
-        burst.GetComponent<AttackFromPlayer>().AppendAttackSets(200, 12, 1.5f, 23.54f);
+        burst.GetComponent<AttackFromPlayer>().AppendAttackSets(200, 9, 1.5f, 23.54f);
+        burst.GetComponent<AttackFromPlayer>().KBType = BasicCalculation.KnockBackType.FromCenterFixed;
+        
     }
 }

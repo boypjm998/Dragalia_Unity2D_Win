@@ -112,6 +112,10 @@ public class AttackFromPlayer : AttackBase
         var animAttack = GetComponentInParent<Animator>();
         var rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
         var anim = playerpos.gameObject.GetComponentInParent<Animator>();
+        
+        if(anim==null)
+            anim = playerpos.gameObject.GetComponentInChildren<Animator>();
+        
         //Debug.Log(parent);
         animAttack.speed = 0.5f;
         anim.speed = 0;
@@ -127,11 +131,18 @@ public class AttackFromPlayer : AttackBase
     {
         var animAttack = GetComponentInParent<Animator>();
         var rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
-        var anim = playerpos.gameObject.GetComponentInParent<Animator>();
+        var anim = playerpos.gameObject.GetComponentInParent<ActorController>().anim;
+        
+        if(anim==null)
+            anim = playerpos.gameObject.GetComponentInChildren<Animator>();
+        
+        
         rigid.gravityScale = gravity;
         //Debug.Log(rigid.gravityScale);
         anim.speed = 1;
-        animAttack.speed = 1;
+        if(animAttack!=null)
+            animAttack.speed = 1;
+        //animAttack.speed = 1;
         ConnectCoroutine = null;
     }
 
@@ -214,7 +225,7 @@ public class AttackFromPlayer : AttackBase
     public Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType, GameObject target)
     {
         var kbdirtemp = knockbackDirection;
-        switch (KBType)
+        switch (knockBackType)
         {
             case BasicCalculation.KnockBackType.FaceDirection:
                 kbdirtemp = firedir * kbdirtemp;
@@ -327,7 +338,9 @@ public class AttackFromPlayer : AttackBase
         if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
 
+        //print(target.transform.parent.gameObject.name);
         var dmg = battleStageManager.PlayerHit(target.transform.parent.gameObject, this);
+        
 
 
         if (hitConnectEffect != null)

@@ -66,7 +66,7 @@ public class UI_StartScreen : MonoBehaviour
         //JAPANESE
 
         var timeLimit = transform.Find("TimeLimit").GetComponent<TextMeshProUGUI>();
-        string time;
+        //string time;
         if (_battleStageManager.timeLimit < 0)
         {
             timeLimit.text = $"<sprite=0> ∞";

@@ -5,6 +5,8 @@ using Random = UnityEngine.Random;
 
 public class VoiceController_HB01 : AudioManagerGeneral
 {
+
+    private UI_DialogDisplayer _dialogDisplayer;
     public enum myMoveList
     {
         SingleDodgeCombo,
@@ -21,6 +23,7 @@ public class VoiceController_HB01 : AudioManagerGeneral
     }
     void Start()
     {
+        _dialogDisplayer = FindObjectOfType<UI_DialogDisplayer>();
         voice = gameObject.GetComponent<AudioSource>();
         voiceAssetBundlePath = "voice_c005";
         LoadMyVoice();
@@ -118,7 +121,7 @@ public class VoiceController_HB01 : AudioManagerGeneral
         }
     }
 
-    public void PlayMyVoice(myMoveList moveName)
+    public void PlayMyVoice(myMoveList moveName,bool broadcast = false)
     {
         if (voice.isPlaying == true || voiceCDRoutine!=null)
         {
@@ -127,73 +130,94 @@ public class VoiceController_HB01 : AudioManagerGeneral
 
         voiceCDRoutine = StartCoroutine("WaitForVoiceCooldown");
         AudioClip clip;
-        int rand = 0;
+        int voiceID = 0;
+        
 
         switch (moveName)
         {
             case myMoveList.Combo:
             {
-                rand = Random.Range(0, 7);
-                clip = myClips[rand];
+                voiceID = Random.Range(0, 7);
+                clip = myClips[voiceID];
                 break;
             }
             case myMoveList.SingleDodgeCombo:
             {
-                rand = Random.Range(0, 6);
-                clip = myClips[rand];
+                voiceID = Random.Range(0, 6);
+                clip = myClips[voiceID];
                 break;
             }
             case myMoveList.WarpAttack:
             {
-                clip = myClips[20];
+                voiceID = 20;
                 break;
                     
             }
             case myMoveList.CamineRush:
             {
-                clip = myClips[10];
+                voiceID = 10;
                 break;
             }
             case myMoveList.FlameRaid:
             {
-                clip = myClips[11];
+                voiceID = 11;
                 break;
             }
             case myMoveList.BrightCamineRush:
             {
-                clip = myClips[13];
+                voiceID = 13;
                 break;
             }
             case myMoveList.SavageFlameRaid:
             {
-                clip = myClips[14];
+                voiceID = 14;
                 break;
             }
             case myMoveList.ScarletInferno:
             {
-                clip = myClips[15];
+                voiceID = 15;
                 break;
             }
             case myMoveList.Roll:
             {
-                clip = myClips[9];
+                voiceID = 9;
                 break;
             }
-            default: clip = null;
+            default:
+                voiceID = -1;
                 break;
 
         }
+
+        if (voiceID >= 0)
+        {
+            clip = myClips[voiceID];
+        }
+        else
+        {
+            clip = null;
+        }
+
         voice.clip = clip;
         voice.Play();
+        if (broadcast)
+        {
+            _dialogDisplayer.EnqueueDialog(1005,voiceID);
+        }
 
     }
 
-    public void BroadcastVoice(myMoveList moveName)
+    public void BroadcastVoice(int moveID)
     {
-        switch (moveName)
+        switch (moveID)
         {
-            case myMoveList.Defeat:
+            case 0:
                 voice.PlayOneShot(myClips[29]);
+                _dialogDisplayer.EnqueueDialog(1005,29);
+                break;
+            case 11:
+                voice.PlayOneShot(myClips[15]);
+                _dialogDisplayer.EnqueueDialog(1005,15);
                 break;
         }
         

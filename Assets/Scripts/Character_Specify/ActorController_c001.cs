@@ -11,7 +11,8 @@ public class ActorController_c001 : ActorController
 
     public override void UseSkill(int id)
     {
-        voiceController.PlaySkillVoice(id);
+        if(voiceController.voiceLoaded)
+            voiceController.PlaySkillVoice(id);
         switch (id)
         {
             case 1:
@@ -61,7 +62,7 @@ public class ActorController_c001 : ActorController
     {
         base.Awake();
 
-        alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+        alchemicGauge = GameObject.Find("AlchemicGauge")?.GetComponent<AlchemicGauge>();
         voiceController = GetComponentInChildren<VoiceController_C001>();
 
 
@@ -283,8 +284,8 @@ public class ActorController_c001 : ActorController
         ActionDisable((int)PlayerActionType.JUMP);//jump
         pi.SetInputDisabled("move");
         
-        if(anim.GetBool("isAttack")==false)
-            voiceController.PlayAttackVoice(1);
+        //if(anim.GetBool("isAttack")==false)
+            //voiceController.PlayAttackVoice(1);
         
         
         StartAttack();
@@ -383,14 +384,14 @@ public class ActorController_c001 : ActorController
     public override void OnDashEnter()
     {
         base.OnDashEnter();
-        voiceController.PlayAttackVoice(0);
+        //voiceController.PlayAttackVoice(0);
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="moveID">1:普攻,2:s1,3:s2</param>
-    protected override void FaceDirectionAutoFix(int moveID)
+    public override void FaceDirectionAutoFix(int moveID)
     {
         switch (moveID)
         {

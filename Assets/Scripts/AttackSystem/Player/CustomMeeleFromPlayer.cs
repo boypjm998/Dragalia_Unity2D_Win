@@ -78,9 +78,9 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
         
         Animator animAttack = GetComponentInParent<Animator>();
         if(animAttack == null)
-            yield break;
+            print("animAttack is null");
         Rigidbody2D rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
-        Animator anim = playerpos.gameObject.GetComponentInParent<Animator>();
+        Animator anim = playerpos.gameObject.GetComponentInParent<ActorController>().anim;
         //Debug.Log(parent);
         animAttack.speed = 0.5f;
         anim.speed = 0;

@@ -218,8 +218,8 @@ public class TargetAimer : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(!enabled)
-            return;
+        //if(!enabled)
+            //return;
         
         
         if (collision.CompareTag("Enemy") && collision.GetComponent<Transform>().gameObject != EnemyWatched)
@@ -242,8 +242,8 @@ public class TargetAimer : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(!enabled)
-            return;
+        //if(!enabled)
+            //return;
         if (!collision.CompareTag("Enemy"))
             return;
         if (EnemyWatched != null )

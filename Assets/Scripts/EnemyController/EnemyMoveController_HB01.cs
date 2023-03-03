@@ -502,7 +502,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         anim.Play("buff");
         float animTime;
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
-        voice.PlayMyVoice(VoiceController_HB01.myMoveList.ScarletInferno);
+        
+        voice.BroadcastVoice(11);
+        
         Destroy(hint,0.5f);
         ScarletInferno();
         StageCameraController.SwitchMainCamera();
@@ -528,7 +530,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         anim.Play("buff");
         float animTime;
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
-        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Roll);
+        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Roll,true);
         BlazingEnhancementBuff();
         
         
@@ -1287,7 +1289,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         switch (id)
         {
             case 0:
-                voice.BroadcastVoice(VoiceController_HB01.myMoveList.Defeat);
+                voice.BroadcastVoice(0);
                 break;
         }
     }

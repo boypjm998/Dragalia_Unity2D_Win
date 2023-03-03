@@ -16,6 +16,9 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     private Image HPBarImage;
     protected float currentHP;
     protected float maxHP;
+    protected UI_FullScreenEffect fullScreenEffect;
+    
+    
     [SerializeField] private Color HPFullColor;
     [SerializeField] private Color HPOver30Color;
     [SerializeField] private Color HPBelow30Color;
@@ -32,6 +35,8 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        fullScreenEffect = GameObject.Find("UI").transform.Find("FullScreenEffect").
+            GetChild(0).GetComponent<UI_FullScreenEffect>();
         var characterID = GlobalController.currentCharacterID;
         statusManager = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
         _slider = GetComponentInChildren<Slider>();
@@ -61,12 +66,15 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
         if (_slider.value >= 1)
         {
             HPBarImage.color = HPFullColor;
+            fullScreenEffect.Disable();
         }else if (_slider.value < 0.3)
         {
             HPBarImage.color = HPBelow30Color;
+            fullScreenEffect.Enable();
         }
         else
         {
+            fullScreenEffect.Disable();
             HPBarImage.color = HPOver30Color;
         }
     }

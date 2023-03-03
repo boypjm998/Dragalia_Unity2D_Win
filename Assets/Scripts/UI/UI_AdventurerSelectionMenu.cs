@@ -42,17 +42,25 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     private string[] descriptionString;
 
     public AssetBundle iconBundle;
-    
+
+    private int deleReg=0;
 
     private void Awake()
     {
-        
+        //GlobalController的事件onGlobalControllerAwake添加Init()方法
+        //GlobalController.onGlobalControllerAwake += Init;
         
     }
 
+    private void Start()
+    {
+        deleReg = 1;
+    }
+
+
     void InitAllChildren()
     {
-        detailedInfoMenu = GameObject.Find("DetailedInfoMenu");
+        detailedInfoMenu = GameObject.Find("UI").transform.Find("DetailedInfoMenu").gameObject;
         iconInDetailedInfoMenu = detailedInfoMenu.transform.Find("Board").GetChild(0).GetComponent<Image>();
         detailedMenuTitle = detailedInfoMenu.transform.Find("Title").GetComponentInChildren<TextMeshProUGUI>();
         detailedItemName = detailedInfoMenu.transform.Find("Board").GetChild(1).GetComponent<TextMeshProUGUI>();
@@ -85,8 +93,23 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    IEnumerator Start()
+    private void OnEnable()
     {
+        if (iconBundle == null)
+        {
+            Init();
+        }
+        
+    }
+
+    private void OnDisable()
+    {
+        
+    }
+
+    public void Init()
+    {
+        print("Init");
         InitAllChildren();
         _globalController = FindObjectOfType<GlobalController>();
         //日语！！！！！！！！！！！！！！！！！
@@ -102,10 +125,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo.json");
             CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo.json");
         }
-
         
-
-        yield return new WaitUntil(() => _globalController.loadingEnd);
         var bundle = AssetBundle.GetAllLoadedAssetBundles();
         
         foreach (var ab in bundle)
@@ -113,8 +133,9 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             if (ab.name == "iconsmall")
                 iconBundle = ab;
         }
-
-        yield return null;
+        
+        print(iconBundle);
+        
         this.iconBundle =
             _globalController.GetBundle
                 ("iconsmall");
@@ -127,11 +148,9 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         ReloadDisplayedCharacter();
     }
 
+
     // Update is called once per frame
-    void Update()
-    {
-        //print("AssetBundleNum:"+AssetBundle.GetAllLoadedAssetBundles().Count());
-    }
+    
 
     JsonData ReadCharacterInfoData(string name)
     {
@@ -265,7 +284,8 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
     private void OnDestroy()
     {
-        
+        GlobalController.onGlobalControllerAwake -= Init;
+
         //Destroy(iconBundle);
     }
 }

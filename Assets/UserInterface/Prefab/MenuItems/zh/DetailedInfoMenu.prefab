@@ -711,8 +711,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5134250755606827067}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ReturnUIState
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -973,6 +973,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5134250755606827068}
   - component: {fileID: 5134250755606827067}
+  - component: {fileID: 1278883456}
   m_Layer: 5
   m_Name: DetailedInfoMenu
   m_TagString: Untagged
@@ -1018,11 +1019,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LayerID: 2
-  sortingGroupID: 0
+  sortingGroupID: 10031
   isActive: 0
   initialPosition: {x: 0, y: 0}
+  hideTime: 0.3
   _hideDirection: 3
   _hideLocalPosition: {x: 0, y: 900}
+--- !u!225 &1278883456
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5134250755606827069}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5134250755827827249
 GameObject:
   m_ObjectHideFlags: 0

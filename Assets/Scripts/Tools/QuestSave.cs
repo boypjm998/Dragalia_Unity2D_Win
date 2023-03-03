@@ -31,16 +31,25 @@ public class QuestSave
     }
 }
 
+public class MapData
+{
+    public int mapID;
+    public int isAvailable;
+}
+
 public class QuestDataList
 {
     public List<QuestSave> quest_info;
-    
+    public List<MapData> map_info;
+
     public QuestDataList()
     {
         quest_info = new List<QuestSave>();
+        map_info = new List<MapData>();
     }
     public QuestDataList(List<QuestSave> list)
     {
         quest_info = list;
+        map_info = new List<MapData>();
     }
 }

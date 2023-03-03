@@ -10,8 +10,8 @@ public class Attack_c001 : AttackManager
     [SerializeField]
     private GameObject Shotpoints;
     
-    [SerializeField]
-    private GameObject attackContainer;
+    //[SerializeField]
+    //private GameObject attackContainer;
     [Header("Projectiles:")]
     public GameObject projectile1;//Roll
     public GameObject projectile2;//Std
@@ -39,9 +39,9 @@ public class Attack_c001 : AttackManager
     // Start is called before the first frame update
     private void Awake()
     {
-        //RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
+        RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
         ta = GetComponentInChildren<TargetAimer>();
-        //Shotpoints = GameObject.Find("Shotpoints");
+        Shotpoints = GameObject.Find("Shotpoints");
         ac = GetComponent<ActorController_c001>();
         _statusManager = GetComponent<PlayerStatusManager>();
         
@@ -89,7 +89,7 @@ public class Attack_c001 : AttackManager
 
     }
 
-    private void DashAttack()
+    public void DashAttack()
     {
         ta.TargetSwapByAttack();
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "DashAttack");
@@ -164,7 +164,7 @@ public class Attack_c001 : AttackManager
         atk1.InitAttackBasicAttributes(1.5f, 2.0f, 0.8f, 3.84f, 0, ac.facedir);
         for (int i = 0; i < 5; i++)
         {
-            atk1.AppendAttackSets(120,6.0f,0.8f,3.84f);
+            atk1.AppendAttackSets(140,6.0f,0.8f,3.84f);
        
         }
         atk1.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Flashburn,
@@ -312,7 +312,7 @@ public class Attack_c001 : AttackManager
 
 
 
-    private void AirDashAttack()
+    public override void AirDashAttack()
     {
         GameObject attackLayer = MeeleAttackFXLayer;
         GameObject container = Instantiate(attackContainer, shotpoint.position, transform.rotation, MeeleAttackFXLayer.transform);

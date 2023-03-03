@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class UI_AdventurerSelectionMenu2 : MonoBehaviour
 {
-    private UI_AdventurerSelectionMenu upperMenu;
+    [SerializeField] private UI_AdventurerSelectionMenu upperMenu;
 
     private void Awake()
     {
-        upperMenu = FindObjectOfType<UI_AdventurerSelectionMenu>();
+        //upperMenu = FindObjectOfType<UI_AdventurerSelectionMenu>();
+        if (upperMenu == null)
+        {
+            upperMenu = GameObject.Find("UI").transform.Find("CharacterInfoMenu").GetComponent<UI_AdventurerSelectionMenu>();
+        }
     }
 
     // Start is called before the first frame update

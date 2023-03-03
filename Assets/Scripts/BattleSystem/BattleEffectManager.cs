@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
 
@@ -222,8 +223,18 @@ public class BattleEffectManager : MonoBehaviour
 
 
     }
-    
-    
+
+    public static void BWEffect()
+    {
+        var volume = GameObject.Find("Global Volume2").GetComponent<Volume>();
+
+        volume.weight = 1;
+        
+        var tweenerCore = DOTween.To(() => volume.weight, x => volume.weight = x,
+            0,
+            3f).SetUpdate(true);
+        
+    }
 
 
 }

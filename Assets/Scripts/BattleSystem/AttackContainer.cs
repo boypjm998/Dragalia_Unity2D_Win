@@ -10,7 +10,8 @@ public class AttackContainer : MonoBehaviour
     private bool needTotalDisplay;
     protected int totalDamage;
     public bool spGained;
-    public List<int> conditionCheckDone;
+    public List<int> conditionCheckDone;//已检查过的敌人InstanceID
+    //public List<int> specialConditionCheckDone;
 
     public int hitConnectNum { get; protected set; }
 

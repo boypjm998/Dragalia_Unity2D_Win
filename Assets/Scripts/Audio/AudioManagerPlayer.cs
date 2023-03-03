@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public abstract class AudioManagerPlayer : MonoBehaviour
 {
@@ -10,7 +12,8 @@ public abstract class AudioManagerPlayer : MonoBehaviour
     
     protected AudioSource voice;
     protected Coroutine voiceCDRoutine;
-    
+    public bool voiceLoaded { get; protected set; } = false;
+
     [Header("Attack Part")]
     public AudioClip[] Combo1;
     public AudioClip[] Combo3;
@@ -45,12 +48,22 @@ public abstract class AudioManagerPlayer : MonoBehaviour
 
     protected void LoadMyVoice()
     {
-        _globalController = FindObjectOfType<GlobalController>();
+        try
+        {
+            _globalController = FindObjectOfType<GlobalController>();
+        }
+        catch (NullReferenceException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
         AssetBundle assetBundle = _globalController.GetBundle(GetVoicePath());
         //AssetBundle assetBundle = AssetBundle.LoadFromFile
             //(Path.Combine(Application.streamingAssetsPath, GetVoicePath()));
         var voicePack = assetBundle.LoadAllAssets<AudioClip>();
         DistributeMyVoice(voicePack);
+        voiceLoaded = true;
     }
 
     protected string GetVoicePath()

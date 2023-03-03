@@ -1013,12 +1013,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3395538615925798124}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1021
           m_FloatArgument: 0
           m_StringArgument: OpenInfoMenu
           m_BoolArgument: 0
@@ -2045,12 +2045,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3395538615925798124}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1021
           m_FloatArgument: 0
           m_StringArgument: OpenInfoMenu
           m_BoolArgument: 0
@@ -2192,12 +2192,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3395538615925798124}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1021
           m_FloatArgument: 0
           m_StringArgument: OpenInfoMenu
           m_BoolArgument: 0
@@ -2550,12 +2550,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3395538615925798124}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1021
           m_FloatArgument: 0
           m_StringArgument: OpenInfoMenu
           m_BoolArgument: 0
@@ -2697,12 +2697,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3395538615925798124}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1021
           m_FloatArgument: 0
           m_StringArgument: OpenInfoMenu
           m_BoolArgument: 0
@@ -2730,6 +2730,7 @@ GameObject:
   - component: {fileID: 5749843553755202142}
   - component: {fileID: 3395538615925798124}
   - component: {fileID: 3516283447148709312}
+  - component: {fileID: 1939476675}
   m_Layer: 5
   m_Name: CharacterInfoMenu
   m_TagString: Untagged
@@ -2776,9 +2777,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LayerID: 1
-  sortingGroupID: 0
+  sortingGroupID: 1003
   isActive: 0
   initialPosition: {x: 0, y: 0}
+  hideTime: 0.3
   _hideDirection: 1
   _hideLocalPosition: {x: 0, y: -800}
 --- !u!114 &3516283447148709312
@@ -2795,6 +2797,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentSelectedCharaID: 1
   iconBundle: {fileID: 0}
+--- !u!225 &1939476675
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5749843553755202137}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5749843554312681486
 GameObject:
   m_ObjectHideFlags: 0
@@ -3871,12 +3885,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3395538615925798124}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: clicked
-        m_Mode: 5
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1021
           m_FloatArgument: 0
           m_StringArgument: OpenInfoMenu
           m_BoolArgument: 0
