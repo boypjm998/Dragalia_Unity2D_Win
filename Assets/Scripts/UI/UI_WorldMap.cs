@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using LitJson;
 using UnityEngine.UI;
 
 public class UI_WorldMap : MonoBehaviour
@@ -13,13 +14,15 @@ public class UI_WorldMap : MonoBehaviour
     private int lastQuestID = -1;
     private ScrollRect _scrollRect;
     private Vector3 startPosition;
-    
+    protected UI_LevelSelection _levelSelection;
+
     // Start is called before the first frame update
     private void Awake()
     {
         content = transform.Find("Viewport/Content").gameObject;
         startPosition = content.transform.localPosition;
         _scrollRect = GetComponent<ScrollRect>();
+        _levelSelection = transform.parent.Find("LevelSelection").GetComponent<UI_LevelSelection>();
         //print(content);
         _globalController = FindObjectOfType<GlobalController>();
         _mapInformation = transform.Find("Viewport/Content/MapContainer").GetComponentInChildren<MapInformation>();
@@ -81,6 +84,16 @@ public class UI_WorldMap : MonoBehaviour
         //启用ScrollRect
         _scrollRect.enabled = true;
     }
+
+    public void InformPanelReload(int panelID)
+    {
+        _levelSelection.Reload(panelID);
+    }
+
+
+
+
+
 
 
     // Update is called once per frame

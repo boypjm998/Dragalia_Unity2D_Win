@@ -13,6 +13,11 @@ public class UI_BossConditionBar : UI_ConditionBar
         startPosition = -200;
     }
 
+    void Start()
+    {
+        
+    }
+
     // Start is called before the first frame update
     private void OnEnable()
     {

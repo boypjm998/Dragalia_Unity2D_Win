@@ -132,20 +132,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c0b3c06388c14d4ebf37c86e0f33654, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 0}
+  chara_id: 1
+  skill_id: 1
+  attackInfo:
+  - dmgModifier:
+    - 3.48
+    constDmg: []
+    knockbackPower: 140
+    knockbackForce: 8
+    knockbackTime: 0.5
+    knockbackDirection: {x: 3, y: 1}
+    KBType: 1
+    firedir: 0
+  firedir: 0
+  attackType: 4
+  dmgModifier:
+  - 3.84
+  nextDmgModifier: []
+  nextKnockbackPower: []
+  nextKnockbackForce: []
+  nextKnockbackTime: []
   knockbackPower: 140
   knockbackForce: 8
   knockbackTime: 0.5
   knockbackDirection: {x: 3, y: 1}
   KBType: 1
-  dmgModifier:
-  - 3.84
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
   spGain: 0
   isMeele: 0
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
   withConditionChance: 78000000
   withConditionNum: 01000000
   withConditionFlags: 
@@ -154,8 +169,8 @@ MonoBehaviour:
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
   defaultGravity: 0
-  attackType: 4
   hitShakeIntensity: 5
+  damageAutoReset: 0
 --- !u!61 &5844383950186056460
 BoxCollider2D:
   m_ObjectHideFlags: 0

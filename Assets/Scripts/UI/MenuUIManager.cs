@@ -10,10 +10,10 @@ using UnityEngine.UI;
 public class MenuUIManager : MonoBehaviour
 {
     public int GUIAnimCount { get; protected set; } = 0;
-    private Coroutine animRoutine = null;
+    //private Coroutine animRoutine = null;
     private Sequence _sequence;
     public static int highestMenu = 0;
-    public int lastDisabledUIGroup;
+    //public int lastDisabledUIGroup;
     private Dictionary<string, UISortingGroup> UIDict;
     private GlobalController _globalController;
     public Stack<int> menuLevelStack;
@@ -180,13 +180,13 @@ public class MenuUIManager : MonoBehaviour
         return;
         
 
-        var buttons = obj.GetComponentsInChildren<Button>();
-        
-        foreach (var button in buttons)
-        {
-            button.interactable = flag;
-            
-        }
+        // var buttons = obj.GetComponentsInChildren<Button>();
+        //
+        // foreach (var button in buttons)
+        // {
+        //     button.interactable = flag;
+        //     
+        // }
     }
 
     public static void SetMaxMenuLevel(int id)
@@ -408,7 +408,12 @@ public class MenuUIManager : MonoBehaviour
     public void EnterLevel(int questID)
     {
         DisableAll();
-        _globalController.TestEnterLevel();
+        
+        string questIDStr = questID.ToString();
+        //如果questIDStr长度不足6位，就在前面补0
+        questIDStr = questIDStr.PadLeft(6,'0');
+        
+        _globalController.TestEnterLevel(questIDStr);
     }
 
     public void ToNextUIState(int toState,bool animation = true)

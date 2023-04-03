@@ -15,7 +15,8 @@ public class BattleSceneUIManager : MonoBehaviour
 
     private void Awake()
     {
-        PauseMenu = transform.Find("PauseMenu").gameObject;PauseMenu.SetActive(false);
+        PauseMenu = transform.Find("PauseMenu").gameObject;
+        PauseMenu.SetActive(false);
         _stageManager = FindObjectOfType<BattleStageManager>();
         MenuButton = transform.Find("MenuButton").gameObject;
     }

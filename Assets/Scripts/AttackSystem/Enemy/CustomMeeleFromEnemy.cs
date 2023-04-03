@@ -13,7 +13,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
         
     }
 
-    void Start()
+    protected void Start()
     {
         if(attackCollider==null)
             attackCollider = GetComponent<Collider2D>();
@@ -21,6 +21,9 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
         if (enemySource == null)
         {
             enemySource = selfpos?.gameObject;
+            if (firedir == 0)
+                firedir = enemySource.GetComponent<ActorBase>().facedir;
+            print(firedir);
         }
 
         //print(enemySource);
@@ -34,7 +37,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
     
     private void OnTriggerStay2D(Collider2D collision)
     {
-        Transform enemyTrans;
+        //Transform enemyTrans;
         //Debug.Log(collision.gameObject.GetInstanceID());
         //print("stay!!!!");
         
@@ -42,7 +45,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
         {
             if (Avoidable == AvoidableProperty.Red)
             {
-                if(collision.GetComponentInParent<ActorController>().dodging)
+                if(collision.GetComponentInParent<IKnockbackable>().GetDodge())
                 //如果是红圈并且角色在技能中
                 return;
             }

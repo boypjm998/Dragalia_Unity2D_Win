@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using GameMechanics;
 public class ActorController_Dagger : ActorController
 {
     public int combo = 0;

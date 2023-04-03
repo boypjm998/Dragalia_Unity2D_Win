@@ -1,47 +1,45 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using BehaviorDesigner.Runtime.Tasks.Movement;
-using BehaviorDesigner.Runtime.Tasks.Unity.UnityParticleSystem;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using Random = UnityEngine.Random;
-
-public class EnemyControllerHumanoid : EnemyController
+using GameMechanics;
+public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanActor
 {
-    
+    public GameObject weaponObject; //need SeriazeField
     
     public float movespeed = 6.0f;
     public float rollspeed = 9.0f;
     public float jumpforce = 20.0f;
     protected int jumpTime = 2;
-    private float jumpHeight = 5f;
+    protected float jumpHeight = 5f;
     
     [SerializeField] protected float isMove = 0;
     public bool dodging = false;
 
-    public bool moveEnable;
-
-    public bool testMove;
+    [HideInInspector] public bool moveEnable;
+    
     public GameObject tar;
     
     
-    //private Animator anim;
+    //protected Animator anim;
     
     
     public float _defaultgravityscale;
-    private EnemyGroundSensor _groundSensor;
+    protected StandardGroundSensor _groundSensor;
 
-    private int debugRes;
+    protected int debugRes;
+    
 
     protected override void Awake()
     {
-        base.Awake();
-        anim.GetComponentInChildren<Animator>();
+        //base.Awake();
+        rendererObject = transform.Find("Model").GetChild(0).Find("model/mBodyAll").gameObject;
+        anim = GetComponentInChildren<Animator>();
         rigid = GetComponentInChildren<Rigidbody2D>();
         MoveManager = GetComponent<EnemyMoveManager>();
-        _groundSensor = GetComponentInChildren<EnemyGroundSensor>();
+        _groundSensor = GetComponentInChildren<StandardGroundSensor>();
         _behavior = GetComponent<DragaliaEnemyBehavior>();
         
     }
@@ -53,13 +51,13 @@ public class EnemyControllerHumanoid : EnemyController
         currentKBRes = _statusManager.knockbackRes;
         debugRes = currentKBRes;
 
-        EnemyGroundSensor.IsGround += GroundCheck;
+        _groundSensor.IsGround += GroundCheck;
 
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
-        EnemyGroundSensor.IsGround -= GroundCheck;
+        _groundSensor.IsGround -= GroundCheck;
     }
 
     protected void Update()
@@ -87,7 +85,7 @@ public class EnemyControllerHumanoid : EnemyController
 
     }
 
-    private void FixedUpdate()
+    protected void FixedUpdate()
     {
         Move();
     }
@@ -257,10 +255,15 @@ public class EnemyControllerHumanoid : EnemyController
 
     }
 
-    public IEnumerator MoveTowardTargetOnGround(GameObject target, float maxFollowTime, float arriveDistanceX,float arriveDistanceY, float startFollowDistance)
+    public virtual IEnumerator MoveTowardTargetOnGround(GameObject target, float maxFollowTime, float arriveDistanceX,float arriveDistanceY, float startFollowDistance)
     {
         if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
             VerticalMoveRoutine = null;
+        }
+
+        
         
         TurnMove(target);
         if (CheckTargetDistance(target,arriveDistanceX,arriveDistanceY) && anim.GetBool("isGround"))
@@ -338,7 +341,7 @@ public class EnemyControllerHumanoid : EnemyController
         
 
     }
-    public IEnumerator MoveToSameGround(GameObject target, float maxFollowTime, float arriveDistanceX)
+    public virtual IEnumerator MoveToSameGround(GameObject target, float maxFollowTime, float arriveDistanceX)
     {
         if (VerticalMoveRoutine != null)
             VerticalMoveRoutine = null;
@@ -430,19 +433,7 @@ public class EnemyControllerHumanoid : EnemyController
     /// 检查与目标的距离，小于指定值返回true.
     /// </summary>
     /// <returns></returns>
-    public bool CheckTargetDistance(GameObject target, float x, float y)
-    {
-        if (Mathf.Abs(target.transform.position.x - transform.position.x ) > x)
-        {
-            return false;
-        }
-        if (Mathf.Abs(target.transform.position.y - transform.position.y ) > y)
-        {
-            return false;
-        }
-
-        return true;
-    }
+    
 
     /// <summary>
     /// 检查目标是否和自己在同一个平面
@@ -468,7 +459,7 @@ public class EnemyControllerHumanoid : EnemyController
         }
 
         GameObject tarGround;
-        var targetSensor = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
+        var targetSensor = target.GetComponentInChildren<IGroundSensable>();
         if(targetSensor.GetCurrentAttachedGroundInfo()!=null)
         {
             tarGround = targetSensor.GetCurrentAttachedGroundInfo();
@@ -511,11 +502,6 @@ public class EnemyControllerHumanoid : EnemyController
 
 
     }
-
-
-
-
-
     /// <summary>
     /// <para>弃用的</para>
     /// </summary>
@@ -539,7 +525,7 @@ public class EnemyControllerHumanoid : EnemyController
         return false;
     }
 
-    IEnumerator TryDoJump(GameObject target, float requiredY)
+    protected virtual IEnumerator TryDoJump(GameObject target, float requiredY)
     {
         var groundListener = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
         var groundTargetAttached = groundListener.GetCurrentAttachedGroundInfo();
@@ -597,7 +583,7 @@ public class EnemyControllerHumanoid : EnemyController
 
     }
 
-    IEnumerator TryJumpOver(GameObject target)
+    protected virtual IEnumerator TryJumpOver(GameObject target)
     {
         Jump();
         yield return new WaitUntil(() => rigid.velocity.y < 0.5f);
@@ -620,7 +606,7 @@ public class EnemyControllerHumanoid : EnemyController
         
     }
 
-    IEnumerator TryDownPlatform(GameObject target)
+    protected virtual IEnumerator TryDownPlatform(GameObject target)
     {
         var groundListener = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
         
@@ -656,10 +642,10 @@ public class EnemyControllerHumanoid : EnemyController
     /// 检查自身是否在地面上。
     /// </summary>
     /// <returns></returns>
-    public bool GroundCheck()
-    {
-        return anim.GetBool("isGround");
-    }
+    // public bool GroundCheck()
+    // {
+    //     return anim.GetBool("isGround");
+    // }
 
     
     /// <summary>
@@ -667,7 +653,7 @@ public class EnemyControllerHumanoid : EnemyController
     /// </summary>
     /// <param name="groundTarget">弃用</param>
     /// <returns></returns>
-    protected bool PlatformIsAccessible()
+    protected virtual bool PlatformIsAccessible()
     {
         //var pos = groundTarget.GetComponent<Collider2D>().
         RaycastHit2D[] hitinfo =
@@ -700,13 +686,6 @@ public class EnemyControllerHumanoid : EnemyController
 
 
     }
-
-
-
-
-
-
-
 
 
     protected virtual IEnumerator KnockBackEffect(float time,float force, Vector2 kbDir)
@@ -782,12 +761,30 @@ public class EnemyControllerHumanoid : EnemyController
     
     }
     
+    protected override IEnumerator HurtEffectCoroutine()
+    {
+        var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
+        var time = hurtEffectDuration;
+        while (time > 0)
+        {
+            time -= Time.deltaTime;
+            flashBody.SetActive(true);
+            flashWeapon.SetActive(true);
+            yield return null;
+        }
+        flashBody.SetActive(false);
+        flashWeapon.SetActive(false);
+        hurtEffectCoroutine = null;
+    }
+
+    
+
     protected void SetAnimSpeed(float percentage)
     {
         anim.speed = percentage;
     }
     
-    protected void OnHurtEnter()
+    public override void OnHurtEnter()
     {
         
         OnAttackInterrupt?.Invoke();
@@ -815,7 +812,7 @@ public class EnemyControllerHumanoid : EnemyController
                 _statusManager.ObtainUnstackableTimerBuff
                 ((int)BasicCalculation.BattleCondition.AtkDebuff,
                     30,7,BattleCondition.buffEffectDisplayType.Value,99);
-                print(_behavior.GetCurrentState());
+                //print(_behavior.GetCurrentState());
             }
             _behavior.StopCoroutine(_behavior.currentAttackAction);
             _behavior.currentAttackAction = null;
@@ -834,10 +831,13 @@ public class EnemyControllerHumanoid : EnemyController
             //meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
             meeles.GetChild(i).GetComponent<EnemyAttackHintBar>()?.DestroySelf();
         }
+        
+        transform.GetChild(0).GetComponentInChildren<AnimationEventSender_Enemy>()?.ChangeFaceExpression(0.75f);
+        MoveManager.AppearRenderer();
 
     }
     
-    protected void OnHurtExit()
+    public override void OnHurtExit()
     {
         moveEnable = true;
         rigid.gravityScale = _defaultgravityscale;
@@ -849,7 +849,7 @@ public class EnemyControllerHumanoid : EnemyController
         }
         TurnMove(_behavior.targetPlayer);
 
-        
+        transform.GetChild(0).GetComponentInChildren<AnimationEventSender_Enemy>()?.ChangeFaceExpression(0f);
 
     }
 
@@ -894,7 +894,7 @@ public class EnemyControllerHumanoid : EnemyController
         {
             MoveManager._tweener.Kill();
         }
-        rigid.gravityScale = 4;
+        rigid.gravityScale = _defaultgravityscale;
         SetVelocity(rigid.velocity.x,0);
         moveEnable = false;
         //SetVelocity(rigid.velocity.x,0);
@@ -917,7 +917,7 @@ public class EnemyControllerHumanoid : EnemyController
         if (hurtEffectCoroutine != null)
         {
             StopCoroutine(hurtEffectCoroutine);
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
+            flashBody.SetActive(false);
             hurtEffectCoroutine = null;
             
         }
@@ -961,10 +961,7 @@ public class EnemyControllerHumanoid : EnemyController
     }
     
 
-    public void SetKBRes(int value)
-    {
-        currentKBRes = value;
-    }
+    
 
     /// <summary>
     /// 跳跃之后将着地判定暂时挂起
@@ -998,5 +995,14 @@ public class EnemyControllerHumanoid : EnemyController
         isMove = 0;
     }
 
+    public override void SwapWeaponVisibility(bool flag)
+    {
+        weaponObject.transform.GetChild(0).gameObject.SetActive(flag);
+    }
+    
+    public bool GetDodge()
+    {
+        return dodging;
+    }
 
 }

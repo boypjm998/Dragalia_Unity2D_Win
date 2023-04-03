@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-
+using GameMechanics;
 //Put in Charater/Enemy's child.
 public class UI_BuffLogPopManager : MonoBehaviour
 {

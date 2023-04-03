@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using GameMechanics;
 public class UI_CountdownTimer : MonoBehaviour
 {
     [SerializeField] private Sprite normalSprite;

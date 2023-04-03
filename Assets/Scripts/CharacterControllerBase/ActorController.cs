@@ -1,33 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 
 
-public class ActorController : MonoBehaviour
+public class ActorController : ActorBase, IKnockbackable, IHumanActor
 {
+    public int jumptime => pi.jumptime;
     public int defaultGravity = 4;
     protected AudioManagerPlayer voiceController;
     public PlayerInput pi;
-    public PlayerStatusManager stat;
+    public PlayerStatusManager _statusManager;
     public float movespeed = 6.0f;
     public float rollspeed = 9.0f;
     public float jumpforce = 20.0f;
-    public Animator anim; 
-    public Rigidbody2D rigid;
+    
     //private Vector2 movingVec;
+
     
-    public int facedir = 1;
     public bool dodging = false;
-    
-    public delegate void OnHurt();
-    public OnHurt OnAttackInterrupt;
-    
-    
+
+
+    [SerializeField] public bool[] isAttackSkill = new bool[4];
     public TargetAimer ta;
     private Coroutine KnockbackRoutine = null;
-    
+
     public enum PlayerActionType
     {
         MOVE = 1,
@@ -42,11 +41,11 @@ public class ActorController : MonoBehaviour
     /// </summary>
     public virtual void Move()
     {
-        if(pi.enabled == false)
+        if (pi.enabled == false)
         {
             return;
         }
-        
+
         if (pi.moveEnabled == false)
         {
             return;
@@ -55,72 +54,87 @@ public class ActorController : MonoBehaviour
         rigid.position += new Vector2(movespeed * (pi.isMove), 0) * Time.fixedDeltaTime;
 
         if (pi.directionLock == true)
-        { return; }
-        
+        {
+            return;
+        }
+
         //if(anim.GetBool("attack") == false)
         checkFaceDir();
 
-        
+
     }
+
     public void Jump()
     {
-        anim.SetBool("jump",true);   
+        anim.SetBool("jump", true);
     }
+
     public void DoubleJump()
     {
         anim.SetBool("wjump", true);
     }
+
     public virtual void Roll()
     {
         anim.SetBool("roll", true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
     }
+
     public virtual void StdAtk()
     {
-        anim.SetBool("attack",true);
+        anim.SetBool("attack", true);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
+        pi.InvokeAttackSignal();
     }
+
     public virtual void AirDashAtk()
     {
         anim.SetBool("attack", true);
-        //voiceController.PlayAttackVoice(0);
+        voiceController.PlayAttackVoice(0);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
+        pi.InvokeAttackSignal();
     }
+
     public virtual void UseSkill(int id)
     {
-        
+        if (isAttackSkill[id - 1])
+        {
+            pi.InvokeAttackSignal();
+        }
+
         switch (id)
         {
             case 1:
                 anim.Play("s1");
-                stat.currentSP[0] = 0;
+                _statusManager.currentSP[0] = 0;
                 break;
 
             case 2:
                 anim.Play("s2");
-                stat.currentSP[1] = 0;
+                _statusManager.currentSP[1] = 0;
                 break;
-            
+
             case 3:
                 anim.Play("s3");
-                stat.currentSP[2] = 0;
+                _statusManager.currentSP[2] = 0;
                 break;
-            
+
             case 4:
                 anim.Play("s4");
-                stat.currentSP[3] = 0;
+                _statusManager.currentSP[3] = 0;
                 break;
 
             default:
                 break;
         }
     }
+
     public void ClearFloatSignal(string varname)
     {
-        
+
         anim.SetFloat(varname, 0f);
 
-        
+
 
     }
 
@@ -135,6 +149,7 @@ public class ActorController : MonoBehaviour
     {
         anim.SetBool("isAttack", true);
     }
+
     public void ExitAttack()
     {
         anim.SetBool("isAttack", false);
@@ -144,7 +159,7 @@ public class ActorController : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Awake()
     {
-        
+
         pi = GetComponent<PlayerInput>();
         rigid = GetComponent<Rigidbody2D>();
         anim = rigid.GetComponentInChildren<Animator>();
@@ -153,20 +168,20 @@ public class ActorController : MonoBehaviour
         facedir = 1;
         ta = gameObject.transform.parent.GetComponentInChildren<TargetAimer>();
 
-        stat = GetComponent<PlayerStatusManager>();
-        jumpforce = stat.jumpforce;
-        movespeed = stat.movespeed;
-        rollspeed = stat.rollspeed;
+        _statusManager = GetComponent<PlayerStatusManager>();
+        jumpforce = _statusManager.jumpforce;
+        movespeed = _statusManager.movespeed;
+        rollspeed = _statusManager.rollspeed;
 
-        stat.OnHPBelow0 += CheckLife;
+        _statusManager.OnHPBelow0 += CheckLife;
 
     }
 
     protected void CheckLife()
     {
-        if (stat.remainReviveTimes > 0)
+        if (_statusManager.remainReviveTimes > 0)
         {
-            stat.remainReviveTimes--;
+            _statusManager.remainReviveTimes--;
             OnRevive();
         }
         else
@@ -186,24 +201,24 @@ public class ActorController : MonoBehaviour
         {
             UseSkill(2);
         }
-        
+
         if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
         {
             UseSkill(3);
         }
-        
+
         if (pi.skill[3] && !pi.hurt && !pi.isSkill)
         {
             UseSkill(4);
         }
-        
-        
+
+
     }
 
     // Update is called once per frame
     protected virtual void Update()
     {
-  
+
 
         //if (rigid.transform.eulerAngles.y == 0)
         //{
@@ -213,7 +228,7 @@ public class ActorController : MonoBehaviour
         //{
         //    facedir = -1;
         //}
-        if(rigid.transform.localScale.x == 1)
+        if (rigid.transform.localScale.x == 1)
         {
             facedir = 1;
         }
@@ -221,17 +236,17 @@ public class ActorController : MonoBehaviour
         {
             facedir = -1;
         }
-        
-        
+
+
         anim.SetFloat("forward", Mathf.Abs(pi.DRight));
 
         if (pi.hurt)
         {
-            anim.SetBool("hurt",true);
+            anim.SetBool("hurt", true);
         }
         else
         {
-            anim.SetBool("hurt",false);
+            anim.SetBool("hurt", false);
         }
 
 
@@ -239,19 +254,22 @@ public class ActorController : MonoBehaviour
         {
             Jump();
         }
+
         if (pi.wjump && pi.jumpEnabled)
         {
             DoubleJump();
         }
+
         if (pi.stdAtk && pi.attackEnabled)
         {
             if (anim.GetBool("isGround") == true)
                 StdAtk();
-            else {
+            else
+            {
                 AirDashAtk();
             }
         }
-        
+
 
         if (pi.roll && pi.rollEnabled)
         {
@@ -261,12 +279,13 @@ public class ActorController : MonoBehaviour
         //movingVec = rigid.transform.forward;
         //print(movingVec);
     }
+
     void FixedUpdate()
     {
         Move();
-        
-        
-       
+
+
+
     }
 
     //Event functions and Setting functions
@@ -275,6 +294,7 @@ public class ActorController : MonoBehaviour
     //设置主控角色的速度。
 
     #region Move Horizontally
+
     public void SetVelocity(float vx, float vy)
     {
         rigid.velocity = new Vector2(vx, vy);
@@ -283,18 +303,22 @@ public class ActorController : MonoBehaviour
 
     }
 
-    public IEnumerator HorizontalMoveInteria(float time, float groundSpeed,float airSpeed)
+    public IEnumerator HorizontalMoveInteria(float time, float groundSpeed, float airSpeed)
     {
         while (time > 0)
         {
             if (anim.GetBool("isGround") == true)
             {
-                transform.position = new Vector2(transform.position.x + facedir * groundSpeed * Time.fixedDeltaTime, transform.position.y); 
+                transform.position = new Vector2(transform.position.x + facedir * groundSpeed * Time.fixedDeltaTime,
+                    transform.position.y);
                 //transform.position = new Vector2(transform.position.x + transform.right.x * groundSpeed * Time.fixedDeltaTime, transform.position.y); 
             }
-            else { 
-                transform.position = new Vector2(transform.position.x + facedir * airSpeed * Time.fixedDeltaTime, transform.position.y);
+            else
+            {
+                transform.position = new Vector2(transform.position.x + facedir * airSpeed * Time.fixedDeltaTime,
+                    transform.position.y);
             }
+
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
 
@@ -302,17 +326,18 @@ public class ActorController : MonoBehaviour
         }
 
     }
-    
-    
+
+
     //主控角色在一定的时间内光滑水平位移，speed为移动速度，time为移动时间，acceration为加速度（大于0是减速）
     //参数为3个时，代表当退出某动画状态时中断位移。
-    public IEnumerator HorizontalMove(float speed,float time,string move)
+    public IEnumerator HorizontalMove(float speed, float time, string move)
     {
-        
-        while(time>0)
+
+        while (time > 0)
         {
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector3(transform.position.x+ facedir * speed * Time.fixedDeltaTime,transform.position.y,transform.position.z);
+            transform.position = new Vector3(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+                transform.position.y, transform.position.z);
             //transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
@@ -320,67 +345,75 @@ public class ActorController : MonoBehaviour
             {
                 //print("interrupt");
                 if (Mathf.Abs(rigid.velocity.x) > movespeed)
-                    rigid.velocity = new Vector2(movespeed,rigid.velocity.y);
+                    rigid.velocity = new Vector2(movespeed, rigid.velocity.y);
                 //pi.SetMoveEnabled();
                 yield break;
             }
-            
+
             yield return new WaitForFixedUpdate();
         }
-        
+
 
     }
+
     public IEnumerator HorizontalMove(float speed, float time)
     {
 
         while (time > 0)
         {
             //transform.right->facedir
-            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime, transform.position.y);
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+                transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
-            
+
             yield return new WaitForFixedUpdate();
         }
 
 
     }
-    public IEnumerator HorizontalMove(float speed,float acceration, float time, string move)
+
+    public IEnumerator HorizontalMove(float speed, float acceration, float time, string move)
     {
         while (time > 0)
         {
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime, transform.position.y);
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+                transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
             if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
             {
                 if (Mathf.Abs(rigid.velocity.x) > movespeed)
-                    rigid.velocity = new Vector2(movespeed, rigid.velocity.y); 
-                
+                    rigid.velocity = new Vector2(movespeed, rigid.velocity.y);
+
                 yield break;
             }
+
             speed -= acceration * Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
 
 
     }
+
     public IEnumerator HorizontalMove(float speed, float acceration, float time)
     {
         while (time > 0)
         {
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));trsfm.right->facedir
-            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime, transform.position.y);
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+                transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
-            
+
             speed -= acceration * Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
 
 
     }
+    
 
     public void ResetMovement()
     {
@@ -405,22 +438,24 @@ public class ActorController : MonoBehaviour
                 break;
         }
     }
+
     public void SetFaceDir(int dir)
     {
         facedir = dir;
-        print(facedir);
-        if (dir==1)
+
+        if (dir == 1)
             rigid.transform.localScale = new Vector3(1, 1, 1);
-            //rigid.transform.eulerAngles = new Vector3(0, 0, 0);
-        else if (dir==-1)
+        //rigid.transform.eulerAngles = new Vector3(0, 0, 0);
+        else if (dir == -1)
             rigid.transform.localScale = new Vector3(-1, 1, 1);
-            //rigid.transform.eulerAngles = new Vector3(0, 180, 0);
-            
+        //rigid.transform.eulerAngles = new Vector3(0, 180, 0);
+
         facedir = dir;
     }
+
     #endregion
 
-    #region Animation States Events
+    #region Animation _statusManageres Events
 
     //人物滚动时附加的位移效果
     public virtual void EventRoll()
@@ -429,44 +464,47 @@ public class ActorController : MonoBehaviour
         {
             SetFaceDir(-1);
         }
-        else if(!pi.buttonLeft.IsPressing && pi.buttonRight.IsPressing)
+        else if (!pi.buttonLeft.IsPressing && pi.buttonRight.IsPressing)
         {
             SetFaceDir(1);
         }
 
-        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));  
+        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
 
     }
+
     public virtual void EventDash()
     {
         //SetVelocity(facedir*rollspeed,rigid.velocity.y);
-        StartCoroutine(HorizontalMove(rollspeed*3f, 10.0f, 0.1f, "dash"));
+        StartCoroutine(HorizontalMove(rollspeed * 3f, 10.0f, 0.1f, "dash"));
 
     }
+
     public virtual void InertiaMove(float time)
     {
         float speedrate = anim.GetFloat("forward");
-        
-        if(speedrate<0.1f && anim.GetBool("isGround"))
+
+        if (speedrate < 0.1f && anim.GetBool("isGround"))
             speedrate = 0.5f;
-        
-        StartCoroutine(HorizontalMoveInteria(time ,1.8f * movespeed * speedrate, 1.5f * movespeed * speedrate));
-        
+
+        StartCoroutine(HorizontalMoveInteria(time, 1.8f * movespeed * speedrate, 1.5f * movespeed * speedrate));
+
     }
 
     protected virtual IEnumerator InvincibleRoutine()
     {
-        var renderer = GetComponent<SpriteRenderer>();
+        //var renderer = GetComponent<SpriteRenderer>();
+
         var hitsensor = transform.Find("HitSensor").GetComponent<Collider2D>();
-        renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.5f);
+        //renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.5f);
         hitsensor.enabled = false;
-        stat.HPRegenImmediatelyWithoutRandom(0,100);
-        stat.currentHp = stat.maxHP;
-        
-        
+        _statusManager.HPRegenImmediatelyWithoutRandom(0, 100);
+        _statusManager.currentHp = _statusManager.maxHP;
+
+
         yield return new WaitForSeconds(3f);
-        
-        renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1);
+
+        //renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1);
         hitsensor.enabled = true;
 
     }
@@ -477,6 +515,7 @@ public class ActorController : MonoBehaviour
     #endregion
 
     #region Messages Process Moudles
+
     public void onJumpEnter()
     {
         //print("onJump"); 
@@ -492,19 +531,22 @@ public class ActorController : MonoBehaviour
         anim.SetBool("wjump", false);
         //pi.rollEnabled = false;
     }
+
     public void onJumpExit()
     {
         //print("onJumpExit");
     }
+
     public void IsGround()
     {
         //print("GROUND:"+transform.position.x);
-        
+
         anim.SetBool("isGround", true);
-        
+
         pi.jumptime = 2;
         pi.rollEnabled = true;
     }
+
     public void isNotGround()
     {
         //print(transform.position.x);
@@ -517,8 +559,8 @@ public class ActorController : MonoBehaviour
         pi.attackEnabled = false;
         pi.jumpEnabled = false;
         pi.moveEnabled = false;
-        //voiceController?.PlayDodgeVoice();
-        //pi.LockDirection(1);
+        voiceController?.PlayDodgeVoice();
+
         dodging = true;
     }
 
@@ -534,6 +576,7 @@ public class ActorController : MonoBehaviour
         pi.SetInputEnabled("move");
         //Debug.Log("ExitRoll");
     }
+
     public void OnFall()
     {
         //Debug.Log("OnfallEnter");
@@ -550,14 +593,15 @@ public class ActorController : MonoBehaviour
         ActionDisable((int)PlayerActionType.ATTACK);
         pi.SetInputDisabled("attack");
         pi.SetInputDisabled("move");
-        
+
         //Debug.Log("OndashEnter");
     }
+
     public virtual void OnDashExit()
     {
-        ActionEnable((int)PlayerActionType.MOVE);//move
-        ActionEnable((int)PlayerActionType.JUMP);//jump
-        ActionEnable((int)PlayerActionType.ROLL);//roll
+        ActionEnable((int)PlayerActionType.MOVE); //move
+        ActionEnable((int)PlayerActionType.JUMP); //jump
+        ActionEnable((int)PlayerActionType.ROLL); //roll
         ActionEnable((int)PlayerActionType.ATTACK);
         anim.SetBool("attack", false);
     }
@@ -565,15 +609,16 @@ public class ActorController : MonoBehaviour
 
     public virtual void OnStandardAttackEnter()
     {
-     
-       
+        
+
     }
+
     public virtual void OnStandardAttackExit()
     {
 
     }
 
-    
+
 
     public virtual void OnSkillEnter()
     {
@@ -588,16 +633,16 @@ public class ActorController : MonoBehaviour
         //pi.SetInputDisabled("attack");
         pi.SetInputDisabled("move");
         print("skillEnter");
-        
+
     }
 
     public virtual void OnSkillExit()
     {
         pi.isSkill = false;
         dodging = false;
-        ActionEnable((int)PlayerActionType.MOVE);//move
-        ActionEnable((int)PlayerActionType.JUMP);//jump
-        ActionEnable((int)PlayerActionType.ROLL);//roll
+        ActionEnable((int)PlayerActionType.MOVE); //move
+        ActionEnable((int)PlayerActionType.JUMP); //jump
+        ActionEnable((int)PlayerActionType.ROLL); //roll
         ActionEnable((int)PlayerActionType.ATTACK);
         pi.SetInputEnabled("move");
     }
@@ -605,10 +650,10 @@ public class ActorController : MonoBehaviour
     public virtual void OnGravityWeaken()
     {
         rigid.gravityScale = 1;
-        SetVelocity(rigid.velocity.x,0);
-        
+        SetVelocity(rigid.velocity.x, 0);
+
     }
-    
+
     public virtual void OnGravityRecover()
     {
         rigid.gravityScale = defaultGravity;
@@ -617,7 +662,7 @@ public class ActorController : MonoBehaviour
     public void OnHurtEnter()
     {
         OnAttackInterrupt?.Invoke();
-        
+
         pi.SetInputDisabled("roll");
         pi.SetInputDisabled("jump");
         pi.SetInputDisabled("attack");
@@ -636,10 +681,12 @@ public class ActorController : MonoBehaviour
         {
             meeles.GetChild(i).GetComponent<AttackContainer>().DestroyInvoke();
         }
-        voiceController.PlayHurtVoice(stat);
+
+        voiceController.PlayHurtVoice(_statusManager);
+        transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression(0.75f);
 
     }
-    
+
     public void OnHurtExit()
     {
         pi.SetInputEnabled("roll");
@@ -647,24 +694,25 @@ public class ActorController : MonoBehaviour
         pi.SetInputEnabled("attack");
         pi.SetInputEnabled("move");
         pi.directionLock = false;
-        rigid.gravityScale = 4;
+        rigid.gravityScale = defaultGravity;
         ActionEnable((int)PlayerActionType.MOVE);
         ActionEnable((int)PlayerActionType.JUMP);
         ActionEnable((int)PlayerActionType.ROLL);
         ActionEnable((int)PlayerActionType.ATTACK);
         anim.speed = 1;
-
+        transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression();
     }
 
     protected virtual void OnRevive()
     {
-        stat.ResetAllStatus();
-        stat.ClearSP();
+        _statusManager.ResetAllStatus();
+        _statusManager.ClearSP();
         BattleEffectManager effectManager = FindObjectOfType<BattleEffectManager>();
         effectManager.PlayReviveSoundEffect();
         BattleEffectManager.BWEffect();
-        
+        effectManager.SpawnReviveEffect(gameObject);
         StartCoroutine(InvincibleRoutine());
+        _statusManager.waitForRevive = false;
     }
 
     protected virtual void OnDeath()
@@ -673,19 +721,19 @@ public class ActorController : MonoBehaviour
         pi.SetInputDisabled("jump");
         pi.SetInputDisabled("attack");
         pi.SetInputDisabled("move");
-        
+
         pi.isSkill = false;
         rigid.gravityScale = defaultGravity;
         ActionDisable((int)PlayerActionType.MOVE);
         ActionDisable((int)PlayerActionType.JUMP);
         ActionDisable((int)PlayerActionType.ROLL);
         ActionDisable((int)PlayerActionType.ATTACK);
-        
+
         OnAttackInterrupt?.Invoke();
-        
-        
-        stat.ResetAllStatusForced();
-        stat.enabled = false;
+
+
+        _statusManager.ResetAllStatusForced();
+        _statusManager.enabled = false;
         transform.Find("HitSensor").GetComponent<Collider2D>().enabled = false;
         pi.enabled = false;
         var enemies = FindObjectsOfType<DragaliaEnemyBehavior>();
@@ -701,45 +749,47 @@ public class ActorController : MonoBehaviour
             StopCoroutine(KnockbackRoutine);
             KnockbackRoutine = null;
         }
-        SetVelocity(0,0);
+
+        SetVelocity(0, 0);
 
         //播放死亡动画
 
         StartCoroutine(DeathRoutine());
-        
+
         //this.enabled = false;
-        
-        
+
+
     }
 
     protected IEnumerator DeathRoutine()
     {
-        
+
         pi.enabled = false;
         pi.moveEnabled = false;
         pi.inputMoveEnabled = false;
-        
+
         yield return null;
 
-       
+
         anim.Play("die");
-        anim.SetFloat("forward",0);
+        anim.SetFloat("forward", 0);
 
-        stat.enabled = false;
-        
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime>0.95f);
+        _statusManager.enabled = false;
 
-        anim.speed = 0;
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95f);
 
-        var stats = FindObjectsOfType<PlayerStatusManager>();
+        //anim.speed = 0;
 
-        foreach (var status in stats)
+        var _statusManagers = FindObjectsOfType<PlayerStatusManager>();
+
+        foreach (var _statusManagerus in _statusManagers)
         {
-            if(status.currentHp > 0 || status.remainReviveTimes>0)
+            if (_statusManagerus.currentHp > 0 || _statusManagerus.remainReviveTimes > 0)
                 yield break;
         }
+
         GlobalController.BattleFinished(false);
-        
+
     }
 
     protected void SetAnimSpeed(float percentage)
@@ -750,44 +800,32 @@ public class ActorController : MonoBehaviour
 
     #endregion
 
-    #region 攻击返回指令
-
-    public virtual void OnStandardAttackConnect() { }
-    public virtual void OnSkillConnect() { }
-    public virtual void OnForceConnect() { }
-    public virtual void OnOtherAttackConnect() { }
-
-    public virtual void OnStandardAttackConnect(AttackFromPlayer attackStat) { }
-    public virtual void OnSkillConnect(AttackFromPlayer attackStat) { }
-    public virtual void OnForceConnect(AttackFromPlayer attackStat) { }
-    public virtual void OnOtherAttackConnect(AttackFromPlayer attackStat) { }
+    
 
 
-    #endregion
-
-
-    public void TakeDamage(float kbtime,float kbForce, Vector2 kbDir)
+    public override void TakeDamage(float kbPower, float kbtime, float kbForce, Vector2 kbDir)
     {
-        if(stat.knockbackRes >= 100)
+        if (_statusManager.knockbackRes >= 100)
             return;
-        
+
         if (KnockbackRoutine != null)
         {
             StopCoroutine(KnockbackRoutine);
         }
-        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
+
+        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbDir));
         //print("Hurt");
         //Unimplemented
 
     }
 
-    IEnumerator KnockBackEffect(float time,float force, Vector2 kbDir)
+    IEnumerator KnockBackEffect(float time, float force, Vector2 kbDir)
     {
         kbDir = kbDir.normalized;
         pi.hurt = true;
         //anim.SetBool("hurt",true);
-        SetVelocity(force * kbDir.x,force * kbDir.y);
-        
+        SetVelocity(force * kbDir.x, force * kbDir.y);
+
         var totalTime = time;
         while (time > 0)
         {
@@ -796,17 +834,18 @@ public class ActorController : MonoBehaviour
             if (totalTime - time > 0.3f && rigid.gravityScale < defaultGravity)
             {
                 rigid.gravityScale += (Time.deltaTime * 4);
-                
+
             }
+
             yield return null;
-            
+
         }
 
         rigid.drag = 0;
-        
-        
-        
-        SetVelocity(0,rigid.velocity.y);
+
+
+
+        SetVelocity(0, rigid.velocity.y);
         //anim.SetBool("hurt",false);
         pi.hurt = false;
         KnockbackRoutine = null;
@@ -853,7 +892,7 @@ public class ActorController : MonoBehaviour
     ///0:全部,1:移动，2:跳跃，3:翻滚，4:攻击
     public void ActionDisable(int type)
     {
-        
+
         if (type == 0)
         {
             pi.SetAttackDisabled();
@@ -882,7 +921,7 @@ public class ActorController : MonoBehaviour
 
     public virtual void FaceDirectionAutoFix(int moveID)
     {
-        
+
     }
 
     protected virtual void CheckSignal()
@@ -892,8 +931,14 @@ public class ActorController : MonoBehaviour
             if (anim.GetBool("isGround"))
             {
                 StdAtk();
-            }else AirDashAtk();
+            }
+            else AirDashAtk();
         }
+    }
+
+    public bool GetDodge()
+    {
+        return dodging;
     }
 
 

@@ -8,13 +8,7 @@ public class AttackContainerEnemy : AttackContainer
     // Start is called before the first frame update
 
     
-    void Start()
-    {
-        /*if (attackTotalNum <= 0)
-        {
-            attackTotalNum = 1;
-        }*/
-    }
+    
 
     // Update is called once per frame
     void LateUpdate()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using GameMechanics;
 
 public class StatusManager : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class StatusManager : MonoBehaviour
     [Header("Basic Attributes")]
     
     public int maxBaseHP;
-    public int baseDef;
+    [Range(1,1000)] public int baseDef = 10;
     public int baseAtk;
     public int critRate;
     public int maxHP;
@@ -36,7 +37,10 @@ public class StatusManager : MonoBehaviour
     [SerializeField]protected int freezeRes = 0;
     [SerializeField]protected int blindnessRes = 0;
     [SerializeField]protected int cursedRes = 0;
-    
+
+
+    [Space(10)] [Header("Ability")] [SerializeField]protected List<int> abilityList = new();
+
     //public int 
 
     protected BattleStageManager _battleStageManager;
@@ -55,6 +59,7 @@ public class StatusManager : MonoBehaviour
 
     public delegate void StatusManagerVoidDelegate();
     public StatusManagerVoidDelegate OnHPBelow0;
+    public StatusManagerVoidDelegate OnHPChange;
 
     [SerializeField]
     protected UI_ConditionBar _conditionBar;
@@ -139,6 +144,7 @@ public class StatusManager : MonoBehaviour
     [SerializeField] protected int damageCut = 0;
     [SerializeField] protected int damageCutConst = 0;
     protected int lifeShield;
+    public bool waitForRevive = false;
     protected bool knockbackImmune = false;
     
     protected int healBuffNum = 0;
@@ -176,8 +182,11 @@ public class StatusManager : MonoBehaviour
 
     protected virtual void HPCheck()
     {
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
         if (currentHp <= 0)
         {
+            //waitForRevive = true;
             OnHPBelow0?.Invoke();
         }
     }
@@ -435,40 +444,44 @@ public class StatusManager : MonoBehaviour
     /// <returns></returns>
     public int GetAfflictionResistance(BasicCalculation.BattleCondition condition)
     {
+        int res = 0;
         if (IsDotAffliction((int)condition) || IsControlAffliction((int)condition))
         {
             switch (condition)
             {
                 case BasicCalculation.BattleCondition.Flashburn:
-                    return flashburnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FlashburnRes);
+                    res = flashburnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FlashburnRes);
+                    break;
                 case BasicCalculation.BattleCondition.Burn:
-                    return burnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnRes);
+                    res = burnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnRes);break;
                 case BasicCalculation.BattleCondition.Scorchrend:
-                    return scorchrendRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ScorchrendRes);
+                    res = scorchrendRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ScorchrendRes);break;
                 case BasicCalculation.BattleCondition.Poison:
-                    return poisonRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes);
+                    res = poisonRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes);break;
                 case BasicCalculation.BattleCondition.Freeze:
-                    return freezeRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FreezeRes);
+                    res = freezeRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FreezeRes);break;
                 case BasicCalculation.BattleCondition.Cursed:
-                    return cursedRes;
+                    res = cursedRes;break;
                 case BasicCalculation.BattleCondition.Paralysis:
-                    return paralysisRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ParalysisRes);
+                    res = paralysisRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ParalysisRes);break;
                 case BasicCalculation.BattleCondition.Frostbite:
-                    return frostbiteRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes);
+                    res = frostbiteRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes);break;
                 case BasicCalculation.BattleCondition.Sleep:
-                    return sleepRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.SleepRes);
+                    res = sleepRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.SleepRes);break;
                 case BasicCalculation.BattleCondition.Stun:
-                    return stunRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunRes);
+                    res = stunRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunRes);break;
                 case BasicCalculation.BattleCondition.Blindness:
-                    return blindnessRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BlindnessRes);
+                    res = blindnessRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BlindnessRes);break;
                 case BasicCalculation.BattleCondition.Bog:
-                    return bogRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BogRes);
+                    res = bogRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BogRes);break;
                 default:
                     break;
             }
+
+            //return res;
         }
         //Debug.LogWarning("No Such Resistance");
-        return 0;
+        return res;
         
 
     }
@@ -1121,6 +1134,11 @@ public class StatusManager : MonoBehaviour
         _conditionBar = bar;
     }
 
+    public bool GetAbility(int abilityID)
+    {
+        return abilityList.Contains(abilityID);
+    }
+    
 
 
 

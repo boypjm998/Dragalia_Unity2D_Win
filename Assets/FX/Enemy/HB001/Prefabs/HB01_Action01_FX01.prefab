@@ -108,6 +108,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 1
   skill_id: 0
+  attackInfo:
+  - dmgModifier:
+    - 0.8
+    constDmg: []
+    knockbackPower: 100
+    knockbackForce: 8
+    knockbackTime: 0.4
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 1
+    firedir: 0
+  firedir: 0
   attackType: 1
   dmgModifier:
   - 0.8
@@ -115,13 +126,13 @@ MonoBehaviour:
   nextKnockbackPower: []
   nextKnockbackForce: []
   nextKnockbackTime: []
-  enemySource: {fileID: 0}
   knockbackPower: 100
   knockbackForce: 8
   knockbackTime: 0.4
   knockbackDirection: {x: 1, y: 0}
   KBType: 1
-  firedir: 0
+  hitSoundEffect: {fileID: 0}
+  enemySource: {fileID: 0}
   isMeele: 1
   withConditionChance: 64000000
   withConditionNum: 01000000

@@ -58,7 +58,9 @@ public class HomingProjectile : AttackFromPlayer
 
     protected override void Start()
     {   
-        playerpos = GameObject.Find("PlayerHandle").transform;
+        //重点关注
+        if(playerpos == null)
+            playerpos = GameObject.Find("PlayerHandle").transform;
         ta = playerpos.gameObject.GetComponentInChildren<TargetAimer>();
         base.Start();
         SetForward(angle);
@@ -142,6 +144,8 @@ public class HomingProjectile : AttackFromPlayer
 
         transform.position += transform.right * speed * Time.fixedDeltaTime;
         speed += acceleration * Time.fixedDeltaTime;
+        //如果transform.right.x>0,那么firedir=1,否则firedir=-1
+        firedir = transform.right.x > 0 ? 1 : -1;
     }
 
     void DestroyProjectile()

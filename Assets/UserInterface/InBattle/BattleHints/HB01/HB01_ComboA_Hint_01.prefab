@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1321639792532214283}
   - component: {fileID: 487835649426567128}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1471894806129298890}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Borders
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2538588602428395336}
   - component: {fileID: 4298685272687242460}
-  m_Layer: 0
+  - component: {fileID: 7963292874541933642}
+  - component: {fileID: 5249960924544518985}
+  m_Layer: 11
   m_Name: HB01_ComboA_Hint_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -167,7 +169,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   warningTime: 1
+  attackLastTime: 3
+  interruptable: 1
   fillType: 0
+--- !u!61 &7963292874541933642
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3532243577954815203}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 6.75, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 14.5, y: 4}
+  m_EdgeRadius: 0
+--- !u!114 &5249960924544518985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3532243577954815203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5704082493e8f8f41983a2cc52f08a69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5243463528380879115
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4034352508311888904}
   - component: {fileID: 4074950517489970412}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +304,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6229351877725503019}
   - component: {fileID: 4096862862521119127}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GameObject (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +388,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3555991868389912381}
   - component: {fileID: 2406249625511535132}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +472,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5453525803824406295}
   - component: {fileID: 2159859838793078944}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GameObject (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -514,7 +556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9129582746926844107}
   - component: {fileID: 6656713197767610}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GameObject (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

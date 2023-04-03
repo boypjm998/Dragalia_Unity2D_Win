@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using TMPro;
 using System.Text;
-
+using GameMechanics;
 public class DamageNumberManager : MonoBehaviour
 {
     public int fontSize = 10;
@@ -32,7 +32,7 @@ public class DamageNumberManager : MonoBehaviour
         GenerateDotDmgNumber(dmg,targetTrans.position,dmgNumParent,condition);
     }
 
-    public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType)
+    public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType, float sizeModifier = 1f)
     {
         
         //Vector3 newPosition = new Vector3(enemyPos.position.x + Random.Range(-1f, 1f), enemyPos.position.y + Random.Range(-0.5f, 0.5f) + 3f, enemyPos.position.z);
@@ -48,55 +48,13 @@ public class DamageNumberManager : MonoBehaviour
 
         if (dmgType == 1)
         {
-            GenerateNormalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent);
+            GenerateNormalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent, sizeModifier);
         }
         else if (dmgType == 2)
         {
-            GenerateCriticalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent);
+            GenerateCriticalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent, sizeModifier);
         }
         
-        //print("出伤害");
-        
-
-
-
-        /*
-        if (dmgType == 1)
-        {
-            num =
-            Instantiate(normDamageNumPrefab,
-            new Vector3(newDmgNumPosVec.x + Random.Range(-1f, 1f), newDmgNumPosVec.y + Random.Range(-0.5f, 0.5f) + 3f, newDmgNumPosVec.z),
-            Quaternion.identity,
-            dmgNumParent);
-        }
-        if (dmgType == 2)
-        {
-            num =
-            Instantiate(critDamageNumPrefab,
-            new Vector3(newDmgNumPosVec.x + Random.Range(-1f, 1f), newDmgNumPosVec.y + Random.Range(-0.5f, 0.5f) + 3f, newDmgNumPosVec.z),
-            Quaternion.identity,
-            dmgNumParent);
-            GameObject crit = null;
-            crit = 
-            Instantiate(critPrefab,
-            new Vector3(num.transform.position.x, num.transform.position.y-1.4f, num.transform.position.z),
-            Quaternion.identity,
-            dmgNumParent);
-            TextMeshPro critText = crit.GetComponentInChildren<TextMeshPro>();
-            critText.fontSize = fontSize*0.9f;
-        }
-        TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
-        //dmgText.text = "<sprite=9><sprite=9><sprite=8>";
-        dmgText.text = Text2SpriteAssetNumber(dmg,dmgType);
-        if (dmgType == 1)
-            dmgText.fontSize = this.fontSize;
-        else
-        {
-            dmgText.fontSize = 1.2f*this.fontSize;
-        }
-        InstancePropertyUI dmgProperty = num.GetComponent<InstancePropertyUI>();
-        dmgProperty.SetGenerateParent(enemyPos);
-        */
     }
 
     public void DamagePopPlayer(Transform playerPos, int dmg, bool isCrit)
@@ -238,7 +196,7 @@ public class DamageNumberManager : MonoBehaviour
         return new Vector3(oldPos.position.x+offsetX, oldPos.position.y+offsetY,oldPos.position.z);
     }
 
-    private void GenerateNormalDamageNumber(int dmg, Vector3 newDmgNumPosVec, Transform enemyPos, Transform dmgNumParent)
+    private void GenerateNormalDamageNumber(int dmg, Vector3 newDmgNumPosVec, Transform enemyPos, Transform dmgNumParent,float sizeModifier = 1f)
     {
         GameObject num = null;
         num =
@@ -252,14 +210,14 @@ public class DamageNumberManager : MonoBehaviour
         
         dmgText.text = Text2SpriteAssetNumber(dmg, 1);
         
-        dmgText.fontSize = this.fontSize;
+        dmgText.fontSize = this.fontSize * sizeModifier;
        
         InstancePropertyUI dmgProperty = num.GetComponent<InstancePropertyUI>();
         dmgProperty.SetGenerateParent(enemyPos);
 
     }
 
-    private void GenerateCriticalDamageNumber(int dmg, Vector3 newDmgNumPosVec, Transform enemyPos, Transform dmgNumParent)
+    private void GenerateCriticalDamageNumber(int dmg, Vector3 newDmgNumPosVec, Transform enemyPos, Transform dmgNumParent, float sizeModifier = 1f)
     {
         
 
@@ -273,17 +231,17 @@ public class DamageNumberManager : MonoBehaviour
 
         GameObject crit =
             Instantiate(critPrefab,
-            new Vector3(num.transform.position.x, num.transform.position.y - 1.4f*(fontSize/12f), num.transform.position.z),
+            new Vector3(num.transform.position.x, num.transform.position.y - 1.4f*(fontSize*sizeModifier/12f), num.transform.position.z),
             Quaternion.identity,
             dmgNumParent);
             TextMeshPro critText = crit.GetComponentInChildren<TextMeshPro>();
-            critText.fontSize = fontSize * 0.9f;
+            critText.fontSize = fontSize * 0.9f * sizeModifier;
 
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
         //dmgText.text = "<sprite=9><sprite=9><sprite=8>";
         dmgText.text = Text2SpriteAssetNumber(dmg,2);
         
-        dmgText.fontSize = 1.2f * this.fontSize;
+        dmgText.fontSize = 1.2f * this.fontSize * sizeModifier;
         
         InstancePropertyUI dmgProperty = num.GetComponent<InstancePropertyUI>();
         dmgProperty.SetGenerateParent(enemyPos);
@@ -297,9 +255,9 @@ public class DamageNumberManager : MonoBehaviour
     {
         
 
-        Transform displaypos = GameObject.Find("PlayerHandle").transform;
+        Transform displaypos = GameObject.Find("PlayerHandle")?.transform;
 
-        Transform postrans = GameObject.Find("TotalDamageDisplayer").transform;
+        Transform postrans = GameObject.Find("TotalDamageDisplayer")?.transform;
 
         if (postrans.childCount != 0)
         {

@@ -123,6 +123,8 @@ public class VoiceController_HB01 : AudioManagerGeneral
 
     public void PlayMyVoice(myMoveList moveName,bool broadcast = false)
     {
+        if(myClips.Length<=0)
+            return;
         if (voice.isPlaying == true || voiceCDRoutine!=null)
         {
             return;
@@ -202,24 +204,29 @@ public class VoiceController_HB01 : AudioManagerGeneral
         voice.Play();
         if (broadcast)
         {
-            _dialogDisplayer.EnqueueDialog(1005,voiceID);
+            //_dialogDisplayer.EnqueueDialog(1005,voiceID);
         }
 
     }
 
     public void BroadcastVoice(int moveID)
     {
+        if(myClips.Length<=0)
+            return;
+        int clipID = -1;
         switch (moveID)
         {
             case 0:
-                voice.PlayOneShot(myClips[29]);
-                _dialogDisplayer.EnqueueDialog(1005,29);
+                clipID = 29;
                 break;
             case 11:
-                voice.PlayOneShot(myClips[15]);
-                _dialogDisplayer.EnqueueDialog(1005,15);
+                clipID = 15;
+                break;
+            case 13:
+                clipID = 9;
                 break;
         }
+        _dialogDisplayer.EnqueueDialog(1005, clipID, voice, myClips[clipID]);
         
     }
 

@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2398043946
+CRC: 1191344886
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -10,22 +10,95 @@ AssetBundleManifest:
       Dependencies: {}
     Info_2:
       Name: ui_general
-      Dependencies: {}
-    Info_3:
-      Name: c001
       Dependencies:
-        Dependency_0: ui_general
-        Dependency_1: ui_c001
-    Info_4:
+        Dependency_0: iconsmall
+        Dependency_1: allin1
+    Info_3:
       Name: soundeffect_common
       Dependencies: {}
-    Info_5:
+    Info_4:
       Name: iconsmall
       Dependencies: {}
-    Info_6:
+    Info_5:
       Name: ui_c001
       Dependencies:
         Dependency_0: ui_general
-    Info_7:
+        Dependency_1: iconsmall
+    Info_6:
       Name: boss_ability_icon
+      Dependencies: {}
+    Info_7:
+      Name: eff_c005
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: eff_general
+        Dependency_2: 118effbundle
+        Dependency_3: c005
+        Dependency_4: allin1
+    Info_8:
+      Name: eff_general
+      Dependencies:
+        Dependency_0: eff_c001
+    Info_9:
+      Name: 118effbundle
+      Dependencies:
+        Dependency_0: eff_c001
+    Info_10:
+      Name: c005
+      Dependencies: {}
+    Info_11:
+      Name: allin1
+      Dependencies:
+        Dependency_0: ui_general
+    Info_12:
+      Name: eff_c001
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+        Dependency_2: ui_c001
+        Dependency_3: eff_general
+        Dependency_4: 118effbundle
+        Dependency_5: allin1
+    Info_13:
+      Name: model/model_c001
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: eff_c001
+        Dependency_2: animation/anim_common
+        Dependency_3: model/model_c005
+        Dependency_4: enemy/hb_1001
+    Info_14:
+      Name: animation/anim_common
+      Dependencies: {}
+    Info_15:
+      Name: model/model_c005
+      Dependencies: {}
+    Info_16:
+      Name: enemy/hb_1001
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: soundeffect_common
+        Dependency_2: iconsmall
+        Dependency_3: eff_c005
+        Dependency_4: eff_general
+        Dependency_5: 118effbundle
+        Dependency_6: animation/anim_common
+        Dependency_7: model/model_c005
+    Info_17:
+      Name: storyportrait/1001
+      Dependencies: {}
+    Info_18:
+      Name: storyportrait/1010
+      Dependencies: {}
+    Info_19:
+      Name: storyportrait/1019
+      Dependencies: {}
+    Info_20:
+      Name: story/ms_voice
+      Dependencies: {}
+    Info_21:
+      Name: story/ms_bgm
+      Dependencies: {}
+    Info_22:
+      Name: storyportrait/2001
       Dependencies: {}

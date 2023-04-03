@@ -5,6 +5,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using GameMechanics;
 
 public class ConditionIcon : MonoBehaviour
 {

@@ -11,10 +11,11 @@ public class VoiceController_C001 : AudioManagerPlayer
 
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         voice = gameObject.GetComponent<AudioSource>();
         chara_id = 1;
+        yield return new WaitForSeconds(0.1f);
         LoadMyVoice();
         
     }

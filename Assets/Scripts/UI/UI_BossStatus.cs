@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using LitJson;
 using UnityEngine.UI;
+using GameMechanics;
 
 public class UI_BossStatus : MonoBehaviour
 {
@@ -19,12 +20,14 @@ public class UI_BossStatus : MonoBehaviour
     private JsonData bossAbilityDetailData;
 
     private GlobalController _globalController;
+    private BattleStageManager _battleStageManager;
     
     
     
     IEnumerator Start()
     {
         _globalController = FindObjectOfType<GlobalController>();
+        _battleStageManager = FindObjectOfType<BattleStageManager>();
         yield return new WaitUntil(() => boss != null);
         Init();
     }
@@ -51,12 +54,17 @@ public class UI_BossStatus : MonoBehaviour
         
         bossAbilityDetailData = BasicCalculation.
             ReadJsonData("/LevelInformation/BossAbilityDetail_ZH.json");
+        var levelDetailedInfo = _battleStageManager.GetLevelDetailedInfo();
+        var bossAbilities = 
+            levelDetailedInfo.boss_prefab[BattleStageManager.currentDisplayingBossInfo - 1].boss_abilities;
+
+        foreach (var ability in bossAbilities)
+        {
+            AddBossAbility(ability);
+        }
         
-        
-        
-        //Load Ability Icon Not IMPLIED
-        AddBossAbility("BOSS_ABILITY_0011");
-        AddBossAbility("BOSS_ABILITY_0021");
+        // AddBossAbility("BOSS_ABILITY_20011");
+        // AddBossAbility("BOSS_ABILITY_20021");
         
         
         //这里写死了 应该引入questInfo.json动态加载的！

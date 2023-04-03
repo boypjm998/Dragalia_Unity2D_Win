@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,22 @@ public class AttackManager : MonoBehaviour
     public GameObject BuffFXLayer;
     
     public GameObject healbuff;
+    
+    protected BattleEffectManager _effectManager;
+    
     // Start is called before the first frame update
+
+    protected virtual void Awake()
+    {
+        _effectManager = FindObjectOfType<BattleEffectManager>();
+        
+    }
+
+    protected virtual void Start()
+    {
+        attackContainer = BattleStageManager.Instance.attackContainer;
+    }
+
     public virtual void AirDashAttack()
     {
         DashAttack();
@@ -52,7 +68,15 @@ public class AttackManager : MonoBehaviour
             }
         }
 
+        //prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+
         return prefabInstance;
     }
 
+    protected GameObject InstantiateMeele(GameObject prefab, Vector3 position, GameObject container)
+    {
+        var prefabInstance = Instantiate(prefab, position, Quaternion.identity, container.transform);
+        prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+        return prefabInstance;
+    }
 }

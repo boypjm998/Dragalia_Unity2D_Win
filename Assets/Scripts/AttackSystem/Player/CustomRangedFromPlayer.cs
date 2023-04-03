@@ -25,34 +25,16 @@ public class CustomRangedFromPlayer : AttackFromPlayer
         
     }
     
-    private void OnTriggerStay2D(Collider2D collision)
+    protected override void OnTriggerStay2D(Collider2D collision)
     {
-        Transform enemyTrans;
+        //Transform enemyTrans;
         //Debug.Log(collision.gameObject.GetInstanceID());
-        
+        print(collision.gameObject);
         
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
             CauseDamage(collision.gameObject);
-            /*
-            hitFlags.Remove(collision.transform.parent.GetInstanceID());
-
-            enemyTrans = collision.transform.parent;
-
-            int dmg = battleStageManager.PlayerHit(collision.gameObject, this);
             
-            
-
-            GameObject eff = Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
-            eff.name = "HitEffect1";
-            CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
-            
-            collision.gameObject.GetComponent<Enemy>().TakeDamage();
-            
-            AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
-            container.AttackOneHit();
-            if (container.NeedTotalDisplay() && dmg > 0)
-                container.AddTotalDamage(dmg);*/
             
             
             
@@ -60,8 +42,12 @@ public class CustomRangedFromPlayer : AttackFromPlayer
 
         }
         
+        
     }
+
     
     
-    
+
+
+
 }

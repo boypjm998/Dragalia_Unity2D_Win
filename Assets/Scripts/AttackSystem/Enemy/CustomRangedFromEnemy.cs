@@ -22,7 +22,7 @@ public class CustomRangedFromEnemy : AttackFromEnemy
     // Update is called once per frame
     private void OnTriggerStay2D(Collider2D collision)
     {
-        Transform enemyTrans;
+        //Transform enemyTrans;
         //Debug.Log(collision.gameObject.GetInstanceID());
         //print("stay!!!!");
         
@@ -30,7 +30,7 @@ public class CustomRangedFromEnemy : AttackFromEnemy
         {
             if (Avoidable == AvoidableProperty.Red)
             {
-                if(collision.GetComponentInParent<ActorController>().dodging)
+                if(collision.GetComponentInParent<IKnockbackable>().GetDodge())
                     //如果是红圈并且角色在技能中
                     return;
             }

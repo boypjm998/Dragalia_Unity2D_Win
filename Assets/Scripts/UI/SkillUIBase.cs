@@ -24,6 +24,7 @@ public class SkillUIBase : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
+        //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         sm = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
         cooldownGauge = transform.Find("CD").GetComponent<Slider>();
         skillIcon = transform.Find("IconBody").Find("Mask").GetChild(0).gameObject;

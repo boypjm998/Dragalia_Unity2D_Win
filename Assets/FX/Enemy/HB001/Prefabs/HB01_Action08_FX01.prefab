@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8268830276537453827}
   - component: {fileID: 3130710988372723242}
   - component: {fileID: 1966251925206320572}
+  - component: {fileID: 4703371320163799376}
   m_Layer: 11
   m_Name: HB01_Action08_FX01
   m_TagString: Untagged
@@ -49,6 +50,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 1
   skill_id: 2
+  attackInfo:
+  - dmgModifier:
+    - 0.5
+    constDmg: []
+    knockbackPower: 100
+    knockbackForce: 2
+    knockbackTime: 0.3
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 2
+    firedir: 0
+  firedir: 0
   attackType: 4
   dmgModifier:
   - 0.5
@@ -56,13 +68,13 @@ MonoBehaviour:
   nextKnockbackPower: []
   nextKnockbackForce: []
   nextKnockbackTime: []
-  enemySource: {fileID: 0}
   knockbackPower: 100
   knockbackForce: 2
   knockbackTime: 0.3
   knockbackDirection: {x: 1, y: 0}
   KBType: 2
-  firedir: 0
+  hitSoundEffect: {fileID: 0}
+  enemySource: {fileID: 0}
   isMeele: 1
   withConditionChance: 6400000078000000
   withConditionNum: 02000000
@@ -97,6 +109,7 @@ MonoBehaviour:
   - 0.45
   - 0.57
   - 0.7
+  nextConditionTime: []
   targetCollider: {fileID: 0}
   destroyTime: 1.1
   sleepAfterAnimStopped: 0
@@ -116,6 +129,18 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.5}
   serializedVersion: 2
   m_Radius: 6
+--- !u!114 &4703371320163799376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218359548770224817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d608298ee3181940afcd0c09a5e68ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5956410482310562733
 PrefabInstance:
   m_ObjectHideFlags: 0

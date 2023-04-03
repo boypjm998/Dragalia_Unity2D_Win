@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using GameMechanics;
 
 public abstract class BattleCondition
 {

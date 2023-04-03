@@ -1,19 +1,62 @@
 ﻿{
   "QUEST_010013": {
-    "NAME": "席菈的试炼 超级",
-    "SCENE_PREFAB_PATH": "",
-    "OVERALL_CAMERA_PATH": "",
-    "TOTAL_BOSS_NUM": 1,
-    "BOSS_PREFAB_1": {
-      "PREFAB_PATH": "",
-      "BEHAVIOR_SCRIPT_NAME": "",
-      "BOSS_ABILITIES": ["BOSS_ABILITY_0011","BOSS_ABILITY_0021"],
-      "START_POSITION": [4.5,-2]
-    },
-    "PLAYER_POSITION": [-4.5,-2],
-    "REVIVE_LIMIT": 3,
-    "TIME_LIMIT": -1,
-    "CROWN_TIME_LIMIT": 300,
-    "CROWN_REVIVE_LIMIT": 0
+    "name": "席菈的试炼 超级",
+    "scene_prefab_path": "",
+    "overall_camera_path": "",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1001", 
+        "resources": ["enemy/hb_1001","model/model_c005","eff_c005","voice_c005"],
+        "prefab_name": "hb_1001_3",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20011",
+          "BOSS_ABILITY_20021"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -2
+    ],
+    "revive_limit": 3,
+    "time_limit": -1,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_010012": {
+    "name": "席菈的试炼 高级",
+    "scene_prefab_path": "",
+    "overall_camera_path": "",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1001",
+        "resources": ["enemy/hb_1001","model/model_c005","eff_c005","voice_c005"],
+        "prefab_name": "hb_1001_2",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20011",
+          "BOSS_ABILITY_20021"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -2
+    ],
+    "revive_limit": 3,
+    "time_limit": -1,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
   }
 }

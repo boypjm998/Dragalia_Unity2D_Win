@@ -105,7 +105,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Time: 0.5
   m_Parameters:
@@ -5032,7 +5032,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -5143,19 +5143,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc79aea9bf450904595723fe1a3ec56a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 0}
+  chara_id: 1
+  skill_id: 1
+  attackInfo:
+  - dmgModifier:
+    - 1.88
+    constDmg: []
+    knockbackPower: 120
+    knockbackForce: 4
+    knockbackTime: 0.5
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 1
+    firedir: 0
+  firedir: 0
+  attackType: 4
+  dmgModifier: []
+  nextDmgModifier: []
+  nextKnockbackPower: []
+  nextKnockbackForce: []
+  nextKnockbackTime: []
   knockbackPower: 0
   knockbackForce: 0
   knockbackTime: 0
   knockbackDirection: {x: 1, y: 0}
   KBType: 1
-  dmgModifier: []
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
   spGain: 0
   isMeele: 0
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
   withConditionChance: 78000000
   withConditionNum: 01000000
   withConditionFlags: 
@@ -5164,8 +5179,8 @@ MonoBehaviour:
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
   defaultGravity: 0
-  attackType: 4
   hitShakeIntensity: 5
+  damageAutoReset: 0
   targetLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -10091,7 +10106,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0

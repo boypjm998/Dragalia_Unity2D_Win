@@ -64,7 +64,8 @@ public class EnemyAttackTriggerController : MonoBehaviour
             }
         }
         
-        Destroy(gameObject,destroyTime);
+        if(destroyTime > 0)
+            Destroy(gameObject,destroyTime);
 
     }
 

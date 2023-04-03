@@ -22,7 +22,7 @@ public abstract  class AudioManagerGeneral : MonoBehaviour
     {
         _globalController = FindObjectOfType<GlobalController>();
         AssetBundle assetBundle = _globalController.GetBundle(voiceAssetBundlePath);
-        
+        print("voiceAssetBundlePath: " + voiceAssetBundlePath);
         //AssetBundle assetBundle = AssetBundle.LoadFromFile
         //    (Path.Combine(Application.streamingAssetsPath, GetVoicePath(voiceAssetBundlePath)));
         var voicePack = assetBundle.LoadAllAssets<AudioClip>();

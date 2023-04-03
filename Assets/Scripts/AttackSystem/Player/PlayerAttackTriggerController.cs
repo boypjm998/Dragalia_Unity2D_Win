@@ -61,7 +61,9 @@ public class PlayerAttackTriggerController : MonoBehaviour
             }
         }
         
-        Destroy(gameObject,destroyTime);
+        if(destroyTime>0)
+            Destroy(gameObject,destroyTime);
+        //Destroy(gameObject,destroyTime);
 
     }
 

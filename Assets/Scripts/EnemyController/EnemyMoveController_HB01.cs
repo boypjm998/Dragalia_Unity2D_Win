@@ -3,29 +3,28 @@ using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
-
-
+using GameMechanics;
+using CharacterSpecificProjectiles;
 public class EnemyMoveController_HB01 : EnemyMoveManager
 {
     
     // Start is called before the first frame update
 
-    private BattleEffectManager _effectManager;
-    private Animator anim;
-    private BattleStageManager _stageManager;
+    
+    
     private VoiceController_HB01 voice;
 
     [Header("Warnings")] 
     [SerializeField] private GameObject[] WarningPrefab;
 
-    void Start()
+    protected override void Start()
     {
         voice = GetComponentInChildren<VoiceController_HB01>();
         _stageManager = FindObjectOfType<BattleStageManager>();
         MeeleAttackFXLayer = transform.Find("MeeleAttackFX").gameObject;
         RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
         ac = GetComponent<EnemyControllerHumanoid>();
-        anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
         _behavior = GetComponent<DragaliaEnemyBehavior>();
         _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
         _statusManager = GetComponent<StatusManager>();
@@ -94,27 +93,33 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
         yield return new WaitForSeconds(0.5f);
         anim.Play("warp");
+        DisappearRenderer();
         var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         _effectManager.SpawnTargetLockIndicator(_behavior.targetPlayer,1.2f);
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.WarpAttack);
+        WarpAttack_ShadowEffect();
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.33f);
         WarpAttack_Disappear(true);
-        var dir = LockFaceDir(_behavior.targetPlayer);
-        var pos = LockPosition(_behavior.targetPlayer);
         
-        yield return new WaitForSeconds(.2f);
+        
+        yield return new WaitForSeconds(0.22f);
+        var pos = LockPosition(_behavior.targetPlayer);
+        var dir = LockFaceDir(_behavior.targetPlayer);
+        
+        yield return new WaitForSeconds(.08f);
         WarpAttack_Appear();
         anim.Play("comboDodge1");
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         SetGravityScale(0);
         BackWarp(pos,dir,3f,4.5f);
        
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.22f);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.17f);
         ComboDodge2_WarpAttack1(pos);
-        SetGravityScale(4);
+        var controllerHumanoid = (EnemyControllerHumanoid)ac;
+        SetGravityScale(controllerHumanoid._defaultgravityscale);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.272f);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.236f);
         ComboDodge2_WarpAttack2();
         
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
@@ -143,18 +148,18 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         float animTime;
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.21f);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.13f);
         Combo1();
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.6f);
         anim.Play("combo2");
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.1f);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.05f);
         Combo2();
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.5f);
         if (!anim.GetBool("isGround"))
         {
             anim.Play("fall");
@@ -166,7 +171,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.5f);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.25f);
         Combo3();
         
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
@@ -183,7 +188,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName("HB01_Action04");
+        bossBanner?.PrintSkillName("HB01_Action04");
         
         
         var hint = GenerateWarningPrefab(WarningPrefab[1], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
@@ -330,7 +335,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
         var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.5f);
         anim.Play("combo6");
         anim.speed = 0;
 
@@ -342,7 +347,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         Combo6();
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.6f);
         SetGravityScale(4);
         transform.position = new Vector3(oldPos, transform.position.y);
         QuitAttack();
@@ -357,7 +362,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName("HB01_Action08");
+        bossBanner?.PrintSkillName("HB01_Action08");
 
         yield return new WaitForSeconds(1f);
         var hint = GenerateWarningPrefab(WarningPrefab[3], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
@@ -385,9 +390,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName("HB01_Action09");
+        bossBanner?.PrintSkillName("HB01_Action09");
         
-        var hint = GenerateWarningPrefab(WarningPrefab[1], transform.position,transform.rotation, RangedAttackFXLayer.transform);
+        var hint = 
+            GenerateWarningPrefab
+                (WarningPrefab[1], transform.position,Quaternion.Euler(0,ac.facedir==1?0:180,0), RangedAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
         var hint2 = 
             GenerateWarningPrefab(WarningPrefab[1], transform.position,
@@ -464,7 +471,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName("HB01_Action10");
+        bossBanner?.PrintSkillName("HB01_Action10");
 
         yield return new WaitForSeconds(.5f);
         var hint = GenerateWarningPrefab(WarningPrefab[5], transform.position+Vector3.up,transform.rotation, MeeleAttackFXLayer.transform);
@@ -491,7 +498,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName("HB01_Action11");
+        bossBanner?.PrintSkillName("HB01_Action11");
         StageCameraController.SwitchOverallCamera();
 
         yield return new WaitForSeconds(.5f);
@@ -523,15 +530,41 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
-        bossBanner.PrintSkillName("HB01_Action13");
+        bossBanner?.PrintSkillName("HB01_Action13");
         //StageCameraController.SwitchOverallCamera();
 
         yield return new WaitForSeconds(1f);
         anim.Play("buff");
         float animTime;
         animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
-        voice.PlayMyVoice(VoiceController_HB01.myMoveList.Roll,true);
+        //voice.PlayMyVoice(VoiceController_HB01.myMoveList.Roll,true);
+        voice.BroadcastVoice(13);
         BlazingEnhancementBuff();
+        
+        
+        
+        yield return null;
+        
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= animTime);
+        QuitAttack();
+    }
+    
+    public IEnumerator HB01_Action13_2()
+    {
+        QuitMove();
+        yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
+        ac.OnAttackEnter(999);
+        ac.TurnMove(_behavior.targetPlayer);
+        bossBanner?.PrintSkillName("HB01_Action13");
+        //StageCameraController.SwitchOverallCamera();
+
+        yield return new WaitForSeconds(1f);
+        anim.Play("buff");
+        float animTime;
+        animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
+        //voice.PlayMyVoice(VoiceController_HB01.myMoveList.Roll,true);
+        voice.BroadcastVoice(13);
+        BlazingEnhancementBuff(2);
         
         
         
@@ -546,6 +579,14 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
 
     #region DetailedAction
+
+    private void WarpAttack_ShadowEffect()
+    {
+        InstantiateDirectional(projectilePoolEX[11], transform.position, RangedAttackFXLayer.transform, ac.facedir, 0,
+            1);
+        
+    }
+
 
     /// <summary>
     /// 隐身
@@ -563,11 +604,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         var miniIcon = transform.Find("MinimapIcon").gameObject;
         miniIcon.SetActive(false);
         
-        var spriteRenderer1 = GetComponent<SpriteRenderer>();
+        //var spriteRenderer1 = GetComponent<SpriteRenderer>();
         
         //spriteRenderer;
-        spriteRenderer1.color = 
-            new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 0);
+        DisappearRenderer();
 
         
 
@@ -576,11 +616,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     void WarpAttack_Appear()
     {
         
-        var spriteRenderer1 = GetComponent<SpriteRenderer>();
-        
+        //var spriteRenderer1 = GetComponent<SpriteRenderer>();
+        AppearRenderer();
         //spriteRenderer;
-        spriteRenderer1.color = 
-            new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);
+        //spriteRenderer1.color = 
+            //new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);
 
         var miniIcon = transform.Find("MinimapIcon").gameObject;
         miniIcon.SetActive(true);
@@ -600,7 +640,14 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
     int LockFaceDir(GameObject target)
     {
-        return target.GetComponentInChildren<ActorController>().facedir;
+        var ac = target.GetComponentInChildren<ActorController>();
+        if (ac == null)
+        {
+            var sac = target.GetComponentInChildren<StandardCharacterController>();
+            return sac.facedir;
+        }
+
+        return ac.facedir;
     }
 
     /// <summary>
@@ -650,7 +697,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     void Combo1()
     {
 
-        GameObject projectile_clone1 = Instantiate(projectile3, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        GameObject projectile_clone1 = InstantiateDirectional(projectile3, transform.position, MeeleAttackFXLayer.transform, ac.facedir,0,1);
         if (ac.facedir == -1)
         {
             var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
@@ -661,7 +708,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         GameObject container = Instantiate(attackContainer, transform.position, Quaternion.identity, RangedAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
-        GameObject projectile_clone2 = Instantiate(projectile4, transform.position, transform.rotation, container.transform);
+        GameObject projectile_clone2 = InstantiateDirectional(projectile4, transform.position, container.transform, ac.facedir);
         projectile_clone2.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         projectile_clone2.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         if (ac.facedir == -1)
@@ -677,7 +724,8 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         //RushForward();
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
-        GameObject projectile_clone1 = Instantiate(projectile5, transform.position, transform.rotation, container.transform);
+        GameObject projectile_clone1 = InstantiateDirectional
+            (projectile5, transform.position, container.transform,ac.facedir,0,1);
         projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         if (ac.facedir == -1)
         {
@@ -691,7 +739,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
-        GameObject projectile_clone1 = Instantiate(projectile6, transform.position, transform.rotation, container.transform);
+        GameObject projectile_clone1 = InstantiateDirectional(projectile6, transform.position,container.transform,ac.facedir,0,1);
         projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         if (ac.facedir == -1)
         {
@@ -713,19 +761,19 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             RangedAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
 
-        GameObject proj = Instantiate(projectilePoolEX[1], 
-            new Vector3(transform.position.x,transform.position.y+1), transform.rotation, container.transform);
+        GameObject proj = InstantiateDirectional(projectilePoolEX[1], 
+            new Vector3(transform.position.x,transform.position.y+1),container.transform,ac.facedir,0,1);
         proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         
         if (ac.facedir == -1)
         {
             var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var particle in particles)
-            {
-                var main = particle.main;
-                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            }
+            //foreach (var particle in particles)
+            //{
+            //    var main = particle.main;
+            //    main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            //}
         }
     }
 
@@ -737,20 +785,20 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         
 
-        GameObject proj = Instantiate(projectilePoolEX[2], 
+        GameObject proj = InstantiateDirectional(projectilePoolEX[2], 
             new Vector3(transform.position.x,transform.position.y-2.5f),
-            transform.rotation, container.transform);
+             container.transform,ac.facedir,0,1);
         proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         
         if (ac.facedir == -1)
         {
             var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var particle in particles)
-            {
-                var main = particle.main;
-                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            }
+            //foreach (var particle in particles)
+            //{
+            //    var main = particle.main;
+            //    main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            //}
         }
     }
 
@@ -770,21 +818,21 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         
 
-        GameObject proj = Instantiate(projectilePoolEX[3], 
+        GameObject proj = InstantiateDirectional(projectilePoolEX[3], 
             new Vector3(transform.position.x+2f*ac.facedir,transform.position.y),
-            transform.rotation, container.transform);
+             container.transform,ac.facedir,0,1);
         proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         
-        if (ac.facedir == -1)
-        {
-            var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var particle in particles)
-            {
-                var main = particle.main;
-                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            }
-        }
+        // if (ac.facedir == -1)
+        // {
+        //     var particles = proj.GetComponentsInChildren<ParticleSystem>();
+        //     foreach (var particle in particles)
+        //     {
+        //         var main = particle.main;
+        //         main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+        //     }
+        // }
     }
     
     void Combo6()
@@ -797,9 +845,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         
 
-        GameObject proj = Instantiate(projectilePoolEX[4], 
+        GameObject proj = InstantiateDirectional(projectilePoolEX[4], 
             new Vector3(transform.position.x,transform.position.y),
-            transform.rotation, container.transform);
+            container.transform,ac.facedir,0,1);
         proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         
@@ -809,11 +857,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             var shadow = particles[0].GetComponent<DOTweenSimpleController>();
             shadow.moveDirection.x *= -1;
 
-            foreach (var particle in particles)
-            {
-                var main = particle.main;
-                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            }
+            // foreach (var particle in particles)
+            // {
+            //     var main = particle.main;
+            //     main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            // }
         }
     }
 
@@ -823,15 +871,16 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
 
-        GameObject proj = Instantiate(projectile10, transform.position, transform.rotation, container.transform);
+        GameObject proj = Instantiate
+            (projectile10, transform.position,transform.rotation, container.transform);
         if (ac.facedir == -1)
         {
-            var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var particle in particles)
-            {
-                var main = particle.main;
-                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            }
+            // var particles = proj.GetComponentsInChildren<ParticleSystem>();
+            // foreach (var particle in particles)
+            // {
+            //     var main = particle.main;
+            //     main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+            // }
         }
 
     }
@@ -849,19 +898,20 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         
 
-        GameObject proj = Instantiate(projectilePoolEX[0], transform.position, transform.rotation, container.transform);
+        GameObject proj = InstantiateDirectional
+            (projectilePoolEX[0], transform.position, container.transform,ac.facedir,0,1);
         proj.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         
-        if (ac.facedir == -1)
-        {
-            var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            foreach (var particle in particles)
-            {
-                var main = particle.main;
-                main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            }
-        }
+        // if (ac.facedir == -1)
+        // {
+        //     var particles = proj.GetComponentsInChildren<ParticleSystem>();
+        //     foreach (var particle in particles)
+        //     {
+        //         var main = particle.main;
+        //         main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
+        //     }
+        // }
     }
 
     void ComboDodge1()
@@ -872,17 +922,17 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
         
-        GameObject projectile_clone1 = Instantiate(projectile1, transform.position, transform.rotation, container.transform);
+        GameObject projectile_clone1 = InstantiateDirectional(projectile1, transform.position,container.transform,0,1);
 
         projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
-        //projectile_clone1.GetComponent<AttackFromEnemy>().AddWithCondition(new TimerBuff(999));
+       
         
 
         if (ac.facedir == -1)
         {
-            var particle = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
+           // var particle = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
             //ParticleSystem.MinMaxCurve curve;
-            particle.startRotationY = new ParticleSystem.MinMaxCurve(Mathf.PI);
+            //particle.startRotationY = new ParticleSystem.MinMaxCurve(Mathf.PI);
         }
 
 
@@ -900,15 +950,15 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
         
-        GameObject projectile_clone1 = Instantiate(projectile2, transform.position, transform.rotation, container.transform);
+        GameObject projectile_clone1 = InstantiateDirectional(projectile2, transform.position, container.transform,0,1);
 
         projectile_clone1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
 
         if (ac.facedir == -1)
         {
-            var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
+            //var partical = projectile_clone1.GetComponentInChildren<ParticleSystem>().main;
             //ParticleSystem.MinMaxCurve curve;
-            partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
+            //partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
         }
     }
 
@@ -921,19 +971,20 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         //subcontainer.GetComponent<AttackSubContainer>().InitAttackContainer(1,container);
 
         var proj1 = 
-            Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
+            InstantiateDirectional(projectile7, transform.position+new Vector3(ac.facedir,0), container.transform,ac.facedir);
+        
         proj1.GetComponent<AttackFromEnemy>().
-            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
         proj1.GetComponent<AttackFromEnemy>().
-            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         if (ac.facedir == -1)
         {
-            //proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+            proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
         }
         
 
@@ -943,17 +994,17 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     void CamineRush_Part2(GameObject container)
     {
         var proj2 = 
-            Instantiate(projectile9, transform.position, transform.rotation, container.transform);
+            InstantiateDirectional(projectile9, transform.position, container.transform, ac.facedir);
         //proj2.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj2.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj2.GetComponent<AttackFromEnemy>().
-            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
         proj2.GetComponent<AttackFromEnemy>().
-            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
 
-        var proj3 = Instantiate(projectile8, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
+        var proj3 = InstantiateDirectional(projectile8, transform.position, MeeleAttackFXLayer.transform,ac.facedir,0,1);
         
         if (ac.facedir == -1)
         {
@@ -969,12 +1020,14 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(7);
 
         var proj1 = 
-            Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
+            InstantiateDirectional(projectile7, transform.position+new Vector3(ac.facedir,0), container.transform,ac.facedir);
+        //var proj1 = 
+            //Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
         var attack1 = proj1.GetComponent<AttackFromEnemy>();
-        attack1.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
-        attack1.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+        attack1.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+        attack1.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
         
         attack1.firedir = ac.facedir;
         attack1.enemySource = gameObject;
@@ -984,10 +1037,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
                 transform.position+new Vector3(ac.facedir*Mathf.Cos(0.35f),Mathf.Sin(0.35f)),
                 Quaternion.Euler(0,ac.facedir==1?0:180,20), container.transform);
         var attack2 = proj2.GetComponent<AttackFromEnemy>();
-        attack2.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
-        attack2.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+        attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+        attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
         
         attack2.firedir = ac.facedir;
         attack2.enemySource = gameObject;
@@ -997,10 +1050,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
                 transform.position+new Vector3(ac.facedir*Mathf.Cos(0.35f),-Mathf.Sin(0.35f)),
                 Quaternion.Euler(0,ac.facedir==1?0:180,-20), container.transform);
         var attack3 = proj3.GetComponent<AttackFromEnemy>();
-        attack3.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
-        attack3.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+        attack3.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+        attack3.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
         attack3.firedir = ac.facedir;
         attack3.enemySource = gameObject;
         
@@ -1014,9 +1067,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         if (ac.facedir == -1)
         {
-            //proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
-            //projfx1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
-            //projfx2.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+            proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+            projfx1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+            projfx2.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
         }
         
         
@@ -1025,19 +1078,29 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     
     void BrightCamineRush_Part2(GameObject container, Quaternion rotation)
     {
-        
+        Quaternion newRot;
+        if(ac.facedir == 1)
+        {
+            newRot = Quaternion.Euler(0,0,0);
+        }
+        else
+        {
+            newRot = Quaternion.Euler(0,180,0);
+        }
+
         var proj2 = 
             Instantiate(projectilePoolEX[7],
-                transform.position+new Vector3(ac.facedir,0),
-                rotation, container.transform);
+                transform.position+new Vector3(ac.facedir-ac.facedir,0),
+                rotation, container.transform);//rotation->newRot
+        
         var attack2 = proj2.GetComponent<AttackFromEnemy>();
-        attack2.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-            -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
-        attack2.AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-            15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+        attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+            -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+        attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+            15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
         
         var projfx1 = Instantiate(projectilePoolEX[6],
-            transform.position+transform.right,
+            transform.position+new Vector3(ac.facedir-ac.facedir,0,0),
             rotation, container.transform);
         
         Debug.Log(projfx1.transform.rotation.eulerAngles);
@@ -1052,7 +1115,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         angle = rotation.eulerAngles.z* Mathf.Deg2Rad;
         
         //print("angle"+angle);
-        moveController.moveDirection.x = 30f * Mathf.Cos(angle) * ac.facedir;
+        moveController.moveDirection.x = 30f * Mathf.Cos(angle);
         moveController.moveDirection.y = 30f * Mathf.Sin(angle);
         moveController.duration *= 1.2f;
 
@@ -1066,21 +1129,24 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
         //GameObject subcontainer = Instantiate(attackSubContainer, transform.position, transform.rotation, RangedAttackFXLayer.transform);
         //subcontainer.GetComponent<AttackSubContainer>().InitAttackContainer(1,container);
-
         var proj1 = 
-            Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
+            InstantiateDirectional(projectile7, transform.position+new Vector3(ac.facedir,0), container.transform,ac.facedir);
+        
+        
+        //var proj1 = 
+            //Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
         proj1.GetComponent<AttackFromEnemy>().
-            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1));
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
+                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
         proj1.GetComponent<AttackFromEnemy>().
-            AddWithCondition(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1));
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
+                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         if (ac.facedir == -1)
         {
-            //proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
+            proj1.GetComponentInChildren<DOTweenSimpleController>().moveDirection.x *= -1;
         }
         
     }
@@ -1092,10 +1158,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         var proj1 = 
             Instantiate(projectilePoolEX[5], transform.position, Quaternion.identity, container.transform);
-        proj1.GetComponent<AttackFromEnemy>().AddWithCondition(new TimerBuff(999));
-        proj1.GetComponent<AttackFromEnemy>().AddWithCondition
+        proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll(new TimerBuff(999),100);
+        proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll
             (new TimerBuff((int)BasicCalculation.BattleCondition.Burn,
-                72.7f,12f,BattleCondition.buffEffectDisplayType.None,1));
+                72.7f,12f,BattleCondition.buffEffectDisplayType.None,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
@@ -1107,10 +1173,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         var proj1 = 
             Instantiate(projectilePoolEX[8], transform.position+Vector3.up, Quaternion.identity, container.transform);
-        proj1.GetComponent<AttackFromEnemy>().AddWithCondition(new TimerBuff(999));
-        proj1.GetComponent<AttackFromEnemy>().AddWithCondition
+        proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll(new TimerBuff(999),100);
+        proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll
         (new TimerBuff((int)BasicCalculation.BattleCondition.Scorchrend,
-            31.1f,21f,BattleCondition.buffEffectDisplayType.None,1));
+            31.1f,21f,BattleCondition.buffEffectDisplayType.None,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
@@ -1135,12 +1201,20 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
-    void BlazingEnhancementBuff()
+    void BlazingEnhancementBuff(int difficulty=3)
     {
+        var buffEffect1 = 200f;
+        var buffEffect2 = 100f;
+        if (difficulty == 2)
+        {
+            buffEffect1 = 50f;
+            buffEffect2 = 20f;
+        }
+        //1001 关卡名 005 buff type 01序号
         var buff = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
-            200, 10, BattleCondition.buffEffectDisplayType.Value, 100, 1);
+            buffEffect1, 10, BattleCondition.buffEffectDisplayType.Value, 100, 100100501);
         var buff_hard = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
-            100, -1, BattleCondition.buffEffectDisplayType.Value, 100, 2);
+            buffEffect2, -1, BattleCondition.buffEffectDisplayType.Value, 100, 100100502);
         buff_hard.dispellable = false;
         _statusManager.ObtainTimerBuff(buff);
         _statusManager.ObtainTimerBuff(buff_hard);
@@ -1226,22 +1300,24 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
-    void DisappearRenderer()
+    public override void DisappearRenderer()
     {
-        var spriteRenderer1 = GetComponent<SpriteRenderer>();
-        
+        //var spriteRenderer1 = GetComponent<SpriteRenderer>();
+        ac.rendererObject.SetActive(false);
+        ac.SwapWeaponVisibility(false);
         //spriteRenderer;
-        spriteRenderer1.color = 
-            new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 0);
+        //spriteRenderer1.color = 
+            //new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 0);
         
     }
-    void AppearRenderer()
+    public override void AppearRenderer()
     {
-        var spriteRenderer1 = GetComponent<SpriteRenderer>();
-        
+        //var spriteRenderer1 = GetComponent<SpriteRenderer>();
+        ac.rendererObject.SetActive(true);
+        ac.SwapWeaponVisibility(true);
         //spriteRenderer;
-        spriteRenderer1.color = 
-            new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);
+        //spriteRenderer1.color = 
+            //new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);
         
     }
 
@@ -1258,14 +1334,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// <param name="where"></param>
     /// <param name="_parent"></param>
     /// <returns></returns>
-    GameObject GenerateWarningPrefab(GameObject prefab, Vector3 where,Quaternion rot, Transform _parent)
-    {
-        var clone = Instantiate(prefab, where, rot, _parent);
-        clone.GetComponent<EnemyAttackHintBar>().SetSource(ac);
-        return clone;
-    }
     
-    void QuitAttack()
+    
+    protected override void QuitAttack()
     {
         _behavior.currentAttackAction = null;
         ac.OnAttackExit();

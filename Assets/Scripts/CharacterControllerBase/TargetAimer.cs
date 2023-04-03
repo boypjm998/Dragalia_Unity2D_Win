@@ -13,6 +13,9 @@ public class TargetAimer : MonoBehaviour
     [SerializeField]
     public GameObject EnemyWatched; //视线偏向的敌人目标
     private PolygonCollider2D TargetSearchScale; //锁定范围触发器
+    public List<GameObject> ReachableEnemies => EnemyInRange;
+    
+    
     [SerializeField]
     private CinemachineVirtualCamera cinemachineVirtualCamera; //摄像头
     [SerializeField] 

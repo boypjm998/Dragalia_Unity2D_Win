@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using GameMechanics;
 public class PlayerStatusManager : StatusManager
 {
     // Record Character's Status
@@ -52,7 +52,8 @@ public class PlayerStatusManager : StatusManager
         skillRegenByAttack = new bool[4]{ true, true, true, true };
         ac = GetComponent<ActorController>();
         
-        //_conditionBar = GameObject.Find("ConditionBar").GetComponent<UI_ConditionBar>();
+        if(_conditionBar == null)
+            _conditionBar = GameObject.Find("ConditionBar").GetComponent<UI_ConditionBar>();
     }
 
     public void GetPlayerConditionBar()

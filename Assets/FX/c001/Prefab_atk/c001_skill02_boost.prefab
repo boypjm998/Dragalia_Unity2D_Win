@@ -106,21 +106,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 345be9eb718efa44a9e6a68bee7270e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chara_id: 0
-  skill_id: 0
+  chara_id: 1
+  skill_id: 2
+  attackInfo:
+  - dmgModifier:
+    - 2.35
+    constDmg: []
+    knockbackPower: 0
+    knockbackForce: 0
+    knockbackTime: 0
+    knockbackDirection: {x: 0, y: 0}
+    KBType: 0
+    firedir: 0
+  - dmgModifier:
+    - 23.54
+    constDmg: []
+    knockbackPower: 200
+    knockbackForce: 9
+    knockbackTime: 1.5
+    knockbackDirection: {x: 1, y: 6}
+    KBType: 4
+    firedir: 0
+  firedir: 0
   attackType: 4
   dmgModifier: []
   nextDmgModifier: []
   nextKnockbackPower: []
   nextKnockbackForce: []
   nextKnockbackTime: []
-  hitSoundEffect: {fileID: 0}
-  self: {fileID: 0}
   knockbackPower: 0
   knockbackForce: 0
   knockbackTime: 0
   knockbackDirection: {x: 1, y: 6}
   KBType: 4
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
   spGain: 0
   isMeele: 0
   withConditionChance: 
@@ -132,6 +152,7 @@ MonoBehaviour:
   playerpos: {fileID: 0}
   defaultGravity: 0
   hitShakeIntensity: 5
+  damageAutoReset: 0
 --- !u!1001 &4360189856244068004
 PrefabInstance:
   m_ObjectHideFlags: 0

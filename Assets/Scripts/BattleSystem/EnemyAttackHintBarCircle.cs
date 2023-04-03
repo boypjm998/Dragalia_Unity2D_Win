@@ -7,7 +7,7 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
 {
     private Vector2 maxFillSize;
     private SpriteRenderer fillRenderer;
-    private Tweener _tweener;
+    
     
     // Start is called before the first frame update
     protected override void Start()

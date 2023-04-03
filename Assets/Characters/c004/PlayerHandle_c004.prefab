@@ -335,7 +335,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6661274983668370809}
   - component: {fileID: 6661274983668370786}
-  - component: {fileID: 6661274983668370784}
   - component: {fileID: 6661274983668370798}
   - component: {fileID: 6661274985528823816}
   - component: {fileID: 6661274983668370785}
@@ -385,6 +384,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab606344964fa144aa22f56e7da715b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  accTime: 0.1
   standardAttackContinious: 0
   keyRight: d
   keyLeft: a
@@ -419,36 +419,6 @@ MonoBehaviour:
   inputAttackEnabled: 1
   inputJumpEnabled: 1
   inputRollEnabled: 1
---- !u!114 &6661274983668370784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6661274983668370811}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06ce489a54feb704499bd19451f97767, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RangedAttackFXLayer: {fileID: 0}
-  MeeleAttackFXLayer: {fileID: 6661274985377319807}
-  BuffFXLayer: {fileID: 4547110999485207023}
-  healbuff: {fileID: 2819481691769256717, guid: 0b7a7f4c1d7976b4b82e57f1e378e537, type: 3}
-  Shotpoints: {fileID: 6661274985340632926}
-  attackContainer: {fileID: 497525783265369579, guid: 20655c64630fcbd419fffcbc147c5e39, type: 3}
-  projectile1: {fileID: 6017278169156030481, guid: 974d7d233b0ea224590ce6adaa2e7278, type: 3}
-  projectile2: {fileID: 5842669881630562263, guid: e39db2f6ac13f624e8e3300c8f3aef1a, type: 3}
-  projectile3: {fileID: 3928483398152051950, guid: 06b8e06ecf2c7b1458bc21b17e4727b8, type: 3}
-  projectile_m1: {fileID: 4176649666536326855, guid: eda1222257f1da14899c28fc55f3d73d, type: 3}
-  projectile_s1: {fileID: 6525411714413843190, guid: da9e38449a28bfb408f609114ef392ee, type: 3}
-  projectile_s1_boost: {fileID: 6414330507012090249, guid: da3183bd9e6bf6741aa0a5286a023423, type: 3}
-  projectile_s2_boost: {fileID: 7695913588168608737, guid: 4e6920ba51738f742ba5959c54fc85bf, type: 3}
-  projectile_s3: {fileID: 3260100563582749043, guid: 63f2ab4f63eeea8449b316a8e44fe715, type: 3}
-  projectile_s3_boost: {fileID: 1153847036672427330, guid: fbf08eef5aa31634a8d5c2f42abc39ee, type: 3}
-  portal: {fileID: 11837177500775277, guid: 5579af1d67f45574aa835f81cf01e1f5, type: 3}
-  shotpoint: {fileID: 6661274985124123798}
-  ta: {fileID: 0}
 --- !u!114 &6661274983668370798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,6 +449,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayedName: 
+  dialogIconID: 0
   maxBaseHP: 4301
   baseDef: 10
   baseAtk: 5705
@@ -486,10 +457,24 @@ MonoBehaviour:
   maxHP: 4301
   currentHp: 4301
   knockbackRes: 0
+  burnRes: 0
+  poisonRes: 0
+  frostbiteRes: 0
+  paralysisRes: 0
+  scorchrendRes: 0
+  stormlashRes: 0
   flashburnRes: 0
+  shadowblightRes: 0
+  stunRes: 0
+  sleepRes: 0
+  bogRes: 0
+  freezeRes: 0
+  blindnessRes: 0
+  cursedRes: 0
   _conditionBar: {fileID: 0}
   damageCut: 0
   damageCutConst: 0
+  waitForRevive: 0
   maxSkillNum: 4
   requiredSP:
   - 3060
@@ -507,8 +492,7 @@ MonoBehaviour:
   jumpforce: 20
   rollspeed: 9
   comboConnectMaxInterval: 4
-  spGainBuff: 0
-  spGainDebuff: 0
+  remainReviveTimes: 9
   comboHitCount: 0
   _comboIndicator: {fileID: 0}
 --- !u!50 &6661274983668370785
@@ -812,14 +796,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5cc08fc213290f4b9745e045431bb09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pi: {fileID: 0}
-  stat: {fileID: 0}
-  movespeed: 6
-  rollspeed: 9
-  jumpforce: 20
   anim: {fileID: 0}
   rigid: {fileID: 0}
   facedir: 1
+  defaultGravity: 4
+  pi: {fileID: 0}
+  _statusManager: {fileID: 0}
+  movespeed: 6
+  rollspeed: 9
+  jumpforce: 20
   dodging: 0
   ta: {fileID: 0}
   combo: 0

@@ -2,17 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile_C001_4 : MonoBehaviour
+namespace CharacterSpecificProjectiles
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Projectile_C001_4 : MonoBehaviour
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Start is called before the first frame update
+        void Start()
+        {
+            
+        }
+    
+        // Update is called once per frame
+        void Update()
+        {
+            
+        }
     }
 }
+
+

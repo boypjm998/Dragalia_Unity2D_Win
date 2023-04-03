@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using GameMechanics;
 public class AttackFromEnemy : AttackBase
 {
     protected BattleStageManager battleStageManager;
@@ -10,14 +10,14 @@ public class AttackFromEnemy : AttackBase
     public GameObject enemySource;
     
     [Header("Damage Basic Attributes")]
-    public float knockbackPower = 100;
-    public float knockbackForce;
-    public float knockbackTime;
-    public Vector2 knockbackDirection = Vector2.right;
-    public BasicCalculation.KnockBackType KBType;
+    // public float knockbackPower = 100;
+    // public float knockbackForce;
+    // public float knockbackTime;
+    // public Vector2 knockbackDirection = Vector2.right;
+    // public BasicCalculation.KnockBackType KBType;
     
     //[SerializeField]protected float[] dmgModifier;
-    [HideInInspector] public int firedir;
+    //[HideInInspector] public int firedir;
     [SerializeField] public bool isMeele;
     
     //[SerializeField] protected List<float> nextDmgModifier;
@@ -25,10 +25,10 @@ public class AttackFromEnemy : AttackBase
     //[SerializeField] protected List<float> nextKnockbackForce;
     //[SerializeField] protected List<float> nextKnockbackTime;
     
-    public List<BattleCondition> withConditions { get; protected set; }
-    public List<int> withConditionChance;
-    public List<int> withConditionNum; //一次上几个debuff？
-    public List<int> withConditionFlags;// 友军
+    // public List<BattleCondition> withConditions { get; protected set; }
+    // public List<int> withConditionChance;
+    // public List<int> withConditionNum; //一次上几个debuff？
+    // public List<int> withConditionFlags;// 友军
     [HideInInspector]public List<int> hitFlags;//遍历玩家做一个数组，每个玩家代表一个hitflag
 
 
@@ -36,7 +36,7 @@ public class AttackFromEnemy : AttackBase
     [HideInInspector]public Collider2D attackCollider;
     [HideInInspector]public Transform selfpos;
     
-    static int DEFAULT_GRAVITY = 4;
+    //static int DEFAULT_GRAVITY = 4;
     public Coroutine ConnectCoroutine;
     
     
@@ -58,25 +58,18 @@ public class AttackFromEnemy : AttackBase
     protected virtual void Awake()
     {
         _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
-        //nextDmgModifier = new List<float>();
-        //nextKnockbackForce = new List<float>();
-        //nextKnockbackPower = new List<float>();
-        //nextKnockbackTime = new List<float>();
-        withConditions = new List<BattleCondition>();
+        //withConditions = new List<BattleCondition>();
         //withConditionNum = new List<int>();
         hitFlags = SearchPlayerList();
-        withConditionFlags = SearchPlayerList();
+        //withConditionFlags = SearchPlayerList();
         battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
         
-        
+
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
     
+
 
     protected List<int> SearchPlayerList()
     {
@@ -138,19 +131,31 @@ public class AttackFromEnemy : AttackBase
     
     public void AddWithCondition(BattleCondition condition)
     {
-        withConditions.Add(condition);
+        //withConditions.Add(condition);
+    }
+    
+    public void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
+    {
+        var conditionInfo = new AttackInfo.ConditionWithAttackInfo();
+        conditionInfo.condition = condition;
+        conditionInfo.withConditionChance = chance;
+        conditionInfo.identifier = identifier;
+        foreach (var attack in attackInfo)
+        {
+            attack.withConditions.Add(conditionInfo);
+        }
     }
     
     public void CauseDamage(Collider2D collision)
     {
         hitFlags.Remove(collision.transform.parent.GetInstanceID());
-        withConditionFlags.Remove(collision.transform.parent.GetInstanceID());
+        //withConditionFlags.Remove(collision.transform.parent.GetInstanceID());
         
         if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
 
-        int dmg = battleStageManager.EnemyHit
-            (collision.transform.parent.gameObject,enemySource, this);
+        int dmg = battleStageManager.CalculateHit
+            (collision.transform.parent.gameObject,enemySource, this,1);
 
 
         if (hitConnectEffect != null)
@@ -173,84 +178,82 @@ public class AttackFromEnemy : AttackBase
         
     }
 
-    public Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType,GameObject target)
+    // public Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType,GameObject target)
+    // {
+    //     var kbdirtemp = knockbackDirection;
+    //     switch (knockBackType)
+    //     {
+    //         case BasicCalculation.KnockBackType.FaceDirection:
+    //             kbdirtemp = firedir * kbdirtemp;
+    //             break;
+    //             
+    //         case BasicCalculation.KnockBackType.FromCenterRay:
+    //             kbdirtemp = transform.InverseTransformPoint(target.transform.position);
+    //             break;
+    //         case BasicCalculation.KnockBackType.FromCenterFixed:
+    //             kbdirtemp = transform.position.x > target.transform.position.x
+    //                 ? new Vector2(-knockbackDirection.x,knockbackDirection.y)
+    //                 : knockbackDirection;
+    //             break;
+    //         case BasicCalculation.KnockBackType.None:
+    //             kbdirtemp = Vector2.zero;
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //
+    //     return kbdirtemp;
+    // }
+
+    
+    
+    public override void NextAttack()
     {
-        var kbdirtemp = knockbackDirection;
-        switch (KBType)
+        if (attackInfo.Count > 1)
         {
-            case BasicCalculation.KnockBackType.FaceDirection:
-                kbdirtemp = firedir * kbdirtemp;
-                break;
-                
-            case BasicCalculation.KnockBackType.FromCenterRay:
-                kbdirtemp = transform.InverseTransformPoint(target.transform.position);
-                break;
-            case BasicCalculation.KnockBackType.FromCenterFixed:
-                kbdirtemp = transform.position.x > target.transform.position.x
-                    ? new Vector2(-knockbackDirection.x,knockbackDirection.y)
-                    : knockbackDirection;
-                break;
-            case BasicCalculation.KnockBackType.None:
-                kbdirtemp = Vector2.zero;
-                break;
-            default:
-                break;
+            attackInfo.RemoveAt(0);
         }
-
-        return kbdirtemp;
-    }
-
-    public int GetHitCount()
-    {
-        return dmgModifier.Length;
-    }
-    
-    public float GetDmgModifier(int id)
-    {
-        return dmgModifier[id];
-    }
-    
-    public void NextAttack()
-    {
+        
+        
         //print(nextDmgModifier.Count);
-        if (nextKnockbackForce.Count > 0)
-        {
-            knockbackForce = nextKnockbackForce[0];
-            nextKnockbackForce.RemoveAt(0);
-        }
-
-        if (nextKnockbackPower.Count > 0)
-        {
-            knockbackPower = nextKnockbackPower[0];
-            nextKnockbackPower.RemoveAt(0);
-        }
-
-        if (nextKnockbackTime.Count > 0)
-        {
-            knockbackTime = nextKnockbackTime[0];
-            nextKnockbackTime.RemoveAt(0);
-        }
-
-        if (nextDmgModifier.Count > 0)
-        {
-            dmgModifier = new float[1];
-            dmgModifier[0] = nextDmgModifier[0];
-            //print("下一个攻击");
-            //print(dmgModifier[0]);
-            nextDmgModifier.RemoveAt(0);
-        }
+        // if (nextKnockbackForce.Count > 0)
+        // {
+        //     knockbackForce = nextKnockbackForce[0];
+        //     nextKnockbackForce.RemoveAt(0);
+        // }
+        //
+        // if (nextKnockbackPower.Count > 0)
+        // {
+        //     knockbackPower = nextKnockbackPower[0];
+        //     nextKnockbackPower.RemoveAt(0);
+        // }
+        //
+        // if (nextKnockbackTime.Count > 0)
+        // {
+        //     knockbackTime = nextKnockbackTime[0];
+        //     nextKnockbackTime.RemoveAt(0);
+        // }
+        //
+        // if (nextDmgModifier.Count > 0)
+        // {
+        //     dmgModifier = new float[1];
+        //     dmgModifier[0] = nextDmgModifier[0];
+        //     //print("下一个攻击");
+        //     //print(dmgModifier[0]);
+        //     nextDmgModifier.RemoveAt(0);
+        // }
         
 
         ResetFlags();
     }
     
-    public void ResetWithConditionFlags()
+    public override void ResetWithConditionFlags()
     {
-        withConditionFlags.Clear();
-
-        var enemyLayer = GameObject.Find("Player");
-        for (var i = 0; i < enemyLayer.transform.childCount; i++)
-            withConditionFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
+        // withConditionFlags.Clear();
+        //
+        // var enemyLayer = GameObject.Find("Player");
+        // for (var i = 0; i < enemyLayer.transform.childCount; i++)
+        //     withConditionFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
 
         var container = GetComponentInParent<AttackContainer>();
         container.conditionCheckDone.Clear();

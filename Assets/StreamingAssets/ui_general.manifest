@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3486656091
+CRC: 2364170130
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ca4047f25fd5ab5e69c669fd5adea405
+    Hash: b7d4339f93fe87ff4e083550c9ae6801
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d99a72380d63a12f7a46460bda3c39bb
+    Hash: e22635dab77bdef7af6f954bfcfe9205
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -14,6 +14,8 @@ ClassTypes:
 - Class: 4
   Script: {instanceID: 0}
 - Class: 21
+  Script: {instanceID: 0}
+- Class: 23
   Script: {instanceID: 0}
 - Class: 28
   Script: {instanceID: 0}
@@ -26,6 +28,22 @@ ClassTypes:
 - Class: 95
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 74f6ce06fab902e4caaffddf0d1557b2, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 547fb95fd9b20e14f9e996cf4aaf88a3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 785a8ef6d24964a48b74e66fb17ce0dc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8abf4265c21eb1f46b2c4cc8f27d6dd9, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 6e4a1da7e271bfb418b364cd29c83c26, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: f1107149098f7e848a84eef8df1056b8, type: 3}
@@ -35,13 +53,29 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: da875d8a419405a4d84bf66d915461ed, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 66c0bc2dd44dfe0428dbe08ebb501b24, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2729b32162f679344a84b50a1384b9c5, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
   Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
 - Class: 212
   Script: {instanceID: 0}
 - Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 223
+  Script: {instanceID: 0}
+- Class: 224
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Unity.RenderPipelines.Universal.Runtime
@@ -68,6 +102,10 @@ SerializeReferenceClassIdentifiers:
   ClassName: TMPro.TMP_SpriteCharacter
 - AssemblyName: Unity.TextMeshPro
   ClassName: TMPro.TMP_SpriteGlyph
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.VertexGradient
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
 - AssemblyName: UnityEngine.TextCoreFontEngineModule
   ClassName: UnityEngine.TextCore.FaceInfo
 - AssemblyName: UnityEngine.TextCoreFontEngineModule
@@ -76,33 +114,86 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.TextCore.GlyphMetrics
 - AssemblyName: UnityEngine.TextCoreFontEngineModule
   ClassName: UnityEngine.TextCore.GlyphRect
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.AnimationTriggers
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.ColorBlock
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Navigation
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Slider/SliderEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.SpriteState
 Assets:
 - Assets/Resources/UI/InBattle/BuffLogText/TextIdle.anim
 - Assets/Resources/UI/InBattle/BuffIcons/Icons/BuffSheet.asset
-- Assets/TextMesh Pro/Shaders/TMP_SDF.shader
-- Assets/AllIn1SpriteShader/Textures/GradientTextures/palette-downwell.png
-- Assets/UserInterface/InBattle/SkillMask/Mask03_1.png
-- Assets/Resources/UI/InBattle/Number/Sprite/HP_base.mat
-- Assets/AllIn1SpriteShader/Textures/fire2.png
-- Assets/AllIn1SpriteShader/Textures/rainbow.png
-- Assets/UserInterface/InBattle/SkillMask/MaskBack01.png
-- Assets/AllIn1SpriteShader/Textures/seamlessNoise.png
-- Assets/TextMesh Pro/Shaders/TMP_Sprite.shader
-- Assets/Resources/UI/Font/fot-rodinntlgpro-b.otf
+- Assets/Fonts/EN_outline.mat
+- Assets/Resources/UI/InBattle/BuffIcons/Basic/BuffIconBack.png
+- Assets/FX/General/AttackSubContainer.prefab
+- Assets/Resources/UI/InBattle/BuffIcons/Prefabs/Icon_Buff.prefab
+- Assets/UserInterface/InBattle/BattleHints/inbattle_red_from_center.png
+- Assets/UserInterface/InBattle/Common/Texture/suipian 1.png
+- "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/BuffText_ZH.mat"
+- Assets/UserInterface/InBattle/BattleHints/inbattle_red_from_left.png
+- Assets/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader
+- Assets/Resources/UI/InBattle/BuffIcons/Icons/Icon_Buff_1.png
 - Assets/FX/General/AttackContainer.prefab
+- Assets/Resources/UI/InBattle/BuffIcons/Icons/Icon_Buff_201.png
+- Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
+- Assets/UserInterface/InBattle/ComboUI/ComboIndicator.prefab
+- Assets/FX/General/BuffEffect/Heal/buffeffect01_0.controller
+- Assets/AllIn1SpriteShader/Materials/UIStencil.mat
+- Assets/Resources/UI/Font/fot_rodin/fot-rodinntlgpro-b SDF.asset
+- Assets/UserInterface/InBattle/SkillMask/Mask02.png
+- Assets/AllIn1SpriteShader/Textures/GradientTextures/palette-downwell.png
+- Assets/Resources/UI/InBattle/Number/Sprite/HP_base.png
+- Assets/UserInterface/InBattle/BattleHints/inbattle_hint_circle.png
+- Assets/Shaders/UI_overlay.shader
+- Assets/Resources/UI/InBattle/BuffIcons/Basic/BuffIconBorder2 1.png
+- Assets/FX/General/BuffEffect/Heal/HealEffect_01.anim
+- Assets/Resources/UI/InBattle/BuffIcons/Prefabs/ConditionBar.prefab
+- Assets/Material/Flash Material.mat
+- Assets/AllIn1SpriteShader/Materials/UIDefault.mat
+- Assets/UserInterface/InBattle/SkillMask/Mask03_1.png
+- Assets/Resources/UI/InBattle/BuffIcons/Basic/BuffIconInner.png
+- Assets/Resources/UI/InBattle/Number/Sprite/HP_base.mat
+- Assets/UserInterface/InBattle/Gauge/HPIcon.png
+- Assets/UserInterface/InBattle/Chara_Stat/LifeHeart.prefab
+- Assets/Material/CoodDownMat.mat
+- Assets/UserInterface/InBattle/SkillMask/MaskBack01.png
+- Assets/FX/General/AttackContainerEnemy.prefab
+- Assets/UserInterface/InBattle/Map/Minimap_Icon.png
+- "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/UI_affl_Txt.mat"
+- Assets/Resources/UI/InBattle/BuffIcons/Prefabs/Icon_Debuff.prefab
+- Assets/Resources/UI/InBattle/BuffIcons/Basic/DebuffIconInner.png
+- Assets/Resources/UI/InBattle/BuffIcons/Basic/WhiteIconInner.png
 - Assets/Resources/UI/InBattle/BuffIcons/Icons/BuffSheet.png
+- Assets/UserInterface/InBattle/ComboUI/battle_ui.asset
 - Assets/UserInterface/InBattle/SkillMask/Mask02' 1.png
+- Assets/UserInterface/InBattle/ComboUI/battle_ui.png
+- Assets/Resources/UI/InBattle/BuffIcons/Prefabs/Icon_Affliction.prefab
+- Assets/UserInterface/InBattle/Chara_Stat/Lifeheart.png
 - Assets/UserInterface/InBattle/SkillMask/Mask02'.png
 - Assets/FX/General/BuffEffect/Prefab/buff_fx_01.prefab
-- Assets/FX/General/BuffEffect/Heal/buffeffect01_0.controller
-- Assets/Resources/UI/Font/fot_rodin/fot-rodinntlgpro-b SDF.asset
+- Assets/Fonts/fot-rodinntlgpro-b.otf
+- Assets/Resources/UI/InBattle/BuffLogText/Text.controller
+- Assets/UserInterface/InBattle/BattleHints/inbattle_hint_purple_from_left.png
+- "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/UI_buff_Txt.mat"
+- "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/UI_HP_text_mat.mat"
+- Assets/UserInterface/InBattle/Gauge/hpbar2.png
 - Assets/Resources/UI/InBattle/BuffLogText/TextPop.anim
 - Assets/FX/General/BuffEffect/Heal/buffeffect01.png
-- Assets/UserInterface/InBattle/SkillMask/Mask02.png
-- Assets/UserInterface/InBattle/SkillMask/Mask03.png
-- Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShaderUiMask.shader
-- Assets/UserInterface/InBattle/SkillMask/Mask01.png
+- "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/UI_debuff_Txt.mat"
+- Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+- Assets/Resources/UI/InBattle/BuffLogText/BuffText_ZH.prefab
 - Assets/Resources/UI/InBattle/Number/Sprite/HP_base.asset
-- Assets/Resources/UI/InBattle/Number/Sprite/HP_base.png
-- Assets/FX/General/BuffEffect/Heal/HealEffect_01.anim
-Dependencies: []
+- Assets/UserInterface/InBattle/SkillMask/Mask03.png
+- Assets/UserInterface/InBattle/SkillMask/Mask01.png
+- Assets/TextMesh Pro/Fonts/LiberationSans.ttf
+- Assets/UserInterface/InBattle/Common/Texture/suipian.mat
+- Assets/UserInterface/InBattle/ComboUI/combo.png
+Dependencies:
+- D:/Unity/Projects/My project (1)/AssetBundles/StandaloneWindows/allin1
+- D:/Unity/Projects/My project (1)/AssetBundles/StandaloneWindows/iconsmall

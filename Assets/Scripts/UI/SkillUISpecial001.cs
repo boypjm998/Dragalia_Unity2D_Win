@@ -12,6 +12,7 @@ public class SkillUISpecial001 : SkillUIBase
     // Start is called before the first frame update
     protected override void Start()
     {
+        //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         base.Start();
         alchemicGauge = GameObject.Find("AlchemicGauge").GetComponentInChildren<AlchemicGauge>();
     }

@@ -6,7 +6,7 @@ using LitJson;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using GameMechanics;
 public class UI_DialogDisplayer : MonoBehaviour
 {
     private UI_DialogImageSwapper _swapper;
@@ -39,8 +39,10 @@ public class UI_DialogDisplayer : MonoBehaviour
         }
     }
 
-    public void EnqueueDialog(int speakerID,int clipID)
+    public void EnqueueDialog(int speakerID,int clipID, AudioSource audioSource, AudioClip clip)
     {
+        if(clipID < 0)
+            return;
         var dialogInfo = questDialogInfoData[$"SPEAKER_{speakerID}"][$"DIALOG_CLIP_{clipID}"];
         DialogFormat dialogFormat = new DialogFormat();
         dialogFormat.text = dialogInfo["TEXT"].ToString();
@@ -48,6 +50,8 @@ public class UI_DialogDisplayer : MonoBehaviour
         dialogFormat.faceExpression = Convert.ToInt32(dialogInfo["FACE"].ToString());
         dialogFormat.lastTime_10 = Convert.ToInt32(dialogInfo["TIME"].ToString());
         dialogFormat.speakerID = speakerID;
+        dialogFormat.audioSource = audioSource;
+        dialogFormat.clip = clip;
         dialogQueue.Enqueue(dialogFormat);
     }
 
@@ -55,6 +59,10 @@ public class UI_DialogDisplayer : MonoBehaviour
     private IEnumerator DisplayDialog()
     {
         var dialog = dialogQueue.Dequeue();
+        if (dialog.audioSource != null)
+        {
+            dialog.audioSource.PlayOneShot(dialog.clip);
+        }
         GameObject balloon;
         if (dialog.ballonType == 1)
         {
@@ -116,5 +124,7 @@ public class UI_DialogDisplayer : MonoBehaviour
         public int ballonType;
         public int faceExpression;
         public int lastTime_10;
+        public AudioSource audioSource;
+        public AudioClip clip;
     }
 }

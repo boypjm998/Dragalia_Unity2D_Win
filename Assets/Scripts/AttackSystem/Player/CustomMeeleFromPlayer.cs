@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomMeeleFromPlayer : AttackFromPlayer
 {
-    protected ActorController ac;
+    protected ActorBase ac;
 
     Coroutine ConnectCoroutine;
     
@@ -27,9 +27,11 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     protected override void Start()
     {
         base.Start();
-        playerpos = GameObject.Find("PlayerHandle").transform;
-        ac = playerpos.GetComponent<ActorController>();
-        if (isMeele)
+        if(playerpos==null)
+            playerpos = GameObject.Find("PlayerHandle").transform;
+        ac = playerpos.GetComponent<ActorBase>();
+
+        if (isMeele && ac!=null)
         {
             ac.OnAttackInterrupt += DestroyContainer;
         }
@@ -53,12 +55,12 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     
     
   
-    private void OnTriggerStay2D(Collider2D collision)
+    protected override void OnTriggerStay2D(Collider2D collision)
     {
-        Transform enemyTrans;
-        //Debug.Log(collision.gameObject.GetInstanceID());
-        //print("stay!!!!");
+        //Transform enemyTrans;
         
+        
+      
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
 
@@ -77,8 +79,13 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     {
         
         Animator animAttack = GetComponentInParent<Animator>();
-        if(animAttack == null)
-            print("animAttack is null");
+        if (animAttack == null)
+        {
+            //print("animAttack is null");
+            ConnectCoroutine = null;
+            yield break;
+        }
+        
         Rigidbody2D rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
         Animator anim = playerpos.gameObject.GetComponentInParent<ActorController>().anim;
         //Debug.Log(parent);
@@ -89,7 +96,7 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
         rigid.gravityScale = 0;
         yield return new WaitForSeconds(time);
 
-        RecoverFromMeeleTimeStop(4);
+        RecoverFromMeeleTimeStop(defaultGravity);
 
        
     }

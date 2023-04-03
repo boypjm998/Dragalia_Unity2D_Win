@@ -48,22 +48,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c0b3c06388c14d4ebf37c86e0f33654, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 0}
-  knockbackPower: 120
-  knockbackForce: 0
-  knockbackTime: 0.6
-  knockbackDirection: {x: 1, y: 0}
-  KBType: 3
+  chara_id: 0
+  skill_id: 0
+  attackInfo:
+  - dmgModifier:
+    - 5.92
+    constDmg: []
+    knockbackPower: 120
+    knockbackForce: 0
+    knockbackTime: 0.6
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 3
+    firedir: 0
+  - dmgModifier:
+    - 5.92
+    constDmg: []
+    knockbackPower: 120
+    knockbackForce: 0
+    knockbackTime: 0.6
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 3
+    firedir: 0
+  - dmgModifier:
+    - 6.3
+    constDmg: []
+    knockbackPower: 120
+    knockbackForce: 0
+    knockbackTime: 0.6
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 3
+    firedir: 0
+  firedir: 0
+  attackType: 4
   dmgModifier:
   - 5.92
-  spGain: 0
-  isMeele: 0
   nextDmgModifier:
   - 5.92
   - 6.3
   nextKnockbackPower: []
   nextKnockbackForce: []
   nextKnockbackTime: []
+  knockbackPower: 120
+  knockbackForce: 0
+  knockbackTime: 0.6
+  knockbackDirection: {x: 1, y: 0}
+  KBType: 3
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
+  spGain: 0
+  isMeele: 0
   withConditionChance: 
   withConditionNum: 
   withConditionFlags: 
@@ -72,8 +105,8 @@ MonoBehaviour:
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
   defaultGravity: 0
-  attackType: 4
   hitShakeIntensity: 6
+  damageAutoReset: 0
 --- !u!61 &3915380577712524089
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -139,7 +172,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 932530049, guid: 63ef436e412bc9e4cb9b79678a404f17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

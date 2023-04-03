@@ -66,7 +66,7 @@ public class UISortingGroup : MonoBehaviour
         isActive = false;
         if(_menuUIManager==null)
             return;
-        _menuUIManager.lastDisabledUIGroup = this.sortingGroupID;
+        //_menuUIManager.lastDisabledUIGroup = this.sortingGroupID;
     }
 
 

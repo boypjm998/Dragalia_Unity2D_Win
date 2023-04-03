@@ -5,7 +5,7 @@ using System.Reflection;
 using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
-
+using GameMechanics;
 
 public class HB01_BehaviorTree : DragaliaEnemyBehavior
 {
@@ -28,46 +28,50 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         //Invoke("SetEnable",awakeTime);
     }
 
+    protected void OnDestroy()
+    {
+        enemyController.OnMoveFinished -= FinishMove;
+        enemyAttackManager.OnAttackFinished -= FinishAttack;
+    }
+
     void SetEnable()
     {
         this.enabled = true;
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         StopAllCoroutines();
         enemyController.DisableMovement();
     }
 
-    IEnumerator Start()
-    {
-        yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
-        SearchTarget();
-        state = 0;
-        substate = 0;
-        yield return new WaitForSeconds(awakeTime);
-        StartCoroutine(UpdateBehavior());
-        //tartCoroutine(UpdateBehavior());
-    }
+    // protected IEnumerator Start()
+    // {
+    //     yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
+    //     SearchTarget();
+    //     state = 0;
+    //     substate = 0;
+    //     yield return new WaitForSeconds(awakeTime);
+    //     StartCoroutine(UpdateBehavior());
+    //     //tartCoroutine(UpdateBehavior());
+    // }
     
 
-    IEnumerator UpdateBehavior()
-    {
-        while (true)
-        {
-            UpdateAttack();
-            yield return null;
-            yield return new WaitUntil(() => !isAction);
-        }
-    }
+    // protected IEnumerator UpdateBehavior()
+    // {
+    //     while (true)
+    //     {
+    //         UpdateAttack();
+    //         yield return null;
+    //         yield return new WaitUntil(() => !isAction);
+    //     }
+    // }
 
     
 
 
     protected override void UpdateAttack()
     {
-        
-
         CheckPhase();
         ExcutePhase();
     }
@@ -98,10 +102,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         }
     }
 
-    protected void SearchTarget()
-    {
-        targetPlayer = FindObjectOfType<ActorController>().gameObject;
-    }
+    
 
     private void DoAction(int state, int substate)
     {
@@ -319,7 +320,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         }
     }
 
-    private IEnumerator ACT_CarmineRush(float interval)
+    protected IEnumerator ACT_CarmineRush(float interval)
     {
         MoveTowardTarget(targetPlayer,3,12f);
         
@@ -352,7 +353,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         
     }
     
-    private IEnumerator ACT_BrightCarmineRush(float interval, float moveTime)
+    protected IEnumerator ACT_BrightCarmineRush(float interval, float moveTime)
     {
         if (moveTime > 0)
         {
@@ -402,7 +403,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         
     }
 
-    private IEnumerator ACT_ComboA(float interval)
+    protected IEnumerator ACT_ComboA(float interval)
     {
         MoveTowardTarget(targetPlayer,3,10f);
         
@@ -435,7 +436,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
     }
 
-    private IEnumerator ACT_ComboB(float interval)
+    protected IEnumerator ACT_ComboB(float interval)
     {
         MoveTowardTarget(targetPlayer,3,4f);
         
@@ -465,7 +466,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
     }
     
-    private IEnumerator ACT_ComboC(float interval)
+    protected IEnumerator ACT_ComboC(float interval)
     {
         MoveTowardTarget(targetPlayer,3,6f);
         
@@ -498,7 +499,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
     }
 
-    private IEnumerator ACT_ComboD(float interval)
+    protected IEnumerator ACT_ComboD(float interval)
     {
         MoveTowardTarget(targetPlayer,3,3f);
         
@@ -531,7 +532,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
     }
 
-    private IEnumerator ACT_SingleDodgeCombo(float interval)
+    protected IEnumerator ACT_SingleDodgeCombo(float interval)
     {
         //Do Move Action
         MoveTowardTarget(targetPlayer,5,3.5f,2.5f,5f,false);
@@ -566,7 +567,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
     }
 
-    private IEnumerator ACT_FlameRaid(float interval)
+    protected IEnumerator ACT_FlameRaid(float interval)
     {
         MoveTowardTarget(targetPlayer,2.5f,5f,6f,7f,true);
         
@@ -599,7 +600,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
         
     }
-    private IEnumerator ACT_SavageFlameRaid(float interval, float moveTime)
+    protected IEnumerator ACT_SavageFlameRaid(float interval, float moveTime)
     {
         if (moveTime > 0)
         {
@@ -651,7 +652,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         
     }
     
-    private IEnumerator ACT_CrimsonInferno(float interval, float moveTime)
+    protected IEnumerator ACT_CrimsonInferno(float interval, float moveTime)
     {
         if (moveTime > 0)
         {
@@ -697,7 +698,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         isAction = false;
         
     }
-    private IEnumerator ACT_BlazingEnhancement(float interval)
+    protected IEnumerator ACT_BlazingEnhancement(float interval)
     {
         isAction = true;
         
@@ -717,6 +718,37 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
             
             currentAttackAction =
                 StartCoroutine(enemyAttackManager.HB01_Action13());
+            
+        }
+        yield return new WaitUntil(() => currentAttackAction == null);
+        enemyController.SetKBRes(status.knockbackRes);
+        //Wait For Attack Interval
+        yield return new WaitForSeconds(interval);
+        substate++;
+        isAction = false;
+        
+    }
+    
+    protected IEnumerator ACT_BlazingEnhancement_2(float interval)
+    {
+        isAction = true;
+        
+        TaskSuccess = true;
+
+        enemyController.SetKBRes(999);
+        TurnAction();
+        yield return null;
+        
+        if (TaskSuccess)
+        {
+            currentAttackAction =
+                StartCoroutine(enemyAttackManager.HB01_Action13_2());
+        }
+        else
+        {
+            
+            currentAttackAction =
+                StartCoroutine(enemyAttackManager.HB01_Action13_2());
             
         }
         yield return new WaitUntil(() => currentAttackAction == null);

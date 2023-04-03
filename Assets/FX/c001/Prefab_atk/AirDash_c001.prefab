@@ -147,20 +147,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 0
   skill_id: 0
+  attackInfo:
+  - dmgModifier:
+    - 0.7
+    constDmg: []
+    knockbackPower: 120
+    knockbackForce: 10
+    knockbackTime: 0.5
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 3
+    firedir: 0
+  firedir: 0
   attackType: 2
   dmgModifier: []
   nextDmgModifier: []
   nextKnockbackPower: []
   nextKnockbackForce: []
   nextKnockbackTime: []
-  hitSoundEffect: {fileID: 0}
-  self: {fileID: 0}
   knockbackPower: 100
   knockbackForce: 10
   knockbackTime: 0.5
   knockbackDirection: {x: 1, y: 0}
   KBType: 3
-  spGain: 0
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
+  spGain: 150
   isMeele: 1
   withConditionChance: 
   withConditionNum: 
@@ -171,3 +182,4 @@ MonoBehaviour:
   playerpos: {fileID: 0}
   defaultGravity: 0
   hitShakeIntensity: 5
+  damageAutoReset: 0

@@ -6,48 +6,52 @@ public class ActorController_c001 : ActorController
 {
     AlchemicGauge alchemicGauge;
     
-
-   
-
     public override void UseSkill(int id)
     {
         if(voiceController.voiceLoaded)
             voiceController.PlaySkillVoice(id);
+        
+        if (isAttackSkill[id - 1])
+        {
+            pi.InvokeAttackSignal();
+        }
+        
+        
         switch (id)
         {
             case 1:
                 anim.Play("s1");
-                stat.currentSP[0] = 0;
+                _statusManager.currentSP[0] = 0;
                 break;
 
             case 2:
                 anim.Play("s2");
-                stat.currentSP[1] = 0;
+                _statusManager.currentSP[1] = 0;
                 break;
             
             case 3:
                 anim.Play("s3");
-                stat.currentSP[2] = 0;
+                _statusManager.currentSP[2] = 0;
                 break;
             
             case 4:
                 anim.Play("s4");
-                stat.currentSP[3] = 0;
+                _statusManager.currentSP[3] = 0;
                 break;
             
             case 5:
                 anim.Play("s1_boost");
-                stat.currentSP[0] = 0;
+                _statusManager.currentSP[0] = 0;
                 break;
             
             case 6:
                 anim.Play("s2_boost");
-                stat.currentSP[1] = 0;
+                _statusManager.currentSP[1] = 0;
                 break;
             
             case 7:
                 anim.Play("s3_boost");
-                stat.currentSP[2] = 0;
+                _statusManager.currentSP[2] = 0;
                 break;
 
             default:
@@ -124,7 +128,7 @@ public class ActorController_c001 : ActorController
             {
                 UseSkill(5);
                 alchemicGauge.CatridgeConsume();
-                stat.RemoveTimerBuff(101);
+                _statusManager.RemoveTimerBuff(101);
             }
             else
             {
@@ -138,7 +142,7 @@ public class ActorController_c001 : ActorController
             {
                 UseSkill(6);
                 alchemicGauge.CatridgeConsume();
-                stat.RemoveTimerBuff(101);
+                _statusManager.RemoveTimerBuff(101);
             }
             else
             {
@@ -152,7 +156,7 @@ public class ActorController_c001 : ActorController
             {
                 UseSkill(7);
                 alchemicGauge.CatridgeConsume();
-                stat.RemoveTimerBuff(101);
+                _statusManager.RemoveTimerBuff(101);
             }
             else
             {
@@ -284,8 +288,8 @@ public class ActorController_c001 : ActorController
         ActionDisable((int)PlayerActionType.JUMP);//jump
         pi.SetInputDisabled("move");
         
-        //if(anim.GetBool("isAttack")==false)
-            //voiceController.PlayAttackVoice(1);
+        if(anim.GetBool("isAttack")==false)
+            voiceController.PlayAttackVoice(1);
         
         
         StartAttack();
@@ -310,7 +314,7 @@ public class ActorController_c001 : ActorController
         //print("Exit");
     }
 
-    public override void OnStandardAttackConnect(AttackFromPlayer attackStat)
+    public override void OnStandardAttackConnect(AttackBase attackStat)
     {
 
         AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
@@ -321,10 +325,10 @@ public class ActorController_c001 : ActorController
 
         if (!alchemicGauge.IsCatridgeActive())
         {
-            alchemicGauge.CPCharge(1);
-            if (stat.comboHitCount > 30)
+            alchemicGauge.CPCharge(2);
+            if (_statusManager.comboHitCount > 30)
             {
-                alchemicGauge.CPCharge(2);
+                alchemicGauge.CPCharge(4);
             }
         }
 
@@ -334,7 +338,7 @@ public class ActorController_c001 : ActorController
 
     }
 
-    public override void OnOtherAttackConnect(AttackFromPlayer attackStat)
+    public override void OnOtherAttackConnect(AttackBase attackStat)
     {
         AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
 
@@ -347,7 +351,7 @@ public class ActorController_c001 : ActorController
         if (!alchemicGauge.IsCatridgeActive())
         {
             alchemicGauge.CPCharge(1);
-            if (stat.comboHitCount > 30)
+            if (_statusManager.comboHitCount > 30)
             {
                 alchemicGauge.CPCharge(2);
             }

@@ -10,6 +10,7 @@ public class SkillUINormal : SkillUIBase
     [SerializeField] protected Sprite ImageBW;
     protected override void Start()
     {
+        //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         base.Start();
         
         //这里需要根据角色id加载UI图片

@@ -6,12 +6,13 @@ using System.Linq;
 using Cinemachine;
 using LitJson;
 using TMPro;
-using Unity.Mathematics;
+using GameMechanics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GlobalController : MonoBehaviour
 {
+    public static GlobalController Instance;
     
     private Transform cameraTransform;
     private GameObject UIFXContainer;
@@ -59,7 +60,7 @@ public class GlobalController : MonoBehaviour
     #region GameCheckpoint
 
     public static int lastQuestSpot = -1;
-    
+    public static string questSaveDataString;
 
     #endregion
     
@@ -75,19 +76,21 @@ public class GlobalController : MonoBehaviour
     [SerializeField] private GameObject clickEff;
     
     public static string questID = "000000";
+    public static int viewerID = 0;
     public bool loadingEnd = true;
     
 
     private void Awake()
     {
-        QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
         
+        QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
         var other = FindObjectsOfType<GlobalController>();
         if (other.Length > 1)
         {
             this.enabled = false;
             Destroy(gameObject);
         }
+        Instance = this;
         this.loadedBundles = new Dictionary<string, AssetBundle>();
         UIFXContainer = GameObject.Find("UIFXContainer");
     }
@@ -104,7 +107,7 @@ public class GlobalController : MonoBehaviour
         cameraTransform = GameObject.Find("Main Camera").transform;
         currentGameState = GameState.Outbattle;
         onGlobalControllerAwake?.Invoke();
-        
+        UpdateQuestSaveData();
         
         
     }
@@ -136,11 +139,11 @@ public class GlobalController : MonoBehaviour
 
 
     // Update is called once per frame
-    public void TestEnterLevel()
+    public void TestEnterLevel(string levelName = "010013")
     {
         if(loadingRoutine!=null)
             return;
-        loadingRoutine = StartCoroutine(LoadBattleScene("010013"));
+        loadingRoutine = StartCoroutine(LoadBattleScene(levelName));
     }
     
     IEnumerator LoadBattleScene(string questID){
@@ -158,7 +161,9 @@ public class GlobalController : MonoBehaviour
         AssetBundleCreateRequest ar = null;
 
         JsonData currentQuestInfo = QuestInfo[$"QUEST_{questID}"];
+        var currentLevelDetailedInfo = JsonMapper.ToObject<LevelDetailedInfo>(currentQuestInfo.ToJson());
 
+        
         List<String> requiredBundleList = new List<string>();
         
         var needLoad = SearchPlayerRelatedAssets(1);
@@ -171,10 +176,11 @@ public class GlobalController : MonoBehaviour
         requiredBundleList.Add(needLoad[2]);
         requiredBundleList.Add("ui_general");
         requiredBundleList.Add("eff_general");
+        requiredBundleList.Add("animation/anim_common");
         requiredBundleList.Add("allin1");
         requiredBundleList.Add("118effbundle");
         requiredBundleList.Add("boss_ability_icon");
-        requiredBundleList.Add("voice_c005");
+        //requiredBundleList.Add("voice_c005");
         
         //print(requiredBundleList.ToArray());
         
@@ -201,87 +207,7 @@ public class GlobalController : MonoBehaviour
         
         
         
-        /*
-        if (!loadedBundles.ContainsKey(needLoad[0]))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, needLoad[0]));
-            yield return ar;
-            loadedBundles.Add(needLoad[0],ar.assetBundle);
-            assetBundle = ar.assetBundle;
-        }
-        else
-        {
-            assetBundle = loadedBundles[needLoad[0]];
-        }
         
-        //load UI_dependencies
-        if (!loadedBundles.ContainsKey("ui_general"))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "ui_general"));
-            yield return ar;
-            loadedBundles.Add("ui_general",ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }
-        
-        if (!loadedBundles.ContainsKey("boss_ability_icon"))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "boss_ability_icon"));
-            yield return ar;
-            loadedBundles.Add("boss_ability_icon",ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }
-        
-        if (!loadedBundles.ContainsKey("eff_general"))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "eff_general"));
-            yield return ar;
-            loadedBundles.Add("eff_general",ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }
-        
-        if (!loadedBundles.ContainsKey("118effbundle"))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "118effbundle"));
-            yield return ar;
-            loadedBundles.Add("118effbundle",ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }
-        
-        
-        
-        
-        
-        
-        //Load Voices
-        if (!loadedBundles.ContainsKey("voice_c005"))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, "voice_c005"));
-            yield return ar;
-            loadedBundles.Add("voice_c005",ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }
-        if (!loadedBundles.ContainsKey(needLoad[1]))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, needLoad[1]));
-            yield return ar;
-            loadedBundles.Add(needLoad[1],ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }
-        if (!loadedBundles.ContainsKey(needLoad[2]))
-        {
-            ar =
-                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, needLoad[2]));
-            yield return ar;
-            loadedBundles.Add(needLoad[2],ar.assetBundle);
-            //assetBundle2 = ar.assetBundle;
-        }*/
 
         
         
@@ -300,13 +226,17 @@ public class GlobalController : MonoBehaviour
         //初始化battleStageManager:
         var battleStageManager = FindObjectOfType<BattleStageManager>();
         
-        battleStageManager.GetLevelInfo(currentCharacterID,
-            currentQuestInfo["NAME"].ToString(),
-            (int)currentQuestInfo["TIME_LIMIT"],
-            (int)currentQuestInfo["CROWN_TIME_LIMIT"],
-            (int)currentQuestInfo["TOTAL_BOSS_NUM"],
-            (int)currentQuestInfo["REVIVE_LIMIT"],
-            (int)currentQuestInfo["CROWN_REVIVE_LIMIT"]);
+        battleStageManager.LoadLevelDetailedInfo(currentCharacterID,currentLevelDetailedInfo);
+
+        
+        
+        // battleStageManager.GetLevelInfo(currentCharacterID,
+        //     currentQuestInfo["name"].ToString(),
+        //     (int)currentQuestInfo["time_limit"],
+        //     (int)currentQuestInfo["crown_time_limit"],
+        //     (int)currentQuestInfo["total_boss_num"],
+        //     (int)currentQuestInfo["revive_limit"],
+        //     (int)currentQuestInfo["crown_revive_limit"]);
         
         
         
@@ -321,19 +251,45 @@ public class GlobalController : MonoBehaviour
         var plrclone = 
             Instantiate(plr, new Vector3(-4.5f, -2f, 0), transform.rotation, plrlayer.transform);
         plrclone.name = "PlayerHandle";
-        LoadLocalizedUITest(battleStageManager,"010013");
+        LoadLocalizedUITest(battleStageManager,questID);
         battleStageManager.InitPlayer(plrclone);
         plrclone.GetComponent<PlayerStatusManager>().GetPlayerConditionBar();
         plrclone.GetComponent<PlayerStatusManager>().remainReviveTimes = 3;
         plrclone.GetComponent<PlayerInput>().enabled = false;
         //加载本地化相关
-        
-
-        
         yield return null;
         anim.SetBool("loaded",true);
         var Chara_UI = GameObject.Find("CharacterInfo");
         Chara_UI.SetActive(false);
+        
+        
+        
+        var enemyDependencies = battleStageManager.GetEnemyDependencies();
+        
+        foreach (var abpath in enemyDependencies)
+        {
+            if (!loadedBundles.ContainsKey(abpath))
+            {
+                ar =
+                    AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, abpath));
+                yield return ar;
+                loadedBundles.Add(abpath,ar.assetBundle);
+                assetBundles.Add(ar.assetBundle);
+            }
+            else
+            {
+                assetBundles.Add(loadedBundles[abpath]);
+            }
+
+            //index++;
+        }
+        
+        battleStageManager.LinkBossStatus();
+        
+        
+
+        
+        
         
         
         
@@ -394,6 +350,7 @@ public class GlobalController : MonoBehaviour
         
         
 
+        UpdateQuestSaveData();
         yield return null;
         
         //Resources.UnloadUnusedAssets();
@@ -426,6 +383,7 @@ public class GlobalController : MonoBehaviour
         currentGameState = GameState.Outbattle;
         onGlobalControllerAwake?.Invoke();
         MenuUIManager.SetMaxMenuLevel(1);
+        UpdateQuestSaveData();
 
 
         loadingRoutine = null;
@@ -454,7 +412,7 @@ public class GlobalController : MonoBehaviour
     string[] SearchPlayerRelatedAssets(int id)
     {
         var needLoad = new string[4];
-        needLoad[0] = BasicCalculation.ConvertID("c", id);
+        needLoad[0] = BasicCalculation.ConvertID("model/model_c", id);
         needLoad[1] = BasicCalculation.ConvertID("voice_c", id);
         needLoad[2] = BasicCalculation.ConvertID("eff_c", id);
         needLoad[3] = BasicCalculation.ConvertID("ui_c", id);
@@ -481,6 +439,12 @@ public class GlobalController : MonoBehaviour
 
     public static void BattleFinished(bool win)
     {
+        var playerInputs = FindObjectsOfType<PlayerInput>();
+        foreach (var playerInput in playerInputs)
+        {
+            playerInput.enabled = false;
+        }
+        
         currentGameState = GameState.End;
         var battleStageManager = FindObjectOfType<BattleStageManager>();
         if(win)
@@ -494,5 +458,16 @@ public class GlobalController : MonoBehaviour
         
     }
 
-    
+    public static void UpdateQuestSaveData()
+    {
+        string path = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        StreamReader sr = new StreamReader(path);
+        var str = sr.ReadToEnd();
+        sr.Close();
+        questSaveDataString = str;
+        
+
+    }
+
+
 }

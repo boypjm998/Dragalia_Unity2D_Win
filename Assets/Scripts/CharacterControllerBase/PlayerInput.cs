@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
+    public delegate void OnPressSignal();
+    public static event OnPressSignal OnPressAttack;
+    
     // Start is called before the first frame update
     //variables
     private PlayerStatusManager stat;
@@ -510,6 +513,11 @@ public class PlayerInput : MonoBehaviour
         keyRoll = GlobalController.keyRoll;
         keyJump = GlobalController.keyJump;
 
+    }
+
+    public void InvokeAttackSignal()
+    {
+        OnPressAttack?.Invoke();
     }
 
 }

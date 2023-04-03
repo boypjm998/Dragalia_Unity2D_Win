@@ -5,28 +5,44 @@ using UnityEngine;
 
 public class ParticleSystemControllerTest : MonoBehaviour
 {
+    ParticleSystem ps;
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        ps = GetComponent<ParticleSystem>();
         
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
         
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Enemy"))
+        //遍历场景上所有碰撞体，如果其tag是platform，就将其碰撞体加入到触发器列表中
+        foreach (var collider in FindObjectsOfType<Collider2D>())
         {
-            print("hit character");
+            if (collider.CompareTag("platform"))
+            {
+                ps.trigger.AddCollider(collider);
+            }
         }
+        
+        
+        
     }
 
-    private void OnParticleSystemStopped()
+    private void OnParticleTrigger()
     {
-        gameObject.SetActive(false);
+        ParticleSystem ps = GetComponent<ParticleSystem>();
+        List<ParticleSystem.Particle> enter = new List<ParticleSystem.Particle>();
+        int numEnter = ps.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, enter);
+        print(numEnter);
+        for (int i = 0; i < numEnter; i++)
+        {
+            //let enter[i] collider enter the collision event
+            print(enter[i].position);
+            var p = enter[i];
+            p.remainingLifetime = 0;
+            p.velocity = Vector3.zero;
+            
+            enter[i] = p;
+            
+            
+        }
+        ps.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, enter);
     }
 }

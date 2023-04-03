@@ -1,20 +1,18 @@
 <<<<<<< HEAD
-# DL_2D_Win_v0.1.1-Beta (2023/03/04）
+# DL_2D_Win (Not Realeased) (2023/04/02）
 
 #####
-1. 感谢大佬的解包动画，目前正在将人物进行重做，将角色2D贴图置换为3D模型。
 
+1. 正在制作新手教程剧情模块。
 
-#####
-1. Remake characters, from 2D sprite sheets to 3D models.
+2. 实现了AI的简单寻路算法。
 
-
-=======
-# DL_2D_Win_v0.1.0 (2023/02/13）
+3. 添加了关卡：席菈的试炼高级。
 
 #####
-1. 添加了死亡黑白特效。
 
-#####
-1. Added BW effect when player die.
->>>>>>> 94fa8ff534e66eeed848308dd11186afa0027b87
+1. Tutorial Level is developing!
+
+2. Implemented a simple AI navigator.
+
+3. Added new level: Sheila's Trail : Expert.

@@ -2,17 +2,677 @@
   "main_story_001": {
     "command_list": [
       {
-        "command": "BLACKOUT_FADE",
+        "command": "BLACKOUT",
         "args": [],
         "end": 1
       },
       {
-        "command" : "SET_BACKGROUND",
-        "args": ["bg_031"],
+        "command": "BLACKSCREEN",
+        "args": [
+          "1.0"
+        ],
         "end": 1
       },
       {
-        "command": "BLACK_SCREEN",
+        "command": "BUTTON_VISIBILITY",
+        "args": [
+          "1"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_BGM",
+        "args": [
+          "BGM_STY_1401"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [
+          "所有世界被泽诺斯毁灭\n\n但圣城却在巫女的守护之下幸免于难\n\n王子和伙伴一同闯入要塞与泽诺斯展开决战\n\n经历了众多的牺牲，泽诺斯被击败\n\n巫女们用世间众人的创世之力重新创造了世界\n\n但重新创造的世界却不知为何开始崩溃\n\n原来这个世界中还留有泽诺斯的核心\n\n而能够到达那里的则只有王子\n\n为了切断泽诺斯与世界的关联\n\n王子只身前往泽诺斯的藏身之处"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_001"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_002"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_003"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_004"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_005"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_006"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_007"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_008"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_009"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 0
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_00_010"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_PRINT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "BLACKSCREEN_FADE",
+        "args": [
+          "1.0"
+        ],
+        "end": 0
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1019",
+          "0",
+          "0"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "塞西娅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_001",
+          "1",
+          "0",
+          "1"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "等、等一下！切断了泽诺斯与世界的关联后，\n\n哥哥与世界的关联会怎样啊！？",
+          "3"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "CHARA_FADE",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1001",
+          "8",
+          "6"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "伊莉雅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_002",
+          "1",
+          "6",
+          "7"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "啊！我怎么没想到呢！他是泽诺斯的一部分，\n\n如果切断了泽诺斯与世界的关联——",
+          "4"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "CHARA_FADE",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1010",
+          "6",
+          "6"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "纳姆"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_003",
+          "1",
+          "6",
+          "7"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "不会吧！这一定不是真的吧！？",
+          "1"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "CHARA_FADE",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1019",
+          "6",
+          "0"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "塞西娅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_004",
+          "1",
+          "6",
+          "7"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "...哥哥！！",
+          "1"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "CHARA_FADE",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1010",
+          "2",
+          "4"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SCREEN_SHAKE",
+        "args": [
+          "2.5",
+          "35.0"
+        ],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "纳姆"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_005",
+          "1",
+          "4",
+          "5"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "什么？发生什么事了！？",
+          "2"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "2001"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PORTRAIT_MOVE",
+        "args": [
+          "SHAKE",
+          "15.0",
+          "1.5"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1001",
+          "0",
+          "2"
+        ],
+        "end": 1
+      },
+      {
+        "command": "WAIT",
+        "args": [
+          "0.5"
+        ],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "伊莉雅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_006",
+          "1",
+          "2",
+          "3"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "难道说，他想通过终端——\n\n来保存自己和世界的关联吗？！",
+          "3"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "CHARA_FADE",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1019",
+          "6",
+          "0"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "塞西娅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_007",
+          "1",
+          "0",
+          "1"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "各位，我能用创世之力暂时抵抗崩溃。\n\n击破终端就拜托你们了！",
+          "3"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "CHARA_FADE",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1001",
+          "8",
+          "8"
+        ],
+        "end": 1
+      },
+      {
+        "command": "WAIT",
+        "args": [
+          "0.5"
+        ],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEIN",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1001",
+          "0",
+          "4"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "伊莉雅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_008",
+          "1",
+          "4",
+          "5"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "嗯，拜托你了，塞西娅。\n\n这场战斗，我们无论如何也不能输。",
+          "3"
+        ],
+        "end": 1
+      },
+      {
+        "command": "CLEAR_DIALOG",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "SET_SPEAKER",
+        "args": [
+          "伊莉雅"
+        ],
+        "end": 1
+      },
+      {
+        "command": "SET_CHARA",
+        "args": [
+          "1001",
+          "0",
+          "8"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PLAY_VOICE",
+        "args": [
+          "VO_STY_01_009",
+          "1",
+          "8",
+          "9"
+        ],
+        "end": 1
+      },
+      {
+        "command": "PRINT_DIALOG",
+        "args": [
+          "各位！要来了！",
+          "1"
+        ],
+        "end": 1
+      },
+      {
+        "command": "DIALOG_FADEOUT",
+        "args": [],
+        "end": 1
+      },
+      {
+        "command": "BUTTON_VISIBILITY",
+        "args": [
+          "0"
+        ],
+        "end": 1
+      },
+      {
+        "command": "BLACKIN",
         "args": [],
         "end": 1
       }

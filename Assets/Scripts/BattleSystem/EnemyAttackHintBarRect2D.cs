@@ -9,7 +9,7 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
 {
     private Vector2 maxFillSize;
     private SpriteRenderer fillRenderer;
-    private Tweener _tweener;
+    
     private enum RectFillType
     {
         X,
@@ -54,4 +54,5 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
         base.OnDestroy();
         _tweener.Kill();
     }
+    
 }

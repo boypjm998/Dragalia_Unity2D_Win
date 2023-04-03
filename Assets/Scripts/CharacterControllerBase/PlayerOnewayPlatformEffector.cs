@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PlayerOnewayPlatformEffector : MonoBehaviour
+public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
 {
     public delegate void OnGetContactGround(GameObject ground);
     public static OnGetContactGround ContactGroundEvent;
@@ -11,6 +11,7 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
     
     [SerializeField]
     public GameObject currentOnewayPlatform;
+    private GameObject lastContanctGround;
 
     [SerializeField] protected GameObject currentGround;
     private Rigidbody2D rigid;
@@ -55,10 +56,12 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
         if (collision.gameObject.CompareTag("platform"))
         {
             currentOnewayPlatform = collision.gameObject;
+            lastContanctGround = currentOnewayPlatform;
             ContactGroundEvent?.Invoke(currentOnewayPlatform);
         }else if (collision.gameObject.CompareTag("Ground"))
         {
             currentGround = collision.gameObject;
+            lastContanctGround = currentGround;
             ContactGroundEvent?.Invoke(currentGround);
         }
         
@@ -74,7 +77,7 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
         }
 
     }
-    private IEnumerator DisableCollision()
+    public IEnumerator DisableCollision()
     {
         Collider2D platformCollider = currentOnewayPlatform.GetComponent<Collider2D>();
         
@@ -94,6 +97,21 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour
         return null;
         
         //return currentOnewayPlatform;
+    }
+    
+    public Collider2D GetCurrentAttachedGroundCol()
+    {
+        if (GetCurrentAttachedGroundInfo() == null)
+        {
+            return null;
+        }
+
+        return GetCurrentAttachedGroundInfo().GetComponent<Collider2D>();
+    }
+
+    public GameObject GetLastAttachedGroundInfo()
+    {
+        return lastContanctGround;
     }
 
 

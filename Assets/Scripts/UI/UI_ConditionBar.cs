@@ -35,7 +35,7 @@ public class UI_ConditionBar : MonoBehaviour
 
     private void Start()
     {
-        
+        //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         targetStat = GameObject.Find("PlayerHandle").GetComponentInChildren<StatusManager>();
         conditionCount = targetStat.conditionList.Count;
 
@@ -61,6 +61,8 @@ public class UI_ConditionBar : MonoBehaviour
 
     public void OnConditionAdd(BattleCondition buff)
     {
+        
+        
         if (!conditionIDList.Contains(buff.buffID))
         {
             InstantiateIcon(buff);

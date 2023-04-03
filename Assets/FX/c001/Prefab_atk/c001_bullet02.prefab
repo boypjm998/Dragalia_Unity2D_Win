@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d8c46ddb5fee1794eb656974bd0333e1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -160,7 +160,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d8c46ddb5fee1794eb656974bd0333e1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
@@ -213,7 +213,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 3
   m_Time: 0.15
   m_Parameters:
@@ -302,19 +302,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d5de07ee6419d2438fb9c9ef334fee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 0}
+  chara_id: 0
+  skill_id: 0
+  attackInfo:
+  - dmgModifier:
+    - 1.35
+    constDmg: []
+    knockbackPower: 100
+    knockbackForce: 3
+    knockbackTime: 0.3
+    knockbackDirection: {x: 1, y: 0}
+    KBType: 1
+    firedir: 0
+  firedir: 0
+  attackType: 1
+  dmgModifier: []
+  nextDmgModifier: []
+  nextKnockbackPower: []
+  nextKnockbackForce: []
+  nextKnockbackTime: []
   knockbackPower: 0
   knockbackForce: 0
   knockbackTime: 0
   knockbackDirection: {x: 1, y: 0}
   KBType: 1
-  dmgModifier: []
-  spGain: 0
+  hitSoundEffect: {fileID: 0}
+  self: {fileID: 0}
+  spGain: 280
   isMeele: 0
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
   withConditionChance: 
   withConditionNum: 
   withConditionFlags: 
@@ -323,8 +338,8 @@ MonoBehaviour:
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
   defaultGravity: 0
-  attackType: 1
   hitShakeIntensity: 3
+  damageAutoReset: 0
   speed: 2.4
   lifeTime: 0.4
   hitDistance: 1
@@ -403,7 +418,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_Time: 0.25
   m_Parameters:
@@ -552,7 +567,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_Time: 0.25
   m_Parameters:

@@ -49,6 +49,7 @@ public class AlchemicGauge : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         number = transform.Find("Number").gameObject;
         gaugeRect = transform.Find("SliderRec").gameObject;
         gaugeRing = transform.Find("SliderRing").gameObject;

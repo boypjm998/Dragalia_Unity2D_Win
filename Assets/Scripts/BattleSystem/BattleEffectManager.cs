@@ -6,9 +6,11 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
-
+using GameMechanics;
 public class BattleEffectManager : MonoBehaviour
 {
+    public static BattleEffectManager Instance { get; private set; }
+    
     [Header("AfflictionEffect--异常状态特效")]
     [SerializeField] private Color flashburnColor;
     [SerializeField] private GameObject flashburnFXPrefab;
@@ -22,6 +24,7 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject dispellFXPrefab;
     [SerializeField] private GameObject buffFXPrefab;
     [SerializeField] private GameObject debuffFXPrefab;
+    [SerializeField] private GameObject reviveFXPrefab;
 
     [Header("Enemy BattleHint Effect")]
     [SerializeField] private GameObject targetLockPrefab;
@@ -32,22 +35,21 @@ public class BattleEffectManager : MonoBehaviour
     [Header("Sound Effects")]
     [SerializeField] private AudioClip hitEffectClip;
     [SerializeField] private AudioClip reviveSEClip;
-    
-    
-    
-    
-    
-    private Camera camera;
+
+    private Camera _camera;
     private AudioSource soundEffectSource;
     //private GameObject counterIcon;
 
-    
-    
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
         soundEffectSource = transform.GetChild(0).gameObject.GetComponent<AudioSource>();
-        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
     }
 
 
@@ -59,8 +61,8 @@ public class BattleEffectManager : MonoBehaviour
 
     public void SpawnEffect(GameObject target, BasicCalculation.BattleCondition cond)
     {
-        SpriteRenderer spriteRenderer = target.GetComponentInChildren<SpriteRenderer>();
-        Light2D light = spriteRenderer?.GetComponent<Light2D>();
+        //SpriteRenderer spriteRenderer = target.GetComponentInChildren<SpriteRenderer>();
+        Light2D light = target?.GetComponentInChildren<Light2D>();
         
         
         if (cond == BasicCalculation.BattleCondition.Dispell)
@@ -114,7 +116,8 @@ public class BattleEffectManager : MonoBehaviour
     private void SpawnAnimation(GameObject target, GameObject prefab)
     {
         var layer = target.transform.Find("BuffLayer");
-        var fx = Instantiate(prefab, target.transform.position, Quaternion.identity, layer.transform);
+        
+        var fx = Instantiate(prefab, layer.position, Quaternion.identity, layer.transform);
         //RESIZE
         if (fx.transform.GetComponentInChildren<Renderer>().localBounds.size.x > 10)
         {
@@ -148,7 +151,7 @@ public class BattleEffectManager : MonoBehaviour
     {
         var layer = target.transform.Find("BuffLayer");
         var fx =
-            Instantiate(targetLockPrefab, target.transform.position, Quaternion.identity, layer.transform);
+            Instantiate(targetLockPrefab, layer.position, Quaternion.identity, layer.transform);
         fx.GetComponent<ObjectInvokeDestroy>().destroyTime = lastTime;
 
     }
@@ -163,8 +166,8 @@ public class BattleEffectManager : MonoBehaviour
 
     public void PlaySoundEffect(AudioClip clip, Vector2 position)
     {
-        camera = Camera.current;
-        AudioSource.PlayClipAtPoint(clip,new Vector3(position.x,position.y,camera.transform.position.z));
+        _camera = Camera.current;
+        AudioSource.PlayClipAtPoint(clip,new Vector3(position.x,position.y,_camera.transform.position.z));
         
     }
     public void PlayHitSoundEffect(Vector2 position)
@@ -181,6 +184,12 @@ public class BattleEffectManager : MonoBehaviour
         soundEffectSource.PlayOneShot(reviveSEClip);
         //AudioSource.PlayClipAtPoint(reviveSEClip, camera.transform.position);
 
+    }
+    
+    public void SpawnReviveEffect(GameObject target)
+    {
+        Instantiate(reviveFXPrefab, target.transform.position, target.transform.rotation,
+            target.GetComponent<AttackManager>().BuffFXLayer.transform);
     }
 
     public void PlayHealSoundEffect()

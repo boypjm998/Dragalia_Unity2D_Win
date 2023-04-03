@@ -48,16 +48,10 @@ public abstract class AudioManagerPlayer : MonoBehaviour
 
     protected void LoadMyVoice()
     {
-        try
-        {
-            _globalController = FindObjectOfType<GlobalController>();
-        }
-        catch (NullReferenceException e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
         
+        _globalController = FindObjectOfType<GlobalController>();
+
+
         AssetBundle assetBundle = _globalController.GetBundle(GetVoicePath());
         //AssetBundle assetBundle = AssetBundle.LoadFromFile
             //(Path.Combine(Application.streamingAssetsPath, GetVoicePath()));
@@ -92,6 +86,8 @@ public abstract class AudioManagerPlayer : MonoBehaviour
     public abstract void PlaySkillVoice(int id);
     public virtual void PlayHurtVoice(StatusManager statusManager)
     {
+        if(Hurt.Length==0)
+            return;
         voice.Stop();
         var rand = Random.Range(0, 10);
         if (statusManager.currentHp > statusManager.maxHP * 0.8)
