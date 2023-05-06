@@ -39,8 +39,8 @@ public class AttackManager_C001 : AttackManager
     [SerializeField]
     private TargetAimer ta;
     
-    private ActorController_c001 ac;
-    private PlayerStatusManager _statusManager;
+    new private ActorController_c001 ac;
+    //private PlayerStatusManager _statusManager;
 
     // Start is called before the first frame update
     protected override void Awake()
@@ -161,7 +161,7 @@ public class AttackManager_C001 : AttackManager
             
             projectiles[i].GetComponent<AttackFromPlayer>().
                 AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Flashburn,
-                    41.6f,21f,BattleCondition.buffEffectDisplayType.StackNumber,
+                    41.6f,21f,
                     BasicCalculation.MAXCONDITIONSTACKNUMBER),120);
             
         }
@@ -172,7 +172,7 @@ public class AttackManager_C001 : AttackManager
     public void Skill1_Boost()
     {
         //_statusManager.RemoveTimerBuff(101);
-        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15,BattleCondition.buffEffectDisplayType.Value);
+        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15);
         ta.TargetSwapByAttack();
         
         
@@ -191,7 +191,7 @@ public class AttackManager_C001 : AttackManager
        
         }
         atk1.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Flashburn,
-                41.6f,21f,BattleCondition.buffEffectDisplayType.StackNumber,
+                41.6f,21f,
                 BasicCalculation.MAXCONDITIONSTACKNUMBER),120);
         
 
@@ -213,7 +213,7 @@ public class AttackManager_C001 : AttackManager
         
         _statusManager.ObtainTimerBuffs
         ((int)BasicCalculation.BattleCondition.AlchemicCatridge,
-            -1,BattleCondition.buffEffectDisplayType.StackNumber,gauge.GetCatridgeNumber(),
+            -1,gauge.GetCatridgeNumber(),
             3,-1);
             //_statusManager.ObtainTimerBuff(1,25,3,BattleCondition.buffEffectDisplayType.Value,100);
             //_statusManager.ObtainTimerBuff(3,30,15,BattleCondition.buffEffectDisplayType.Value,100);
@@ -247,7 +247,7 @@ public class AttackManager_C001 : AttackManager
     {
         ta.TargetSwapByAttack();
         //_statusManager.RemoveTimerBuff(101);
-        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15,BattleCondition.buffEffectDisplayType.Value);
+        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15);
         
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "DashAttack");
         shotpoint = attackPointObject.transform;
@@ -324,7 +324,7 @@ public class AttackManager_C001 : AttackManager
         ta.TargetSwapByAttack();
         
         
-        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15,BattleCondition.buffEffectDisplayType.Value);
+        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,30,15);
         
         GameObject attackPointObject = FindShotpointInChildren(Shotpoints, "StandardAttack");
         shotpoint = attackPointObject.transform;
@@ -352,10 +352,10 @@ public class AttackManager_C001 : AttackManager
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
         _statusManager.ObtainTimerBuff
             ((int)BasicCalculation.BattleCondition.HotRecovery,
-                -10,15,BattleCondition.buffEffectDisplayType.StackNumber);
+                -10,15);
         
-        if(_statusManager.healRoutine == null)
-            _statusManager.healRoutine = StartCoroutine(_statusManager.HotRecoveryTick());
+        // if(_statusManager.healRoutine == null)
+        //     _statusManager.healRoutine = StartCoroutine(_statusManager.HotRecoveryTick());
     
     }
 

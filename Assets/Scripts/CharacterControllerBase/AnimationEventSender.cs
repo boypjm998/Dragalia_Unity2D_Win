@@ -23,11 +23,7 @@ public class AnimationEventSender : MonoBehaviour
         _attackManager = transform.parent.parent.GetComponent<AttackManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
     
     #region Messages Process Moudles
     public void onJumpEnter()
@@ -191,6 +187,16 @@ public class AnimationEventSender : MonoBehaviour
     public void ClearBoolSignal(string signal)
     {
         ActorController.ClearBoolSignal(signal);
+    }
+
+    public void SetInputRoll(int signal)
+    {
+        _playerInput.SetInputRoll(signal);
+    }
+    
+    public void SetInputAttack(int signal)
+    {
+        _playerInput.SetInputAttack(signal);
     }
 
     #endregion

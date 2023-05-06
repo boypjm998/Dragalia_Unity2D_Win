@@ -10,12 +10,17 @@ public class GlobalControllerTestScene : GlobalController
         GameLanguage = Language.ZHCN;
         currentGameState = GameState.Inbattle;
         AssetBundle ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/voice_c001");
-        loadedBundles.Add("voice_c001",ab);
+        loadedBundles.Add("voice/voice_c001",ab);
+        GameObject.Find("PlayerHandle").GetComponentInChildren<VoiceController_C001>().DebugLoadVoice();
+    }
+
+    void Update()
+    {
     }
 
     // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        
+        base.Awake();
     }
 }

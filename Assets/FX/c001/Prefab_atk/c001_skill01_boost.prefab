@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4609798085894863732}
   - component: {fileID: 5378641275618890401}
   - component: {fileID: 5844383950186056460}
+  - component: {fileID: 2418789094237022308}
   m_Layer: 10
   m_Name: c001_skill01_boost
   m_TagString: Untagged
@@ -146,30 +147,19 @@ MonoBehaviour:
     firedir: 0
   firedir: 0
   attackType: 4
-  dmgModifier:
-  - 3.84
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
-  knockbackPower: 140
-  knockbackForce: 8
-  knockbackTime: 0.5
-  knockbackDirection: {x: 3, y: 1}
-  KBType: 1
   hitSoundEffect: {fileID: 0}
+  attackSE: []
   self: {fileID: 0}
   spGain: 0
   isMeele: 0
-  withConditionChance: 78000000
-  withConditionNum: 01000000
-  withConditionFlags: 
   hitFlags: 
   hitConnectEffect: {fileID: 832008921799168349, guid: 9bcb9a422b31b3546a996ba11159f3db, type: 3}
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
+  forcedShake: 0
   defaultGravity: 0
   hitShakeIntensity: 5
+  hitSoundVolume: 1
   damageAutoReset: 0
 --- !u!61 &5844383950186056460
 BoxCollider2D:
@@ -197,3 +187,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 9.5, y: 3.5}
   m_EdgeRadius: 0
+--- !u!114 &2418789094237022308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6414330507012090249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03296381508058449a21091b7fa0faa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SEClip: {fileID: 8300000, guid: fe8210eeeecc86b4d93ccab8e87cf9db, type: 3}
+  volume: 1
+  withContainer: 0

@@ -9,14 +9,27 @@ using UnityEngine.UI;
 using GameMechanics;
 public class UI_DialogDisplayer : MonoBehaviour
 {
-    private UI_DialogImageSwapper _swapper;
-    private Image portraitIcon;
-    private TextMeshProUGUI tmp;
-    private GameObject balloons;
-    private Queue<DialogFormat> dialogQueue;
-    private Coroutine displayRoutine;
-    private JsonData questDialogInfoData;
+    protected UI_DialogImageSwapper _swapper;
+    protected Image portraitIcon;
+    protected TextMeshProUGUI tmp;
+    protected GameObject balloons;
+    protected Queue<DialogFormat> dialogQueue;
+    protected Coroutine displayRoutine;
+    protected JsonData questDialogInfoData;
 
+    public static UI_DialogDisplayer Instance { get; private set; }
+
+
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -39,7 +52,14 @@ public class UI_DialogDisplayer : MonoBehaviour
         }
     }
 
-    public void EnqueueDialog(int speakerID,int clipID, AudioSource audioSource, AudioClip clip)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="speakerID"></param>
+    /// <param name="clipID">用来寻找声音来源的</param>
+    /// <param name="audioSource"></param>
+    /// <param name="clip"></param>
+    public virtual void EnqueueDialog(int speakerID,int clipID, AudioSource audioSource, AudioClip clip)
     {
         if(clipID < 0)
             return;
@@ -54,6 +74,22 @@ public class UI_DialogDisplayer : MonoBehaviour
         dialogFormat.clip = clip;
         dialogQueue.Enqueue(dialogFormat);
     }
+    
+    public void EnqueueDialog(int speakerID, string dialogInfoName, AudioSource audioSource, AudioClip clip)
+    {
+        var dialogInfo = questDialogInfoData[dialogInfoName];
+        DialogFormat dialogFormat = new DialogFormat();
+        dialogFormat.text = dialogInfo["TEXT"].ToString();
+        dialogFormat.ballonType = Convert.ToInt32(dialogInfo["BALLOON"].ToString());
+        dialogFormat.faceExpression = Convert.ToInt32(dialogInfo["FACE"].ToString());
+        dialogFormat.lastTime_10 = Convert.ToInt32(dialogInfo["TIME"].ToString());
+        dialogFormat.speakerID = speakerID;
+        dialogFormat.audioSource = audioSource;
+        dialogFormat.clip = clip;
+        dialogQueue.Enqueue(dialogFormat);
+    }
+    
+    
 
 
     private IEnumerator DisplayDialog()
@@ -117,7 +153,7 @@ public class UI_DialogDisplayer : MonoBehaviour
 
 
     [Serializable]
-    class DialogFormat
+    protected class DialogFormat
     {
         public int speakerID;
         public string text;

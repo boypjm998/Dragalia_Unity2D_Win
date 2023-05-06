@@ -23,7 +23,7 @@ public class UI_ConditionBar : MonoBehaviour
     
     [SerializeField] protected float maxCapacity = 14;
 
-    [SerializeField] private int seperateBound; //index between buff and debuff
+    private Coroutine loopDisplayRoutine = null;
 
     private int conditionCount;
     
@@ -42,11 +42,15 @@ public class UI_ConditionBar : MonoBehaviour
 
 
     }
-
-    // Update is called once per frame
-    private void Update()
+    
+    protected void Update()
     {
         
+    }
+
+    private void OnEnable()
+    {
+        //StartCoroutine(SortBar());
     }
 
     protected void TestInstIcon()
@@ -66,7 +70,10 @@ public class UI_ConditionBar : MonoBehaviour
         if (!conditionIDList.Contains(buff.buffID))
         {
             InstantiateIcon(buff);
-            StartCoroutine(SortBar());
+            
+            if(gameObject.activeInHierarchy)
+                StartCoroutine(SortBar());
+
             //print("sort");
         }
         var icon = FindBuffInBar(buff.buffID);
@@ -88,8 +95,12 @@ public class UI_ConditionBar : MonoBehaviour
             {
                 conditionIDList.Remove(buffID);
                 Destroy(icon.gameObject);
-                if(GlobalController.currentGameState == GlobalController.GameState.Inbattle)
-                    StartCoroutine(SortBar());
+                if (GlobalController.currentGameState == GlobalController.GameState.Inbattle)
+                {
+                    if(gameObject.activeInHierarchy)
+                        StartCoroutine(SortBar());
+
+                }
             }
 
             //Remember to clear the icon if stack is 0.
@@ -184,14 +195,58 @@ public class UI_ConditionBar : MonoBehaviour
             childs[i].order = newOrderList[i];
             
             childs[i].GetComponent<RectTransform>().localPosition =
-                new Vector3(startPosition + (childs[i].order) * distanceBetweenBuff, 0);
+                new Vector3(startPosition + (childs[i].order % maxCapacity) * distanceBetweenBuff, 0);
             //}
             
         }
+
+        if (childs.Length > maxCapacity)
+        {
+            if(loopDisplayRoutine==null)
+                loopDisplayRoutine = StartCoroutine(LoopDisplayIcon());
+        }
+
+        // foreach (var child in childs)
+        // {
+        //     if(child.order>maxCapacity)
+        //         child.GetComponent<CanvasGroup>().alpha = 0;
+        //     else
+        //     {
+        //         child.GetComponent<CanvasGroup>().alpha = 1;
+        //     }
+        // }
         
 
+
+
+
+    }
+    
+    protected void SortBarImmediately()
+    {
+        var childs = transform.GetComponentsInChildren<ConditionIcon>();
+        List<ConditionIcon> childList = 
+            new List<ConditionIcon>(childs.ToList());
         
-        
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            childs[i].order = i;
+        }
+
+        var newOrderList = SortConditionPriorty(childList);
+   
+        for (int i = 0; i < childs.Length; i++)
+        {
+            
+            //childs[i].order = newOrder;
+            childs[i].order = newOrderList[i];
+            
+            childs[i].GetComponent<RectTransform>().localPosition =
+                new Vector3(startPosition + (childs[i].order % maxCapacity) * distanceBetweenBuff, 0);
+            //}
+            
+        }
+
     }
 
     private int CompareConditionPriority(ConditionIcon a, ConditionIcon b)
@@ -262,6 +317,96 @@ public class UI_ConditionBar : MonoBehaviour
         
         return output;
 
+    }
+
+    protected IEnumerator LoopDisplayIcon()
+    {
+        var conditionIcons = GetComponentsInChildren<ConditionIcon>();
+        foreach (var icon in conditionIcons)
+        {
+            if(icon.order>=maxCapacity)
+                icon.canvasGroup.alpha = 0;
+            else 
+                icon.canvasGroup.alpha = 1;
+        }
+
+        var countdown = 3f + maxCapacity * 0.2f;
+        int currentpage = 1;
+        var currentChildNum = transform.childCount;
+        
+        while (transform.childCount > maxCapacity)
+        {
+            if (countdown > 0)
+            {
+                countdown -= Time.deltaTime;
+                if (currentChildNum != transform.childCount)
+                {
+                    conditionIcons = GetComponentsInChildren<ConditionIcon>();
+                    if (currentpage == 1)
+                    {
+                        foreach (var icon in conditionIcons)
+                        {
+                            if(icon.order>=maxCapacity)
+                                icon.canvasGroup.alpha = 0;
+                            else 
+                                icon.canvasGroup.alpha = 1;
+                        }
+                    }
+                    else if (currentpage == 2)
+                    {
+                        foreach (var icon in conditionIcons)
+                        {
+                            if(icon.order<maxCapacity || icon.order>=maxCapacity*2)
+                                icon.canvasGroup.alpha = 0;
+                            else 
+                                icon.canvasGroup.alpha = 1;
+                        }
+                    }
+                }
+
+                yield return null;
+            }
+            else
+            {
+                conditionIcons = GetComponentsInChildren<ConditionIcon>();
+                if (currentpage == 1)
+                {
+                    countdown = 3f + (conditionIcons.Length-maxCapacity) * 0.2f;
+                    foreach (var icon in conditionIcons)
+                    {
+                        if(icon.order<maxCapacity || icon.order>=maxCapacity*2)
+                            icon.canvasGroup.alpha = 0;
+                        else 
+                            icon.canvasGroup.alpha = 1;
+                    }
+                    currentpage = 2;
+                }
+                else if (currentpage == 2)
+                {
+                    countdown = 3f + maxCapacity * 0.2f;
+                    foreach (var icon in conditionIcons)
+                    {
+                        if(icon.order>=maxCapacity)
+                            icon.canvasGroup.alpha = 0;
+                        else 
+                            icon.canvasGroup.alpha = 1;
+                    }
+                    currentpage = 1;
+                }
+                yield return null;
+
+            }
+
+        }
+        conditionIcons = GetComponentsInChildren<ConditionIcon>();
+        foreach (var icon in conditionIcons)
+        {
+            if(icon.order>=maxCapacity)
+                icon.canvasGroup.alpha = 0;
+            else 
+                icon.canvasGroup.alpha = 1;
+        }
+        loopDisplayRoutine = null;
     }
 
 }

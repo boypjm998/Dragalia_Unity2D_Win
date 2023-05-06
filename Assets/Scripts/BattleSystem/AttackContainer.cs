@@ -7,6 +7,7 @@ public class AttackContainer : MonoBehaviour
 {
     protected bool destroyInvoked;
     public int attackTotalNum { get; protected set; }
+    public bool IfODCounter;
     protected int currentFinishedNum;
     [SerializeField]private bool needTotalDisplay;
     protected int totalDamage;
@@ -91,6 +92,11 @@ public class AttackContainer : MonoBehaviour
     public void AddNewCheckedCondition(int instanceID, int internalConditionID)
     {
         checkedConditions.Add(new Tuple<int, int>(instanceID, internalConditionID));
+    }
+    
+    public void RemoveCheckedCondition(int instanceID, int internalConditionID)
+    {
+        checkedConditions.Remove(new Tuple<int, int>(instanceID, internalConditionID));
     }
 
 

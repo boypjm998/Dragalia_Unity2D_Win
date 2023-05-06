@@ -48,6 +48,8 @@ public class BattleStageManager : MonoBehaviour
     public float mapBorderL { get; private set; }
     public float mapBorderR { get; private set; }
     public float mapBorderT { get; private set; }
+    
+    public float mapBorderB { get; private set; }
 
     public bool isGamePaused { get; private set; }
 
@@ -113,8 +115,14 @@ public class BattleStageManager : MonoBehaviour
         player.GetComponent<AttackManager>().RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
 
         var buffLayer = player.transform.Find("BuffLayer");
-        var bufftxt = 
-            Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
+
+        if (buffLayer.childCount == 0)
+        {
+            var bufftxt = 
+                         Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
+        }
+
+        
 
         //StartCoroutine(开场buff(player));
     }
@@ -195,6 +203,7 @@ public class BattleStageManager : MonoBehaviour
         var borderInfoL = GameObject.Find("BorderLeft");
         var borderInfoR = GameObject.Find("BorderRight");
         var borderInfoT = GameObject.Find("BorderTop");
+        var borderInfoB = GameObject.FindGameObjectWithTag("Ground");
 
         mapBorderL = borderInfoL.GetComponent<BoxCollider2D>().offset.x +
                      borderInfoL.GetComponent<BoxCollider2D>().size.x * 0.5f + borderInfoL.transform.position.x;
@@ -202,6 +211,7 @@ public class BattleStageManager : MonoBehaviour
             borderInfoR.GetComponent<BoxCollider2D>().size.x * 0.5f + borderInfoR.transform.position.x;
         mapBorderT = borderInfoT.GetComponent<BoxCollider2D>().offset.y -
                      borderInfoT.GetComponent<BoxCollider2D>().size.y * 0.5f + borderInfoT.transform.position.y;
+        mapBorderB = borderInfoB.GetComponent<BoxCollider2D>().bounds.max.y;
     }
 
     /// <summary>
@@ -296,16 +306,16 @@ public class BattleStageManager : MonoBehaviour
             
 
 
-            var damage =
-                BasicCalculation.CalculateDamagePlayer(
-                    playerstat,
-                    targetStat,
-                    attackStat.GetDmgModifier(i),
-                    attackStat,
-                    ref isCrit
-                );
+            // var damage =
+            //     BasicCalculation.CalculateDamagePlayer(
+            //         playerstat,
+            //         targetStat,
+            //         attackStat.GetDmgModifier(i),
+            //         attackStat,
+            //         ref isCrit
+            //     );
 
-            damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
+            //damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
 
             //3.Special Effect
 
@@ -424,9 +434,10 @@ public class BattleStageManager : MonoBehaviour
         if (!target.transform.Find("HitSensor").GetComponent<Collider2D>().isActiveAndEnabled) return -1;
 
         
-        //Attack Callback
+        
         switch (attackStat.attackType)
         {
+            //Attack Callback
             case BasicCalculation.AttackType.STANDARD:
                 player.GetComponent<ActorBase>()?.OnStandardAttackConnect(attackStat);
                 break;
@@ -446,6 +457,7 @@ public class BattleStageManager : MonoBehaviour
 
         var playerstat = player.GetComponentInChildren<StatusManager>();
 
+        //2-4 : Calculate the damage in a loop.
         for (var i = 0; i < attackStat.GetHitCountInfo(); i++)
         {
             //2.Calculate the damage deal to target.
@@ -464,13 +476,15 @@ public class BattleStageManager : MonoBehaviour
                 );
 
             damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f)) +
-                         (int)attackStat.GetDmgConstInfo(i);
+                         (int)attackStat.GetDmgConstInfo(i) - (int)targetStat.GetDamageCutConst();
+            
+            if(damageM[i]<0) damageM[i] = 0;
 
             //3.Special Effect
 
 
             //4.Instantiate the damage number.
-
+            
             if (attackType == 0)
             {
                 if (isCrit)
@@ -496,7 +510,7 @@ public class BattleStageManager : MonoBehaviour
 
             totalDamage += damageM[i];
 
-            player.GetComponent<PlayerStatusManager>()?.ComboConnect();
+            player.GetComponent<StatusManager>()?.ComboConnect();
         }
 
         var container = attackStat.GetComponentInParent<AttackContainer>();
@@ -524,23 +538,41 @@ public class BattleStageManager : MonoBehaviour
                     
                     if (withCondition.condition.buffID == 999)
                     {
-                        targetStat.DispellTimerBuff();
-                        continue;
+                        var dispellCheck = targetStat.DispellTimerBuff();
+                        if (dispellCheck)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            container.RemoveCheckedCondition(target.GetInstanceID(),
+                                attackStat.attackInfo[0].withConditions[i].identifier);
+                            continue;
+                        }
                     }
                     
-                    var condFlag = CheckAffliction(withCondition.withConditionChance,
+                    var condFlag = CheckAffliction(withCondition.withConditionChance +
+                        playerstat.GetConditionRateBuff((BasicCalculation.BattleCondition)(withCondition.condition.buffID)),
                         targetStat.GetAfflictionResistance
                             ((BasicCalculation.BattleCondition)withCondition.condition.buffID));
                     if (condFlag<1)
                     {
+                        playerstat.OnAfflictionResist?.Invoke(withCondition.condition);
                         //1是成功,0是白字resist,-1是黄字resist
-                        DamageNumberManager.GenerateResistText(target.transform);
+                        if(condFlag == 0)
+                            DamageNumberManager.GenerateResistText(target.transform);
+                        else
+                        {
+                            DamageNumberManager.GenerateResistText(target.transform, 1);
+                        }
+                        
                         continue;//检查异常抗性！不一定是异常！
                     }
                     if(StatusManager.IsDotAffliction(withCondition.condition.buffID)
                             ||StatusManager.IsControlAffliction(withCondition.condition.buffID))
                     {
-                        targetStat.IncreaseAfflictionResistance(withCondition.condition.buffID);
+                        if(attackType!=1)
+                            targetStat.IncreaseAfflictionResistance(withCondition.condition.buffID);
                     }
 
 
@@ -550,6 +582,8 @@ public class BattleStageManager : MonoBehaviour
                         newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(playerstat) /
                                     BasicCalculation.CalculateDefenseInfo(targetStat);
                     
+                    
+                    
 
                     
                     if (withCondition.condition.maxStackNum > 1)
@@ -558,7 +592,6 @@ public class BattleStageManager : MonoBehaviour
                         (withCondition.condition.buffID,
                             newEffect,
                             withCondition.condition.duration,
-                            withCondition.condition.DisplayType,
                             withCondition.condition.maxStackNum,
                             withCondition.condition.specialID);
                     }
@@ -568,7 +601,6 @@ public class BattleStageManager : MonoBehaviour
                         (   withCondition.condition.buffID,
                             newEffect,
                             withCondition.condition.duration,
-                            withCondition.condition.DisplayType,
                             withCondition.condition.specialID
                         );
                     }
@@ -585,10 +617,12 @@ public class BattleStageManager : MonoBehaviour
         
         //print("击退的力度为"+attackStat.attackInfo[0].knockbackForce);
         
+        // target.GetComponentInParent<ActorBase>().
+        //     TakeDamage(attackStat.attackInfo[0].knockbackPower,
+        //         attackStat.attackInfo[0].knockbackTime, 
+        //         attackStat.attackInfo[0].knockbackForce, kbtemp);
         target.GetComponentInParent<ActorBase>().
-            TakeDamage(attackStat.attackInfo[0].knockbackPower,
-                attackStat.attackInfo[0].knockbackTime, 
-                attackStat.attackInfo[0].knockbackForce, kbtemp);
+            TakeDamage(attackStat,kbtemp);
 
         //7. Calculate the SP
         if (player.GetComponent<PlayerStatusManager>() != null)
@@ -604,6 +638,31 @@ public class BattleStageManager : MonoBehaviour
 
         targetStat.currentHp -= totalDamage;
         targetStat.OnHPChange?.Invoke();
+
+        // 9. Reduce enemy's Overdrive Gauge
+        if (targetStat is SpecialStatusManager)
+        {
+            var targetSpecialStat = (SpecialStatusManager) targetStat;
+            if (targetSpecialStat.baseBreak > 0)
+            {
+                float ODModifier = 0;
+                if (container.IfODCounter)
+                {
+                    ODModifier += (0.8f + 0.02f * Mathf.Sqrt(Mathf.Abs(attackStat.attackInfo[0].knockbackPower-100)));
+                    ODModifier += targetSpecialStat.counterModifier;
+                }
+
+                //Calculate OD Gauge Punisher
+                var ODpunisher = 1 + playerstat.ODAccerator + 
+                                 BasicCalculation.CheckSpecialODAccerleratorEffect
+                                     (playerstat,targetSpecialStat,attackStat);
+                if (targetSpecialStat.ODLock == false)
+                {
+                    targetSpecialStat.currentBreak -= totalDamage * (Random.Range(0.95f, 1.05f) + ODModifier) * ODpunisher;
+                }
+            }
+
+        }
 
         return totalDamage;
         
@@ -636,10 +695,11 @@ public class BattleStageManager : MonoBehaviour
 
         dnm.HealPop(damageM, target.transform);
 
+        if(stat.currentHp < stat.maxHP)
+            stat.OnHPChange?.Invoke();
+        
         stat.currentHp += damageM;
 
-        stat.OnHPChange?.Invoke();
-        
         return damageM;
     }
 
@@ -664,14 +724,15 @@ public class BattleStageManager : MonoBehaviour
         dnm.DotPop(damageM, target.transform, condition);
 
 
+        if(damageM > 0)
+            stat.OnHPChange?.Invoke();
+
         stat.currentHp -= damageM;
         
-        stat.OnHPChange?.Invoke();
-
         return damageM;
     }
 
-    public virtual int EnemyHit(GameObject target, GameObject self, AttackFromEnemy attackStat)
+    /*public virtual int EnemyHit(GameObject target, GameObject self, AttackFromEnemy attackStat)
     {
         //1.If target is not in invincible state.
         if (target.transform.Find("HitSensor").GetComponent<Collider2D>().isActiveAndEnabled == false) return -1;
@@ -694,17 +755,17 @@ public class BattleStageManager : MonoBehaviour
         {
             //2.Calculate the damage deal to target.
 
-            var isCrit = false;
-            var damage =
-                BasicCalculation.CalculateDamageEnemy(
-                    selfstat,
-                    targetStat,
-                    attackStat.GetDmgModifier(i),
-                    attackStat,
-                    ref isCrit
-                );
-
-            damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
+            // var isCrit = false;
+            // var damage =
+            //     BasicCalculation.CalculateDamageEnemy(
+            //         selfstat,
+            //         targetStat,
+            //         attackStat.GetDmgModifier(i),
+            //         attackStat,
+            //         ref isCrit
+            //     );
+            //
+            // damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
 
             //3.Special Effect
 
@@ -712,12 +773,12 @@ public class BattleStageManager : MonoBehaviour
             //4.Instantiate the damage number.
 
 
-            if (isCrit)
-                dnm.DamagePopPlayer(target.transform, damageM[i], true);
-            else
-                dnm.DamagePopPlayer(target.transform, damageM[i], false);
-
-            totalDamage += damageM[i];
+            // if (isCrit)
+            //     dnm.DamagePopPlayer(target.transform, damageM[i], true);
+            // else
+            //     dnm.DamagePopPlayer(target.transform, damageM[i], false);
+            //
+            // totalDamage += damageM[i];
         }
 
         var container = attackStat.GetComponentInParent<AttackContainer>();
@@ -775,7 +836,7 @@ public class BattleStageManager : MonoBehaviour
                 }
 
                 container.conditionCheckDone.Add(target.GetInstanceID());
-            }*/
+            }#1#
         
         //击退Knockback
         // if (attackStat.knockbackPower > 0)
@@ -793,7 +854,7 @@ public class BattleStageManager : MonoBehaviour
         targetStat.OnHPChange?.Invoke();
         
         return totalDamage;
-    }
+    }*/
 
     #endregion
 
@@ -840,7 +901,22 @@ public class BattleStageManager : MonoBehaviour
     {
         isGamePaused = flag;
         Time.timeScale = flag ? 0 : 1;
-        
+        var voices1 = GameObject.FindGameObjectsWithTag("Voice");
+        foreach (var voice in voices1)
+        {
+            var audiosrc = voice.GetComponent<AudioSource>();
+            
+            if (flag)
+            {
+                if(audiosrc.isPlaying)
+                    audiosrc.Pause();
+            }
+            else
+            {
+                if(!audiosrc.isPlaying)
+                    audiosrc.UnPause();
+            }
+        }
     }
 
     public void SetGameFailed()
@@ -881,15 +957,17 @@ public class BattleStageManager : MonoBehaviour
     IEnumerator GameClearedRoutine()
     {
         //var fxs = GameObject.Find("AttackFXPlayer");
+
+        if (GameObject.Find("EnemyLayer").transform.childCount > 0)
+        {
+            Time.timeScale = 0.5f;
+            GameObject.Find("CharacterInfo").SetActive(false);
         
-        
-        Time.timeScale = 0.5f;
-        GameObject.Find("CharacterInfo").SetActive(false);
-        //
-        StageCameraController.SwitchMainCamera();
-        StageCameraController.SwitchMainCameraFollowObject(lastEnemyEliminated);
-        StageCameraController.SetMainCameraSize(6);
-        yield return new WaitForSeconds(.8f);
+            StageCameraController.SwitchMainCamera();
+            StageCameraController.SwitchMainCameraFollowObject(lastEnemyEliminated);
+            StageCameraController.SetMainCameraSize(6);
+            yield return new WaitForSeconds(.8f);
+        }
 
         Time.timeScale = 1;
         StageCameraController.SwitchMainCameraFollowObject(player);
@@ -913,6 +991,7 @@ public class BattleStageManager : MonoBehaviour
         yield return null;
         playercontroller.anim.Play("idle");
         playercontroller.enabled = false;
+        playerinput.DisableAndIdle();
         
         var attacks = FindObjectsOfType<AttackContainer>();
         foreach (var attack in attacks)
@@ -1079,4 +1158,25 @@ public class BattleStageManager : MonoBehaviour
         return levelDetailedInfo;
     }
 
+    public Vector2 OutOfRangeCheck(Vector2 pos)
+    {
+        if (pos.y > mapBorderT)
+        {
+            pos.y = mapBorderT;
+        }
+        if (pos.y < mapBorderB)
+        {
+            pos.y = mapBorderB;
+        }
+        if (pos.x > mapBorderR)
+        {
+            pos.x = mapBorderR;
+        }
+        if (pos.x < mapBorderL)
+        {
+            pos.x = mapBorderL;
+        }
+
+        return new Vector2(pos.x, pos.y);
+    }
 }

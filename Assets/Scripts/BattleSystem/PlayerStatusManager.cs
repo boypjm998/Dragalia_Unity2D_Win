@@ -21,23 +21,13 @@ public class PlayerStatusManager : StatusManager
 
     
     public float attackspeed = 1.0f;
-    public float movespeed = 6.0f;
+    public float movespeed = 7.0f;
     public float jumpforce = 20.0f;
-    public float rollspeed = 9.0f;
-    public float comboConnectMaxInterval = 3.0f;
+    public float rollspeed = 10.0f;
+    
     public int remainReviveTimes = 9;
 
-    private Coroutine calroutine; //Calculate Left Combo time
     
-    
-    
-    
-    
-
-
-    public int comboHitCount = 0;
-    public float lastComboRemainTime { get; private set; } = 0;
-    private Coroutine comboRoutine = null;
 
     [HideInInspector] public ComboIndicatorUI _comboIndicator;
     private ActorController ac;
@@ -53,7 +43,7 @@ public class PlayerStatusManager : StatusManager
         ac = GetComponent<ActorController>();
         
         if(_conditionBar == null)
-            _conditionBar = GameObject.Find("ConditionBar").GetComponent<UI_ConditionBar>();
+            _conditionBar = GameObject.Find("ConditionBar")?.GetComponent<UI_ConditionBar>();
     }
 
     public void GetPlayerConditionBar()
@@ -80,10 +70,10 @@ public class PlayerStatusManager : StatusManager
     protected override void Update()
     {
         base.Update();
-        SpGainInStatus(0, spRegenPerSecond * Time.deltaTime);
-        SpGainInStatus(1, spRegenPerSecond * Time.deltaTime);
-        SpGainInStatus(2, spRegenPerSecond * Time.deltaTime);
-        SpGainInStatus(3, spRegenPerSecond * Time.deltaTime);
+        SpGainInStatus(0, spRegenPerSecond * Time.deltaTime,true);
+        SpGainInStatus(1, spRegenPerSecond * Time.deltaTime,true);
+        SpGainInStatus(2, spRegenPerSecond * Time.deltaTime,true);
+        SpGainInStatus(3, spRegenPerSecond * Time.deltaTime,true);
 
         
 
@@ -94,10 +84,12 @@ public class PlayerStatusManager : StatusManager
         
     }
 
-    public void SpGainInStatus(int id, float num)
+    public void SpGainInStatus(int id, float num,bool autoCharge = false)
     {
         //从0开始
-        if(skillRegenByAttack[id])
+        if(!enabled)
+            return;
+        if(skillRegenByAttack[id] || autoCharge)
             currentSP[id] += num;
 
         if (currentSP[id] > requiredSP[id])
@@ -108,7 +100,7 @@ public class PlayerStatusManager : StatusManager
 
     
 
-    private IEnumerator ComboCheck()
+    protected override IEnumerator ComboCheck()
     {
         if (comboHitCount > 0)
         {
@@ -124,7 +116,7 @@ public class PlayerStatusManager : StatusManager
                 calroutine = StartCoroutine(CalculateRemain(comboConnectMaxInterval));
             }
             
-            _comboIndicator.PrintComboNum();
+            _comboIndicator?.PrintComboNum();
             yield return new WaitForSeconds(comboConnectMaxInterval);
             comboHitCount = 0;
             
@@ -132,11 +124,11 @@ public class PlayerStatusManager : StatusManager
             calroutine = null;
             
             lastComboRemainTime = 0;
-            _comboIndicator.HideComboNum();
+            _comboIndicator?.HideComboNum();
         }
     }
 
-    public void ComboConnect()
+    public override void ComboConnect()
     {
         comboHitCount++;
         
@@ -151,17 +143,7 @@ public class PlayerStatusManager : StatusManager
         requiredSP[sidFromZero] = sp;
     }
 
-    private IEnumerator CalculateRemain(float time)
-    {
-        //calculate remmain combo last time.
-        lastComboRemainTime = time;
-        while (time > 0)
-        {
-            time -= Time.deltaTime;
-            lastComboRemainTime = time;
-            yield return null;
-        }
-    }
+    
 
 
     #region Buff Related
@@ -176,12 +158,12 @@ public class PlayerStatusManager : StatusManager
         /// </summary>
         
         
-        public override void ObtainUnstackableTimerBuff(int buffID, float effect, float duration,
-            BattleCondition.buffEffectDisplayType type, int spID)
+        /*public override void ObtainUnstackableTimerBuff(int buffID, float effect, float duration,
+            int spID = -1)
         {
             OverrideUnstackableBuff(buffID, spID,effect,duration);
         
-            var buff = new TimerBuff(buffID, effect, duration, type, 1);
+            var buff = new TimerBuff(buffID, effect, duration, 1);
             
             if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
             {
@@ -203,21 +185,17 @@ public class PlayerStatusManager : StatusManager
         
             conditionList.Add(buff);
             
+            if (GetRecoveryPotency() > 0 && healRoutine == null)
+            {
+                healRoutine = StartCoroutine(HotRecoveryTick());
+            }
+            
             _conditionBar.OnConditionAdd(buff);
         
             OnBuffEventDelegate?.Invoke(buff);
-        }
+        }*/
         
-        /// <summary>
-        ///   <para>目标移除一个Condition</para>
-        /// </summary>
-        public override void RemoveCondition(BattleCondition buff)
-        {
-            
-            conditionList.Remove(buff);
-            
-            _conditionBar.OnConditionRemove(buff.buffID);
-        }
+        
 
     #endregion
 

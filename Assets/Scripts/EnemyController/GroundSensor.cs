@@ -10,4 +10,9 @@ public interface IGroundSensable
     public Collider2D GetCurrentAttachedGroundCol();
     
     public IEnumerator DisableCollision();
+
+    public Collider2D GetSelfCollider()
+    {
+        return null;
+    }
 }

@@ -2,11 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using GameMechanics;
 
 public abstract class ActorBase : MonoBehaviour
 {
     public delegate void OnHurt();
-
+    public bool isAlive = true;
+    protected GameObject hitSensor;
+    public Collider2D HitSensor
+    {
+        get => hitSensor.GetComponent<Collider2D>();
+    }
 
     public Animator anim;
     public Rigidbody2D rigid;
@@ -15,7 +21,11 @@ public abstract class ActorBase : MonoBehaviour
     public static float DefaultGravity = 4;
 
 
-    public abstract void TakeDamage(float kbPower, float kbtime, float kbForce, Vector2 kbDir);
+    public virtual void TakeDamage(float kbPower, float kbtime, float kbForce, Vector2 kbDir)
+    {
+    }
+
+    public abstract void TakeDamage(AttackBase attackBase,Vector2 kbdir);
 
     public virtual void DisappearRenderer()
     {
@@ -28,6 +38,11 @@ public abstract class ActorBase : MonoBehaviour
     public float GetActorHeight()
     {
         return transform.position.y - transform.Find("GroundSensor").GetComponent<Collider2D>().bounds.min.y;
+    }
+
+    public void SetHitSensor(bool flag)
+    {
+        hitSensor.SetActive(flag);
     }
 
 
@@ -87,6 +102,8 @@ public abstract class ActorBase : MonoBehaviour
 
 
     #endregion
+
+    
 
 
 }

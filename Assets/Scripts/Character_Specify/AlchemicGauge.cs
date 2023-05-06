@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AlchemicGauge : MonoBehaviour
+public class AlchemicGauge : MonoBehaviour, ICharacterSpecialGauge
 {
     [SerializeField] private int catridgeCount = 0;
     [SerializeField] private int cp = 0;
@@ -171,7 +171,6 @@ public class AlchemicGauge : MonoBehaviour
     }
 
     void DisplayNumber()
-
     {
         Image image = number.GetComponent<Image>();
         switch (catridgeCount)
@@ -350,9 +349,29 @@ public class AlchemicGauge : MonoBehaviour
 
     }
 
-    public void CPCharge(int q)
+    public void Charge(int q)
     {
         cp += q;
+    }
+
+    public void ChargeTo(int q, int level = 0)
+    {
+        if (level == 3)
+        {
+            cp = 33;
+            catridgeCount = 3;
+        }
+        else
+        {
+            cp = q;
+            catridgeCount = level;
+        }
+    }
+
+    public void Reset()
+    {
+        cp = 0;
+        catridgeCount = 0;
     }
 
     public bool IsCatridgeActive()

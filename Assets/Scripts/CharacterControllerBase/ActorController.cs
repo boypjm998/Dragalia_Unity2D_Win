@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.Mathematics;
+using GameMechanics;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 
-
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(PlayerStatusManager))]
+[RequireComponent(typeof(PlayerOnewayPlatformEffector))]
 public class ActorController : ActorBase, IKnockbackable, IHumanActor
 {
     public int jumptime => pi.jumptime;
@@ -13,7 +16,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     protected AudioManagerPlayer voiceController;
     public PlayerInput pi;
     public PlayerStatusManager _statusManager;
-    public float movespeed = 6.0f;
+    public float movespeed = 7.0f;
     public float rollspeed = 9.0f;
     public float jumpforce = 20.0f;
     
@@ -43,11 +46,14 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
         if (pi.enabled == false)
         {
+            anim.SetFloat("forward", 0f);
+            //anim.Play("idle");
             return;
         }
 
         if (pi.moveEnabled == false)
         {
+            anim.SetFloat("forward", 0f);
             return;
         }
 
@@ -90,13 +96,16 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public virtual void AirDashAtk()
     {
         anim.SetBool("attack", true);
-        voiceController.PlayAttackVoice(0);
+        voiceController?.PlayAttackVoice(0);
         //rigid.velocity.x = pi.isMove * 2* movespeed;
         pi.InvokeAttackSignal();
     }
 
     public virtual void UseSkill(int id)
     {
+        
+        voiceController?.PlaySkillVoice(id);
+        
         if (isAttackSkill[id - 1])
         {
             pi.InvokeAttackSignal();
@@ -162,7 +171,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
         pi = GetComponent<PlayerInput>();
         rigid = GetComponent<Rigidbody2D>();
+        rigid.gravityScale = defaultGravity;
         anim = rigid.GetComponentInChildren<Animator>();
+        hitSensor = transform.Find("HitSensor").gameObject;
 
         rigid.transform.eulerAngles = new Vector3(0, 0, 0);
         facedir = 1;
@@ -179,6 +190,16 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     protected void CheckLife()
     {
+        if(!isAlive)
+            return;
+
+        isAlive = false;
+
+        if (CheckPowerOfBonds())
+        {
+            return;
+        }
+
         if (_statusManager.remainReviveTimes > 0)
         {
             _statusManager.remainReviveTimes--;
@@ -238,7 +259,12 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         }
 
 
-        anim.SetFloat("forward", Mathf.Abs(pi.DRight));
+        if(pi.enabled)
+            anim.SetFloat("forward", Mathf.Abs(pi.DRight));
+        else
+        {
+            //anim.SetFloat("forward", 0f);
+        }
 
         if (pi.hurt)
         {
@@ -283,8 +309,6 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     void FixedUpdate()
     {
         Move();
-
-
 
     }
 
@@ -491,7 +515,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     }
 
-    protected virtual IEnumerator InvincibleRoutine()
+    public virtual IEnumerator InvincibleRoutine(float waitTime = 3f)
     {
         //var renderer = GetComponent<SpriteRenderer>();
 
@@ -502,10 +526,26 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         _statusManager.currentHp = _statusManager.maxHP;
 
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(waitTime);
 
         //renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1);
         hitsensor.enabled = true;
+        isAlive = true;
+    }
+    
+    public virtual IEnumerator InvincibleRoutineWithoutRecover(float waitTime = 3f)
+    {
+        //var renderer = GetComponent<SpriteRenderer>();
+
+        var hitsensor = transform.Find("HitSensor").GetComponent<Collider2D>();
+        //renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.5f);
+        hitsensor.enabled = false;
+        
+        yield return new WaitForSeconds(waitTime);
+
+        //renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1);
+        hitsensor.enabled = true;
+        isAlive = true;
 
     }
 
@@ -560,6 +600,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.jumpEnabled = false;
         pi.moveEnabled = false;
         voiceController?.PlayDodgeVoice();
+        pi.roll = false;
+        anim.SetBool("roll", false);
 
         dodging = true;
     }
@@ -574,6 +616,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
         anim.SetBool("roll", false);
         pi.SetInputEnabled("move");
+        //pi.directionLock = false;
         //Debug.Log("ExitRoll");
     }
 
@@ -604,6 +647,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         ActionEnable((int)PlayerActionType.ROLL); //roll
         ActionEnable((int)PlayerActionType.ATTACK);
         anim.SetBool("attack", false);
+        pi.directionLock = false;
     }
 
 
@@ -659,7 +703,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         rigid.gravityScale = defaultGravity;
     }
 
-    public void OnHurtEnter()
+    public virtual void OnHurtEnter()
     {
         OnAttackInterrupt?.Invoke();
 
@@ -679,10 +723,10 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         var meeles = transform.Find("MeeleAttackFX");
         for (int i = 0; i < meeles.childCount; i++)
         {
-            meeles.GetChild(i).GetComponent<AttackContainer>().DestroyInvoke();
+            meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
         }
 
-        voiceController.PlayHurtVoice(_statusManager);
+        voiceController?.PlayHurtVoice(_statusManager);
         transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression(0.75f);
 
     }
@@ -707,12 +751,27 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
         _statusManager.ResetAllStatus();
         _statusManager.ClearSP();
-        BattleEffectManager effectManager = FindObjectOfType<BattleEffectManager>();
+        BattleEffectManager effectManager = BattleEffectManager.Instance;
         effectManager.PlayReviveSoundEffect();
         BattleEffectManager.BWEffect();
         effectManager.SpawnReviveEffect(gameObject);
         StartCoroutine(InvincibleRoutine());
         _statusManager.waitForRevive = false;
+    }
+    
+    public bool CheckPowerOfBonds()
+    {
+        if(_statusManager.GetConditionsOfType((int)BasicCalculation.BattleCondition.PowerOfBonds).Count > 0)
+        {
+            _statusManager.currentHp = 0;
+            _statusManager.HPRegenImmediately(100,0);
+            BattleEffectManager.Instance.SpawnHealEffect(gameObject);
+            _statusManager.RemoveTimerBuff((int)BasicCalculation.BattleCondition.PowerOfBonds,true);
+            StartCoroutine(InvincibleRoutineWithoutRecover(1f));
+            return true;
+        }
+
+        return false;
     }
 
     protected virtual void OnDeath()
@@ -819,6 +878,28 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     }
 
+    public override void TakeDamage(AttackBase attackBase, Vector2 kbdir)
+    {
+        if (_statusManager.knockbackRes >= 100)
+            return;
+        
+        var kbtime = attackBase.attackInfo[0].knockbackTime;
+        var kbForce = attackBase.attackInfo[0].knockbackForce;
+        var kbPower = attackBase.attackInfo[0].knockbackPower;
+        var random = Random.Range(0, 100);
+        if(random > kbPower-_statusManager.KnockbackRes)
+        {
+            return;
+        }
+
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+        }
+
+        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbdir));
+    }
+
     IEnumerator KnockBackEffect(float time, float force, Vector2 kbDir)
     {
         kbDir = kbDir.normalized;
@@ -846,7 +927,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
 
         SetVelocity(0, rigid.velocity.y);
-        //anim.SetBool("hurt",false);
+        //TODO:如果不在昏迷/睡眠/冰冻状态，恢复。
         pi.hurt = false;
         KnockbackRoutine = null;
     }
@@ -941,6 +1022,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         return dodging;
     }
 
+
+    
 
 
 }

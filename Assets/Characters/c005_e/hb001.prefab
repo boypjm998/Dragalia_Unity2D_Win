@@ -550,6 +550,90 @@ Transform:
   m_Father: {fileID: 6592148832792504544}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6488247830623399679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4694378641531364794}
+  - component: {fileID: 2645778307254814053}
+  m_Layer: 0
+  m_Name: Shadow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4694378641531364794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6488247830623399679}
+  m_LocalRotation: {x: 0.53729963, y: 0, z: 0, w: 0.8433915}
+  m_LocalPosition: {x: 0.1, y: -1.5, z: 5}
+  m_LocalScale: {x: 0.90000004, y: 0.90000004, z: 0.90000004}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 6592148832792504544}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 65, y: 0, z: 0}
+--- !u!212 &2645778307254814053
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6488247830623399679}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 199403587
+  m_SortingLayer: 2
+  m_SortingOrder: -1
+  m_Sprite: {fileID: 21300000, guid: b5b6790bcbf38dc4b96de5c905e36e1f, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.7529412}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 2.56, y: 2.56}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &6592148832792504573
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,6 +679,7 @@ Transform:
   - {fileID: 6823859806177123419}
   - {fileID: 2341317013193943000}
   - {fileID: 1928096495236822163}
+  - {fileID: 4694378641531364794}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -690,6 +775,8 @@ MonoBehaviour:
   critRate: 12
   maxHP: 606400
   currentHp: 606400
+  comboConnectMaxInterval: 4
+  comboHitCount: 0
   knockbackRes: 0
   burnRes: 0
   poisonRes: 0
@@ -705,9 +792,9 @@ MonoBehaviour:
   freezeRes: 0
   blindnessRes: 0
   cursedRes: 0
+  abilityList: 
   _conditionBar: {fileID: 0}
-  damageCut: 0
-  damageCutConst: 0
+  waitForRevive: 0
 --- !u!114 &2574266878565807511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,6 +812,7 @@ MonoBehaviour:
   BuffFXLayer: {fileID: 0}
   attackContainer: {fileID: 390410345794427676, guid: 4fed0cfcb020ad34ebc13587f9ebf4e8, type: 3}
   attackSubContainer: {fileID: 4590971301714068341, guid: 8815efee16698f746b1d46083c175ab6, type: 3}
+  WarningPrefabs: []
   projectile1: {fileID: 5604679414930194408, guid: 586558f477272174287673cf2c78bc16, type: 3}
   projectile2: {fileID: 3551535956634036390, guid: ea0c46432c66eaf42b830c03687fd5a2, type: 3}
   projectile3: {fileID: 5986545836400010294, guid: aa07f1a9c950d8248b6767aeb93da31f, type: 3}
@@ -747,14 +835,6 @@ MonoBehaviour:
   - {fileID: 4832052809016439710, guid: fa030c6c3d26cfa44af4c5a7efcbc8e8, type: 3}
   - {fileID: 2029448735241411035, guid: 60facc198ff5ee84e86fb68be5c80808, type: 3}
   - {fileID: 5915087622024368002, guid: d354015028041c54ebdec46cffdcccad, type: 3}
-  WarningPrefab:
-  - {fileID: 3532243577954815203, guid: 78d03766be14f2a429b163f080b96da8, type: 3}
-  - {fileID: 4568831194432189347, guid: ba85c34b192a4614c933a9bc720c851f, type: 3}
-  - {fileID: 7877905205732929544, guid: 38edbf41783bc4848aaec7272e31d6e0, type: 3}
-  - {fileID: 8119857919360295814, guid: 2a0a527d49901d94290b731e54ab4cde, type: 3}
-  - {fileID: 791404679166925572, guid: 74146624e348a86468a6010b6e481135, type: 3}
-  - {fileID: 3277773549315030496, guid: 86e1813c45f446145a798e4f984923f8, type: 3}
-  - {fileID: 7825320999426846779, guid: 4656b343d0bcdf8449a0fdcf7bb7ce89, type: 3}
 --- !u!114 &1783855141365854303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -767,23 +847,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8248c6af9a6e1c247a93686977e8a43e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSummonEnemy: 0
-  isAction: 0
+  isAlive: 1
+  anim: {fileID: 0}
   rigid: {fileID: 0}
   facedir: -1
+  isSummonEnemy: 0
+  rendererObject: {fileID: 0}
+  isAction: 0
+  canDeath: 1
   hurt: 0
-  TargetObject: {fileID: 2269329792474344151}
-  animRenderer: {fileID: 0}
-  hurtEffectMaterial: {fileID: 2100000, guid: 1e1856dd1021d0448a4f07c6b3cf8317, type: 2}
+  counterOn: 0
+  flashBody: {fileID: 0}
   hurtEffectDuration: 0.1
   currentKBRes: 0
+  weaponObject: {fileID: 0}
   movespeed: 7.8
   rollspeed: 9
   jumpforce: 22
   isMove: 0
   dodging: 0
   moveEnable: 1
-  testMove: 0
   tar: {fileID: 0}
   _defaultgravityscale: 4
 --- !u!50 &1627270033
@@ -1019,8 +1102,11 @@ MonoBehaviour:
   state: 0
   substate: 0
   targetPlayer: {fileID: 0}
+  viewerPlayer: {fileID: 0}
   isAction: 0
+  breakable: 1
   playerAlive: 1
+  playerList: []
 --- !u!1 &7731592384077309065
 GameObject:
   m_ObjectHideFlags: 0

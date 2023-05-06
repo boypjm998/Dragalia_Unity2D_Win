@@ -13,9 +13,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     
     
     private VoiceController_HB01 voice;
-
-    [Header("Warnings")] 
-    [SerializeField] private GameObject[] WarningPrefab;
+    
 
     protected override void Start()
     {
@@ -67,6 +65,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => !ac.hurt);
         
         ac.OnAttackEnter();
+        ac.SetCounter(true);
         anim.Play("comboDodge0");
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.SingleDodgeCombo);
         var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
@@ -136,13 +135,14 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
         ac.OnAttackEnter();
         ac.TurnMove(_behavior.targetPlayer);
+        ac.SetCounter(true);
         
         
-        var hint = GenerateWarningPrefab(WarningPrefab[0], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
+        var hint = GenerateWarningPrefab(WarningPrefabs[0], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
 
         yield return new WaitForSeconds(hintbar.warningTime);
-        Destroy(hint); 
+        Destroy(hint,0.5f); //4/3添加
         anim.Play("combo1");
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
         float animTime;
@@ -191,7 +191,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         bossBanner?.PrintSkillName("HB01_Action04");
         
         
-        var hint = GenerateWarningPrefab(WarningPrefab[1], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
+        var hint = GenerateWarningPrefab(WarningPrefabs[1], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
 
         yield return new WaitForSeconds(hintbar.warningTime);
@@ -232,8 +232,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         QuitMove();
         
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
-        ac.OnAttackEnter();
+        ac.OnAttackEnter();ac.SetCounter(true);
         ac.TurnMove(_behavior.targetPlayer);
+        GenerateWarningPrefab(WarningPrefabs[7],transform.position,transform.rotation, MeeleAttackFXLayer.transform);
         
         
         _effectManager.SpawnExclamation(gameObject, 
@@ -242,7 +243,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         yield return new WaitForSeconds(0.8f);
         anim.Play("combo7");
         _statusManager.ObtainUnstackableTimerBuff((int)BasicCalculation.BattleCondition.BlazewolfsRush,
-            -1,-1,BattleCondition.buffEffectDisplayType.None,1);
+            -1,-1,1);
         voice.PlayMyVoice(VoiceController_HB01.myMoveList.Combo);
         var animTime = BasicCalculation.GetLastAnimationNormalizedTime(anim);
         
@@ -281,9 +282,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         QuitMove();
         
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
-        ac.OnAttackEnter();
+        ac.OnAttackEnter();ac.SetCounter(true);
         ac.TurnMove(_behavior.targetPlayer);
-        
+        GenerateWarningPrefab(WarningPrefabs[7],transform.position,transform.rotation, MeeleAttackFXLayer.transform);
         
         _effectManager.SpawnExclamation(gameObject, 
             new Vector3(transform.position.x,transform.position.y+4));
@@ -320,11 +321,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         QuitMove();
         
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
-        ac.OnAttackEnter();
+        ac.OnAttackEnter();ac.SetCounter(true);
         ac.TurnMove(_behavior.targetPlayer);
         
         
-        var hint = GenerateWarningPrefab(WarningPrefab[2], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
+        var hint = GenerateWarningPrefab(WarningPrefabs[2], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
 
         yield return new WaitForSeconds(hintbar.warningTime);
@@ -365,7 +366,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         bossBanner?.PrintSkillName("HB01_Action08");
 
         yield return new WaitForSeconds(1f);
-        var hint = GenerateWarningPrefab(WarningPrefab[3], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
+        var hint = GenerateWarningPrefab(WarningPrefabs[3], transform.position,transform.rotation, MeeleAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
         
         yield return new WaitForSeconds(hintbar.warningTime);
@@ -394,15 +395,15 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         var hint = 
             GenerateWarningPrefab
-                (WarningPrefab[1], transform.position,Quaternion.Euler(0,ac.facedir==1?0:180,0), RangedAttackFXLayer.transform);
+                (WarningPrefabs[1], transform.position,Quaternion.Euler(0,ac.facedir==1?0:180,0), RangedAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
         var hint2 = 
-            GenerateWarningPrefab(WarningPrefab[1], transform.position,
+            GenerateWarningPrefab(WarningPrefabs[1], transform.position,
                 (Quaternion.Euler(0,ac.facedir==1?0:180,20)), RangedAttackFXLayer.transform);
         var hint3 = 
-            GenerateWarningPrefab(WarningPrefab[1], transform.position,
+            GenerateWarningPrefab(WarningPrefabs[1], transform.position,
                 (Quaternion.Euler(0,ac.facedir==1?0:180,-20)), RangedAttackFXLayer.transform);
-        var hint4 = GenerateWarningPrefab(WarningPrefab[4], transform.position,transform.rotation, RangedAttackFXLayer.transform);
+        var hint4 = GenerateWarningPrefab(WarningPrefabs[4], transform.position,transform.rotation, RangedAttackFXLayer.transform);
         hint4.GetComponent<EnemyAttackHintBarChaser>().target = _behavior.targetPlayer;
         hint4.transform.rotation = (ac.facedir == 1 ? transform.rotation : Quaternion.Euler(0, 0, 180));
         _effectManager.SpawnTargetLockIndicator(_behavior.targetPlayer,2f);
@@ -474,7 +475,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         bossBanner?.PrintSkillName("HB01_Action10");
 
         yield return new WaitForSeconds(.5f);
-        var hint = GenerateWarningPrefab(WarningPrefab[5], transform.position+Vector3.up,transform.rotation, MeeleAttackFXLayer.transform);
+        var hint = GenerateWarningPrefab(WarningPrefabs[5], transform.position+Vector3.up,transform.rotation, MeeleAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
         
         yield return new WaitForSeconds(hintbar.warningTime);
@@ -502,7 +503,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         StageCameraController.SwitchOverallCamera();
 
         yield return new WaitForSeconds(.5f);
-        var hint = GenerateWarningPrefab(WarningPrefab[6], transform.position+Vector3.up,transform.rotation, MeeleAttackFXLayer.transform);
+        var hint = GenerateWarningPrefab(WarningPrefabs[6], transform.position+Vector3.up,transform.rotation, MeeleAttackFXLayer.transform);
         var hintbar = hint.GetComponent<EnemyAttackHintBar>();
         
         yield return new WaitForSeconds(hintbar.warningTime);
@@ -752,8 +753,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     void Combo4_Part1()
     {
         _statusManager.ObtainTimerBuff
-        ((int)BasicCalculation.BattleCondition.CritRateBuff,20,10,
-            BattleCondition.buffEffectDisplayType.Value);
+        ((int)BasicCalculation.BattleCondition.CritRateBuff,20,10);
         _tweener = transform.DOMove(new Vector2(transform.position.x-1.5f*ac.facedir,transform.position.y + 4f),
             0.1f).SetEase(Ease.OutCubic);
         
@@ -975,10 +975,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         proj1.GetComponent<AttackFromEnemy>().
             AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+                -1,30,1,1),100,0);
         proj1.GetComponent<AttackFromEnemy>().
             AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+                15,30,1,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
@@ -999,10 +999,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         proj2.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         proj2.GetComponent<AttackFromEnemy>().
             AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+                -1,30,1,1),100,0);
         proj2.GetComponent<AttackFromEnemy>().
             AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+                15,30,1,1),100,1);
 
         var proj3 = InstantiateDirectional(projectile8, transform.position, MeeleAttackFXLayer.transform,ac.facedir,0,1);
         
@@ -1025,9 +1025,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             //Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
         var attack1 = proj1.GetComponent<AttackFromEnemy>();
         attack1.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+                -1,30,1,1),100,0);
         attack1.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+                15,30,1,1),100,1);
         
         attack1.firedir = ac.facedir;
         attack1.enemySource = gameObject;
@@ -1038,9 +1038,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
                 Quaternion.Euler(0,ac.facedir==1?0:180,20), container.transform);
         var attack2 = proj2.GetComponent<AttackFromEnemy>();
         attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+                -1,30,1,1),100,0);
         attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+                15,30,1,1),100,1);
         
         attack2.firedir = ac.facedir;
         attack2.enemySource = gameObject;
@@ -1051,9 +1051,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
                 Quaternion.Euler(0,ac.facedir==1?0:180,-20), container.transform);
         var attack3 = proj3.GetComponent<AttackFromEnemy>();
         attack3.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+                -1,30,1,1),100,0);
         attack3.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+                15,30,1,1),100,1);
         attack3.firedir = ac.facedir;
         attack3.enemySource = gameObject;
         
@@ -1095,9 +1095,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         var attack2 = proj2.GetComponent<AttackFromEnemy>();
         attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-            -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+            -1,30,1,1),100,0);
         attack2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-            15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+            15,30,1,1),100,1);
         
         var projfx1 = Instantiate(projectilePoolEX[6],
             transform.position+new Vector3(ac.facedir-ac.facedir,0,0),
@@ -1137,10 +1137,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             //Instantiate(projectile7, transform.position+new Vector3(ac.facedir,0), transform.rotation, container.transform);
         proj1.GetComponent<AttackFromEnemy>().
             AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.EvilsBane,
-                -1,30,BattleCondition.buffEffectDisplayType.None,1,1),100,0);
+                -1,30,1,1),100,0);
         proj1.GetComponent<AttackFromEnemy>().
             AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable,
-                15,30,BattleCondition.buffEffectDisplayType.Value,1,1),100,1);
+                15,30,1,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
@@ -1161,7 +1161,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll(new TimerBuff(999),100);
         proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll
             (new TimerBuff((int)BasicCalculation.BattleCondition.Burn,
-                72.7f,12f,BattleCondition.buffEffectDisplayType.None,1),100,1);
+                72.7f,12f,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
@@ -1176,7 +1176,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll(new TimerBuff(999),100);
         proj1.GetComponent<AttackFromEnemy>().AddWithConditionAll
         (new TimerBuff((int)BasicCalculation.BattleCondition.Scorchrend,
-            31.1f,21f,BattleCondition.buffEffectDisplayType.None,1),100,1);
+            31.1f,21f,1),100,1);
         
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
@@ -1212,11 +1212,12 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         }
         //1001 关卡名 005 buff type 01序号
         var buff = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
-            buffEffect1, 10, BattleCondition.buffEffectDisplayType.Value, 100, 100100501);
+            buffEffect1/2, 10, 100, -1);
         var buff_hard = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
-            buffEffect2, -1, BattleCondition.buffEffectDisplayType.Value, 100, 100100502);
+            buffEffect2, -1, 100, -1);
         buff_hard.dispellable = false;
         _statusManager.ObtainTimerBuff(buff);
+        _statusManager.ObtainTimerBuff(buff,false);
         _statusManager.ObtainTimerBuff(buff_hard);
     }
 
@@ -1338,6 +1339,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     
     protected override void QuitAttack()
     {
+        //ac.SetCounter(false);
         _behavior.currentAttackAction = null;
         ac.OnAttackExit();
         anim.Play("idle");

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks;
@@ -102,17 +103,28 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        buttonLeft.Tick(Input.GetKey(keyLeft));
-        buttonRight.Tick(Input.GetKey(keyRight));
-        buttonAttack.Tick(Input.GetKey(keyAttack));
-        buttonJump.Tick(Input.GetKey(keyJump));
-        buttonRoll.Tick(Input.GetKey(keyRoll));
-        buttonDown.Tick(Input.GetKey(keyDown));
-        buttonUp.Tick(Input.GetKey(keyUp));
-        buttonSkill1.Tick(Input.GetKey(keySkill1));
-        buttonSkill2.Tick(Input.GetKey(keySkill2));
-        buttonSkill3.Tick(Input.GetKey(keySkill3));
-        buttonSkill4.Tick(Input.GetKey(keySkill4));
+        if(keyLeft!=String.Empty)
+            buttonLeft.Tick(Input.GetKey(keyLeft));
+        if(keyRight!=String.Empty)
+            buttonRight.Tick(Input.GetKey(keyRight));
+        if(keyAttack!=String.Empty)
+            buttonAttack.Tick(Input.GetKey(keyAttack));
+        if(keyJump!=String.Empty)
+            buttonJump.Tick(Input.GetKey(keyJump));
+        if(keyRoll!=String.Empty)
+            buttonRoll.Tick(Input.GetKey(keyRoll));
+        if(keyDown!=String.Empty)
+            buttonDown.Tick(Input.GetKey(keyDown));
+        if(keyUp!=String.Empty)
+            buttonUp.Tick(Input.GetKey(keyUp));
+        if(keySkill1!=String.Empty)
+            buttonSkill1.Tick(Input.GetKey(keySkill1));
+        if(keySkill2!=String.Empty)
+            buttonSkill2.Tick(Input.GetKey(keySkill2));
+        if(keySkill3!=String.Empty)
+            buttonSkill3.Tick(Input.GetKey(keySkill3));
+        if(keySkill4!=String.Empty)
+            buttonSkill4.Tick(Input.GetKey(keySkill4));
         buttonEsc.Tick(Input.GetKey(KeyCode.Escape));
         
         
@@ -512,7 +524,29 @@ public class PlayerInput : MonoBehaviour
         keyDown = GlobalController.keyDown;
         keyRoll = GlobalController.keyRoll;
         keyJump = GlobalController.keyJump;
-
+    }
+    /// <summary>
+    /// 设置按键
+    /// </summary>
+    /// <param name="keys">0:Attack / 1-4:Skills / 5:Left / 6:Right / 7:Special / 8:Down / 9:Roll / 10:Jump</param>
+    public void SetKeySetting(string[] keys)
+    {
+        if(keys.Length != 11)
+        {
+            return;
+        }
+        
+        keyAttack = keys[0];
+        keySkill1 = keys[1];
+        keySkill2 = keys[2];
+        keySkill3 = keys[3];
+        keySkill4 = keys[4];
+        keyLeft = keys[5];
+        keyRight = keys[6];
+        keyUp = keys[7]; //special
+        keyDown = keys[8];
+        keyRoll = keys[9];
+        keyJump = keys[10];
     }
 
     public void InvokeAttackSignal()
@@ -520,6 +554,37 @@ public class PlayerInput : MonoBehaviour
         OnPressAttack?.Invoke();
     }
 
+    public void DisableAndIdle()
+    {
+        inputAttackEnabled = false;
+        enabled = false;
+        ac.OnHurtExit();
+        ac.anim.SetFloat("forward", 0);
+        ac.anim.SetBool("attack", false);
+        ac.anim.SetBool("roll", false);
+        roll = false;
+        stdAtk = false;
+        for(int i = 0; i < skill.Length; i++)
+        {
+            skill[i] = false;
+        }
+        ac.anim.Play("idle");
+        DRight = 0;
+    }
+    
+    public void EnableAndIdle()
+    {
+        inputAttackEnabled = true;
+        enabled = true;
+        ac.OnHurtExit();
+        ac.anim.SetFloat("forward", 0);
+        ac.anim.SetBool("attack", false);
+        ac.anim.SetBool("roll", false);
+        ac.anim.Play("idle");
+        DRight = 0;
+    }
+
+    
 }
 
 

@@ -45,7 +45,7 @@ BoxCollider2D:
   m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.75}
@@ -108,7 +108,8 @@ MonoBehaviour:
     firedir: 0
   firedir: 0
   attackType: 1
-  hitSoundEffect: {fileID: 8300000, guid: 9c40c20744e27e841b76838e3ef5060e, type: 3}
+  hitSoundEffect: {fileID: 8300000, guid: f713ebe1482850f4bb5c140e3eac8f7e, type: 3}
+  attackSE: []
   self: {fileID: 0}
   spGain: 0
   isMeele: 0
@@ -118,6 +119,7 @@ MonoBehaviour:
   playerpos: {fileID: 0}
   defaultGravity: 0
   hitShakeIntensity: 0
+  hitSoundVolume: 0.55
   damageAutoReset: 0
 --- !u!1001 &702558632190506390
 PrefabInstance:

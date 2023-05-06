@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using GameMechanics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemyController : ActorBase
 {
     //Stats of Enemy
     [SerializeField] protected bool isSummonEnemy = false;
-    [HideInInspector] public GameObject rendererObject;
+    public GameObject rendererObject;
 
     //public Animator anim;
     public Coroutine ActionTask = null;
@@ -26,9 +29,11 @@ public class EnemyController : ActorBase
     //public Rigidbody2D rigid;
     private int enemyid;
     private bool isBoss;
+    public bool canDeath = true;
     //public int facedir = 1;
     public bool hurt;
-    
+    public bool counterOn = false;
+
 
     //Hurt Effect
     [SerializeField]
@@ -40,6 +45,7 @@ public class EnemyController : ActorBase
     protected Coroutine hurtEffectCoroutine;
     protected Coroutine KnockbackRoutine;
     public Coroutine VerticalMoveRoutine;
+    protected Coroutine breakRoutine;
     
     [SerializeField]
     protected float hurtEffectDuration = 0.1f;
@@ -55,12 +61,22 @@ public class EnemyController : ActorBase
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        //spriteRenderer = TargetObject.GetComponent<SpriteRenderer>();
+        hitSensor = transform.Find("HitSensor").gameObject;
         _statusManager = GetComponentInParent<StatusManager>();
-        //animRenderer = GetComponentInParent<SpriteRenderer>();
         _effectManager = BattleEffectManager.Instance;
-        //counterUI = transform.Find("BuffLayer").Find("CounterUI").gameObject;
         currentKBRes = _statusManager.knockbackRes;
+        rigid = GetComponent<Rigidbody2D>();
+        var attackfromplayers = FindObjectsOfType<AttackFromPlayer>();
+        foreach (var attackfromplayer in attackfromplayers)
+        {
+            attackfromplayer.hitFlags.Add(gameObject.GetInstanceID());
+        }
+
+        if (_statusManager is SpecialStatusManager)
+        {
+            ((SpecialStatusManager)_statusManager).onBreak += StartBreak;
+        }
+
     }
     protected virtual void Awake()
     {
@@ -103,6 +119,62 @@ public class EnemyController : ActorBase
         //Debug.Log(anim.name);
         //anim.SetTrigger("hurt");
         Flash();
+    }
+    
+    public override void TakeDamage(AttackBase atkBase, Vector2 kbdir)
+    {
+        Flash();
+        
+        var kbpower = atkBase.attackInfo[0].knockbackPower;
+        var kbtime = atkBase.attackInfo[0].knockbackTime;
+        var kbForce = atkBase.attackInfo[0].knockbackForce;
+        
+        // if (currentKBRes - kbpower >= 100)
+        // {
+        //     return;
+        // }
+
+        var rand = Random.Range(0, 100);
+        if (rand >= kbpower-currentKBRes || currentKBRes - kbpower >= 100)
+        {
+            if(_statusManager is not SpecialStatusManager)
+                return;
+            
+            if (counterOn && kbpower > currentKBRes)
+            {
+                if (atkBase.GetComponentInParent<AttackContainer>().IfODCounter == false)
+                {
+                    DamageNumberManager.GenerateCounterText(transform);
+                    atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+                }
+            }
+
+            return;
+        }
+        
+
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+        }
+        else
+        {
+            currentKBRes += (int)(kbtime*5)+1;
+        }
+        if (counterOn)
+        {
+            //_effectManager.DisplayCounterIcon(gameObject,false);
+             DamageNumberManager.GenerateCounterText(transform);
+            
+             _statusManager.ObtainUnstackableTimerBuff
+             ((int)BasicCalculation.BattleCondition.Vulnerable,
+                 10,10,9999);
+             _statusManager.ObtainUnstackableTimerBuff
+             ((int)BasicCalculation.BattleCondition.AtkDebuff,
+                 30,7,9999);
+            atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+            //counterOn = false;
+        }
     }
     
     public void EnemyActionStart(int actionID)
@@ -198,11 +270,97 @@ public class EnemyController : ActorBase
 
     public virtual void OnHurtEnter()
     {
+        OnAttackInterrupt?.Invoke();
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
+        if (MoveManager._tweener!=null)
+        {
+            MoveManager._tweener.Kill();
+        }
+
+        if (_behavior.currentAttackAction != null)
+        {
+            
+
+            if (currentKBRes >= 100)
+            {
+                if (_statusManager is SpecialStatusManager)
+                {
+                    if (!(_statusManager as SpecialStatusManager).broken)
+                    {
+                        _effectManager.DisplayCounterIcon(gameObject,false);
+                        DamageNumberManager.GenerateCounterText(transform);
+            
+                        _statusManager.ObtainUnstackableTimerBuff
+                        ((int)BasicCalculation.BattleCondition.Vulnerable,
+                            10,10,9999);
+                        _statusManager.ObtainUnstackableTimerBuff
+                        ((int)BasicCalculation.BattleCondition.AtkDebuff,
+                            30,7,9999);
+                    }
+                }
+                else
+                {
+                    _effectManager.DisplayCounterIcon(gameObject,false);
+                    DamageNumberManager.GenerateCounterText(transform);
+            
+                    _statusManager.ObtainUnstackableTimerBuff
+                    ((int)BasicCalculation.BattleCondition.Vulnerable,
+                        10,10,9999);
+                    _statusManager.ObtainUnstackableTimerBuff
+                    ((int)BasicCalculation.BattleCondition.AtkDebuff,
+                        30,7,9999);
+                    //print(_behavior.GetCurrentState()); 
+                }
+                
+            }
+            _behavior.StopCoroutine(_behavior.currentAttackAction);
+            _behavior.currentAttackAction = null;
+            currentKBRes = _statusManager.knockbackRes;
+            SetCounter(false);
+        }
+
+        //rigid.gravityScale = 1;
+        //SetVelocity(rigid.velocity.x,0);
+        anim.speed = 1;
+        MoveManager.SetGroundCollider(true);
+        var meeles = transform.Find("MeeleAttackFX");
+        for (int i = 0; i < meeles.childCount; i++)
+        {
+
+            //meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
+            meeles.GetChild(i).GetComponent<EnemyAttackHintBar>()?.DestroySelf();
+        }
+        
+        //transform.GetChild(0).GetComponentInChildren<AnimationEventSender_Enemy>()?.ChangeFaceExpression(0.75f);
+        //MoveManager.AppearRenderer();
     }
 
     public virtual void OnHurtExit()
     {
-        
+        //rigid.gravityScale = _defaultgravityscale;
+        anim.speed = 1;
+        if (VerticalMoveRoutine != null)
+        {
+            StopCoroutine(VerticalMoveRoutine);
+            VerticalMoveRoutine = null;
+        }
+        TurnMove(_behavior.targetPlayer);
+    }
+
+    public virtual void StartBreak()
+    {
+    }
+
+    public virtual void OnBreakEnter()
+    {
+    }
+
+    public virtual void OnBreakExit()
+    {
     }
 
     protected virtual void OnDeath()
@@ -220,7 +378,7 @@ public class EnemyController : ActorBase
         //weaponObject.transform.GetChild(0).gameObject.SetActive(flag);
     }
     
-    protected void SetGravityScale(float scale)
+    public void SetGravityScale(float scale)
     {
         rigid.gravityScale = scale;
     }
@@ -257,6 +415,17 @@ public class EnemyController : ActorBase
         currentKBRes = value;
     }
 
+    protected IEnumerator BreakWait(float time)
+    {
+        yield return new WaitForSeconds(time);
+        breakRoutine = null;
+        anim.SetBool("break",false);
+    }
 
+    public void SetCounter(bool flag)
+    {
+        counterOn = flag;
+        BattleEffectManager.Instance.DisplayCounterIcon(gameObject,flag);
+    }
 
 }

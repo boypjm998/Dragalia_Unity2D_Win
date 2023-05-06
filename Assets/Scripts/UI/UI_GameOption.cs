@@ -152,6 +152,9 @@ public class UI_GameOption : MonoBehaviour
         GlobalController.keySkill2 = keyText[8].text.ToLower();
         GlobalController.keySkill3 = keyText[9].text.ToLower();
         GlobalController.keySkill4 = keyText[10].text.ToLower();
+        
+        GlobalController.Instance.WritePlayerSettingsToFile();
+        
     }
 
 

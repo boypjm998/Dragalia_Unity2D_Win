@@ -8,32 +8,32 @@ using DG.Tweening;
 
 public class UI_ResultPage : MonoBehaviour
 {
-    private GameObject portraits;
-    private Image portraitImage;
-    private Image shadowImage;
+    protected GameObject portraits;
+    protected Image portraitImage;
+    protected Image shadowImage;
     
     
-    private TextMeshProUGUI levelName;
-    private TextMeshProUGUI clearTime;
+    protected TextMeshProUGUI levelName;
+    protected TextMeshProUGUI clearTime;
 
-    private GameObject missionList;
-    private GameObject mission1;
-    private GameObject mission2;
-    private GameObject mission3;
+    protected GameObject missionList;
+    protected GameObject mission1;
+    protected GameObject mission2;
+    protected GameObject mission3;
     private TextMeshProUGUI condition1;
     private TextMeshProUGUI condition2;
-    private TextMeshProUGUI condition3;
-    private GameObject crown1;
-    private GameObject crown2;
-    private GameObject crown3;
+    protected TextMeshProUGUI condition3;
+    protected GameObject crown1;
+    protected GameObject crown2;
+    protected GameObject crown3;
 
-    private GameObject returnButton;
+    protected GameObject returnButton;
 
     private int reviveLimit;
     private int getCrownReviveTime = 0;
     private int getCrownLimitTime = 300;
 
-    private BattleStageManager battleManager;
+    protected BattleStageManager battleManager;
 
     private void Awake()
     {
@@ -70,6 +70,10 @@ public class UI_ResultPage : MonoBehaviour
         portraits.transform.localPosition = new Vector3(900, 0);
         portraits.transform.DOLocalMoveX(0, 0.5f);
         //加载相应角色的立绘
+        //用resource.Load加载Image,路径为Portrait/portrait_c{id}
+        var portrait = Resources.Load<Sprite>($"Portrait/portrait_c{GlobalController.currentCharacterID}");
+        portraitImage.sprite = portrait;
+        shadowImage.sprite = portrait;
         
         //加载关卡名from其他脚本
         levelName.text = battleManager.quest_name;
@@ -127,13 +131,13 @@ public class UI_ResultPage : MonoBehaviour
         }
     }
 
-    private void DoCrownAnimation()
+    protected void DoCrownAnimation()
     {
         StartCoroutine(CrownAnimationRoutine());
     }
 
 
-    IEnumerator CrownAnimationRoutine()
+    protected virtual IEnumerator CrownAnimationRoutine()
     {
         if (ConditionCheck(1))
         {
@@ -189,12 +193,12 @@ public class UI_ResultPage : MonoBehaviour
         return false;
     }
 
-    void SetButtonEnabled()
+    protected void SetButtonEnabled()
     {
         Button rtnbtn = returnButton.GetComponent<Button>();
         rtnbtn.interactable = true;
     }
-    void SetButtonDisabled()
+    protected void SetButtonDisabled()
     {
         Button rtnbtn = returnButton.GetComponent<Button>();
         rtnbtn.interactable = false;

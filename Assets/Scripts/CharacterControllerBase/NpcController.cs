@@ -9,6 +9,7 @@ public class NpcController : MonoBehaviour
 {
     protected static float SightHeight = 0.95f;
     protected static float FeetHeight = -1.3f;
+    protected float fallingTime = 5;
     /// <summary>
     /// ActionMode决定当前NPC的行为模式。默认情况下为FollowMode。
     /// </summary>
@@ -28,6 +29,7 @@ public class NpcController : MonoBehaviour
         MoveTowardTarget,
         MoveToSafePoint,//Evade用
         MoveToPlatform,//Evade用
+        Roll,
         Attack
     }
 
@@ -52,6 +54,8 @@ public class NpcController : MonoBehaviour
     public bool isEvadeMode => actionMode == ActionMode.EvadeMode;
     public bool isAttackMode => actionMode == ActionMode.AttackMode;
     public bool isFollowMode => actionMode == ActionMode.FollowMode;
+    public bool subMoveRoutineIsRunning => ac.SubMoveRoutine != null;
+    public bool IsGround => ac.anim.GetBool("isGround");
     public MainRoutineType CurrentMainRoutineType => currentMainRoutineType;
 
     //Speicfic features
@@ -62,7 +66,7 @@ public class NpcController : MonoBehaviour
     protected float maxAttackActiveDistance = 6f; //敌人脱锁距离
     
 
-    protected void Start()
+    protected virtual void Start()
     {
         ac = GetComponent<StandardCharacterController>();
         playerGameObject = GameObject.Find("PlayerHandle");
@@ -99,6 +103,25 @@ public class NpcController : MonoBehaviour
     {
         TickSkillCD();
         print(actionMode + ": "+ currentMainRoutineType);
+        if(ac.anim.GetBool("defeat"))
+            return;
+
+        // 防止卡死在空中
+        if (ac.anim.GetCurrentAnimatorStateInfo(0).IsName("fall"))
+        {
+            fallingTime -= Time.deltaTime;
+            if (fallingTime <= 0)
+            {
+                transform.position = playerGameObject.transform.position;
+                ac.anim.Play("idle");
+                fallingTime = 5;
+            }
+        }else
+        {
+            fallingTime = 5;
+        }
+        if(ac.hurt)
+            return;
 
         if (!isAction)
         {
@@ -120,7 +143,7 @@ public class NpcController : MonoBehaviour
             {
                 if (!playerTargetAimer.ReachableEnemies.Contains(currentTarget))
                 {
-                    print(currentTarget.name + " is not reachable");
+                    //print(currentTarget.name + " is not reachable");
                     //currentTarget = null;
                     actionMode = ActionMode.FollowMode;
                 }
@@ -268,6 +291,9 @@ public class NpcController : MonoBehaviour
         {
             //TODO: 里面如果停止currentMoveRoutine协程并返回，必须将isAction设为false。
             //TODO: isAction进行中，打断当前动作。
+            if(currentMainRoutineType == MainRoutineType.Roll)
+                return;
+            
             
             if (actionMode == ActionMode.EvadeMode)
             {
@@ -511,6 +537,26 @@ public class NpcController : MonoBehaviour
         }
         ac.SubMoveRoutine = null;
         
+    }
+
+    public virtual IEnumerator RollAction()
+    {
+        isAction = true;
+        // if (currentTarget.transform.position.x < transform.position.x)
+        // {
+        //     ac.SetFaceDir(1);
+        // }else
+        //     ac.SetFaceDir(-1);
+        // ac.dodging = true;
+        ac.anim.Play("roll");
+        yield return null;
+        yield return new WaitUntil(() =>
+            ac.anim.GetCurrentAnimatorStateInfo(0).IsName("idle"));
+        //ac.anim.Play("idle");
+        //ac.dodging = false;
+        currentMoveCoroutine = null;
+        currentMainRoutineType = MainRoutineType.None;
+        isAction = false;
     }
 
 
@@ -910,8 +956,18 @@ public class NpcController : MonoBehaviour
         
         var targetPlatformLeft = node.platform.leftBorderPos;
         var targetPlatformRight = node.platform.rightBorderPos;
-        
-        var currentPlatformHeight = currentPlatformCollider.bounds.max.y;
+
+        float currentPlatformHeight;
+        try
+        {
+            currentPlatformHeight = currentPlatformCollider.bounds.max.y;
+        }
+        catch
+        {
+            ac.SubMoveRoutine = null;
+            yield break;
+        }
+
         var targetPlatformHeight = node.platform.height;
         if (targetPlatformHeight > currentPlatformHeight)
         {
@@ -923,6 +979,7 @@ public class NpcController : MonoBehaviour
 
                 while (ac.rigid.velocity.y > 0)
                 {
+                    
                     yield return null;
                 }
                 
@@ -1572,10 +1629,10 @@ public class NpcController : MonoBehaviour
         
 
         //输出safeZones
-        foreach (var safeZone in safeZones)
-        {
-            print(safeZone.Item1 + "," + safeZone.Item2);
-        }
+        // foreach (var safeZone in safeZones)
+        // {
+        //     print(safeZone.Item1 + "," + safeZone.Item2);
+        // }
 
         foreach (var safeZone in safeZones)
         {
@@ -2153,10 +2210,10 @@ public class NpcController : MonoBehaviour
         }
     }
 
-    public void ReceiveEvadeSignal(float height, float duration,Collider2D col)
+    public bool ReceiveEvadeSignal(float height, float duration,Collider2D col)
     {
         if(ac == null)
-            return;
+            return false;
         
         print("收到躲避信号");
         
@@ -2165,7 +2222,7 @@ public class NpcController : MonoBehaviour
         print(ac.jumpAscentTime);
         
         if(height < 0 || duration > ac.jumpAscentTime * 2)
-            return;
+            return false;
 
         if (!ignoreList.Contains(col))
         {
@@ -2175,21 +2232,44 @@ public class NpcController : MonoBehaviour
         var jumpTime2ND = Get2ndJumpTimeWhenAvoidAttackUnderfeet(height, duration);
         
         if(ac.SubMoveRoutine != null)
-            return;
+            return false;
 
         if (currentMoveCoroutine != null)
         {
             if (actionMode == ActionMode.FollowMode)
+            {
                 ac.SubMoveRoutine = StartCoroutine(AvoidJump(0, jumpTime2ND));
+                return true;
+            }
+
+            
         }
         else
         {
-            ac.SubMoveRoutine = StartCoroutine(AvoidJump(0,jumpTime2ND));return;
+            ac.SubMoveRoutine = StartCoroutine(AvoidJump(0,jumpTime2ND));
+            return true;
         }
         print("因为未能满足条件，未能执行躲避");
+        return false;
 
     }
-    
+
+    public void EvadeRoll()
+    {
+        if(ac.anim.GetBool("isGround") == false || ac.hurt)
+            return;
+        if(currentMainRoutineType == MainRoutineType.Roll)
+            return;
+        if (currentMoveCoroutine != null)
+        {
+            StopCoroutine(currentMoveCoroutine);
+        }
+        print("调用Roll");
+        currentMainRoutineType = MainRoutineType.Roll;
+        currentMoveCoroutine = StartCoroutine(RollAction());
+        isAction = true;
+    }
+
     public void DeleteIgnoreList(Collider2D col)
     {
         if (ignoreList.Contains(col))
@@ -2198,6 +2278,19 @@ public class NpcController : MonoBehaviour
         }
     }
 
+    public void SetSkillTimer(float second)
+    {
+        for(int i = 0; i < skillCDTimer.Count; i++)
+        {
+            skillCDTimer[i] = second;
+        }
+    }
+
+    public void RecieveFollowSignal()
+    {
+        currentTarget = playerGameObject;
+        actionMode = ActionMode.FollowMode;
+    }
 
 
 }

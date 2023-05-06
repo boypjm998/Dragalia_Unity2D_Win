@@ -11,14 +11,10 @@ public abstract class ProjectileControllerTest : MonoBehaviour
     [SerializeField] protected float verticalVelocity;
     [SerializeField] protected GameObject contactTarget;
     protected Collider2D _collider;
-    protected int firedir;
+    protected int firedir = 1;
     [SerializeField] protected float lifeTime = 10f;
     
-
-    private void Awake()
-    {
-        
-    }
+    
 
     protected virtual void Start()
     {
@@ -37,6 +33,11 @@ public abstract class ProjectileControllerTest : MonoBehaviour
         this.verticalVelocity = verticalVelocity;
         this.gravScale = gravity;
         this.firedir = direction;
+    }
+
+    public void SetFiredir(int dir)
+    {
+        firedir = dir;
     }
 
     protected abstract void DoProjectileMove();

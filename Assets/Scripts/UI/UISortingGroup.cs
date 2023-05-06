@@ -30,7 +30,7 @@ public class UISortingGroup : MonoBehaviour
     public Vector2 _hideLocalPosition = Vector2.zero;
     private void Awake()
     {
-        print(gameObject.name + transform.localPosition);
+        //print(gameObject.name + transform.localPosition);
         initialPosition = transform.position;
         //initialLocalPosition = transform.localPosition;
         if (_hideDirection == HideDirection.Vertical)

@@ -57,12 +57,12 @@ public class AttackFromEnemy : AttackBase
     // Start is called before the first frame update
     protected virtual void Awake()
     {
-        _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
+        _effectManager = BattleEffectManager.Instance;
         //withConditions = new List<BattleCondition>();
         //withConditionNum = new List<int>();
         hitFlags = SearchPlayerList();
         //withConditionFlags = SearchPlayerList();
-        battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
+        battleStageManager = BattleStageManager.Instance;
         
 
     }
@@ -129,9 +129,19 @@ public class AttackFromEnemy : AttackBase
         eff.name = "HitEffect0";
     }
     
-    public void AddWithCondition(BattleCondition condition)
+    public void AddWithCondition(int hitNo, BattleCondition condition, int chance, int identifier = 0)
     {
-        //withConditions.Add(condition);
+        var conditionInfo = new AttackInfo.ConditionWithAttackInfo();
+        conditionInfo.condition = condition;
+        conditionInfo.withConditionChance = chance;
+        conditionInfo.identifier = identifier;
+        for(int i = 0; i < attackInfo.Count; i++)
+        {
+            if (i == hitNo)
+            {
+                attackInfo[i].withConditions.Add(conditionInfo);
+            }
+        }
     }
     
     public void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
@@ -148,11 +158,13 @@ public class AttackFromEnemy : AttackBase
     
     public void CauseDamage(Collider2D collision)
     {
-        hitFlags.Remove(collision.transform.parent.GetInstanceID());
-        //withConditionFlags.Remove(collision.transform.parent.GetInstanceID());
         
         if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
+        hitFlags.Remove(collision.transform.parent.GetInstanceID());
+        
+        
+
 
         int dmg = battleStageManager.CalculateHit
             (collision.transform.parent.gameObject,enemySource, this,1);
@@ -163,7 +175,20 @@ public class AttackFromEnemy : AttackBase
             Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
         }
         
-        _effectManager.PlayHitSoundEffect(transform.position);
+        try
+        {
+            Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+            if (viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0)
+            {
+                // 在摄像机范围内
+                _effectManager.PlayHitSoundEffect(hitSoundEffect);
+            }
+        }
+        catch
+        {
+            _effectManager.PlayHitSoundEffect(hitSoundEffect);
+        }
+        
         //print("play");
         
 
@@ -213,35 +238,6 @@ public class AttackFromEnemy : AttackBase
         {
             attackInfo.RemoveAt(0);
         }
-        
-        
-        //print(nextDmgModifier.Count);
-        // if (nextKnockbackForce.Count > 0)
-        // {
-        //     knockbackForce = nextKnockbackForce[0];
-        //     nextKnockbackForce.RemoveAt(0);
-        // }
-        //
-        // if (nextKnockbackPower.Count > 0)
-        // {
-        //     knockbackPower = nextKnockbackPower[0];
-        //     nextKnockbackPower.RemoveAt(0);
-        // }
-        //
-        // if (nextKnockbackTime.Count > 0)
-        // {
-        //     knockbackTime = nextKnockbackTime[0];
-        //     nextKnockbackTime.RemoveAt(0);
-        // }
-        //
-        // if (nextDmgModifier.Count > 0)
-        // {
-        //     dmgModifier = new float[1];
-        //     dmgModifier[0] = nextDmgModifier[0];
-        //     //print("下一个攻击");
-        //     //print(dmgModifier[0]);
-        //     nextDmgModifier.RemoveAt(0);
-        // }
         
 
         ResetFlags();

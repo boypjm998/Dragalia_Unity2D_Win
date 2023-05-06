@@ -8,15 +8,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mtBodyAllCH
-  m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+  m_Shader: {fileID: 4800000, guid: a11497e8d1e633c4598c442e7cd9d152, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -58,6 +57,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FrameTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -107,6 +110,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - CORNER: 0
     - PixelSnap: 0
     - Vector1_1620DAD9: 25
     - Vector1_27C8887F: 0.05
@@ -117,12 +121,15 @@ Material:
     - Vector1_F32C9B9: 7
     - _AlphaClip: 0
     - _AlphaScale: 1
+    - _AlphaThreshold: 0
+    - _Angle: 45
     - _Blend: 0
     - _BlendOp: 0
     - _BumpScale: 1
     - _ClearCoat: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ConnectedAlpha: 0
     - _Cull: 2
     - _Cutoff: 1
     - _DetailAlbedoMapScale: 1
@@ -134,14 +141,22 @@ Material:
     - _Glossiness: 0.4472136
     - _GlossinessSource: 0
     - _GlossyReflections: 1
+    - _Line_thickness: 1.5
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OutlineEnabled: 1
+    - _OutlineMode: 0
+    - _OutlinePosition: 0
+    - _OutlineShape: 0
+    - _OutlineThickness: 0.21
+    - _OutlineWidth: 0.001
     - _Parallax: 0.02
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _SampleGI: 0
+    - _Scale: 0.71
     - _Shininess: 0
     - _Smoothness: 0.4472136
     - _SmoothnessSource: 0
@@ -150,7 +165,10 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
+    - _Thickness: 10
+    - _TileMode: 0
     - _UVSec: 0
+    - _Weight: 0.5
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
@@ -162,7 +180,13 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _GradientOutline1: {r: 1, g: 1, b: 1, a: 1}
+    - _GradientOutline2: {r: 1, g: 1, b: 1, a: 1}
+    - _ImageOutline: {r: 1, g: 1, b: 1, a: 1}
+    - _Line_color: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SolidOutline: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &1128974056915935769

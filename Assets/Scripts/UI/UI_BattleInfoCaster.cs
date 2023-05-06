@@ -9,26 +9,28 @@ using UnityEngine.UI;
 using LitJson;
 public class UI_BattleInfoCaster : MonoBehaviour
 {
-    private GlobalController _globalController;
-    private GameObject BossSkillBanner;
+    public static UI_BattleInfoCaster Instance { get; protected set; }
 
-    private TextMeshProUGUI _text;
-    private Image _banner;
-    private Tweener _tweenerText;
-    private Tweener _tweenerImage;
+    protected GlobalController _globalController;
+    protected GameObject BossSkillBanner;
+
+    protected TextMeshProUGUI _text;
+    protected Image _banner;
+    protected Tweener _tweenerText;
+    protected Tweener _tweenerImage;
     [SerializeField] private bool test;
-    private Color tweenColor;
+    protected Color tweenColor;
 
-    private GameObject DialogDisplayer;
-    private Coroutine displayRoutine;
+    protected GameObject DialogDisplayer;
+    protected Coroutine displayRoutine;
 
-    private JsonData BossSkillNameData;
-    private JsonData BossVoiceTextData;
+    protected JsonData BossSkillNameData;
+    protected JsonData BossVoiceTextData;
 
     private void Awake()
     {
-        _globalController = FindObjectOfType<GlobalController>();
-        BossSkillBanner = transform.Find("BossSkillBanner").gameObject;
+        Instance = this;
+        BossSkillBanner = transform.GetChild(0).gameObject;
         DialogDisplayer = transform.Find("DialogDisplayer").gameObject;
         _text = BossSkillBanner.GetComponentInChildren<TextMeshProUGUI>();
         _banner = BossSkillBanner.GetComponentInChildren<Image>();
@@ -38,10 +40,16 @@ public class UI_BattleInfoCaster : MonoBehaviour
         _tweenerText = null;
     }
 
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        BossSkillNameData = ReadBattleInfoData("/LevelInformation/BossSkillInfo.json");
+        _globalController = GlobalController.Instance;
+        BossSkillNameData = ReadBattleInfoData("LevelInformation/BossSkillInfo.json");
         //gameObject.
     }
 
@@ -81,7 +89,7 @@ public class UI_BattleInfoCaster : MonoBehaviour
         
     }
 
-    private void PrintSkillName_ZH(string str)
+    protected void PrintSkillName_ZH(string str)
     {
         
 
@@ -96,7 +104,7 @@ public class UI_BattleInfoCaster : MonoBehaviour
 
     
 
-    private IEnumerator SkillBannerAnimation()
+    protected IEnumerator SkillBannerAnimation()
     {
         //_banner.gameObject.SetActive(true);
         //_text.gameObject.SetActive(true);
@@ -139,7 +147,7 @@ public class UI_BattleInfoCaster : MonoBehaviour
         //finishedTween++;
     }
     
-    JsonData ReadBattleInfoData(string name)
+    protected JsonData ReadBattleInfoData(string name)
     {
         string path = Application.streamingAssetsPath + "/"+ name;
         StreamReader sr = new StreamReader(path);

@@ -14,7 +14,7 @@ public class SkillUISpecial001 : SkillUIBase
     {
         //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         base.Start();
-        alchemicGauge = GameObject.Find("AlchemicGauge").GetComponentInChildren<AlchemicGauge>();
+        alchemicGauge = GameObject.Find("CharacterInfo").transform.Find("AlchemicGauge").GetComponentInChildren<AlchemicGauge>();
     }
 
     // Update is called once per frame

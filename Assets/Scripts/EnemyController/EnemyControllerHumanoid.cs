@@ -114,9 +114,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             
         }
     }
-
-
-
+    
 
 
 
@@ -132,6 +130,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         return player.gameObject;
     }
 
+    
+    #region Old Methods
     /// <summary>
     /// 主动靠近玩家
     /// </summary>
@@ -429,12 +429,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
     }
 
-    /// <summary>
-    /// 检查与目标的距离，小于指定值返回true.
-    /// </summary>
-    /// <returns></returns>
     
-
+    
+    # endregion
     /// <summary>
     /// 检查目标是否和自己在同一个平面
     /// </summary>
@@ -525,9 +522,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         return false;
     }
 
+    # region Old Vertical Moves
     protected virtual IEnumerator TryDoJump(GameObject target, float requiredY)
     {
-        var groundListener = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
+        var groundListener = target.GetComponentInChildren<IGroundSensable>();
         var groundTargetAttached = groundListener.GetCurrentAttachedGroundInfo();
         float distanceY = 0;
         if (groundTargetAttached)
@@ -608,7 +606,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     protected virtual IEnumerator TryDownPlatform(GameObject target)
     {
-        var groundListener = target.GetComponentInChildren<PlayerOnewayPlatformEffector>();
+        var groundListener = target.GetComponentInChildren<IGroundSensable>();
         
         //print(groundListener);
 
@@ -636,16 +634,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
 
     }
-
-
-    /// <summary>
-    /// 检查自身是否在地面上。
-    /// </summary>
-    /// <returns></returns>
-    // public bool GroundCheck()
-    // {
-    //     return anim.GetBool("isGround");
-    // }
+    
+    #endregion
+    
 
     
     /// <summary>
@@ -754,7 +745,81 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
         //print(rand+"小于"+(kbpower-currentKBRes));
 
-        //print(kbForce);
+        if (counterOn)
+        {
+            //反击
+            // _effectManager.DisplayCounterIcon(gameObject,false);
+            // DamageNumberManager.GenerateCounterText(transform);
+            //
+            // _statusManager.ObtainUnstackableTimerBuff
+            // ((int)BasicCalculation.BattleCondition.Vulnerable,
+            //     10,10,9999);
+            // _statusManager.ObtainUnstackableTimerBuff
+            // ((int)BasicCalculation.BattleCondition.AtkDebuff,
+            //     30,7,9999);
+        }
+
+        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
+        
+        
+    
+    }
+    
+    public override void TakeDamage(AttackBase atkBase, Vector2 kbDir)
+    {
+        Flash();
+        var kbpower = atkBase.attackInfo[0].knockbackPower;
+        var kbtime = atkBase.attackInfo[0].knockbackTime;
+        var kbForce = atkBase.attackInfo[0].knockbackForce;
+        
+        // if (currentKBRes - kbpower >= 100)
+        // {
+        //     return;
+        // }
+
+        var rand = Random.Range(0, 100);
+        if (rand >= kbpower-currentKBRes || currentKBRes - kbpower >= 100)
+        {
+            
+            
+            if (counterOn && kbpower > currentKBRes && _statusManager is SpecialStatusManager)
+            {
+                DamageNumberManager.GenerateCounterText(transform);
+                atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+            }
+
+            return;
+        }
+        
+        //print(rand+"小于"+(kbpower-currentKBRes));
+
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+        }
+        else
+        {
+            currentKBRes += (int)(kbtime*5)+1;
+        }
+        //print(rand+"小于"+(kbpower-currentKBRes));
+
+        if (counterOn)
+        {
+            //TODO: 反击
+            _effectManager.DisplayCounterIcon(gameObject,false);
+            DamageNumberManager.GenerateCounterText(transform);
+            
+            _statusManager.ObtainUnstackableTimerBuff
+            ((int)BasicCalculation.BattleCondition.Vulnerable,
+                10,10,9999);
+            _statusManager.ObtainUnstackableTimerBuff
+            ((int)BasicCalculation.BattleCondition.AtkDebuff,
+                30,7,9999);
+            atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+            SetCounter(false);
+            
+        }
+
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime,kbForce,kbDir));
         
         
@@ -801,22 +866,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
         if (_behavior.currentAttackAction != null)
         {
-            if (currentKBRes >= 100)
-            {
-                _effectManager.DisplayCounterIcon(gameObject,false);
-                DamageNumberManager.GenerateCounterText(transform);
-            
-                _statusManager.ObtainUnstackableTimerBuff
-                ((int)BasicCalculation.BattleCondition.Vulnerable,
-                    10,10,BattleCondition.buffEffectDisplayType.Value,99);
-                _statusManager.ObtainUnstackableTimerBuff
-                ((int)BasicCalculation.BattleCondition.AtkDebuff,
-                    30,7,BattleCondition.buffEffectDisplayType.Value,99);
-                //print(_behavior.GetCurrentState());
-            }
             _behavior.StopCoroutine(_behavior.currentAttackAction);
             _behavior.currentAttackAction = null;
             currentKBRes = _statusManager.knockbackRes;
+            SetCounter(false);
         }
 
         rigid.gravityScale = 1;
@@ -840,6 +893,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public override void OnHurtExit()
     {
         moveEnable = true;
+        //SetCounter(false);
         rigid.gravityScale = _defaultgravityscale;
         anim.speed = 1;
         if (VerticalMoveRoutine != null)
@@ -864,7 +918,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
         isAction = true;
         currentKBRes = 100;
-        _effectManager.DisplayCounterIcon(gameObject,true);
+        SetCounter(true);
     }
 
     protected override void OnDeath()
@@ -884,6 +938,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         MoveManager.PlayVoice(0);//死亡
         anim.SetBool("hurt",false);
         OnAttackInterrupt?.Invoke();
+        _behavior.enabled = false;
+        _statusManager.enabled = false;
+        _statusManager.StopAllCoroutines();
         
         if (VerticalMoveRoutine != null)
         {
@@ -912,6 +969,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
 
         _behavior.enabled = false;
+        _statusManager.ResetAllStatusForced();
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
         if (hurtEffectCoroutine != null)
@@ -946,18 +1004,19 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         currentKBRes = newKnockbackRes;
         
         if(newKnockbackRes<200)
-            _effectManager.DisplayCounterIcon(gameObject,true);
+            SetCounter(true);
     }
     
     public override void OnAttackExit()
     {
-        _effectManager.DisplayCounterIcon(gameObject,false);
+        SetCounter(false);
         //isMove = 0;
         //moveEnable = false;
         isAction = false;
         //currentKBRes = _statusManager.knockbackRes;
         if (VerticalMoveRoutine != null)
             VerticalMoveRoutine = null;
+        SetCounter(false);
     }
     
 
@@ -971,7 +1030,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     void GroundCheck(bool flag)
     {
-        if (flag && rigid.velocity.y < 0.1f)
+        if (flag && rigid.velocity.y < 0.15f)
         {
             anim.SetBool("isGround",true);
             jumpTime = 2;

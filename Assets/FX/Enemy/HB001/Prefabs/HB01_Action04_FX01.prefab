@@ -89,24 +89,9 @@ MonoBehaviour:
     firedir: 0
   firedir: 0
   attackType: 4
-  dmgModifier:
-  - 0.95
-  - 0.95
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
-  knockbackPower: 100
-  knockbackForce: 0
-  knockbackTime: 0.5
-  knockbackDirection: {x: 1, y: 0}
-  KBType: 0
   hitSoundEffect: {fileID: 0}
   enemySource: {fileID: 0}
   isMeele: 0
-  withConditionChance: 6400000064000000
-  withConditionNum: 02000000
-  withConditionFlags: 
   hitFlags: 
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
@@ -152,6 +137,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7347368509845013090}
     m_Modifications:
+    - target: {fileID: 734510757386950419, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3069437901965382066, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4247924532764887069, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 4247924533522433528, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -200,13 +197,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: fx_c005_skill_01
       objectReference: {fileID: 0}
+    - target: {fileID: 4247924533522433531, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164359399198090713, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 6950391399439350592, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
       propertyPath: m_LocalPosition.y
       value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6950391399439350594, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6950391399439350594, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8306031916177232791, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6d868c8330fe8541a9b1760f7f9d8b3, type: 3}

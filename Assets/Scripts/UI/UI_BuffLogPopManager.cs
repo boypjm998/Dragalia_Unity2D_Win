@@ -19,7 +19,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
 
     private int currentCnt = 0;
     public Queue<string> ConditionStr;
-    public Queue<int> ConditionStrInfo;
+    public Queue<(int,int)> ConditionStrInfo;
     private GlobalController.Language _language;
 
     private void Awake()
@@ -57,7 +57,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
         _statusManager.OnSpecialBuffDelegate += CustomText;
             
         ConditionStr = new Queue<string>();
-        ConditionStrInfo = new Queue<int>();
+        ConditionStrInfo = new();
     }
 
     // Update is called once per frame
@@ -87,10 +87,11 @@ public class UI_BuffLogPopManager : MonoBehaviour
            {
                txt.text = ConditionStr.Dequeue();
                var type = ConditionStrInfo.Dequeue();
-               if (type > 400 && type<500)
+               if (type.Item1 > 400 && type.Item1<500)
                {
                    txt.fontSize = 7;
-                   var num = _statusManager.GetConditionStackNumber(type);
+                   var num = (type.Item2);
+                   //var num = _statusManager.GetConditionStackNumber(type);
                    if (num > 1)
                    {
                        txt.text += ("×" + num);
@@ -119,7 +120,13 @@ public class UI_BuffLogPopManager : MonoBehaviour
             sb.Append("<sprite=" + (condition.buffID-1) + ">");
         }
 
-        if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value)
+        if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value || condition.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue)
+        {
+            var formatStr = String.Format
+                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
+            sb.Append(formatStr);
+        }
+        else if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Level)
         {
             var formatStr = String.Format
                 (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
@@ -141,7 +148,8 @@ public class UI_BuffLogPopManager : MonoBehaviour
         //}
         //print(sb.ToString());
         EnqueueNewCondition(sb.ToString());
-        ConditionStrInfo.Enqueue(condition.buffID);
+        ConditionStrInfo.Enqueue(new (condition.buffID,
+            _statusManager.GetConditionStackNumber(condition.buffID)));
 
     }
 
@@ -178,7 +186,8 @@ public class UI_BuffLogPopManager : MonoBehaviour
         
         
         EnqueueNewCondition(sb.ToString());
-        ConditionStrInfo.Enqueue(999);//驱散都是999
+        ConditionStrInfo.Enqueue(new(999,0));//驱散都是999
+        //ConditionStrInfo.Enqueue(999);//驱散都是999
 
     }
 
@@ -208,7 +217,15 @@ public class UI_BuffLogPopManager : MonoBehaviour
         {
             case "Reset":
                 EnqueueNewCondition("全状态重置");
-                ConditionStrInfo.Enqueue(1000);//Other
+                ConditionStrInfo.Enqueue(new(1000,0));//Other
+                break;
+            case "ReliefAllDebuff":
+                EnqueueNewCondition("全减益状态解除");
+                ConditionStrInfo.Enqueue(new(1001,0));//Other
+                break;
+            case "SPCharge":
+                EnqueueNewCondition("技能充能");
+                ConditionStrInfo.Enqueue(new(1002,0));//Other
                 break;
                 
         }
@@ -220,7 +237,11 @@ public class UI_BuffLogPopManager : MonoBehaviour
         {
             case "Reset":
                 EnqueueNewCondition("Empty");
-                ConditionStrInfo.Enqueue(1000);//Other
+                ConditionStrInfo.Enqueue(new(1000,0));//Other
+                break;
+            case "ReliefAllDebuff":
+                EnqueueNewCondition("全减益状态解除");
+                ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
                 
         }
@@ -232,7 +253,11 @@ public class UI_BuffLogPopManager : MonoBehaviour
         {
             case "Reset":
                 EnqueueNewCondition("Empty");
-                ConditionStrInfo.Enqueue(1000);//Other
+                ConditionStrInfo.Enqueue(new(1000,0));//Other
+                break;
+            case "ReliefAllDebuff":
+                EnqueueNewCondition("全减益状态解除");
+                ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
                 
         }

@@ -166,13 +166,16 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         {
             currentSelectedCharaID = newID;
             ReloadDisplayedCharacter();
-        } 
-        //currentSelectedCharaID = newID;
+        }
+        
     }
+
+    
 
     private void ReloadDisplayedCharacter()
     {
         Resources.UnloadUnusedAssets();
+        currentSelectedCharaID = GlobalController.currentCharacterID;
         Portrait.sprite = Resources.Load<Sprite>($"Portrait/portrait_c{currentSelectedCharaID}");
         var text1 = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["WEAPON"].ToString();
         switch (text1)

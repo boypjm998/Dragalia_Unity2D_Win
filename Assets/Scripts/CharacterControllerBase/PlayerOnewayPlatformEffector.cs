@@ -28,7 +28,7 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
     protected virtual void Awake()
     {
         if(playerCollider== null)
-            playerCollider = transform.Find("GroundSensor").GetComponentInChildren<BoxCollider2D>();
+            playerCollider = transform.Find("Platform Sensor").GetComponentInChildren<BoxCollider2D>();
         //playerCollider = transform.Find("GroundSensor").GetComponentInChildren<BoxCollider2D>();
         pi = GetComponent<PlayerInput>();
         rigid = GetComponent<Rigidbody2D>();
@@ -112,6 +112,11 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
     public GameObject GetLastAttachedGroundInfo()
     {
         return lastContanctGround;
+    }
+    
+    public Collider2D GetSelfCollider()
+    {
+        return playerCollider;
     }
 
 

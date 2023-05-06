@@ -68,7 +68,7 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
 
     protected virtual void Start()
     {
-        _statusManager.OnHPBelow0 += OnDeath;
+        _statusManager.OnHPBelow0 += CheckLife;
         //currentKBRes = _statusManager.knockbackRes;
         //debugRes = currentKBRes;
 
@@ -336,7 +336,27 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
         //Unimplemented
 
     }
-    
+    public override void TakeDamage(AttackBase attackBase, Vector2 kbdir)
+    {
+        if (_statusManager.knockbackRes >= 100)
+            return;
+        
+        var kbtime = attackBase.attackInfo[0].knockbackTime;
+        var kbForce = attackBase.attackInfo[0].knockbackForce;
+        var kbPower = attackBase.attackInfo[0].knockbackPower;
+        var random = Random.Range(0, 100);
+        if(random > kbPower-_statusManager.KnockbackRes)
+        {
+            return;
+        }
+
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+        }
+
+        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbdir));
+    }
 
     
 
@@ -398,8 +418,33 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
 
     }
     
+    protected virtual void CheckLife()
+    {
+        if (CheckPowerOfBonds())
+        {
+            return;
+        }
+        
+        OnDeath();
+        
+    }
+    
+    public bool CheckPowerOfBonds()
+    {
+        if(_statusManager.GetConditionsOfType((int)BasicCalculation.BattleCondition.PowerOfBonds).Count > 0)
+        {
+            _statusManager.currentHp = 0;
+            _statusManager.HPRegenImmediately(100,0);
+            BattleEffectManager.Instance.SpawnHealEffect(gameObject);
+            _statusManager.RemoveTimerBuff((int)BasicCalculation.BattleCondition.PowerOfBonds,true);
+            //StartCoroutine(InvincibleRoutineWithoutRecover(1f));
+            return true;
+        }
 
-    protected virtual void OnDeath()
+        return false;
+    }
+
+    protected void OnDeath()
     {
         StartCoroutine(DeathRoutine());
     }
@@ -407,6 +452,11 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
     IEnumerator DeathRoutine()
     {
         SetKBRes(999);
+        var enemyBehaviors = FindObjectsOfType<DragaliaEnemyBehavior>();
+        foreach (var behavior in enemyBehaviors)
+        {
+            behavior.RemoveTarget(gameObject);
+        }
         rigid.gravityScale = _defaultgravityscale;
         GetComponentInChildren<AudioSource>().Stop();
         
@@ -431,6 +481,7 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
         moveEnable = false;
         
         anim.speed = 1;
+        GetComponent<NpcController>().enabled = false;
         //MoveManager.SetGroundCollider(true);
         //MoveManager.enabled = false;
         //MoveManager.StopAllCoroutines();
@@ -461,7 +512,9 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
         
         yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f);
         anim.speed = 0;
+
         
+
     }
 
     public virtual void OnAttackEnter(int newKnockbackRes)
@@ -609,5 +662,46 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
     {
     }
 
+    public void EventRoll()
+    {
+        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
+    }
     
+    public IEnumerator HorizontalMove(float speed, float time, string move)
+    {
+
+        while (time > 0)
+        {
+            //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
+            transform.position = new Vector3(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+                transform.position.y, transform.position.z);
+            //transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
+            //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
+            time -= Time.fixedDeltaTime;
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
+            {
+                //print("interrupt");
+                if (Mathf.Abs(rigid.velocity.x) > movespeed)
+                    rigid.velocity = new Vector2(movespeed, rigid.velocity.y);
+                //pi.SetMoveEnabled();
+                yield break;
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
+
+
+    }
+
+    public void onRollEnter()
+    {
+        dodging = true;
+        isMove = 0;
+    }
+    
+    public void onRollExit()
+    {
+        dodging = false;
+        
+    }
 }

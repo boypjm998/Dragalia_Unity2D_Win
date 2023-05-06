@@ -14,18 +14,36 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     //protected EnemyMoveManager enemyAttackManager;
     protected StatusManager status;
     public GameObject targetPlayer;
-    protected GameObject viewerPlayer;
+    public GameObject viewerPlayer;
+    public GameObject ClosestTarget => GetTargetInDistanceOrder(0);
+    public GameObject FurthestTarget => GetTargetInDistanceOrder(1);
+
     public Coroutine currentMoveAction = null;
     public Coroutine currentAttackAction = null;
     public Coroutine currentAction = null;
     protected bool TaskSuccess;
     public bool isAction;
+    public bool breakable = true;
     public bool playerAlive = true;
     public List<GameObject> playerList = new();
 
-    protected abstract void UpdateAttack();
-    protected abstract void ExcutePhase();
+    protected virtual void UpdateAttack()
+    {
+        CheckPhase();
+        ExcutePhase();
+    }
+
+    protected virtual void ExcutePhase()
+    {
+        if (!isAction)
+        {
+            DoAction(state,substate);
+        }
+    }
+
     protected abstract void CheckPhase();
+
+    protected abstract void DoAction(int state, int substate);
     
 
     protected virtual void Awake()
@@ -58,7 +76,12 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     {
         return ("State" + state + " ,Substate" + substate);
     }
-    
+
+    public Tuple<int,int> GetState()
+    {
+        return new Tuple<int, int>(state, substate);
+    }
+
     protected IEnumerator Start()
     {
         yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
@@ -70,6 +93,21 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         //tartCoroutine(UpdateBehavior());
     }
     
+    protected void SetTarget(GameObject target)
+    {
+        targetPlayer = target;
+    }
+    public void RemoveTarget(GameObject gameObject)
+    {
+        playerList.Remove(gameObject);
+        if(playerList.Count == 0)
+        {
+            playerAlive = false;
+            return;
+        }
+        if(targetPlayer == gameObject)
+            targetPlayer = playerList[0];
+    }
     protected virtual void SearchTarget()
     {
         targetPlayer = FindObjectOfType<ActorController>().gameObject;
@@ -77,7 +115,8 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         var players = GameObject.Find("Player");
         for (int i = 0; i < players.transform.childCount; i++)
         {
-            this.playerList.Add(players.transform.GetChild(i).gameObject);
+            if(players.transform.GetChild(i).Find("HitSensor").gameObject.activeSelf)
+                this.playerList.Add(players.transform.GetChild(i).gameObject);
         }
     }
     
@@ -89,6 +128,11 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
             UpdateAttack();
             yield return null;
             yield return new WaitUntil(() => !isAction);
+            if (GlobalController.currentGameState == GlobalController.GameState.End)
+            {
+                StopAllCoroutines();
+                yield break;
+            }
         }
     }
 
@@ -107,9 +151,15 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         if(order == 0)
             return playerList[0];
         if (order == 1)
-            return playerList[-1];
+            return playerList[playerList.Count - 1];
         
         else return viewerPlayer;
+    }
+
+    public void SetState(int state, int substate = 0)
+    {
+        this.state = state;
+        this.substate = substate;
     }
 
 

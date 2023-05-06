@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 using DG.Tweening;
@@ -21,6 +22,7 @@ public class EnemyAttackHintBar : MonoBehaviour
     
     protected Tweener _tweener;
     protected List<NpcController> npcInRange = new();
+    [SerializeField] protected bool autoDestruct = false;
 
     public void DestroySelf()
     {
@@ -53,6 +55,11 @@ public class EnemyAttackHintBar : MonoBehaviour
         if (timeToSendEvadeSignal != 0)
         {
             Invoke(nameof(BroadCastEvadeSignalInTrigger),timeToSendEvadeSignal);
+        }
+
+        if (autoDestruct)
+        {
+            Destroy(gameObject, warningTime + attackLastTime);
         }
     }
 
@@ -101,6 +108,21 @@ public class EnemyAttackHintBar : MonoBehaviour
         }
     }
     
+    protected bool BroadCastEvadeSignalInTriggerWithCallback()
+    {
+        //TODO:测试用，逻辑有问题
+        var flags = new List<bool>();
+        foreach (var npc in npcInRange)
+        {
+            flags.Add(npc.ReceiveEvadeSignal(height,attackLastTime,GetComponent<Collider2D>()));
+        }
+
+        if (npcInRange.Count == 0)
+            return true;
+
+        return (flags[0]);
+    }
+    
     
 
     protected void OnTriggerEnter2D(Collider2D col)
@@ -117,7 +139,7 @@ public class EnemyAttackHintBar : MonoBehaviour
         NpcController npc = null;
         if ((npc = col.GetComponentInParent<NpcController>()) != null)
         {
-            npcInRange.Remove(npc);
+            //npcInRange.Remove(npc);
         }
     }
 }

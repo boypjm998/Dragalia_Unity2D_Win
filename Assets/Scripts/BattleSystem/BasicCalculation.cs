@@ -18,42 +18,29 @@ namespace GameMechanics
             ABILITY = 5,
             OTHER = 6
         }
-        
-        public class TriggerIntersection
+
+        public static int[] conditionsDisplayedByStacknum = new int[]
         {
-            public Vector2 leftPoint;
-            public Vector2 rightPoint;
-            public float lengthX => (rightPoint.x - leftPoint.x);
-            public float lengthY => (rightPoint.y - leftPoint.y);
-            
-            public TriggerIntersection(Vector2 leftPoint, Vector2 rightPoint)
-            {
-                this.leftPoint = leftPoint;
-                this.rightPoint = rightPoint;
-            }
+            5, 13, 14, 15, 19, 57,
+            101, 102, 103, 104, 105, 106, 111,
+            213, 214, 300,
+            301,
+            401, 402, 403, 404, 405, 406, 407, 408, 411, 412, 413, 414, 415, 416
+        };
+        public static int[] conditionsDisplayedByLevel = new int[]
+        {
+            112
+        };
 
-            public TriggerIntersection(Vector2 uniquePoint,bool isLeft)
-            {
-                if(isLeft)
-                {
-                    this.leftPoint = uniquePoint;
-                    this.rightPoint = new Vector2(9999f, leftPoint.y);
-                }
-                else
-                {
-                    this.leftPoint = new Vector2(-9999f, leftPoint.y);
-                    this.rightPoint = uniquePoint;
-                }
+        public static int[] conditionDisplayedByExactValue = new int[]
+        {
+            11
+        };
 
-            }
-
-            public TriggerIntersection()
-            {
-                this.leftPoint = new Vector2(-9999f, 0f);
-                this.rightPoint = new Vector2(9999f, 0f);
-            }
-
-        }
+        public static int[] conditionsImmuneToNihility = new int[]
+        {
+            5, 6, 7, 12, 15, 57
+        };
     
         public enum BattleCondition
         {
@@ -77,7 +64,7 @@ namespace GameMechanics
             AttackRateUp = 17,
             ForceStrikeDmgBuff = 18,
             Energy = 19,
-            
+            Inspiration = 20,
             BurnRes = 21,
             PoisonRes = 22,
             FrostbiteRes = 23,
@@ -92,6 +79,42 @@ namespace GameMechanics
             BogRes = 33,
             FreezeRes = 34,
             BlindnessRes = 35,
+            
+            OverdriveAccerlerator = 37,
+            
+            BurnPunisher = 41,
+            PoisonPunisher = 42,
+            FrostbitePunisher = 43,
+            ParalysisPunisher = 44,
+            ScorchrendPunisher = 45,
+            StormlashPunisher = 46,
+            FlashburnPunisher = 47,
+            ShadowblightPunisher = 48,
+            
+            StunPunisher = 51,
+            SleepPunisher = 52,
+            BogPunisher = 53,
+            FreezePunisher = 54,
+            BlindnessPunisher = 55,
+            
+            AfflictedPunisher = 57,
+            
+            BurnRateUp = 61,
+            PoisonRateUp = 62,
+            FrostbiteRateUp = 63,
+            ParalysisRateUp = 64,
+            ScorchrendRateUp = 65,
+            StormlashRateUp = 66,
+            FlashburnRateUp = 67,
+            ShadowblightRateUp = 68,
+            
+            DebuffRateUp = 70,
+            StunRateUp = 71,
+            SleepRateUp = 72,
+            BogRateUp = 73,
+            FreezeRateUp = 74,
+            BlindnessRateUp = 75,
+            
     
             //Special Buff
             AlchemicCatridge = 101,
@@ -99,6 +122,17 @@ namespace GameMechanics
             HolyFaith = 103,
             BlazewolfsRush = 104,
             PowerOfBonds = 105,
+            HolyAccord = 106,
+            GabrielsBlessing = 107,
+            
+            
+            StandardAttackBurner = 111,
+            HeartAflame = 112,
+            
+            
+            
+            
+            
     
             //Basic Debuff
             AtkDebuff = 201,
@@ -294,6 +328,136 @@ namespace GameMechanics
                 }
             }
         }
+        
+        public static string ConditionInfo_EN(BattleCondition cond)
+        {
+            switch (cond)
+            {
+                //Basic Conditions
+                case BattleCondition.AtkBuff:
+                    return ("Attack +{0}％");
+                case BattleCondition.AtkDebuff:
+                    return ("Attack -{0}％");
+                case BattleCondition.DefBuff:
+                    return ("Defense +{0}％");
+                case BattleCondition.DefDebuff:
+                    return ("Defense -{0}％");
+                case BattleCondition.HotRecovery:
+                    return ("HP Regen");
+                case BattleCondition.CritRateBuff:
+                    return ("Critical Rate +{0}％");
+                case BattleCondition.CritRateDebuff:
+                    return ("Critical Rate -{0}％");
+                case BattleCondition.CritDmgBuff:
+                    return ("Critical Damage +{0}％");
+                case BattleCondition.CritDmgDebuff:
+                    return ("Critical Damage -{0}％");
+                case BattleCondition.RecoveryBuff:
+                    return ("回復スキル効果{0}％アップ");
+                case BattleCondition.RecoveryDebuff:
+                    return ("回復スキル効果{0}％ダウン");
+                case BattleCondition.SkillDmgBuff:
+                    return ("Skill Damage +{0}％");
+                case BattleCondition.SkillDmgDebuff:
+                    return ("Skill Damage -{0}％");
+                case BattleCondition.LifeShield:
+                    return ("Life Shield");
+                case BattleCondition.DamageCut:
+                    return ("Damage Taken -{0}%");
+                case BattleCondition.DamageCutConst:
+                    return ("Damage Taken -{0}");
+                case BattleCondition.Shield:
+                    return ("");
+                case BattleCondition.SkillHasteBuff:
+                    return ("Skill Haste +{0}%");
+                case BattleCondition.SkillHasteDebuff:
+                    return ("Skill Haste -{0}%");
+                case BattleCondition.SPRegen:
+                    return ("Skill Energy Regen");
+                case BattleCondition.SPDegen:
+                    return ("Skill Energy Degen");
+                case BattleCondition.Vulnerable:
+                    return ("Damage Taken +{0}%");
+                
+                case BattleCondition.ScorchrendRes:
+                    return ("劫火抗性提升");
+                case BattleCondition.FlashburnRes:
+                    return ("闪热抗性提升");
+                case BattleCondition.BurnRes:
+                    return ("烧伤抗性提升");
+                case BattleCondition.ShadowBlightRes:
+                    return ("暗殇抗性提升");
+                case BattleCondition.ParalysisRes:
+                    return ("麻痹抗性提升");
+                case BattleCondition.FrostbiteRes:
+                    return ("冻伤抗性提升");
+                case BattleCondition.StormlashRes:
+                    return ("裂风抗性提升");
+                case BattleCondition.PoisonRes:
+                    return ("中毒抗性提升");
+                case BattleCondition.FreezeRes:
+                    return ("冰冻抗性提升");
+                case BattleCondition.StunRes:
+                    return ("昏迷抗性提升");
+                case BattleCondition.SleepRes:
+                    return ("睡眠抗性提升");
+                case BattleCondition.BlindnessRes:
+                    return ("黑暗抗性提升");
+    
+                //Special buffs:
+                case BattleCondition.AlchemicCatridge:
+                    return ("Cartridges Loaded");
+                case BattleCondition.InfernoMode:
+                    return ("Inferno Mode");
+                case BattleCondition.HolyFaith:
+                    return ("Holy Faith");
+                case BattleCondition.BlazewolfsRush:
+                    return ("Blazewolf's Rush");
+                case BattleCondition.PowerOfBonds:
+                    return ("Power of Bonds");
+    
+                //Special debuffs:
+                case BattleCondition.EvilsBane:
+                    return ("Evil's Bane");
+    
+                //Afflictions
+                case BattleCondition.Flashburn:
+                    return ("Flashburn");
+                case BattleCondition.Scorchrend:
+                    return ("Scorchrend");
+                case BattleCondition.Burn:
+                    return ("Burn");
+                case BattleCondition.Blindness:
+                    return ("Blindness");
+                case BattleCondition.ShadowBlight:
+                    return ("Shadowblight");
+                case BattleCondition.Frostbite:
+                    return ("Frostbite");
+                case BattleCondition.Freeze:
+                    return ("Freeze");
+                case BattleCondition.Stun:
+                    return ("Stun");
+                case BattleCondition.Sleep:
+                    return ("Sleep");
+                case BattleCondition.Bog:
+                    return ("Bog");
+                case BattleCondition.Paralysis:
+                    return ("Paralysis");
+                case BattleCondition.Poison:
+                    return ("Poision");
+                case BattleCondition.Stormlash:
+                    return ("Stormlash");
+                case BattleCondition.Cursed:
+                    return ("Cursed");
+    
+    
+                default:
+                {
+                    Debug.LogWarning("Buff text not found");
+                    return ("");
+                }
+            }
+        }
         public static string ConditionInfo_ZH(BattleCondition cond)
         {
             switch (cond)
@@ -328,9 +492,9 @@ namespace GameMechanics
                 case BattleCondition.LifeShield:
                     return ("生命护盾");
                 case BattleCondition.DamageCut:
-                    return ("伤害减少{0}%");
+                    return ("所受伤害减少{0}%");
                 case BattleCondition.DamageCutConst:
-                    return ("伤害减少{0}");
+                    return ("所受伤害减少{0}");
                 case BattleCondition.Shield:
                     return ("护盾");
                 case BattleCondition.SkillHasteBuff:
@@ -344,6 +508,9 @@ namespace GameMechanics
                 case BattleCondition.Vulnerable:
                     return ("所受伤害增加{0}%");
                 
+                
+                case BattleCondition.KnockBackImmune:
+                    return ("免疫击退效果");
                 case BattleCondition.ScorchrendRes:
                     return ("劫火抗性提升{0}%");
                 case BattleCondition.FlashburnRes:
@@ -368,6 +535,44 @@ namespace GameMechanics
                     return ("睡眠抗性提升{0}%");
                 case BattleCondition.BlindnessRes:
                     return ("黑暗抗性提升{0}%");
+                case BattleCondition.BogRes:
+                    return ("湿身抗性提升{0}%");
+                case BattleCondition.FlashburnResDown:
+                    return ("闪热抗性下降{0}%");
+                case BattleCondition.ScorchrendResDown:
+                    return ("劫火抗性下降{0}%");
+                case BattleCondition.BurnResDown:
+                    return ("烧伤抗性下降{0}%");
+                case BattleCondition.ShadowBlightResDown:
+                    return ("暗殇抗性下降{0}%");
+                case BattleCondition.ParalysisResDown:
+                    return ("麻痹抗性下降{0}%");
+                case BattleCondition.FrostbiteResDown:
+                    return ("冻伤抗性下降{0}%");
+                case BattleCondition.StormlashResDown:
+                    return ("裂风抗性下降{0}%");
+                case BattleCondition.PoisonResDown:
+                    return ("中毒抗性下降{0}%");
+                case BattleCondition.BurnRateUp:
+                    return ("造成烧伤成功率提升{0:P0}");
+                case BattleCondition.FlashburnRateUp:
+                    return ("造成闪热成功率提升{0:P0}");
+                case BattleCondition.ScorchrendRateUp:
+                    return ("造成劫火成功率提升{0:P0}");
+
+
+
+                case BattleCondition.Energy:
+                    return ("斗志提升×{0}");
+                case BattleCondition.Inspiration:
+                    return ("灵感提升×{0}");
+                
+                case BattleCondition.AfflictedPunisher:
+                    return ("异常状态特效");
+                case BattleCondition.BurnPunisher:
+                    return ("烧伤特效提升{0}%");
+                
+                
     
                 //Special buffs:
                 case BattleCondition.AlchemicCatridge:
@@ -380,10 +585,20 @@ namespace GameMechanics
                     return ("巫女气焰");
                 case BattleCondition.PowerOfBonds:
                     return ("信赖之力");
+                case BattleCondition.HolyAccord:
+                    return ("圣天启示");
+                
+                case BattleCondition.StandardAttackBurner:
+                    return ("普通攻击赋予烧伤");
+                case BattleCondition.HeartAflame:
+                    return ("炽热之恋Lv.{0}");
     
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
                     return ("破邪巫咒");
+                
+                case BattleCondition.Nihility:
+                    return ("虚无");
     
                 //Afflictions
                 case BattleCondition.Flashburn:
@@ -499,10 +714,28 @@ namespace GameMechanics
             AttackBase atkStat, ref bool isCrit)
         {
             //Source
-    
+
+            float newModifier = modifier;
+
+            if (atkStat.conditionalAttackEffects.Count > 0)
+            {
+                var extraModifier = 0f;
+                foreach (var caf in atkStat.conditionalAttackEffects)
+                {
+                    extraModifier += caf.GetExtraModifiers(targetStat,sourceStat);
+                }
+                newModifier *= (1 + extraModifier);
+                Debug.Log("Extra modifier: " + extraModifier);
+            }
+
+
             //攻击 Attack
+
+            var atkBuff = sourceStat.attackBuff;
+            
+            var atkAbility = CheckSpecialAttackEffect(sourceStat,targetStat,atkStat);
     
-            var atk = sourceStat.baseAtk * (1 + sourceStat.attackBuff);
+            var atk = sourceStat.baseAtk * (1 + atkBuff) * (1 + atkAbility);
     
             //暴击 爆伤 crit
     
@@ -522,21 +755,37 @@ namespace GameMechanics
     
             float skillDmgModifier = 1;
             if (atkStat.attackType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
+            
+            //特攻
+            var punisherModifier = 1 + CheckTotalPunisher(targetStat,sourceStat);
     
             //Target
     
-            var tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
-            var dmgCutModifier = targetStat.GetDamageCut();
-            var dmgCutConst = targetStat.GetDamageCutConst();
-            
-            
-    
-    
+            var tarDef = targetStat.baseDef * (1 + targetStat.defenseBuff);
+            var dmgCutModifier = targetStat.dmgCutBuff;
+
+
+
             //Calculate
-    
-            var attackSource = atk * skillDmgModifier * critDmgModifier * modifier;
-            var defendTarget = tarDef * (1 + dmgCutModifier);
-    
+            
+            //攻击者数值 : 总攻击(基础值*buff*被动) * 技能?伤害(目前只有buff) * 暴击?伤害(buff+被动) * 特攻修正 * 倍率
+            var attackSource = atk * skillDmgModifier * critDmgModifier * punisherModifier * newModifier;
+            var defendTarget = tarDef;
+
+            attackSource *= (1 - dmgCutModifier); //计算 减伤 + 增伤
+
+            if (targetStat is SpecialStatusManager)
+            {
+                var specialTarget = targetStat as SpecialStatusManager;
+                if (specialTarget.broken)
+                {
+                    //破防特效
+                    defendTarget *= specialTarget.breakDefRate;
+                    attackSource *= (1 + sourceStat.breakPunisher);
+                }
+            }
+
+
             var damage = 5f / 3f * (attackSource / defendTarget);
     
             if (damage < 0) damage = 0;
@@ -545,100 +794,8 @@ namespace GameMechanics
             return (int)damage;
         }
     
-        public static int CalculateDamagePlayer(StatusManager sourceStat, StatusManager targetStat, float modifier,
-            AttackFromPlayer atkStat, ref bool isCrit)
-        {
-            //Source
-    
-            //攻击 Attack
-    
-            var atk = sourceStat.baseAtk * (1 + sourceStat.attackBuff);
-    
-            //暴击 爆伤 crit
-    
-    
-            var critRate = sourceStat.critRate + sourceStat.critRateBuff;
-    
-            critRate += CheckSpecialCritEffect(sourceStat,targetStat,atkStat);
-            
-            float critDmgModifier = 1;
-            //isCrit = false;
-            if (Random.Range(0, 100) < critRate)
-            {
-                isCrit = true;
-                critDmgModifier += 0.7f + sourceStat.critDmgBuff;
-                critDmgModifier += CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat);
-            }
-    
-            float skillDmgModifier = 1;
-            if (atkStat.attackType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
-    
-            //Target
-    
-            var tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
-            var dmgCutModifier = targetStat.GetDamageCut();
-            var dmgCutConst = targetStat.GetDamageCutConst();
-    
-    
-            //Calculate
-    
-            var attackSource = atk * skillDmgModifier * critDmgModifier * modifier;
-            var defendTarget = tarDef * (1 + dmgCutModifier);
-    
-            var damage = 5f / 3f * (attackSource / defendTarget) - dmgCutConst;
-    
-            if (damage < 0) damage = 0;
-    
-            //Debug.Log(damage);
-            return (int)damage;
-        }
-        public static int CalculateDamageEnemy(StatusManager sourceStat, StatusManager targetStat, float modifier,
-            AttackFromEnemy atkStat, ref bool isCrit)
-        {
-            //Source
-    
-            //攻击 Attack
-    
-            var atk = sourceStat.baseAtk * (1 + sourceStat.attackBuff);
-    
-            //暴击 爆伤 crit
-    
-    
-            var critRate = sourceStat.critRate + sourceStat.critRateBuff;
-    
-            critRate += CheckSpecialCritEffect(sourceStat,targetStat,atkStat);
-            
-            float critDmgModifier = 1;
-            //isCrit = false;
-            if (Random.Range(0, 100) < critRate)
-            {
-                isCrit = true;
-                critDmgModifier += 0.7f + sourceStat.critDmgBuff;
-                critDmgModifier += CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat);
-            }
-    
-            float skillDmgModifier = 1;
-            if (atkStat.attackType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
-    
-            //Target
-    
-            var tarDef = targetStat.baseDef * (1 + targetStat.GetDefenseBuff());
-            var dmgCutModifier = targetStat.GetDamageCut();
-            var dmgCutConst = targetStat.GetDamageCutConst();
-    
-    
-            //Calculate
-    
-            var attackSource = atk * skillDmgModifier * critDmgModifier * modifier;
-            var defendTarget = tarDef * (1 + dmgCutModifier);
-    
-            var damage = 5f / 3f * (attackSource / defendTarget) - dmgCutConst;
-    
-            if (damage < 0) damage = 0;
-    
-            //Debug.Log(damage);
-            return (int)damage;
-        }
+        
+        
         
     
     
@@ -664,112 +821,28 @@ namespace GameMechanics
     
         
 
-
-
-        #region SpecialEffectOfEnemy
-
-        public static int CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
-                    AttackFromEnemy attackStat)
-                {
-                    int extraCritModifier = 0;
-                    switch (attackStat.chara_id)
-                    {
-                        case 1:
-                        {
-                            if (attackStat.skill_id == 2 &&
-                                targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
-                            {
-                                extraCritModifier = 999;
-                            }
-                            break;
-                        }
-                    }
-                    
-                    
-                    
-                    
-                    return extraCritModifier;
-                }
-
-        public static float CheckSpecialCritDmgEffect(StatusManager sourceStat, StatusManager targetStat,
-                    AttackFromEnemy attackStat)
-                {
-                    float extraCritDmgModifier = 0;
-                    switch (attackStat.chara_id)
-                    {
-                        case 1:
-                        {
-                            if (attackStat.attackType == AttackType.STANDARD &&
-                                targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
-                            {
-                                extraCritDmgModifier += 0.2f; 
-                            }
-                            break;
-                        }
-                        default: break;
-                    }
-            
-                    return extraCritDmgModifier;
-                }
         
+
+        #region SpecialAbilityCalculation
         
-        
-        #endregion
-
-        #region SpeciaEffectOfPlayer
-
-
-
-
-        public static int CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
-            AttackFromPlayer attackStat)
+        public static float CheckSpecialAttackEffect(StatusManager sourceStat, StatusManager targetStat,
+            AttackBase attackStat)
         {
-            int extraCritModifier = 0;
-            switch (attackStat.chara_id)
+            float extraAttackModifier = 0;
+            if (sourceStat.GetAbility(10011))
             {
-                case 5:
-                {
-                    if (attackStat.skill_id == 2 &&
-                        targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
-                    {
-                        extraCritModifier = 999;
-                    }
-                    break;
-                }
+                if(sourceStat.comboHitCount >= 15)
+                    extraAttackModifier += 0.2f;
             }
-            
-            
-            
-            
-            return extraCritModifier;
+
+            if (sourceStat.GetAbility(10006))
+            {
+                extraAttackModifier += (sourceStat.currentHp / sourceStat.maxHP) * 0.2f;
+            }
+
+            return extraAttackModifier;
         }
         
-    
-        public static float CheckSpecialCritDmgEffect(StatusManager sourceStat, StatusManager targetStat,
-            AttackFromPlayer attackStat)
-        {
-            float extraCritDmgModifier = 0;
-            switch (attackStat.chara_id)
-            {
-                case 5:
-                {
-                    if (attackStat.attackType == AttackType.STANDARD &&
-                        targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
-                    {
-                        extraCritDmgModifier += 0.2f;
-                    }
-                    break;
-                }
-                default: break;
-            }
-    
-            return extraCritDmgModifier;
-        }
-        
-        
-        #endregion
-
-        #region SpecialEffect
 
         public static int CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
             AttackBase attackStat)
@@ -784,6 +857,11 @@ namespace GameMechanics
                 {
                     extraCritModifier = 999;
                 }
+            }
+            
+            if (sourceStat.GetAbility(10008) && sourceStat.comboHitCount>= 15)
+            {
+                extraCritModifier += 15;
             }
 
 
@@ -809,7 +887,25 @@ namespace GameMechanics
     
             return extraCritDmgModifier;
         }
+
+        public static float CheckSpecialDamageCutEffect(StatusManager sourceStat, StatusManager targetStat,
+            AttackBase attackStat)
+        {
+            return 0;
+        }
         
+        public static float CheckSpecialODAccerleratorEffect(StatusManager sourceStat, StatusManager targetStat,
+            AttackBase attackStat)
+        {
+            float totalODAccerlerator = 0;
+            if (sourceStat.GetAbility(90001))
+            {
+                totalODAccerlerator += 2f;
+            }
+
+            return totalODAccerlerator;
+        }
+
 
         #endregion
     
@@ -823,19 +919,111 @@ namespace GameMechanics
     
         public static float CalculateDefenseInfo(StatusManager stat)
         {
-            return stat.baseDef * (1 + stat.defenseBuff);
+            var totalDef = stat.baseDef * (1 + stat.defenseBuff);
+            if (stat is SpecialStatusManager)
+            {
+                var spStat = (stat as SpecialStatusManager);
+                if (spStat.broken)
+                {
+                    totalDef *= spStat.breakDefRate;
+                }
+            }
+
+            return totalDef;
             
         }
-    
-        private enum CharacterInfo
+
+        private static float CheckTotalPunisher(StatusManager targetStat, StatusManager sourceStat)
         {
-            Ilia = 1,
-            Ezelith = 2,
-            Zena = 3,
-            Renelle = 4,
-            Sheila = 5
+            int totalAffliction = 0;
+            float totalBuff = 0;
+            if (targetStat.GetConditionStackNumber((int)BattleCondition.Burn) > 0)
+            {
+                totalBuff += sourceStat.burnPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Poison) > 0)
+            {
+                totalBuff += sourceStat.poisonPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Freeze) > 0)
+            {
+                totalBuff += sourceStat.freezePunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Flashburn) > 0)
+            {
+                totalBuff += sourceStat.flashburnPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.ShadowBlight) > 0)
+            {
+                totalBuff += sourceStat.shadowblightPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Blindness) > 0)
+            {
+                totalBuff += sourceStat.blindnessPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Frostbite) > 0)
+            {
+                totalBuff += sourceStat.frostbitePunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Scorchrend) > 0)
+            {
+                totalBuff += sourceStat.scorchrendPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Paralysis) > 0)
+            {
+                totalBuff += sourceStat.paralysisPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Stormlash) > 0)
+            {
+                totalBuff += sourceStat.stormlashPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Bog) > 0)
+            {
+                totalBuff += sourceStat.bogPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.Stun) > 0)
+            {
+                totalBuff += sourceStat.stunPunisher;
+                totalAffliction++;
+            }
+            if(targetStat.GetConditionStackNumber((int)BattleCondition.SleepPunisher) > 0)
+            {
+                totalBuff += sourceStat.sleepPunisher;
+                totalAffliction++;
+            }
+
+            
+            totalBuff += sourceStat.conditionPunisher;
+
+            if (targetStat.GetConditionStackNumber((int)BattleCondition.AfflictedPunisher) > 0)
+            {
+                if (totalAffliction >= 4)
+                {
+                    totalBuff += 0.4f;
+                }
+                else
+                {
+                    totalBuff += totalAffliction * 0.05f + 0.2f;
+                }
+            }
+            
+            Debug.Log("total_punisher:"+totalBuff);
+
+            return totalBuff;
+
         }
-    
+
         public enum KnockBackType
         {
            None = 0, //No Knockback Distance
@@ -952,6 +1140,11 @@ namespace GameMechanics
             return sb.ToString();
         }
     
+        /// <summary>
+        /// Read File From StreamingAssets
+        /// </summary>
+        /// <param name="name">Path in StreamingAsset</param>
+        /// <returns></returns>
         public static JsonData ReadJsonData(string name)
         {
             string path = Application.streamingAssetsPath + "/"+ name;
@@ -1007,6 +1200,49 @@ namespace GameMechanics
             }
 
             return myGround.GetComponentInChildren<Collider2D>();
+        }
+
+        public static float GetRaycastedPlatformY(GameObject target)
+        {
+            var _groundSensor = target.GetComponentInChildren<IGroundSensable>();
+            GameObject myGround;
+            var selfCollider = _groundSensor.GetSelfCollider();
+            try
+            {
+                myGround = _groundSensor.GetCurrentAttachedGroundInfo();
+            }
+            catch
+            {
+                _groundSensor = target.transform.parent.GetComponentInChildren<IGroundSensable>();
+                myGround = _groundSensor.GetCurrentAttachedGroundInfo();
+            }
+
+            if(myGround==null)
+            {
+                RaycastHit2D myRayL = 
+                    Physics2D.Raycast(new Vector2(selfCollider.bounds.min.x,selfCollider.bounds.min.y), Vector2.down,
+                        999f,LayerMask.GetMask("Ground","Platforms"));
+                RaycastHit2D myRayR = 
+                    Physics2D.Raycast(new Vector2(selfCollider.bounds.max.x,selfCollider.bounds.min.y), Vector2.down,
+                        999f,LayerMask.GetMask("Ground","Platforms"));
+        
+                var myGround1 = myRayL.collider.gameObject;
+                var myGround2 = myRayR.collider.gameObject;
+                if(myGround1 == myGround2)
+                    myGround = myGround1;
+                else
+                    myGround = myGround1.transform.position.y > myGround2.transform.position.y ? myGround1 : myGround2;
+            }
+
+            if (myGround == null)
+                return 0;
+            
+            var col = myGround.GetComponentInChildren<Collider2D>();
+            
+            //var distance = col.bounds.max.y - selfCollider.bounds.min.y;
+
+            return col.bounds.max.y;
+
         }
 
         public static bool CheckOnSameRaycastPlatform(GameObject target1, GameObject target2)

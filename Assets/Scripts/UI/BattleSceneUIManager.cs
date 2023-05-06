@@ -8,7 +8,8 @@ using UnityEngine.Video;
 
 public class BattleSceneUIManager : MonoBehaviour
 {
-    private GameObject PauseMenu;
+    public static BattleSceneUIManager Instance { get; private set; }
+    public GameObject PauseMenu;
     private GameObject MenuButton;
     private BattleStageManager _stageManager;
     private PlayerInput pi;
@@ -19,23 +20,22 @@ public class BattleSceneUIManager : MonoBehaviour
         PauseMenu.SetActive(false);
         _stageManager = FindObjectOfType<BattleStageManager>();
         MenuButton = transform.Find("MenuButton").gameObject;
+        Instance = this;
     }
-    
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
 
     private void Start()
     {
-        
-        //yield return GlobalController.currentGameState == GlobalController.GameState.Inbattle;
-        // PauseMenu = transform.Find("PauseMenu").gameObject;
-        // PauseMenu.SetActive(false);
-        // _stageManager = FindObjectOfType<BattleStageManager>();
-        // MenuButton = transform.Find("MenuButton").gameObject;
         pi = FindObjectOfType<PlayerInput>();
     }
 
     private void Update()
     {
-        if(GlobalController.currentGameState == GlobalController.GameState.WaitForStart)
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
         
         if (pi.buttonEsc.OnPressed)
@@ -53,12 +53,15 @@ public class BattleSceneUIManager : MonoBehaviour
 
     public void OpenPauseMenu()
     {
+        if (GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
         if (!_stageManager.isGamePaused)
         {
             _stageManager.SetGamePause(true);
             //Time.timeScale = 0;
             MenuButton.GetComponent<Button>().enabled = false;
             PauseMenu.SetActive(true);
+            print("Paused");
             return;
         }
         Debug.LogWarning("GameIsAlreadyPaused");
@@ -75,5 +78,6 @@ public class BattleSceneUIManager : MonoBehaviour
         }
         Debug.LogWarning("GameIsPlaying");
     }
+    
 
 }

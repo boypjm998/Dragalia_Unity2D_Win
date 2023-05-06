@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class UI_PauseMenu : MonoBehaviour
 {
-    private BattleSceneUIManager _battleSceneUIManager;
-    private string quest_name;
-    private BattleStageManager _battleStageManager;
+    protected BattleSceneUIManager _battleSceneUIManager;
+    protected string quest_name;
+    protected BattleStageManager _battleStageManager;
 
-    private TextMeshProUGUI questNameText;
+    protected TextMeshProUGUI questNameText;
     private void Awake()
     {
         _battleSceneUIManager = transform.parent.GetComponent<BattleSceneUIManager>();
@@ -40,4 +40,10 @@ public class UI_PauseMenu : MonoBehaviour
         }
         FindObjectOfType<GlobalController>().TestReturnMainMenu();
     }
+
+    public virtual void UpdatePanel(string[] args)
+    {
+        
+    }
+
 }

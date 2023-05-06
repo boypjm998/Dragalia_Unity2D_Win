@@ -352,7 +352,13 @@ public class DamageNumberManager : MonoBehaviour
                 Quaternion.identity);
         
     }
-    public static void GenerateResistText(Transform targetTransform)
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="targetTransform"></param>
+    /// <param name="colorType">0为白字 1为黄字</param>
+    public static void GenerateResistText(Transform targetTransform, int colorType = 0)
     {
         var CounterText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/ResistText");
         
@@ -361,6 +367,9 @@ public class DamageNumberManager : MonoBehaviour
             Instantiate(CounterText,
                 targetTransform.position+Vector3.up*3+Random.Range(-.5f,.5f)*new Vector3(1,0),
                 Quaternion.identity);
+        
+        if(colorType == 1)
+            txt.GetComponentInChildren<TextMeshPro>().color = Color.yellow;
         
     }
 

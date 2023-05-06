@@ -15,7 +15,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
     
     //public int state;
     
-    // Start is called before the first frame update
+    
 
     protected override void Awake()
     {
@@ -45,28 +45,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         enemyController.DisableMovement();
     }
 
-    // protected IEnumerator Start()
-    // {
-    //     yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
-    //     SearchTarget();
-    //     state = 0;
-    //     substate = 0;
-    //     yield return new WaitForSeconds(awakeTime);
-    //     StartCoroutine(UpdateBehavior());
-    //     //tartCoroutine(UpdateBehavior());
-    // }
     
-
-    // protected IEnumerator UpdateBehavior()
-    // {
-    //     while (true)
-    //     {
-    //         UpdateAttack();
-    //         yield return null;
-    //         yield return new WaitUntil(() => !isAction);
-    //     }
-    // }
-
     
 
 
@@ -104,7 +83,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     
 
-    private void DoAction(int state, int substate)
+    protected override void DoAction(int state, int substate)
     {
         if (playerAlive == false)
             return;
@@ -322,6 +301,8 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     protected IEnumerator ACT_CarmineRush(float interval)
     {
+        SetTarget(FurthestTarget);
+        
         MoveTowardTarget(targetPlayer,3,12f);
         
         yield return new WaitUntil
@@ -333,6 +314,12 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         
         if (TaskSuccess)
         {
+            if (interval == 0)
+            { 
+                enemyAttackManager.GenerateWarningPrefab(8,transform.position,
+                    enemyController.facedir==1?Quaternion.identity:
+                        Quaternion.Euler(0,180,0),enemyAttackManager.RangedAttackFXLayer.transform);
+            }
             currentAttackAction =
                 StartCoroutine(enemyAttackManager.HB01_Action04());
         }
@@ -355,6 +342,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
     
     protected IEnumerator ACT_BrightCarmineRush(float interval, float moveTime)
     {
+        SetTarget(FurthestTarget);
         if (moveTime > 0)
         {
             MoveTowardTarget(targetPlayer,moveTime,15f);
@@ -405,6 +393,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     protected IEnumerator ACT_ComboA(float interval)
     {
+        SetTarget(ClosestTarget);
         MoveTowardTarget(targetPlayer,3,10f);
         
         
@@ -438,6 +427,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     protected IEnumerator ACT_ComboB(float interval)
     {
+        SetTarget(ClosestTarget);
         MoveTowardTarget(targetPlayer,3,4f);
         
         yield return new WaitUntil
@@ -468,6 +458,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
     
     protected IEnumerator ACT_ComboC(float interval)
     {
+        SetTarget(ClosestTarget);
         MoveTowardTarget(targetPlayer,3,6f);
         
         yield return new WaitUntil
@@ -501,6 +492,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     protected IEnumerator ACT_ComboD(float interval)
     {
+        SetTarget(ClosestTarget);
         MoveTowardTarget(targetPlayer,3,3f);
         
         yield return new WaitUntil
@@ -534,6 +526,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     protected IEnumerator ACT_SingleDodgeCombo(float interval)
     {
+        SetTarget(ClosestTarget);
         //Do Move Action
         MoveTowardTarget(targetPlayer,5,3.5f,2.5f,5f,false);
 
@@ -569,6 +562,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
     protected IEnumerator ACT_FlameRaid(float interval)
     {
+        SetTarget(ClosestTarget);
         MoveTowardTarget(targetPlayer,2.5f,5f,6f,7f,true);
         
         yield return new WaitUntil
@@ -580,6 +574,8 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         
         if (TaskSuccess)
         {
+            
+
             currentAttackAction =
                 StartCoroutine(enemyAttackManager.HB01_Action08());
         }
@@ -596,6 +592,12 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         enemyController.SetKBRes(status.knockbackRes);
         //Wait For Attack Interval
         yield return new WaitForSeconds(interval);
+        // if (interval == 0)
+        // { 
+        //     enemyAttackManager.GenerateWarningPrefab(9,transform.position,
+        //         enemyController.facedir==1?Quaternion.identity:
+        //             Quaternion.Euler(0,180,0),enemyAttackManager.RangedAttackFXLayer.transform);
+        // }
         substate++;
         isAction = false;
         

@@ -104,23 +104,9 @@ MonoBehaviour:
     firedir: 0
   firedir: 0
   attackType: 1
-  dmgModifier:
-  - 1.5
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
-  knockbackPower: 100
-  knockbackForce: 5
-  knockbackTime: 0.4
-  knockbackDirection: {x: 0, y: -1}
-  KBType: 4
   hitSoundEffect: {fileID: 0}
   enemySource: {fileID: 0}
   isMeele: 1
-  withConditionChance: 
-  withConditionNum: 
-  withConditionFlags: 
   hitFlags: 
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
@@ -156,6 +142,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4790712848763983697}
     m_Modifications:
+    - target: {fileID: 2802161221544861954, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 2802161221544861956, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
       propertyPath: looping
       value: 0
@@ -171,6 +161,10 @@ PrefabInstance:
     - target: {fileID: 5937377473661895989, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5937377473661895990, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 6047038167723591205, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
       propertyPath: m_RootOrder
@@ -219,6 +213,10 @@ PrefabInstance:
     - target: {fileID: 6047038167723591206, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
       propertyPath: m_Name
       value: fx_c005_combo_06
+      objectReference: {fileID: 0}
+    - target: {fileID: 6047038167723591206, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 6047038167723591206, guid: 446a3257203096c4ea0bc215c26428cf, type: 3}
       propertyPath: m_IsActive

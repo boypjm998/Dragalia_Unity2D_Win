@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -25,6 +26,7 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject buffFXPrefab;
     [SerializeField] private GameObject debuffFXPrefab;
     [SerializeField] private GameObject reviveFXPrefab;
+    [SerializeField] private GameObject breakFXPrefab;
 
     [Header("Enemy BattleHint Effect")]
     [SerializeField] private GameObject targetLockPrefab;
@@ -35,9 +37,11 @@ public class BattleEffectManager : MonoBehaviour
     [Header("Sound Effects")]
     [SerializeField] private AudioClip hitEffectClip;
     [SerializeField] private AudioClip reviveSEClip;
+    [SerializeField] private AudioClip healSEClip;
+    public Dictionary<string,AudioClip> SEClips = new();
 
     private Camera _camera;
-    private AudioSource soundEffectSource;
+    public AudioSource soundEffectSource;
     //private GameObject counterIcon;
 
 
@@ -50,6 +54,8 @@ public class BattleEffectManager : MonoBehaviour
     {
         soundEffectSource = transform.GetChild(0).gameObject.GetComponent<AudioSource>();
         _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        //var soundbundle = GlobalController.Instance.GetBundle("soundeffect/soundeffect_common");
+        //SEClips = soundbundle.LoadAllAssets<AudioClip>().ToList();
     }
 
 
@@ -57,6 +63,8 @@ public class BattleEffectManager : MonoBehaviour
     {
         Instantiate(healFXPrefab, target.transform.position, target.transform.rotation,
             target.GetComponent<AttackManager>().BuffFXLayer.transform);
+        soundEffectSource.clip = healSEClip;
+        soundEffectSource.Play();
     }
 
     public void SpawnEffect(GameObject target, BasicCalculation.BattleCondition cond)
@@ -119,11 +127,15 @@ public class BattleEffectManager : MonoBehaviour
         
         var fx = Instantiate(prefab, layer.position, Quaternion.identity, layer.transform);
         //RESIZE
-        if (fx.transform.GetComponentInChildren<Renderer>().localBounds.size.x > 10)
+        var hitsensor = target.GetComponent<ActorBase>().HitSensor;
+        var width = hitsensor.bounds.size.x;
+        var height = hitsensor.bounds.size.y;
+        var scaleFactor = Mathf.Max(width, height);
+        if (scaleFactor > 2f)
         {
-            //Not Implement
+            fx.transform.localScale = new Vector3(1, 1, 1) * (scaleFactor*0.5f);
         }
-        
+
     }
 
     private IEnumerator LightEffectRoutine(Light2D light, Color color, float intensity, float duration)
@@ -164,20 +176,41 @@ public class BattleEffectManager : MonoBehaviour
         
     }
 
+    public void PlayBreakEffect()
+    {
+        var targetTransform = GameObject.Find("UIFXContainer").transform;
+        Instantiate(breakFXPrefab, targetTransform);
+    }
+
     public void PlaySoundEffect(AudioClip clip, Vector2 position)
     {
         _camera = Camera.current;
         AudioSource.PlayClipAtPoint(clip,new Vector3(position.x,position.y,_camera.transform.position.z));
         
     }
-    public void PlayHitSoundEffect(Vector2 position)
+    public void PlayHitSoundEffect(AudioClip clip,float volume=1f)
     {
-        soundEffectSource.clip = hitEffectClip;
-        if(!soundEffectSource.isPlaying)
-            soundEffectSource.Play();
+        if(clip == null)
+            return;
+        
+        soundEffectSource.PlayOneShot(clip,volume);
         
     }
-    
+
+    public void PlayOtherSE(string clipname,float volume=1f)
+    {
+        //在SEClip列表中找到clip并播放
+        var seclip = SEClips[clipname];
+        if (seclip == null)
+        {
+            print("SEClip not found");
+            return;
+        }
+
+        soundEffectSource.PlayOneShot(seclip,volume);
+        
+    }
+
     public void PlayReviveSoundEffect()
     {
         //camera = Camera.main;
@@ -191,15 +224,12 @@ public class BattleEffectManager : MonoBehaviour
         Instantiate(reviveFXPrefab, target.transform.position, target.transform.rotation,
             target.GetComponent<AttackManager>().BuffFXLayer.transform);
     }
-
-    public void PlayHealSoundEffect()
-    {
-        
-    }
+    
 
     public void DisplayCounterIcon(GameObject target, bool flag)
     {
         Transform bufflayer = target.transform.Find("BuffLayer");
+        float height = target.transform.Find("HitSensor").GetComponent<Collider2D>().bounds.max.y;
         GameObject icon;
 
         if (flag)
@@ -211,6 +241,10 @@ public class BattleEffectManager : MonoBehaviour
                         target.transform.position + Vector3.up*2,
                         Quaternion.identity, bufflayer.transform);
                 icon.name = "CounterIcon";
+                if (icon.transform.position.y < height)
+                {
+                    icon.transform.position = new Vector3(icon.transform.position.x, height+1, icon.transform.position.z);
+                }
             }
             else
             {

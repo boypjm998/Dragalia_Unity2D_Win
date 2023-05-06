@@ -17,6 +17,8 @@ public abstract class EnemyMoveManager : MonoBehaviour
     public Coroutine currentAttackMove;//只有行为树在用
     public Tweener _tweener;
     protected UI_BattleInfoCaster bossBanner;
+    
+    [SerializeField] protected GameObject[] WarningPrefabs;
 
     [Header("Moves")]
     [SerializeField] protected GameObject projectile1;
@@ -121,9 +123,13 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected GameObject GenerateWarningPrefab(GameObject prefab, Vector3 where,Quaternion rot, Transform _parent)
     {
         var clone = Instantiate(prefab, where, rot, _parent);
-        //if(ac.facedir==-1)
-        //clone.transform.localScale = new Vector3(-1, 1, 1);
-        clone.GetComponent<EnemyAttackHintBar>().SetSource(ac);
+        clone.GetComponent<EnemyAttackHintBar>()?.SetSource(ac);
+        return clone;
+    }
+    public GameObject GenerateWarningPrefab(int prefabId, Vector3 where,Quaternion rot, Transform _parent)
+    {
+        var clone = Instantiate(WarningPrefabs[prefabId], where, rot, _parent);
+        clone.GetComponent<EnemyAttackHintBar>()?.SetSource(ac);
         return clone;
     }
     
@@ -132,6 +138,21 @@ public abstract class EnemyMoveManager : MonoBehaviour
         _behavior.currentAttackAction = null;
         ac.OnAttackExit();
         OnAttackFinished?.Invoke(true);
+    }
+    
+    protected GameObject InstantiateRanged(GameObject prefab, Vector3 position, GameObject container,int facedir, int rotateMode = 1)
+    {
+        var prefabInstance = InstantiateDirectional(prefab, position, container.transform, facedir, 0, rotateMode);
+        prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        prefabInstance.GetComponent<AttackBase>().firedir = facedir;
+        return prefabInstance;
+    }
+    
+    protected GameObject InstantiateMeele(GameObject prefab, Vector3 position, GameObject container)
+    {
+        var prefabInstance = Instantiate(prefab, position, Quaternion.identity, container.transform);
+        prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        return prefabInstance;
     }
 
 }

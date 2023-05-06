@@ -227,7 +227,6 @@ public class VoiceController_HB01 : AudioManagerGeneral
                 break;
         }
         _dialogDisplayer.EnqueueDialog(1005, clipID, voice, myClips[clipID]);
-        
     }
 
     IEnumerator WaitForVoiceCooldown()

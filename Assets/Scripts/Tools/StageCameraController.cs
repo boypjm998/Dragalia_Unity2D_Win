@@ -6,12 +6,32 @@ using UnityEngine;
 
 public class StageCameraController : MonoBehaviour
 {
+    public static StageCameraController Instance;
+    
+
+    public static GameObject MainCameraGameObject
+    {
+        get => mainCameraGameObject;
+        //set => mainCameraGameObject = value;
+    }
+
     private static GameObject overallCameraGameObject;
 
     private static GameObject mainCameraGameObject;
     // Start is called before the first frame update
     public bool testFlag = false;
     private static int currentCamera = 1;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
+
     void Start()
     {
         mainCameraGameObject = gameObject;

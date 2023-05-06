@@ -66,14 +66,19 @@ public class ActorController_c001 : ActorController
     {
         base.Awake();
 
-        alchemicGauge = GameObject.Find("AlchemicGauge")?.GetComponent<AlchemicGauge>();
+        alchemicGauge = GameObject.Find("UI").transform.Find("CharacterInfo/AlchemicGauge")?.GetComponent<AlchemicGauge>();
         voiceController = GetComponentInChildren<VoiceController_C001>();
 
 
 
     }
 
-    
+    public void GetGauge()
+    {
+        alchemicGauge = GameObject.Find("AlchemicGauge")?.GetComponent<AlchemicGauge>();
+    }
+
+
 
 
     // Update is called once per frame
@@ -317,7 +322,14 @@ public class ActorController_c001 : ActorController
     public override void OnStandardAttackConnect(AttackBase attackStat)
     {
 
-        AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+        AlchemicGauge alchemicGauge = this.alchemicGauge;
+        if (alchemicGauge == null)
+        {
+            alchemicGauge = GameObject.Find("UI").transform.Find("CharacterInfo/AlchemicGauge")
+                .GetComponent<AlchemicGauge>();
+        }
+
+
         AttackContainer container = attackStat.GetComponentInParent<AttackContainer>();
 
         if (container.hitConnectNum >= container.attackTotalNum)
@@ -325,10 +337,10 @@ public class ActorController_c001 : ActorController
 
         if (!alchemicGauge.IsCatridgeActive())
         {
-            alchemicGauge.CPCharge(2);
+            alchemicGauge.Charge(2);
             if (_statusManager.comboHitCount > 30)
             {
-                alchemicGauge.CPCharge(4);
+                alchemicGauge.Charge(4);
             }
         }
 
@@ -340,7 +352,12 @@ public class ActorController_c001 : ActorController
 
     public override void OnOtherAttackConnect(AttackBase attackStat)
     {
-        AlchemicGauge alchemicGauge = GameObject.Find("AlchemicGauge").GetComponent<AlchemicGauge>();
+        AlchemicGauge alchemicGauge = this.alchemicGauge;
+        if (alchemicGauge == null)
+        {
+            alchemicGauge = GameObject.Find("UI").transform.Find("CharacterInfo/AlchemicGauge")
+                .GetComponent<AlchemicGauge>();
+        }
 
         AttackContainer container = attackStat.GetComponentInParent<AttackContainer>();
 
@@ -350,10 +367,10 @@ public class ActorController_c001 : ActorController
 
         if (!alchemicGauge.IsCatridgeActive())
         {
-            alchemicGauge.CPCharge(1);
+            alchemicGauge.Charge(1);
             if (_statusManager.comboHitCount > 30)
             {
-                alchemicGauge.CPCharge(2);
+                alchemicGauge.Charge(2);
             }
         }
 
@@ -388,7 +405,7 @@ public class ActorController_c001 : ActorController
     public override void OnDashEnter()
     {
         base.OnDashEnter();
-        //voiceController.PlayAttackVoice(0);
+        voiceController.PlayAttackVoice(0);
     }
 
     /// <summary>

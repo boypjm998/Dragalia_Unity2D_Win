@@ -6,9 +6,11 @@ using System.Text;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public abstract class AudioManagerPlayer : MonoBehaviour
+public abstract class AudioManagerPlayer : MonoBehaviour, IVoice
 {
     public int chara_id;
+    
+    protected bool isSkillVoice;
     
     protected AudioSource voice;
     protected Coroutine voiceCDRoutine;
@@ -31,26 +33,17 @@ public abstract class AudioManagerPlayer : MonoBehaviour
 
     public AudioClip[] Dodge;
 
-    private GlobalController _globalController;
+    protected GlobalController _globalController;
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void DebugLoadVoice()
     {
-        
+        LoadMyVoice();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected virtual void LoadMyVoice()
     {
-        
-    }
 
-    protected void LoadMyVoice()
-    {
-        
         _globalController = FindObjectOfType<GlobalController>();
-
 
         AssetBundle assetBundle = _globalController.GetBundle(GetVoicePath());
         //AssetBundle assetBundle = AssetBundle.LoadFromFile
@@ -63,7 +56,7 @@ public abstract class AudioManagerPlayer : MonoBehaviour
     protected string GetVoicePath()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("voice_c");
+        sb.Append("voice/voice_c");
         if (chara_id < 10)
         {
             sb.Append("00");
@@ -83,7 +76,43 @@ public abstract class AudioManagerPlayer : MonoBehaviour
     }
 
     protected abstract void DistributeMyVoice(AudioClip[] clips);
-    public abstract void PlaySkillVoice(int id);
+
+    public virtual void PlaySkillVoice(int id)
+    {
+        if (isSkillVoice == true)
+        {
+            return;
+        }
+        else
+        {
+            voice.Stop();
+            AudioClip clip;
+            switch (id)
+            {
+                case 1:
+                    clip = S1[0];
+                    break;
+                case 2:
+                    clip = S2[0];
+                    break;
+                case 3:
+                    clip = S3[0];
+                    break;
+                case 4:
+                    clip = S4[0];
+                    break;
+
+                default:
+                    clip = null;
+                    break;
+            }
+
+            voice.clip = clip;
+            voice.Play();
+            //voice.PlayOneShot(clip);
+        }
+    }
+
     public virtual void PlayHurtVoice(StatusManager statusManager)
     {
         if(Hurt.Length==0)
@@ -149,7 +178,9 @@ public abstract class AudioManagerPlayer : MonoBehaviour
     /// <param name="id = 2">Combo3</param>
     /// <param name="id = 3">Combo5</param>
     /// <exception cref="NotImplementedException"></exception>
-    public abstract void PlayAttackVoice(int id);
+    public virtual void PlayAttackVoice(int id)
+    {
+    }
 
     public virtual void PlayDodgeVoice()
     {
@@ -165,5 +196,12 @@ public abstract class AudioManagerPlayer : MonoBehaviour
 
 
     }
+    
+    protected IEnumerator WaitForVoiceCooldown()
+    {
+        yield return new WaitForSecondsRealtime(1.5f);
+        voiceCDRoutine = null;
+    }
+    
 
 }

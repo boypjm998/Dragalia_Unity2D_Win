@@ -7,6 +7,8 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
 {
     private Vector2 maxFillSize;
     private SpriteRenderer fillRenderer;
+
+    [SerializeField] private bool doScale = false;
     
     
     // Start is called before the first frame update
@@ -22,7 +24,13 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
         _tweener = DOTween.To(() => fillRenderer.size,
             x => fillRenderer.size = x,
             maxFillSize, warningTime);
-        
+
+        if (doScale)
+        {
+            transform.localScale = 0.1f*Vector3.one;
+            transform.DOScale(Vector3.one, warningTime / 10f);
+        }
+
     }
 
     protected override void OnDestroy()

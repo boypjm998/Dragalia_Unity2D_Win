@@ -20,10 +20,12 @@ public class ConditionIcon : MonoBehaviour
     private TextMeshProUGUI _text;
     private Slider slider;
     private List<BattleCondition> list;
+    public CanvasGroup canvasGroup;
 
     private void Awake()
     {
         list = new List<BattleCondition>();
+        canvasGroup = GetComponent<CanvasGroup>();
     }
 
     void Start()
@@ -70,6 +72,30 @@ public class ConditionIcon : MonoBehaviour
             StringBuilder sb = new StringBuilder();
             sb.Append(val.ToString());
             sb.Append("%");
+            _text.text = sb.ToString();
+        }else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue)
+        {
+            textObj.SetActive(true);
+            int val = (int)(_statusManager.GetConditionTotalValue(conditionInfo.buffID));
+            if (val > BasicCalculation.BattleConditionLimit(conditionInfo.buffID))
+            {
+                val = (int)BasicCalculation.BattleConditionLimit(conditionInfo.buffID);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(val.ToString());
+            _text.text = sb.ToString();
+        }else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.Level)
+        {
+            textObj.SetActive(true);
+            int val = (int)(_statusManager.GetConditionTotalValue(conditionInfo.buffID));
+            if (val > BasicCalculation.BattleConditionLimit(conditionInfo.buffID))
+            {
+                val = (int)BasicCalculation.BattleConditionLimit(conditionInfo.buffID);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Lv." + val.ToString());
             _text.text = sb.ToString();
         }
     }

@@ -47,7 +47,7 @@ public class DOTweenSimpleController : MonoBehaviour
 
     private void OnDestroy()
     {
-        if(_tweener.active)
+        if(_tweener.IsPlaying())
             _tweener.Kill();
     }
 }

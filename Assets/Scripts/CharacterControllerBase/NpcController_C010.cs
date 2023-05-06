@@ -5,6 +5,14 @@ using System.Collections;
 
 public class NpcController_C010 : NpcController
 {
+    
+    GeneralVoiceController voiceController;
+    
+    protected override void Start()
+    {
+        base.Start();
+        voiceController = GetComponentInChildren<GeneralVoiceController>();
+    }
     public override IEnumerator DoAttack(GameObject target)
     {
         isAction = true;
@@ -103,6 +111,7 @@ public class NpcController_C010 : NpcController
     
     IEnumerator DoSkill_10101()
     {
+        voiceController.PlaySkillVoice(1);
         ac.anim.Play("action01");
         yield return null;
         yield return new WaitUntil(() => ac.anim.GetCurrentAnimatorStateInfo(0).IsName("action02"));
@@ -116,6 +125,7 @@ public class NpcController_C010 : NpcController
     
     IEnumerator DoSkill_10102()
     {
+        voiceController.PlaySkillVoice(2);
         ac.anim.Play("action03");
         yield return null;
         yield return new WaitUntil(() => ac.anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);

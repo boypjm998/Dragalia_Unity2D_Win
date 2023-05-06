@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 512597414388596443}
   - component: {fileID: 512597414388596442}
   - component: {fileID: 512597414388596441}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Flame_Side
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4946,24 +4946,9 @@ MonoBehaviour:
     firedir: 0
   firedir: 0
   attackType: 1
-  dmgModifier:
-  - 0.69
-  - 0.69
-  nextDmgModifier: []
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
-  knockbackPower: 100
-  knockbackForce: 0
-  knockbackTime: 0.5
-  knockbackDirection: {x: 1, y: 0}
-  KBType: 0
   hitSoundEffect: {fileID: 0}
   enemySource: {fileID: 0}
   isMeele: 1
-  withConditionChance: 
-  withConditionNum: 
-  withConditionFlags: 
   hitFlags: 
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
@@ -5029,7 +5014,7 @@ GameObject:
   - component: {fileID: 6199412830978609}
   - component: {fileID: 6616793548669734579}
   - component: {fileID: 7789784632635789985}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Flame_Side (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9911,6 +9896,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: fx_c005_combo_09
       objectReference: {fileID: 0}
+    - target: {fileID: 1033781535834920186, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 2848714210936733839, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -9955,9 +9944,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4210973568056165299, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 4516826266704129444, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
       propertyPath: moveDirection.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837058711459817358, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7299028378741868912, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
       propertyPath: m_SortingLayer
@@ -9966,6 +9963,10 @@ PrefabInstance:
     - target: {fileID: 7299028378741868912, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
       propertyPath: m_SortingLayerID
       value: 199403587
+      objectReference: {fileID: 0}
+    - target: {fileID: 8906772253968890618, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52408ed63f81d4047b0f618c477c4680, type: 3}

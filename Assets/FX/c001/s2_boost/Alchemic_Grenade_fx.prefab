@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6645048687194770066}
   - component: {fileID: 1275980575228256138}
   - component: {fileID: 3709083735188678880}
+  - component: {fileID: 2830732267844830665}
   m_Layer: 10
   m_Name: Alchemic_Grenade_fx
   m_TagString: Untagged
@@ -4841,7 +4842,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -4873,6 +4874,21 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &2830732267844830665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3270824344479565560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03296381508058449a21091b7fa0faa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SEClip: {fileID: 8300000, guid: 17e90fc8b1ac550458d531d6347f76c8, type: 3}
+  volume: 1
+  withContainer: 0
 --- !u!1 &8158508102017739839
 GameObject:
   m_ObjectHideFlags: 0
@@ -14537,7 +14553,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -14578,5 +14594,5 @@ SortingGroup:
   m_GameObject: {fileID: 8531375744801733813}
   m_Enabled: 1
   m_SortingLayerID: 996571589
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: -1

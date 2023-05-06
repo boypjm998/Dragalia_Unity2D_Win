@@ -123,4 +123,9 @@ public class StandardGroundSensor : MonoBehaviour , IGroundSensable
     {
         return lastContanctGround;
     }
+
+    public Collider2D GetSelfCollider()
+    {
+        return box;
+    }
 }

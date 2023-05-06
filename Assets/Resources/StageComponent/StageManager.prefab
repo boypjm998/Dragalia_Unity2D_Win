@@ -44,7 +44,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -177,12 +177,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 0
   quest_name: 
+  FieldAbilityIDList: 
   boss: {fileID: 0}
   timeLimit: 0
   totalEnemyNum: 0
   maxReviveTime: 3
   crownReviveTime: 0
   crownTimeLimit: 300
+  attackContainer: {fileID: 497525783265369579, guid: 20655c64630fcbd419fffcbc147c5e39, type: 3}
+  attackContainerEnemy: {fileID: 390410345794427676, guid: 4fed0cfcb020ad34ebc13587f9ebf4e8, type: 3}
   buffLogPrefab: {fileID: 7553018530641137342, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
   gameFailedPrefab: {fileID: 2722878352171708836, guid: 410cdfceee400df46984c7ceaa63ad1b, type: 3}
   gameClearPrefab: {fileID: 495785828030051020, guid: 425a88c6c1e7c1042aeb9079253cded6, type: 3}
@@ -213,11 +216,14 @@ MonoBehaviour:
   buffFXPrefab: {fileID: 4580996428673532752, guid: d6fdafac4838f1e458c42a38530d4613, type: 3}
   debuffFXPrefab: {fileID: 7234651375369715019, guid: a8f0fa98a279cf043ba8a2c39e1cb050, type: 3}
   reviveFXPrefab: {fileID: 6116830349921751093, guid: 4ae8da6a7689b0340a2c1559fbffbee3, type: 3}
+  breakFXPrefab: {fileID: 7769612837028600590, guid: 0fcb2c7fedbcf0548ae72b80b8c7d5f6, type: 3}
   targetLockPrefab: {fileID: 7544618195546783032, guid: ed7bee8143392f34c8ba3e47df731262, type: 3}
   exclamationPrefab: {fileID: 5392681824071123439, guid: fd6896f89cf8c0d41a41acf0cf798392, type: 3}
   counterIconPrefab: {fileID: 7588947929834200099, guid: 4fbdad96a869bdd41b0dbffbbfa778be, type: 3}
   hitEffectClip: {fileID: 8300000, guid: a35c55a5f7b1eff4ba0e3fa5d8260593, type: 3}
   reviveSEClip: {fileID: 8300000, guid: 19b5ae4650e42724b8239a33b0661a35, type: 3}
+  healSEClip: {fileID: 8300000, guid: 001004c49a802304c8f03805e19c0711, type: 3}
+  soundEffectSource: {fileID: 1652822927677469780}
 --- !u!82 &8905817584630699169
 AudioSource:
   m_ObjectHideFlags: 0

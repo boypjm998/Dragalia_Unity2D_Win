@@ -10,59 +10,67 @@ public class StatusManager : MonoBehaviour
 
     public string displayedName;
     public int dialogIconID;
-    
-    [Header("Basic Attributes")]
-    
-    public int maxBaseHP;
-    [Range(1,1000)] public int baseDef = 10;
+
+    [Header("Basic Attributes")] public int maxBaseHP;
+    [Range(1, 1024)] public int baseDef = 10;
     public int baseAtk;
     public int critRate;
     public int maxHP;
     public int currentHp;
 
-    [Space(10)]
-    [Header("Resistances")]
-    public int knockbackRes = 0;
-    [SerializeField]protected int burnRes = 0;
-    [SerializeField]protected int poisonRes = 0;
-    [SerializeField]protected int frostbiteRes = 0;
-    [SerializeField]protected int paralysisRes = 0;
-    [SerializeField]protected int scorchrendRes = 0;
-    [SerializeField]protected int stormlashRes = 0;
-    [SerializeField]protected int flashburnRes = 0;
-    [SerializeField]protected int shadowblightRes = 0;
-    [SerializeField]protected int stunRes = 0;
-    [SerializeField]protected int sleepRes = 0;
-    [SerializeField]protected int bogRes = 0;
-    [SerializeField]protected int freezeRes = 0;
-    [SerializeField]protected int blindnessRes = 0;
-    [SerializeField]protected int cursedRes = 0;
+    public float comboConnectMaxInterval = 4.0f;
+    protected Coroutine calroutine; //Calculate Left Combo tim
+    public int comboHitCount = 0;
+    public float lastComboRemainTime { get; protected set; } = 0;
+    protected Coroutine comboRoutine = null;
+
+    [Space(10)] [Header("Resistances")] public int knockbackRes = 0;
+    [SerializeField] protected int burnRes = 0;
+    [SerializeField] protected int poisonRes = 0;
+    [SerializeField] protected int frostbiteRes = 0;
+    [SerializeField] protected int paralysisRes = 0;
+    [SerializeField] protected int scorchrendRes = 0;
+    [SerializeField] protected int stormlashRes = 0;
+    [SerializeField] protected int flashburnRes = 0;
+    [SerializeField] protected int shadowblightRes = 0;
+    [SerializeField] protected int stunRes = 0;
+    [SerializeField] protected int sleepRes = 0;
+    [SerializeField] protected int bogRes = 0;
+    [SerializeField] protected int freezeRes = 0;
+    [SerializeField] protected int blindnessRes = 0;
+    [SerializeField] protected int cursedRes = 0;
 
 
-    [Space(10)] [Header("Ability")] [SerializeField]protected List<int> abilityList = new();
+    [Space(10)] [Header("Ability")] [SerializeField]
+    protected List<int> abilityList = new();
 
     //public int 
 
     protected BattleStageManager _battleStageManager;
     protected BattleEffectManager _battleEffectManager;
 
-    
+
     public Coroutine healRoutine = null;
     public Dictionary<int, Coroutine> dotRoutineDict;
+    public Coroutine controlRoutine = null;
 
     public delegate void TestDelegate(BattleCondition condition);
+
     public TestDelegate OnBuffEventDelegate;
     public TestDelegate OnBuffDispelledEventDelegate;
+    public TestDelegate OnBuffExpiredEventDelegate;
+    public TestDelegate OnAfflictionResist;
 
     public delegate void SpecialBuffEventDelegate(string message);
+
     public SpecialBuffEventDelegate OnSpecialBuffDelegate;
 
     public delegate void StatusManagerVoidDelegate();
+
     public StatusManagerVoidDelegate OnHPBelow0;
     public StatusManagerVoidDelegate OnHPChange;
 
-    [SerializeField]
-    protected UI_ConditionBar _conditionBar;
+    [SerializeField] protected UI_ConditionBar _conditionBar;
 
     #region Buff Getter
 
@@ -75,7 +83,7 @@ public class StatusManager : MonoBehaviour
             else return 0;
         }
     }
-    
+
     public float defenseBuff
     {
         get
@@ -83,10 +91,10 @@ public class StatusManager : MonoBehaviour
             if (conditionList.Count > 0)
                 return GetDefenseBuff();
             else return 0;
-            
+
         }
     }
-    
+
     public float critRateBuff
     {
         get
@@ -96,7 +104,7 @@ public class StatusManager : MonoBehaviour
             else return 0;
         }
     }
-    
+
     public float critDmgBuff
     {
         get
@@ -106,13 +114,23 @@ public class StatusManager : MonoBehaviour
             else return 0;
         }
     }
-    
+
     public float skillDmgBuff
     {
         get
         {
             if (conditionList.Count > 0)
                 return GetSkillDamageBuff();
+            else return 0;
+        }
+    }
+
+    public float dmgCutBuff
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetDamageCut();
             else return 0;
         }
     }
@@ -127,12 +145,259 @@ public class StatusManager : MonoBehaviour
         }
     }
 
-    #endregion
+    public float burnPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetBurnPunisher();
+            else return 0;
+        }
+    }
     
+    public float poisonPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetPoisonPunisher();
+            else return 0;
+        }
+    }
     
+    public float frostbitePunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetFrostbitePunisher();
+            else return 0;
+        }
+    }
+    
+    public float paralysisPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetParalysisPunisher();
+            else return 0;
+        }
+    }
+    
+    public float scorchrendPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetScorchrendPunisher();
+            else return 0;
+        }
+    }
+    
+    public float stormlashPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetStormlashPunisher();
+            else return 0;
+        }
+    }
+    
+    public float flashburnPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetFlashburnPunisher();
+            else return 0;
+        }
+    }
+    
+    public float shadowblightPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetShadowblightPunisher();
+            else return 0;
+        }
+    }
+    
+    public float stunPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetStunPunisher();
+            else return 0;
+        }
+    }
+    
+    public float sleepPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetSleepPunisher();
+            else return 0;
+        }
+    }
+    
+    public float bogPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetBogPunisher();
+            else return 0;
+        }
+    }
+    
+    public float freezePunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetFreezePunisher();
+            else return 0;
+        }
+    }
+    
+    public float blindnessPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetBlindnessPunisher();
+            else return 0;
+        }
+    }
+    
+    public float conditionPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetConditionPunisher();
+            else return 0;
+        }
+    }
 
-    private int breakPunisherBuff = 0;
-    private int punisherBuff = 0;
+    public float breakPunisher
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetBreakPunisher();
+            else return 0;
+        }
+    }
+
+    public int KnockbackRes => GetKBRes();
+
+    #region AfflictionRes
+
+    public int FlashburnRes 
+    {
+        get
+        {
+            return (int)(flashburnRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.FlashburnRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.FlashburnResDown));
+        }
+    }
+    
+    public int BurnRes
+    {
+        get
+        {
+            print((int)(burnRes +
+                        GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnRes) -
+                        GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnResDown)));
+            return (int)(burnRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnRes) -
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnResDown));
+        }
+    }
+    
+    public int PoisonRes
+    {
+        get
+        {
+            return (int)(poisonRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonResDown));
+        }
+    }
+    
+    public int ParalysisRes
+    {
+        get
+        {
+            return (int)(paralysisRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.ParalysisRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.ParalysisResDown));
+        }
+    }
+    
+    public int FrostbiteRes
+    {
+        get
+        {
+            return (int)(frostbiteRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteResDown));
+        }
+    }
+    
+    public int ScorchrendRes
+    {
+        get
+        {
+            return (int)(scorchrendRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.ScorchrendRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.ScorchrendResDown));
+        }
+    }
+    
+    public int StormlashRes
+    {
+        get
+        {
+            return (int)(stormlashRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.StormlashRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.StormlashResDown));
+        }
+    }
+    
+    public int ShadowblightRes
+    {
+        get
+        {
+            return (int)(shadowblightRes +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.ShadowBlightRes) +
+                GetConditionTotalValue((int)BasicCalculation.BattleCondition.ShadowBlightResDown));
+        }
+    }
+    
+    public int StunRes
+    {
+        get
+        {
+            return (int)(stunRes +
+                         GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunRes)); 
+            //+GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunResDown));
+        }
+    }
+
+
+    #endregion
+    public float ODAccerator => GetODAccelerator();
+
+
+    #endregion
 
     private int knockbackPowerBuff;
 
@@ -140,20 +405,18 @@ public class StatusManager : MonoBehaviour
 
 
     //Defensive Buff
-    
-    [SerializeField] protected int damageCut = 0;
-    [SerializeField] protected int damageCutConst = 0;
+
     protected int lifeShield;
     public bool waitForRevive = false;
     protected bool knockbackImmune = false;
-    
+
     protected int healBuffNum = 0;
 
     public List<BattleCondition> conditionList;
 
-    
-    
-    
+
+
+
 
     protected virtual void Awake()
     {
@@ -165,8 +428,8 @@ public class StatusManager : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        _battleStageManager = FindObjectOfType<BattleStageManager>();
-        _battleEffectManager = FindObjectOfType<BattleEffectManager>();
+        _battleStageManager = BattleStageManager.Instance;
+        _battleEffectManager = BattleEffectManager.Instance;
         maxHP = maxBaseHP;
         currentHp = maxBaseHP;
     }
@@ -177,15 +440,16 @@ public class StatusManager : MonoBehaviour
         HPCheck();
         ConditionTick();
         StatusLimitCheck();
-        
+
     }
 
     protected virtual void HPCheck()
     {
-        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+        if (GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
         if (currentHp <= 0)
         {
+
             //waitForRevive = true;
             OnHPBelow0?.Invoke();
         }
@@ -202,7 +466,55 @@ public class StatusManager : MonoBehaviour
         {
             currentHp = 0;
         }
-        
+
+    }
+
+    public virtual void ComboConnect()
+    {
+        comboHitCount++;
+
+        lastComboRemainTime = comboConnectMaxInterval;
+        if (comboRoutine != null)
+            StopCoroutine(comboRoutine);
+        comboRoutine = StartCoroutine(ComboCheck());
+    }
+
+    protected virtual IEnumerator ComboCheck()
+    {
+        if (comboHitCount > 0)
+        {
+            lastComboRemainTime = comboConnectMaxInterval;
+            if (calroutine == null)
+            {
+                calroutine = StartCoroutine(CalculateRemain(comboConnectMaxInterval));
+            }
+            else
+            {
+                StopCoroutine(calroutine);
+                calroutine = null;
+                calroutine = StartCoroutine(CalculateRemain(comboConnectMaxInterval));
+            }
+
+            yield return new WaitForSeconds(comboConnectMaxInterval);
+            comboHitCount = 0;
+
+            StopCoroutine(calroutine);
+            calroutine = null;
+
+            lastComboRemainTime = 0;
+        }
+    }
+
+    protected IEnumerator CalculateRemain(float time)
+    {
+        //calculate remmain combo last time.
+        lastComboRemainTime = time;
+        while (time > 0)
+        {
+            time -= Time.deltaTime;
+            lastComboRemainTime = time;
+            yield return null;
+        }
     }
 
     public float GetAttackBuff()
@@ -258,7 +570,7 @@ public class StatusManager : MonoBehaviour
                 totalbuff += GetSpecialDefenseBuff(condition.buffID);
             }
         }
-        
+
         if (totalbuff > 200)
         {
             return 2;
@@ -292,9 +604,10 @@ public class StatusManager : MonoBehaviour
                 totalbuff += GetSpecialCritBuff(condition.buffID);
             }
         }
+
         return totalbuff > 200 ? 200 : (int)totalbuff;
     }
-    
+
     public float GetCritDamageBuff()
     {
         float totalbuff = 0;
@@ -314,7 +627,7 @@ public class StatusManager : MonoBehaviour
                 totalbuff += GetSpecialCritDamageBuff(condition.buffID);
             }
         }
-        
+
         if (totalbuff > 500)
         {
             return 5;
@@ -345,10 +658,10 @@ public class StatusManager : MonoBehaviour
             }
             else
             {
-                totalbuff += GetSpecialSkillDamageBuff(condition.buffID);
+                totalbuff += GetSpecialSkillDamageBuff(condition.buffID,condition.effect);
             }
         }
-        
+
         if (totalbuff > 200)
         {
             return 2;
@@ -371,10 +684,10 @@ public class StatusManager : MonoBehaviour
         {
             if (condition.buffID == 5)
             {
-                if(condition.effect > 0)
+                if (condition.effect > 0)
                     totalbuff += condition.effect;
             }
-            
+
             else
             {
                 totalbuff += GetSpecialRecoveryPotency(condition.buffID);
@@ -392,15 +705,16 @@ public class StatusManager : MonoBehaviour
         {
             if (condition.buffID == 5)
             {
-                if(condition.effect < 0)
+                if (condition.effect < 0)
                     totalbuff -= condition.effect;
             }
-            
+
         }
 
         return totalbuff;
     }
-   // 治疗效果增加
+
+    // 治疗效果增加
     protected float GetRecoveryBuff()
     {
         //治疗效果UP.
@@ -421,7 +735,7 @@ public class StatusManager : MonoBehaviour
                 totalbuff += GetSpecialSkillDamageBuff(condition.buffID);
             }
         }
-        
+
         if (totalbuff > 200)
         {
             return 2;
@@ -434,11 +748,191 @@ public class StatusManager : MonoBehaviour
         {
             return 0.01f * (float)totalbuff;
         }
-        
+
+    }
+
+    #region punisherbuffs
+
+    
+
+    
+    protected float GetBurnPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.BurnPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetFreezePunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.FreezePunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetPoisonPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.PoisonPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetParalysisPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.ParalysisPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetStunPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.StunPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetSleepPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.SleepPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetBogPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.BogPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetBlindnessPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.BlindnessPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetFlashburnPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.FlashburnPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetScorchrendPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.ScorchrendPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetShadowblightPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.ShadowblightPunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetFrostbitePunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.FrostbitePunisher));
+        return totalbuff/100f;
+    }
+    
+    protected float GetStormlashPunisher()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.StormlashPunisher));
+        return totalbuff/100f;
+    }
+
+    protected float GetConditionPunisher()
+    {
+        return 0;
+    }
+
+    protected float GetBreakPunisher()
+    {
+        float totalbuff = 0;
+        return totalbuff;
+    }
+
+    protected float GetODAccelerator()
+    {
+        float totalbuff = 0;
+        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.OverdriveAccerlerator));
+        return totalbuff/100f;
+    }
+
+    #endregion
+
+    #region RateBuffs
+
+    protected int GetBurnRateUpBuff()
+    {
+        int totalbuff = 0;
+        foreach (var condition in conditionList)
+        {
+            if (condition.buffID == 112)
+            {
+                totalbuff += 30;
+            }
+
+            if (condition.buffID == 61)
+            {
+                totalbuff += (int)condition.effect;
+            }
+
+        }
+
+        return totalbuff;
+    }
+
+
+    #endregion
+    
+    
+    public int GetKBRes()
+    {
+        int totalbuff = knockbackRes;
+        if(GetConditionStackNumber((int)(BasicCalculation.BattleCondition.KnockBackImmune))> 0)
+        {
+            return 999;
+        }
+        if(GetConditionStackNumber((int)(BasicCalculation.BattleCondition.HolyFaith))> 0)
+        {
+            return 999;
+        }
+
+        return totalbuff;
     }
 
     /// <summary>
-    /// 访问抗性
+    /// 
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    public int GetConditionRateBuff(BasicCalculation.BattleCondition condition)
+    {
+        int extraChance = 0;
+        if (IsDotAffliction((int)condition) || IsControlAffliction((int)condition))
+        {
+            switch (condition)
+            {
+                case BasicCalculation.BattleCondition.Burn:
+                    extraChance = burnRes + GetBurnRateUpBuff();
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+        return extraChance;
+    }
+
+    /// <summary>
+    /// 访问抗性,后续需要修改添加
     /// </summary>
     /// <param name="condition"></param>
     /// <returns></returns>
@@ -450,39 +944,52 @@ public class StatusManager : MonoBehaviour
             switch (condition)
             {
                 case BasicCalculation.BattleCondition.Flashburn:
-                    res = flashburnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FlashburnRes);
+                    res = FlashburnRes;
                     break;
                 case BasicCalculation.BattleCondition.Burn:
-                    res = burnRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BurnRes);break;
+                    res = BurnRes;
+                    break;
                 case BasicCalculation.BattleCondition.Scorchrend:
-                    res = scorchrendRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ScorchrendRes);break;
+                    res = ScorchrendRes;
+                    break;
                 case BasicCalculation.BattleCondition.Poison:
-                    res = poisonRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes);break;
+                    res = PoisonRes;
+                    break;
                 case BasicCalculation.BattleCondition.Freeze:
-                    res = freezeRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FreezeRes);break;
+                    res = freezeRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FreezeRes);
+                    break;
                 case BasicCalculation.BattleCondition.Cursed:
-                    res = cursedRes;break;
+                    res = cursedRes;
+                    break;
                 case BasicCalculation.BattleCondition.Paralysis:
-                    res = paralysisRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.ParalysisRes);break;
+                    res = ParalysisRes;
+                    break;
                 case BasicCalculation.BattleCondition.Frostbite:
-                    res = frostbiteRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes);break;
+                    res = FrostbiteRes;
+                    break;
                 case BasicCalculation.BattleCondition.Sleep:
-                    res = sleepRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.SleepRes);break;
+                    res = sleepRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.SleepRes);
+                    break;
                 case BasicCalculation.BattleCondition.Stun:
-                    res = stunRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunRes);break;
+                    res = stunRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.StunRes);
+                    break;
                 case BasicCalculation.BattleCondition.Blindness:
-                    res = blindnessRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BlindnessRes);break;
+                    res = blindnessRes +
+                          (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BlindnessRes);
+                    break;
                 case BasicCalculation.BattleCondition.Bog:
-                    res = bogRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BogRes);break;
+                    res = bogRes + (int)GetConditionTotalValue((int)BasicCalculation.BattleCondition.BogRes);
+                    break;
                 default:
                     break;
             }
 
             //return res;
         }
+
         //Debug.LogWarning("No Such Resistance");
         return res;
-        
+
 
     }
 
@@ -494,57 +1001,82 @@ public class StatusManager : MonoBehaviour
             default:
                 break;
             case BasicCalculation.BattleCondition.Scorchrend:
+                if(scorchrendRes>=100)
+                    return;
                 scorchrendRes += 5;
                 scorchrendRes = scorchrendRes >= 100 ? 99 : scorchrendRes;
                 break;
             case BasicCalculation.BattleCondition.Flashburn:
+                if(flashburnRes>=100)
+                    return;
                 flashburnRes += 5;
                 flashburnRes = flashburnRes >= 100 ? 99 : flashburnRes;
                 break;
             case BasicCalculation.BattleCondition.Burn:
+                if(burnRes>=100)
+                    return;
                 burnRes += 5;
                 burnRes = burnRes >= 100 ? 99 : burnRes;
                 break;
             case BasicCalculation.BattleCondition.Paralysis:
+                if(paralysisRes>=100)
+                    return;
                 paralysisRes += 5;
                 paralysisRes = paralysisRes >= 100 ? 99 : paralysisRes;
                 break;
             case BasicCalculation.BattleCondition.Poison:
+                if(poisonRes>=100)
+                    return;
                 poisonRes += 5;
                 poisonRes = poisonRes >= 100 ? 99 : poisonRes;
                 break;
             case BasicCalculation.BattleCondition.Stormlash:
+                if (stormlashRes >= 100)
+                    return;
                 stormlashRes += 5;
                 stormlashRes = stormlashRes >= 100 ? 99 : stormlashRes;
                 break;
             case BasicCalculation.BattleCondition.ShadowBlight:
+                if(shadowblightRes>=100)
+                    return;
                 shadowblightRes += 5;
                 shadowblightRes = shadowblightRes >= 100 ? 99 : shadowblightRes;
                 break;
             case BasicCalculation.BattleCondition.Frostbite:
+                if (frostbiteRes>= 100)
+                    return;
                 frostbiteRes += 5;
                 frostbiteRes = frostbiteRes >= 100 ? 99 : frostbiteRes;
                 break;
             case BasicCalculation.BattleCondition.Freeze:
-                freezeRes += 20;
+                if(freezeRes < 100)
+                    freezeRes += 20;
                 break;
             case BasicCalculation.BattleCondition.Blindness:
-                blindnessRes += 20;
+                if (blindnessRes < 100)
+                {
+                    blindnessRes += 20;
+                }
                 break;
             case BasicCalculation.BattleCondition.Bog:
-                bogRes += 20;
+                if(bogRes<100)
+                    bogRes += 20;
                 break;
             case BasicCalculation.BattleCondition.Stun:
-                stunRes += 20;
+                if(stunRes<100)
+                    stunRes += 20;
                 break;
             case BasicCalculation.BattleCondition.Sleep:
-                sleepRes += 20;
+                if (sleepRes < 100)
+                {
+                    sleepRes += 20; 
+                }
                 break;
             case BasicCalculation.BattleCondition.Cursed:
                 cursedRes += 20;
                 break;
         }
-        
+
 
     }
 
@@ -589,7 +1121,21 @@ public class StatusManager : MonoBehaviour
 
     public float GetDamageCutConst()
     {
-        return damageCutConst;
+        float totalbuff = 0;
+        //返回一个float.
+        foreach (var condition in conditionList)
+        {
+            if (condition.buffID == 11)
+            {
+                totalbuff += condition.effect;
+            }
+            else
+            {
+                //totalbuff += GetSpecialDamageCut(condition.buffID);
+            }
+        }
+
+        return totalbuff;
     }
 
     private float GetSpecialAttackBuff(int buffID)
@@ -598,22 +1144,39 @@ public class StatusManager : MonoBehaviour
         {
             case 102:
                 return 50;
+            case 106:
+                return 30;
             default:
                 return 0;
         }
     }
+
     private float GetSpecialCritBuff(int conditionBuffID)
     {
         return 0;
     }
+
     private float GetSpecialDefenseBuff(int conditionBuffID)
     {
         return 0;
     }
-    private float GetSpecialSkillDamageBuff(int conditionBuffID)
+
+    private float GetSpecialSkillDamageBuff(int conditionBuffID, float effect = -1f)
     {
+        switch (conditionBuffID)
+        {
+            case 112:
+            {
+                if (effect == 1)
+                    return 10;
+                else if (effect == 2)
+                    return 30;
+                break;
+            }
+        }
         return 0;
     }
+
     private float GetSpecialCritDamageBuff(int conditionBuffID)
     {
         return 0;
@@ -621,16 +1184,26 @@ public class StatusManager : MonoBehaviour
 
     private float GetSpecialRecoveryPotency(int conditionBuffID)
     {
+        switch (conditionBuffID)
+        {
+            case 106:
+                return 1.2f;
+        }
         return 0;
     }
-    
+
     private float GetSpecialRecoveryBuff(int conditionBuffID)
     {
         return 0;
     }
-    
+
     private float GetSpecialDamageCut(int conditionBuffID)
     {
+        switch (conditionBuffID)
+        {
+            case 103:
+                return 50;
+        }
         return 0;
     }
 
@@ -640,6 +1213,7 @@ public class StatusManager : MonoBehaviour
             return true;
         return false;
     }
+
     public static bool IsControlAffliction(int buffID)
     {
         if (buffID > 410 && buffID < 417)
@@ -649,154 +1223,237 @@ public class StatusManager : MonoBehaviour
 
     ///Get a new Timerbuff
     public virtual void ObtainTimerBuff(int buffID, float effect, float duration,
-        BattleCondition.buffEffectDisplayType type, int maxStack, int spID)
+        int maxStack, int spID)
     {
-        RemoveBuffIfReachedLimit(buffID, maxStack,spID);
-        var buff = new TimerBuff(buffID, effect, duration, type, maxStack, spID);
-        
-        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+        //检测虚无状态
+        if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
+        {
+            if (buffID <= 100 && !BasicCalculation.conditionsImmuneToNihility.Contains(buffID))
+                return;
+        }
+
+
+        RemoveBuffIfReachedLimit(buffID, maxStack, spID);
+        var buff = new TimerBuff(buffID, effect, duration, maxStack, spID);
+
+        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count == 0)
         {
             if (dotRoutineDict.ContainsKey(buffID))
             {
                 Coroutine oldRoutine;
-                dotRoutineDict.Remove(buffID,out oldRoutine);
+                dotRoutineDict.Remove(buffID, out oldRoutine);
                 StopCoroutine(oldRoutine);
             }
+
             var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
-            dotRoutineDict.Add(buffID,newRoutine);
+            dotRoutineDict.Add(buffID, newRoutine);
         }
         else
         {
-            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+            _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
         }
 
         conditionList.Add(buff);
-        
-        _conditionBar?.OnConditionAdd(buff);
-        
-        OnBuffEventDelegate?.Invoke(buff);
-  }
-    
 
-    public virtual void ObtainTimerBuff(int buffID,float effect, float duration, BattleCondition.buffEffectDisplayType type)
+        if (buffID == 300)
+        {
+            ResetAllBuffByNil();
+        }
+
+        _conditionBar?.OnConditionAdd(buff);
+
+        OnBuffEventDelegate?.Invoke(buff);
+    }
+
+
+    public virtual void ObtainTimerBuff(int buffID, float effect, float duration)
     {
 
-        var buff = new TimerBuff(buffID, effect, duration, type, BasicCalculation.MAXCONDITIONSTACKNUMBER);
+        if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
+        {
+            if (buffID <= 100 && !BasicCalculation.conditionsImmuneToNihility.Contains(buffID))
+                return;
+        }
+
+        var buff = new TimerBuff(buffID, effect, duration, BasicCalculation.MAXCONDITIONSTACKNUMBER);
 
         RemoveBuffIfReachedLimit(buffID);
-        
-        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+
+        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count == 0)
         {
             if (dotRoutineDict.ContainsKey(buffID))
             {
                 Coroutine oldRoutine;
-                dotRoutineDict.Remove(buffID,out oldRoutine);
+                dotRoutineDict.Remove(buffID, out oldRoutine);
                 StopCoroutine(oldRoutine);
             }
+
             var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
-            dotRoutineDict.Add(buffID,newRoutine);
+            dotRoutineDict.Add(buffID, newRoutine);
         }
         else
         {
-            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+            _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
         }
-        
+
         conditionList.Add(buff);
 
+        if (GetRecoveryPotency() > 0 && healRoutine == null)
+        {
+            healRoutine = StartCoroutine(HotRecoveryTick());
+        }
+
+        if (buffID == 300)
+        {
+            ResetAllBuffByNil();
+        }
+
         _conditionBar?.OnConditionAdd(buff);
-        
+
         OnBuffEventDelegate?.Invoke(buff);
 
     }
 
-    public void ObtainTimerBuff(BattleCondition condition)
+    public void ObtainTimerBuff(BattleCondition condition, bool effect = true)
     {
-        RemoveBuffIfReachedLimit(condition.buffID, condition.maxStackNum,condition.specialID);
 
-        if (IsDotAffliction(condition.buffID) && GetConditionsOfType(condition.buffID).Count==0)
+        if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
+        {
+            if (condition.buffID < 100 && !BasicCalculation.conditionsImmuneToNihility.Contains(condition.buffID) &&
+                condition.dispellable)
+                return;
+        }
+
+
+        RemoveBuffIfReachedLimit(condition.buffID, condition.maxStackNum, condition.specialID);
+
+        if (IsDotAffliction(condition.buffID) && GetConditionsOfType(condition.buffID).Count == 0)
         {
             if (dotRoutineDict.ContainsKey(condition.buffID))
             {
                 Coroutine oldRoutine;
-                dotRoutineDict.Remove(condition.buffID,out oldRoutine);
+                dotRoutineDict.Remove(condition.buffID, out oldRoutine);
                 StopCoroutine(oldRoutine);
             }
+
             var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)(condition.buffID)));
-            dotRoutineDict.Add(condition.buffID,newRoutine);
+            dotRoutineDict.Add(condition.buffID, newRoutine);
         }
-        else
+        else if (effect)
         {
-            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)(condition.buffID));
+            _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)(condition.buffID));
         }
 
         conditionList.Add(condition);
-        
+
+        if (GetRecoveryPotency() > 0 && healRoutine == null)
+        {
+            healRoutine = StartCoroutine(HotRecoveryTick());
+        }
+
+        if (condition.buffID == 300)
+        {
+            ResetAllBuffByNil();
+        }
+
         _conditionBar?.OnConditionAdd(condition);
-        
+
         OnBuffEventDelegate?.Invoke(condition);
     }
 
     /// <summary>
     ///   <para>给自身附加多层同类BUFF.</para>
     /// </summary>
-    public virtual void ObtainTimerBuffs(int buffID, float duration, BattleCondition.buffEffectDisplayType type,
+    public virtual void ObtainTimerBuffs(int buffID, float duration,
         int stackNum, int maxStack, int spID)
     {
-        
+        if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
+        {
+            if (buffID <= 100 && !BasicCalculation.conditionsImmuneToNihility.Contains(buffID))
+                return;
+        }
 
-        var buff = new TimerBuff(buffID, 0, duration, type, maxStack, spID);
-        
-        _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+        var buff = new TimerBuff(buffID, 0, duration, maxStack, spID);
+
+        _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
 
         for (int i = 0; i < stackNum; i++)
         {
             conditionList.Add(buff);
         }
-        
+
         RemoveBuffIfReachedLimit(buffID, maxStack);
-        
+
+        if (GetRecoveryPotency() > 0 && healRoutine == null)
+        {
+            healRoutine = StartCoroutine(HotRecoveryTick());
+        }
+
+        if (buffID == 300)
+        {
+            ResetAllBuffByNil();
+        }
+
         OnBuffEventDelegate?.Invoke(buff);
-        
+
         _conditionBar?.OnConditionAdd(buff);
-        
-        
-  
+
+
+
     }
 
     // Get a new Unstackable Timerbuff
     public virtual void ObtainUnstackableTimerBuff(int buffID, float effect, float duration,
-        BattleCondition.buffEffectDisplayType type, int spID)
+        int spID = -1)
     {
-        OverrideUnstackableBuff(buffID, spID, effect,duration);
-        
-        var buff = new TimerBuff(buffID, effect, duration, type, 1);
-        
-        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+
+        if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
+        {
+            if (buffID <= 100 && !BasicCalculation.conditionsImmuneToNihility.Contains(buffID))
+                return;
+        }
+
+        OverrideUnstackableBuff(buffID, spID, effect, duration);
+
+        var buff = new TimerBuff(buffID, effect, duration, 1);
+
+        if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count == 0)
         {
             if (dotRoutineDict.ContainsKey(buffID))
             {
                 Coroutine oldRoutine;
-                dotRoutineDict.Remove(buffID,out oldRoutine);
+                dotRoutineDict.Remove(buffID, out oldRoutine);
                 StopCoroutine(oldRoutine);
             }
+
             var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
-            dotRoutineDict.Add(buffID,newRoutine);
+            dotRoutineDict.Add(buffID, newRoutine);
         }
         else
         {
-            _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+            _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
         }
 
         buff.SetUniqueBuffInfo(spID);
-        
+
         conditionList.Add(buff);
-        
+
+        if (GetRecoveryPotency() > 0 && healRoutine == null)
+        {
+            healRoutine = StartCoroutine(HotRecoveryTick());
+        }
+
+        if (buffID == 300)
+        {
+            ResetAllBuffByNil();
+        }
+
         _conditionBar?.OnConditionAdd(buff);
-        
+
         OnBuffEventDelegate?.Invoke(buff);
     }
 
-    public virtual void DispellTimerBuff()
+    public virtual bool DispellTimerBuff()
     {
         for (int i = conditionList.Count - 1; i >= 0; i--)
         {
@@ -805,17 +1462,38 @@ public class StatusManager : MonoBehaviour
                 //OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
                 RemoveConditionWithLog(conditionList[i]);
                 //驱散特效
-                _battleEffectManager.SpawnEffect(gameObject,BasicCalculation.BattleCondition.Dispell);
-                return;
+                _battleEffectManager.SpawnEffect(gameObject, BasicCalculation.BattleCondition.Dispell);
+                return true;
             }
         }
+
+        return false;
     }
 
-    public virtual void RemoveCondition(BattleCondition buff)
+    public void ReliefAllDebuff()
+    {
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (conditionList[i].buffID <= 400 && conditionList[i].buffID > 200)
+            {
+                //OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
+                RemoveCondition(conditionList[i]);
+
+                _battleEffectManager.SpawnEffect(gameObject, BasicCalculation.BattleCondition.AtkBuff);
+
+            }
+        }
+
+        OnSpecialBuffDelegate?.Invoke("ReliefAllDebuff");
+    }
+
+    protected virtual void RemoveCondition(BattleCondition buff)
     {
         conditionList.Remove(buff);
         _conditionBar?.OnConditionRemove(buff.buffID);
+        OnBuffExpiredEventDelegate?.Invoke(buff);
     }
+
     public virtual void RemoveConditionWithLog(BattleCondition buff)
     {
         conditionList.Remove(buff);
@@ -857,7 +1535,7 @@ public class StatusManager : MonoBehaviour
         return value;
     }
 
-    
+
     /// <summary>
     ///   <para>返回所有BuffID相同的Condition</para>
     ///     <para>Get all conditions of same type, can used in buffstack calculation.</para>
@@ -866,12 +1544,12 @@ public class StatusManager : MonoBehaviour
     {
         return conditionList.Where(t => (t.buffID == buffID)).ToList();
     }
-    
+
     /// <summary>
     ///   <para>返回所有BuffID相同且组内ID相同的Condition</para>
     ///     <para>Get all conditions of same type and special ID.</para>
     /// </summary>
-    public List<BattleCondition> GetExactConditionsOfType(int buffID,int spID)
+    public List<BattleCondition> GetExactConditionsOfType(int buffID, int spID)
     {
         //spid default is -1
         return conditionList.Where(t => (t.buffID == buffID) && (t.specialID == spID)).ToList();
@@ -896,17 +1574,44 @@ public class StatusManager : MonoBehaviour
     /// <summary>
     ///   <para>移除角色一个最早的Condition</para>
     /// </summary>
-    public bool RemoveTimerBuff(int buffID)
+    public bool RemoveTimerBuff(int buffID, bool log = false)
     {
         //角色访问移除BUFF的唯一途径！
         var list = GetExactConditionsOfType(buffID, -1);
         if (list.Count > 0)
         {
-            RemoveCondition(list[0]);
+            if (log)
+            {
+                RemoveConditionWithLog(list[0]);
+            }
+            else
+            {
+                RemoveCondition(list[0]);
+            }
+
             return true;
         }
         else return false;
 
+    }
+
+    public bool RemoveSpecificTimerbuff(int buffID, int spID, bool log = false)
+    {
+        var list = GetExactConditionsOfType(buffID, spID);
+        if (list.Count > 0)
+        {
+            if (log)
+            {
+                RemoveConditionWithLog(list[0]);
+            }
+            else
+            {
+                RemoveCondition(list[0]);
+            }
+
+            return true;
+        }
+        else return false;
     }
 
     public virtual void ResetAllStatus()
@@ -922,6 +1627,23 @@ public class StatusManager : MonoBehaviour
             RemoveCondition(conditionList[i]);
         }
         OnSpecialBuffDelegate?.Invoke("Reset");
+    }
+    
+    public virtual void ResetAllBuffByNil()
+    {
+        
+        for (int i = conditionList.Count-1; i >= 0; i--)
+        {
+            if(conditionList[i].dispellable == false)
+                continue;
+            if(BasicCalculation.conditionsImmuneToNihility.Contains(conditionList[i].buffID))
+                continue;
+            if(conditionList[i].buffID > 200)
+                continue;
+
+            RemoveCondition(conditionList[i]);
+        }
+        //OnSpecialBuffDelegate?.Invoke("Reset");
     }
     
     public virtual void ResetAllStatusForced()
@@ -1016,9 +1738,9 @@ public class StatusManager : MonoBehaviour
         BattleCondition cond = null;
         foreach (var condition in conditionList)
         {
-            if (condition.buffID == buffID)
+            if (condition.buffID == buffID && spID == condition.specialID)
             {
-                if (condition.effect <= effect || condition.lastTime < duration)
+                if (condition.effect <= effect || (condition.lastTime < duration && condition.duration>0))
                 {
                     cond = condition;
                     break;
@@ -1138,6 +1860,7 @@ public class StatusManager : MonoBehaviour
     {
         return abilityList.Contains(abilityID);
     }
+
     
 
 

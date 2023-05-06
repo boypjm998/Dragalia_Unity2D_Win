@@ -23,6 +23,8 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+
         if (transform.rotation.eulerAngles.y == 180 && !isRanged)
         {
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x,

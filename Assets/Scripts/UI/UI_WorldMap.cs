@@ -59,7 +59,7 @@ public class UI_WorldMap : MonoBehaviour
         //print();
         content.transform.DOLocalMove(startPosition - 2*(Vector3)spot.mapSpotPosition, 0.5f);
 
-        print(-spot.mapSpotPosition);
+        //print(-spot.mapSpotPosition);
 
 
 

@@ -17,7 +17,8 @@ public class MenuUIManager : MonoBehaviour
     private Dictionary<string, UISortingGroup> UIDict;
     private GlobalController _globalController;
     public Stack<int> menuLevelStack;
-    
+    public static MenuUIManager Instance { get;private set; }
+
     public enum UIState
     {
         Active,
@@ -27,6 +28,7 @@ public class MenuUIManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         menuLevelStack = new Stack<int>();
         menuLevelStack.Push(0);
         InitAllChildrenElements();
@@ -51,8 +53,13 @@ public class MenuUIManager : MonoBehaviour
         }
         foreach (var ui in uiSortingGroups)
         {
-            if(!ui.isActive)
-             ui.gameObject.SetActive(false);
+            if (!ui.isActive)
+            {
+                ui.gameObject.SetActive(false);
+                print("UI因为不是active而被关闭");
+            }
+
+            
         }
         
     }
@@ -60,7 +67,7 @@ public class MenuUIManager : MonoBehaviour
 
 
 
-    public IEnumerator HideGUI(GameObject obj,Vector3 localPosition, float animStartTime,float animDuration)
+    public IEnumerator HideGUI(GameObject obj,Vector3 localPosition, float animStartTime,float animDuration,bool disable = true)
     {
         GUIAnimCount++;
 
@@ -74,7 +81,9 @@ public class MenuUIManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(animDuration);
         
         //_sequence.Append(obj.transform.DOLocalMove(localPosition, 0.5f));
-        obj.SetActive(false);
+        if(disable)
+            obj.SetActive(false);
+        print("UI因为hideGUI而被关闭");
 
         GUIAnimCount--;
     }
@@ -94,6 +103,7 @@ public class MenuUIManager : MonoBehaviour
         
         //_sequence.Append(obj.transform.DOLocalMove(localPosition, 0.5f));
         obj.SetActive(false);
+        print("UI因为hideGUI而被关闭");
 
         GUIAnimCount--;
     }
@@ -111,6 +121,7 @@ public class MenuUIManager : MonoBehaviour
         
         //_sequence.Append(obj.transform.DOLocalMove(localPosition, 0.5f));
         canv.gameObject.SetActive(false);
+        print("UI因为hideGUI而被关闭");
         GUIAnimCount--;
     }
 
@@ -226,6 +237,20 @@ public class MenuUIManager : MonoBehaviour
 
 
     }
+
+    private void RefreshLevelPage(UISortingGroup _parent, float startTime, float duration)
+    {
+        if(!_parent.isActive)
+            return;
+        
+        _parent.isActive = false;
+        
+        StartCoroutine
+        (HideGUI
+            (_parent.gameObject, _parent._hideLocalPosition, startTime, duration,false));
+        
+    }
+
     public void Display(UISortingGroup _parent, float startTime,float duration)
     {
         if(_parent.isActive)
@@ -328,6 +353,7 @@ public class MenuUIManager : MonoBehaviour
             var asset = ab.LoadAsset<GameObject>(name);
             var obj = Instantiate(asset, transform);
             obj.SetActive(false);
+            print("因为实例化而被禁用");
             obj.name = name;
             uiSortingGroup = obj.GetComponent<UISortingGroup>();
             UIDict.Add(name,uiSortingGroup);
@@ -395,10 +421,13 @@ public class MenuUIManager : MonoBehaviour
     private IEnumerator ReloadLevelSelectionMenuRoutine(int menuID)
     {
         GUIAnimCount++;
-        var menuObj = UIDict["LevelSelectionMenu"].gameObject;
-        Hide(menuObj.GetComponent<UISortingGroup>(), 0, 0.15f);
+        var menuObj = UIDict["LevelSelection"].gameObject;
+        RefreshLevelPage(menuObj.GetComponent<UISortingGroup>(), 0, 0.15f);
         yield return new WaitForSecondsRealtime(0.15f);
+        
         menuObj.GetComponent<UI_LevelSelection>().Reload(menuID);
+        yield return null;
+        
         Display(menuObj.GetComponent<UISortingGroup>(), 0, 0.15f);
         yield return new WaitForSecondsRealtime(0.15f);
         GUIAnimCount--;
@@ -411,28 +440,43 @@ public class MenuUIManager : MonoBehaviour
         
         string questIDStr = questID.ToString();
         //如果questIDStr长度不足6位，就在前面补0
-        questIDStr = questIDStr.PadLeft(6,'0');
+        questIDStr = questIDStr.PadLeft(5,'0');
+        //改写ID
+
+        if (questID == 100001)
+        {
+            _globalController.EnterPrologue();
+        }
+        else
+        {
+            _globalController.TestEnterLevel(questIDStr);
+        }
+
         
-        _globalController.TestEnterLevel(questIDStr);
     }
 
     public void ToNextUIState(int toState,bool animation = true)
     {
-        SwitchUIState(toState,animation);
+        SwitchUIState(toState,animation,false,menuLevelStack.Peek());
     }
     public void ToPreviousUIState(bool animation = true)
     {
-        menuLevelStack.Pop();
-        //打印出全部的栈
-        foreach (var i in menuLevelStack)
-        {
-            print(i);
-        }
+        var poped = menuLevelStack.Pop();
         
-        SwitchUIState(menuLevelStack.Peek(),animation,true);
+         foreach (var i in menuLevelStack)
+         {
+             print(i);
+         }
+        
+        if (poped.ToString().Length >= 6 && poped.ToString()[0]=='9')
+        {
+            
+        }
+
+        SwitchUIState(menuLevelStack.Peek(),animation,true,poped);
     }
     
-    public void SwitchUIState(int toState,bool animation,bool pop = false)
+    public void SwitchUIState(int toState,bool animation,bool pop = false, int fromState = -1)
     {
         print("SwitchUIStateToState:"+toState);
         string[] activeList = {};
@@ -441,19 +485,27 @@ public class MenuUIManager : MonoBehaviour
          * 0: 主菜单
          * 101: 地图
          * 1010: 关卡选单
-         * 1010(XXXYZ): XXX为地图ID，Y为关卡ID，Z为难度ID
+         * 1010XXXKK(YYZ): XXX为地图ID，K为关卡系列ID，Y为关卡标题ID，Z为难度ID
+         * 比如席菈的试炼关卡为1010 101(mapSpot为101，代表试炼场) 01(巫女的试炼) 01(席菈的试炼) 3(超级)
+         * 进入关卡时，tobattle只需要传入后五位数（01013）既可，前方的0可以省略，只传入有效数字。
+         * 加载关卡选单的子菜单时，至少传入6位ID:9XXXKK(第一位必须是9)
          * 102: 角色选择
          * 103: 设置
          * 1021: 角色详细信息
          */
         
         //如果toState的前四位是1010，return
-        if (toState.ToString().Length == 9 && toState.ToString()[..4] == "1010")
+        if (toState.ToString().Length >= 6 && toState.ToString()[0] == '9')
         {
-            SwitchLevelSelectionMenu(toState,pop);
-            return;
+             SwitchLevelSelectionMenu(toState,pop);
+             return;
         }
-        
+
+        if (toState == 1010 && fromState.ToString()[0] == '9')
+        {
+            SwitchLevelSelectionMenu(GlobalController.lastQuestSpot,pop);
+        }
+
         switch (toState)
         {
             case 0:
@@ -502,6 +554,8 @@ public class MenuUIManager : MonoBehaviour
             menuLevelStack.Push(toState);
 
     }
+
+    
 
     private void SwitchLevelSelectionMenu(int menuID,bool pop)
     {
@@ -613,8 +667,8 @@ public class MenuUIManager : MonoBehaviour
     }
 
 
-    private void Update()
+    private void OnDestroy()
     {
-        //print(menuLevelStack.Count);
+        Instance = null;
     }
 }

@@ -9,18 +9,20 @@ using GameMechanics;
 
 public class UI_BossStatus : MonoBehaviour
 {
-    private GameObject boss;
+    protected GameObject boss;
+    public StatusManager bossStat;
     // Start is called before the first frame update
-    private UI_BossConditionBar _conditionBar;
-    private UI_BossHPBar _HPbar;
-    private GameObject _abilityIcons;
+    protected UI_BossConditionBar _conditionBar;
+    protected UI_BossHPBar _HPbar;
+    protected GameObject _abilityIcons;
     [SerializeField] private GameObject bossAbilityPrefab;
     private TextMeshProUGUI _bossName;
 
+    protected CanvasGroup _canvasGroup;
     private JsonData bossAbilityDetailData;
 
     private GlobalController _globalController;
-    private BattleStageManager _battleStageManager;
+    protected BattleStageManager _battleStageManager;
     
     
     
@@ -28,7 +30,10 @@ public class UI_BossStatus : MonoBehaviour
     {
         _globalController = FindObjectOfType<GlobalController>();
         _battleStageManager = FindObjectOfType<BattleStageManager>();
+        _canvasGroup = GetComponent<CanvasGroup>();
+        _canvasGroup.alpha = 0;
         yield return new WaitUntil(() => boss != null);
+        _canvasGroup.alpha = 1;
         Init();
     }
 
@@ -43,9 +48,18 @@ public class UI_BossStatus : MonoBehaviour
         this.boss = boss;
     }
 
-    void Init()
+    protected virtual void Init()
     {
         var bossStat = boss.GetComponentInChildren<StatusManager>();
+
+        if (bossStat is SpecialStatusManager)
+        {
+            var odBar = transform.Find("ODBar").gameObject;
+            odBar.SetActive(true);
+            odBar.GetComponent<UI_BossODBar>().bossStat = bossStat as SpecialStatusManager;
+        }
+
+
         _HPbar = GetComponentInChildren<UI_BossHPBar>();
         _bossName = GetComponentInChildren<TextMeshProUGUI>();
         _conditionBar = GetComponentInChildren<UI_BossConditionBar>();
@@ -76,6 +90,7 @@ public class UI_BossStatus : MonoBehaviour
         _conditionBar.SetTargetStat(bossStat);
         bossStat.SetConditionBar(_conditionBar);
         _HPbar.SetTarget(bossStat);
+        this.bossStat = bossStat;
         
     }
 

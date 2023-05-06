@@ -47,8 +47,27 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
             {
                 if(collision.GetComponentInParent<IKnockbackable>().GetDodge())
                 //如果是红圈并且角色在技能中
-                return;
+                    return;
+                
+                var npcController = collision.GetComponentInParent<NpcController>();
+                if (npcController != null && npcController.enabled)
+                {
+                    if(npcController.CurrentMainRoutineType != NpcController.MainRoutineType.Attack &&
+                       !npcController.subMoveRoutineIsRunning &&
+                       npcController.CurrentMainRoutineType != NpcController.MainRoutineType.Roll);
+                    {
+                        if (npcController.IsGround)
+                        {
+                            npcController.EvadeRoll();
+                            return;
+                        }
+                    }
+                }
+                
             }
+            
+            
+
 
             CauseDamage(collision);
             

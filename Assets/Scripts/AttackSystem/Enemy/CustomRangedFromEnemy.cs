@@ -33,6 +33,23 @@ public class CustomRangedFromEnemy : AttackFromEnemy
                 if(collision.GetComponentInParent<IKnockbackable>().GetDodge())
                     //如果是红圈并且角色在技能中
                     return;
+                
+                var npcController = collision.GetComponentInParent<NpcController>();
+                if (npcController != null)
+                {
+                    if(npcController.enabled == false)
+                        return;
+                    if(npcController.CurrentMainRoutineType != NpcController.MainRoutineType.Attack &&
+                       !npcController.subMoveRoutineIsRunning);
+                    {
+                        if (npcController.IsGround)
+                        {
+                            npcController.EvadeRoll();
+                            return;
+                        }
+                    }
+                }
+                
             }
 
             CauseDamage(collision);

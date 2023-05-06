@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MapInformation : MonoBehaviour
 {
+    List<QuestSave> questSaveList = new();
     [Serializable] public class MapSpotInfo
     {
         //Map spot id is a unique id for each map spot, it is used to identify the map spot.
@@ -20,17 +21,34 @@ public class MapInformation : MonoBehaviour
 
     public void MapClickedEvent(int panelID)
     {
+        GlobalController.lastQuestSpot = panelID;
         //GameObject.Find("MapView").GetComponent<UISortingGroup>().clicked("OpenMapSpot", panelID);
         var mapView = GameObject.Find("MapView");
         mapView.GetComponent<UISortingGroup>().ToUIState(1010);
         mapView.GetComponent<UI_WorldMap>().InformPanelReload(panelID);
-        GlobalController.lastQuestSpot = panelID;
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        questSaveList = GlobalController.Instance.GetQuestInfo();
+        //如果questSaveList里面有元素的quest_id等于100001,令除了第一个子物体以外的子物体不可用
+        if (questSaveList.Exists(x => x.quest_id == "100001"))
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            transform.GetChild(0).gameObject.SetActive(true);
+            for (int i = 1; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
     }
 
     public MapSpotInfo GetSpot(int id)

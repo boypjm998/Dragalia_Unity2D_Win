@@ -16,7 +16,7 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     private Image HPBarImage;
     protected float currentHP;
     protected float maxHP;
-    protected UI_FullScreenEffect fullScreenEffect;
+    protected UI_FullScreenEffect_Injury fullScreenEffect;
     
     
     [SerializeField] private Color HPFullColor;
@@ -36,7 +36,7 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     void Start()
     {
         fullScreenEffect = GameObject.Find("UI").transform.Find("FullScreenEffect").
-            GetChild(0).GetComponent<UI_FullScreenEffect>();
+            GetChild(0).GetComponent<UI_FullScreenEffect_Injury>();
         var characterID = GlobalController.currentCharacterID;
         statusManager = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
         _slider = GetComponentInChildren<Slider>();

@@ -29,7 +29,8 @@ public abstract class BattleCondition
         Value = 0,
         StackNumber = 1,
         Level = 2,
-        None = 3
+        None = 3,
+        ExactValue = 4
     }
 
 

@@ -30,10 +30,12 @@ public class AttackFromPlayer : AttackBase
     public GameObject hitConnectEffect;
     public Collider2D attackCollider;
     public Transform playerpos;
+    public bool forcedShake = false;
     public float defaultGravity;
 
     
     public float hitShakeIntensity;
+    [Range(0,1)]public float hitSoundVolume = 1;
     protected BattleStageManager battleStageManager;
     private Coroutine ConnectCoroutine;
 
@@ -46,7 +48,8 @@ public class AttackFromPlayer : AttackBase
 
     protected virtual void Awake()
     {
-        _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
+        //_effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
+        _effectManager = BattleEffectManager.Instance;
         // nextDmgModifier = new List<float>();
         // nextKnockbackForce = new List<float>();
         // nextKnockbackPower = new List<float>();
@@ -63,8 +66,22 @@ public class AttackFromPlayer : AttackBase
 
     protected virtual void Start()
     {
-        battleStageManager = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
+        battleStageManager = BattleStageManager.Instance;
         chara_id = battleStageManager.chara_id;
+        
+        
+        
+        if(playerpos.GetComponent<StatusManager>().
+               GetConditionsOfType((int)BasicCalculation.BattleCondition.StandardAttackBurner).Count>0)
+        {
+            if(attackType!=BasicCalculation.AttackType.STANDARD)
+                return;
+            
+            var effect = playerpos.GetComponent<StatusManager>().GetConditionTotalValue(
+                (int)BasicCalculation.BattleCondition.StandardAttackBurner
+                );
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Burn, effect, 12f,100),100);
+        }
     }
 
     protected virtual void OnDestroy()
@@ -334,14 +351,25 @@ public class AttackFromPlayer : AttackBase
             Instantiate(hitConnectEffect, new Vector2(target.transform.position.x, transform.position.y),
                 Quaternion.identity);
 
-        if(attackSource == 0)
+        if(attackSource == 0 || forcedShake)
             CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
         
         //CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);
+
+        try
+        {
+            Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+            if (viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1)
+            {
+                // 在摄像机范围内
+                _effectManager.PlayHitSoundEffect(hitSoundEffect,hitSoundVolume);
+            }
+        }
+        catch
+        {
+            _effectManager.PlayHitSoundEffect(hitSoundEffect,hitSoundVolume);
+        }
         
-        
-        
-        _effectManager.PlayHitSoundEffect(new Vector2(0,0));
         //print("PlaySound!");
 
 

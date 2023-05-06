@@ -7,6 +7,8 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
 {
     [SerializeField] private UI_AdventurerSelectionMenu upperMenu;
 
+    private Transform ContentTransform;
+
     private void Awake()
     {
         //upperMenu = FindObjectOfType<UI_AdventurerSelectionMenu>();
@@ -14,6 +16,12 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
         {
             upperMenu = GameObject.Find("UI").transform.Find("CharacterInfoMenu").GetComponent<UI_AdventurerSelectionMenu>();
         }
+        ContentTransform = transform.Find("Scroll View/Viewport/Content");
+    }
+
+    private void Start()
+    {
+        RedirectSelectionArrow(GlobalController.currentCharacterID);
     }
 
     // Start is called before the first frame update
@@ -30,7 +38,30 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
 
     public void ChooseCharacter(int id)
     {
+        if (upperMenu.currentSelectedCharaID == id && ContentTransform.GetChild(id-1).childCount==1)
+        {
+            GlobalController.currentCharacterID = id;
+            RedirectSelectionArrow(id);
+        }
         upperMenu.ChangeCurrentSelectedCharacter(id);
-        
+    }
+    
+    private void RedirectSelectionArrow(int id)
+    {
+        id = id - 1;
+        print(id);
+        for(int i = 0 ; i < ContentTransform.childCount; i++)
+        {
+            print(ContentTransform.GetChild(i).name);
+            if (i == id && ContentTransform.GetChild(i).childCount == 1)
+            {
+                ContentTransform.GetChild(i).GetChild(0).gameObject.SetActive(true);
+            }
+            else
+            {
+                print(ContentTransform.GetChild(i).childCount);
+                ContentTransform.GetChild(i).Find("Light")?.gameObject.SetActive(false);
+            }
+        }
     }
 }

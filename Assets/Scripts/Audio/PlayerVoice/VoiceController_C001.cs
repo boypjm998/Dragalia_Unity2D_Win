@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 public class VoiceController_C001 : AudioManagerPlayer
 {
-    private bool isSkillVoice;
+    
 
 
     // Start is called before the first frame update
@@ -15,6 +15,7 @@ public class VoiceController_C001 : AudioManagerPlayer
     {
         voice = gameObject.GetComponent<AudioSource>();
         chara_id = 1;
+        yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
         yield return new WaitForSeconds(0.1f);
         LoadMyVoice();
         
@@ -202,16 +203,5 @@ public class VoiceController_C001 : AudioManagerPlayer
         
     }
 
-    IEnumerator WaitForVoiceCooldown()
-    {
-        yield return new WaitForSecondsRealtime(1.5f);
-        voiceCDRoutine = null;
-    }
-    IEnumerator WaitForSkillVoiceCooldown()
-    {
-        isSkillVoice = true;
-        yield return new WaitUntil(() => !voice.isPlaying);
-        isSkillVoice = false;
-        voiceCDRoutine = null;
-    }
+    
 }

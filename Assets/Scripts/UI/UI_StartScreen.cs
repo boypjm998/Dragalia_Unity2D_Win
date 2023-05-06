@@ -40,14 +40,14 @@ public class UI_StartScreen : MonoBehaviour
         DestroyMe();
     }
 
-    private void DestroyMe()
+    protected void DestroyMe()
     {
         Destroy(gameObject,1.1f);
     }
 
     private void OnEnable()
     {
-        _battleStageManager = FindObjectOfType<BattleStageManager>();
+        _battleStageManager = BattleStageManager.Instance;
         transform.Find("Text1").GetComponent<TextMeshProUGUI>().text = _battleStageManager.quest_name;
         var text2 = transform.Find("Text2").GetComponent<TextMeshProUGUI>();
         //三语本地化

@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-public abstract  class AudioManagerGeneral : MonoBehaviour
+public abstract  class AudioManagerGeneral : MonoBehaviour, IVoice
 {
     protected AudioSource voice;
     protected Coroutine voiceCDRoutine;
