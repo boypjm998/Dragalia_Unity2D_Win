@@ -1,18 +1,18 @@
 <<<<<<< HEAD
-# DL_2D_Win (Not Realeased) (2023/04/02）
+# DL_2D_Win (Not Realeased) (2023/05/06）
 
 #####
 
-1. 正在制作新手教程剧情模块。
+1. 新手剧情关卡完成。
 
-2. 实现了AI的简单寻路算法。
+2. 新角色：拉辛（短剑）
 
-3. 添加了关卡：席菈的试炼高级。
+3. 加入Overdrive系统，反击代码重写。
 
 #####
 
-1. Tutorial Level is developing!
+1. Tutorial Level is finished!
 
-2. Implemented a simple AI navigator.
+2. New Adventurer : Renelle
 
-3. Added new level: Sheila's Trail : Expert.
+3. Overdrive is added, then restructrued the counter part.
