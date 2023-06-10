@@ -19,6 +19,8 @@ public class MenuUIManager : MonoBehaviour
     public Stack<int> menuLevelStack;
     public static MenuUIManager Instance { get;private set; }
 
+    public int currentQuestInfoPageID;
+
     public enum UIState
     {
         Active,
@@ -485,6 +487,7 @@ public class MenuUIManager : MonoBehaviour
          * 0: 主菜单
          * 101: 地图
          * 1010: 关卡选单
+         * 2010: 关卡攻略
          * 1010XXXKK(YYZ): XXX为地图ID，K为关卡系列ID，Y为关卡标题ID，Z为难度ID
          * 比如席菈的试炼关卡为1010 101(mapSpot为101，代表试炼场) 01(巫女的试炼) 01(席菈的试炼) 3(超级)
          * 进入关卡时，tobattle只需要传入后五位数（01013）既可，前方的0可以省略，只传入有效数字。
@@ -492,13 +495,34 @@ public class MenuUIManager : MonoBehaviour
          * 102: 角色选择
          * 103: 设置
          * 1021: 角色详细信息
+         * 104: 帮助、关于
          */
         
         //如果toState的前四位是1010，return
         if (toState.ToString().Length >= 6 && toState.ToString()[0] == '9')
         {
-             SwitchLevelSelectionMenu(toState,pop);
-             return;
+            if (fromState.ToString() != "2010")
+            {
+                SwitchLevelSelectionMenu(toState,pop);
+                return;
+            }
+            else
+            {
+                var selectedUI = UIDict["QuestDetail"];
+                if (selectedUI.gameObject.activeSelf)
+                {
+                    if (animation)
+                    {
+                        var animTime = selectedUI.hideTime;
+                        Hide(UIDict["QuestDetail"],0,animTime);
+                    }
+                    else
+                    {
+                        Hide(UIDict["QuestDetail"],0,0);
+                    }
+                }
+                return;
+            }
         }
 
         if (toState == 1010 && fromState.ToString()[0] == '9')
@@ -524,6 +548,12 @@ public class MenuUIManager : MonoBehaviour
                 inactiveList = new[] {"MapView"};
                 break;
             }
+            case 2010:
+            {
+                activeList = new[] {"LevelSelection","MenuButton_02","QuestDetail"};
+                inactiveList = new[] {"MapView"};
+                break;
+            }
             case 102:
             {
                 activeList = new[] {"CharacterSelection","CharacterInfoMenu","MenuButton_03"};
@@ -538,6 +568,11 @@ public class MenuUIManager : MonoBehaviour
             case 103:
             {
                 activeList = new[] { "GameOption", "MenuButton_03" };
+                break;
+            }
+            case 104:
+            {
+                activeList = new[] { "Help_About" };
                 break;
             }
 

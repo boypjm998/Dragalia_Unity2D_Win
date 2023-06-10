@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,13 +12,19 @@ public class CustomRangedFromEnemy : AttackFromEnemy
         if(attackCollider==null)
             attackCollider = GetComponent<Collider2D>();
         //selfpos = transform.parent.parent.parent;
+        
+    }
+
+    private void Start()
+    {
         if (isMeele)
         {
+            if(ac == null)
+                ac = enemySource?.GetComponent<EnemyController>();
             ac.OnAttackInterrupt += DestroyContainer;
         }
     }
-    
-    
+
 
     // Update is called once per frame
     private void OnTriggerStay2D(Collider2D collision)

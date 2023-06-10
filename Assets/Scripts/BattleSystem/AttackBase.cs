@@ -9,6 +9,7 @@ public abstract class AttackBase : MonoBehaviour
 
     public int chara_id;
     public int skill_id;
+    public bool destroyAfterHit = false;
 
     public List<AttackInfo> attackInfo = new();
     public int firedir; //要改掉
@@ -22,12 +23,20 @@ public abstract class AttackBase : MonoBehaviour
     protected BattleEffectManager _effectManager;
     
     public List<ConditionalAttackEffect> conditionalAttackEffects = new();
+    
+    public delegate void AttackBaseDelegate(AttackBase attackBase, GameObject target);
+    public AttackBaseDelegate OnAttackHit;
 
     protected void DestroyContainer()
     {
         var container = GetComponentInParent<AttackContainer>();
         if (container != null)
-            Destroy(container.gameObject);
+        {
+            container.DestroyInvoke();
+            //Destroy(container.gameObject);
+        }
+
+        
         print("DestroyContainer");
     }
 
@@ -73,7 +82,7 @@ public abstract class AttackBase : MonoBehaviour
         switch (knockBackType)
         {
             case BasicCalculation.KnockBackType.FaceDirection:
-                kbdirtemp = firedir * kbdirtemp;
+                kbdirtemp = new Vector2(firedir * kbdirtemp.x,kbdirtemp.y);
                 break;
 
             case BasicCalculation.KnockBackType.FromCenterRay:
@@ -107,7 +116,60 @@ public abstract class AttackBase : MonoBehaviour
     {
         conditionalAttackEffects.Add(conditionalAttackEffect);
     }
-    
+
+    /// <summary>
+    /// Method is unimplemented
+    /// </summary>
+    public virtual void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
+    {
+    }
+
+    /// <summary>
+    /// Method is unimplemented
+    /// </summary>
+    public virtual void AddWithCondition(int hitNo, BattleCondition condition, int chance, int identifier = 0)
+    {
+        
+    }
+
+    public virtual void CheckSpecialConditionalEffectBeforeAttack(StatusManager statusManager)
+    {
+        // InfernoMode (102)
+        if (statusManager.GetConditionStackNumber((int)BasicCalculation.BattleCondition.InfernoMode) > 0)
+        {
+            if (attackType == BasicCalculation.AttackType.STANDARD)
+            {
+                int i = 0;
+                foreach (var element in attackInfo)
+                {
+                    var defdebuff = new TimerBuff((int)BasicCalculation.BattleCondition.DefDebuff,
+                        10, 10, 1, 0);
+                    element.AddWithCondition(defdebuff, 30,i);
+                    i++;
+                }
+            }
+        }
+
+
+        // StandardAttackBurner (111)
+        if(statusManager.
+               GetConditionsOfType((int)BasicCalculation.BattleCondition.StandardAttackBurner).Count>0)
+        {
+            if(attackType!=BasicCalculation.AttackType.STANDARD)
+                return;
+            
+            var effect = statusManager.GetConditionTotalValue(
+                (int)BasicCalculation.BattleCondition.StandardAttackBurner
+            );
+            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Burn, effect, 12f,100),100);
+        }
+        
+    }
+
+
+
+
+
 }
 
 [Serializable]
@@ -158,6 +220,9 @@ public class AttackInfo
     }
 }
 
+/// <summary>
+/// 条件判断敌人身上是否有某些buff来改变攻击属性
+/// </summary>
 public class ConditionalAttackEffect
 {
     public enum ConditionType

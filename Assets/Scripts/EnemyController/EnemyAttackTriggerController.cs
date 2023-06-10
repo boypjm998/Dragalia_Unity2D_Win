@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 
 public class EnemyAttackTriggerController : MonoBehaviour
@@ -11,6 +12,8 @@ public class EnemyAttackTriggerController : MonoBehaviour
     [SerializeField] private float[] nextAttackTime;
     [SerializeField] private float[] nextConditionTime;
 
+    [SerializeField] private List<AttackProperty> changePropertyTime = new();
+    
     [SerializeField] private Collider2D targetCollider;
     [SerializeField] private float destroyTime = 1;
 
@@ -18,6 +21,14 @@ public class EnemyAttackTriggerController : MonoBehaviour
     private Animation anim;
 
     private AttackFromEnemy _attackFromEnemy;
+    
+    [Serializable]
+    public class AttackProperty
+    {
+        public float time;
+        public AttackFromEnemy.AvoidableProperty AvoidablePropertyType;
+        public BasicCalculation.AttackType AttackType = BasicCalculation.AttackType.NONE;
+    }
 
 
     private void Awake()
@@ -64,6 +75,14 @@ public class EnemyAttackTriggerController : MonoBehaviour
             }
         }
         
+        if (changePropertyTime.Count > 0)
+        {
+            foreach (var prop in changePropertyTime)
+            {
+                Invoke("RenewAttack",prop.time);
+            }
+        }
+        
         if(destroyTime > 0)
             Destroy(gameObject,destroyTime);
 
@@ -82,6 +101,10 @@ public class EnemyAttackTriggerController : MonoBehaviour
     void AttackAwake()
     {
         targetCollider.enabled = true;
+        if (_attackFromEnemy.forcedShake)
+        {
+            CineMachineOperator.Instance.CamaraShake(_attackFromEnemy.hitShakeIntensity,0.1f);
+        }
     }
     void AttackSleep()
     {
@@ -91,6 +114,20 @@ public class EnemyAttackTriggerController : MonoBehaviour
     void NextCondition()
     {
         _attackFromEnemy.ResetWithConditionFlags();
+    }
+
+    void RenewAttack()
+    {
+        if (changePropertyTime.Count > 0)
+        {
+            _attackFromEnemy.ChangeAvoidability(changePropertyTime[0].AvoidablePropertyType);
+            
+            if(changePropertyTime[0].AttackType != BasicCalculation.AttackType.NONE)
+                _attackFromEnemy.attackType = changePropertyTime[0].AttackType;
+            
+            changePropertyTime.RemoveAt(0);
+        }
+        
     }
 
     public void SetNextWithConditionTime(float[] times)

@@ -8,6 +8,8 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
 using GameMechanics;
+using UnityEngine.SceneManagement;
+
 public class BattleEffectManager : MonoBehaviour
 {
     public static BattleEffectManager Instance { get; private set; }
@@ -19,6 +21,12 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject burnFXPrefab;
     [SerializeField] private Color schorchrendColor;
     [SerializeField] private GameObject scorchrendFXPrefab;
+    [SerializeField] private Color poisonColor;
+    [SerializeField] private GameObject poisonFXPrefab;
+    [SerializeField] private Color stormlashColor;
+    [SerializeField] private GameObject stormlashFXPrefab;
+    
+    [SerializeField] private GameObject stunFXPrefab;
 
     [Header("Basic Effect")]
     [SerializeField] private GameObject healFXPrefab;
@@ -38,22 +46,41 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private AudioClip hitEffectClip;
     [SerializeField] private AudioClip reviveSEClip;
     [SerializeField] private AudioClip healSEClip;
+
+    [Header("Special Boss Voices")]
+    public List<AudioClip> notteHintClips = new();
+    
+    
+    
     public Dictionary<string,AudioClip> SEClips = new();
 
     private Camera _camera;
     public AudioSource soundEffectSource;
+    public AudioSource sharedVoiceSource;
+    public AudioSource bgmVoiceSource;
+    
     //private GameObject counterIcon;
 
 
     private void Awake()
     {
         Instance = this;
+        soundEffectSource = transform.GetChild(0).gameObject.GetComponent<AudioSource>();
+        sharedVoiceSource = transform.GetChild(1).gameObject.GetComponent<AudioSource>();
+        bgmVoiceSource = GetComponent<AudioSource>();
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
-        soundEffectSource = transform.GetChild(0).gameObject.GetComponent<AudioSource>();
+        
         _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+        //yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
+        yield return new WaitUntil(() => GlobalController.Instance.loadingEnd);
+        yield return new WaitForSeconds(1.25f);
+        if(SceneManager.GetActiveScene().name=="BattleScenePrologue")
+            yield break;
+        bgmVoiceSource.Play();
         //var soundbundle = GlobalController.Instance.GetBundle("soundeffect/soundeffect_common");
         //SEClips = soundbundle.LoadAllAssets<AudioClip>().ToList();
     }
@@ -62,7 +89,7 @@ public class BattleEffectManager : MonoBehaviour
     public void SpawnHealEffect(GameObject target)
     {
         Instantiate(healFXPrefab, target.transform.position, target.transform.rotation,
-            target.GetComponent<AttackManager>().BuffFXLayer.transform);
+            target.transform.Find("BuffLayer"));
         soundEffectSource.clip = healSEClip;
         soundEffectSource.Play();
     }
@@ -112,6 +139,20 @@ public class BattleEffectManager : MonoBehaviour
                     }
                     SpawnAnimation(target, scorchrendFXPrefab);
                     break;
+                case BasicCalculation.BattleCondition.Stormlash:
+                    if (light.intensity == 0)
+                    {
+                        StartCoroutine(LightEffectRoutine(light,stormlashColor,1,0.6f));
+                    }
+                    SpawnAnimation(target, stormlashFXPrefab);
+                    break;
+                
+                
+                case BasicCalculation.BattleCondition.Stun:
+                {
+                    SpawnAnimation(target,stunFXPrefab);
+                    break;
+                }
             }
         }
         else
@@ -128,6 +169,11 @@ public class BattleEffectManager : MonoBehaviour
         var fx = Instantiate(prefab, layer.position, Quaternion.identity, layer.transform);
         //RESIZE
         var hitsensor = target.GetComponent<ActorBase>().HitSensor;
+        if (hitsensor == null)
+        {
+            return;
+        }
+
         var width = hitsensor.bounds.size.x;
         var height = hitsensor.bounds.size.y;
         var scaleFactor = Mathf.Max(width, height);
@@ -135,6 +181,30 @@ public class BattleEffectManager : MonoBehaviour
         {
             fx.transform.localScale = new Vector3(1, 1, 1) * (scaleFactor*0.5f);
         }
+
+    }
+    
+    private void SpawnAnimation(GameObject target, GameObject prefab, float time)
+    {
+        var layer = target.transform.Find("BuffLayer");
+        
+        var fx = Instantiate(prefab, layer.position, Quaternion.identity, layer.transform);
+        //RESIZE
+        var hitsensor = target.GetComponent<ActorBase>().HitSensor;
+        if (hitsensor == null)
+        {
+            return;
+        }
+
+        var width = hitsensor.bounds.size.x;
+        var height = hitsensor.bounds.size.y;
+        var scaleFactor = Mathf.Max(width, height);
+        if (scaleFactor > 2f)
+        {
+            fx.transform.localScale = new Vector3(1, 1, 1) * (scaleFactor*0.5f);
+        }
+
+        fx.GetComponent<ObjectInvokeDestroy>().destroyTime = time;
 
     }
 
@@ -172,7 +242,7 @@ public class BattleEffectManager : MonoBehaviour
     {
         var layer = target.transform.Find("BuffLayer");
         var fx =
-            Instantiate(exclamationPrefab, position, Quaternion.identity, layer.transform);
+            Instantiate(exclamationPrefab, position-new Vector3(0,0,10), Quaternion.identity, layer.transform);
         
     }
 
@@ -181,6 +251,7 @@ public class BattleEffectManager : MonoBehaviour
         var targetTransform = GameObject.Find("UIFXContainer").transform;
         Instantiate(breakFXPrefab, targetTransform);
     }
+    
 
     public void PlaySoundEffect(AudioClip clip, Vector2 position)
     {

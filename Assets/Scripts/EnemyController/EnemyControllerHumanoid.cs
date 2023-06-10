@@ -13,9 +13,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public float rollspeed = 9.0f;
     public float jumpforce = 20.0f;
     protected int jumpTime = 2;
+    protected float jumpAscentTime = 0.5f;
     protected float jumpHeight = 5f;
     
-    [SerializeField] protected float isMove = 0;
+    
     public bool dodging = false;
 
     [HideInInspector] public bool moveEnable;
@@ -29,7 +30,11 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public float _defaultgravityscale;
     protected StandardGroundSensor _groundSensor;
 
-    protected int debugRes;
+    
+    protected AStar _aStar;
+    protected List<Platform> mapInfo;
+    protected List<APlatformNode> pathInfo;
+    protected APlatformNode currentNode;
     
 
     protected override void Awake()
@@ -47,9 +52,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     protected override void Start()
     {
         base.Start();
-        _statusManager.OnHPBelow0 += OnDeath;
+        if(canDeath)
+            _statusManager.OnHPBelow0 += OnDeath;
         currentKBRes = _statusManager.knockbackRes;
-        debugRes = currentKBRes;
 
         _groundSensor.IsGround += GroundCheck;
 
@@ -72,13 +77,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
 
         anim.SetFloat("forward", isMove);
-        if (debugRes != currentKBRes)
-        {
-            
-            if(debugRes > 100 && currentKBRes < 100)
-                print(debugRes+"->"+currentKBRes);
-            debugRes = currentKBRes;
-        }
+        
 
 
 
@@ -133,7 +132,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     
     #region Old Methods
     /// <summary>
-    /// 主动靠近玩家
+    /// 主动靠近玩家,只有行为树在用
     /// </summary>
     /// <param name="target">玩家GameObject</param>
     /// <param name="maxFollowTime">最大搜寻时间</param>
@@ -177,13 +176,13 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     }
     
-    public override IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX,float arriveDistanceY, float startFollowDistance)
+    public override IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX,float arriveDistanceY, float startFollowDistance, bool continueThoughConditionOK = false)
     {
         if (VerticalMoveRoutine != null)
             VerticalMoveRoutine = null;
         
         TurnMove(target);
-        if (CheckTargetDistance(target,arriveDistanceX,arriveDistanceY))
+        if (CheckTargetDistance(target,arriveDistanceX,arriveDistanceY) && !continueThoughConditionOK)
         {
             SetKBRes(999);
             OnMoveFinished?.Invoke(true);
@@ -222,7 +221,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 }
             }
 
-            if (CheckTargetDistance(target, arriveDistanceX, arriveDistanceY))
+            if (CheckTargetDistance(target, arriveDistanceX, arriveDistanceY) && !continueThoughConditionOK)
             {
                 if (VerticalMoveRoutine != null)
                 {
@@ -521,6 +520,269 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
         return false;
     }
+    
+    /// <summary>
+    /// New Method
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="arriveDistance"></param>
+    /// <param name="maxFollowTime"></param>
+    /// <returns></returns>
+    public virtual IEnumerator MoveTowardsTarget(GameObject target, float arriveDistance, float maxFollowTime)
+    {
+        isAction = true;
+        yield return new WaitUntil(() =>
+            !hurt);
+        var targetSensor = target.GetComponentInChildren<IGroundSensable>();
+        if (targetSensor == null)
+        {
+            targetSensor = target.transform.parent.GetComponentInChildren<IGroundSensable>();
+        }
+
+        var mySensor = GetComponentInChildren<IGroundSensable>();
+        while (maxFollowTime>0)
+        {
+
+            // if (VerticalMoveRoutine == null && anim.GetBool("isGround") == false)
+            // {
+            //     if(currentTarget == null)
+            //         currentTarget = target;
+            //     if (JumpTime > 0 && currentTarget.transform.position.x -transform.position.x > 1)
+            //     {
+            //         var targetPlatform = GetAccessiblePlatforms(JumpTime);
+            //         VerticalMoveRoutine = StartCoroutine(StruggleInAir(targetPlatform,JumpTime));
+            //         yield return new WaitUntil(()=>VerticalMoveRoutine==null);
+            //     }
+            // }
+
+
+            //处理失足
+            // if (VerticalMoveRoutine != null)
+            // {
+            //     StopCoroutine(VerticalMoveRoutine);
+            //     VerticalMoveRoutine = null;
+            // }
+            
+            //targetSensor.GetCurrentAttachedGroundCol() != null && 
+            
+            yield return new WaitUntil(() =>
+                anim.GetBool("isGround") && !hurt);
+            
+            // 检查NPC和目标是否处于同一个平台上
+            if (CheckTargetStandOnSameGround(target) == 0) {
+                // 计算两者之间的x轴距离
+                float distance = Mathf.Abs(transform.position.x - target.transform.position.x);
+
+                if (distance > arriveDistance)
+                {
+                    TurnMove(target);
+                    isMove = 1;
+                }
+                else
+                   isMove = 0;
+                
+            
+                // 如果x轴距离小于arriveDistance，则终止协程
+                if (distance <= arriveDistance) {
+                    isMove = 0;
+                    OnMoveFinished?.Invoke(true);
+                    yield break;
+                }
+            } else {
+
+                while (targetSensor.GetCurrentAttachedGroundCol() == null)
+                {
+                    yield return null;
+                    if(anim.GetBool("isGround")==false)
+                        continue;
+                    //4.3添加
+                    if(transform.position.x >= mySensor.GetCurrentAttachedGroundCol().bounds.max.x ||
+                       transform.position.x <= mySensor.GetCurrentAttachedGroundCol().bounds.min.x ||
+                       (transform.position.x >= target.transform.position.x && facedir==1) ||
+                       (transform.position.x <= target.transform.position.x && facedir==-1))
+                        isMove = 0;
+                    else isMove = 1;
+                }
+                // yield return new WaitUntil(() =>
+                //     targetSensor.GetCurrentAttachedGroundCol() != null);
+                
+                
+               
+                GetPath(target);
+                
+                var path = pathInfo;
+                
+                if (path == null)
+                {
+                    float distance = Mathf.Abs(transform.position.x - target.transform.position.x);
+                    if (arriveDistance > distance)
+                    {
+                        continue;
+                    }
+
+                    OnMoveFinished?.Invoke(false);
+                    isMove = 0;
+                    _behavior.currentMoveAction = null;
+                    //currentMainRoutineType = MainRoutineType.None;
+                    isAction = false;
+                    yield break;
+                }
+
+                // 沿着路径移动
+                foreach (var platform in path) {
+                    
+                    yield return new WaitUntil(() => anim.GetBool("isGround"));
+                    if (platform.platform.collider == _groundSensor.GetCurrentAttachedGroundCol())
+                    {
+                        if (CheckTargetStandOnSameGround(target) == 0)
+                        {
+                            isMove = 0;
+                            break;
+                        }
+                        continue;
+                    }
+
+                    // 移动到当前平台
+                    if (VerticalMoveRoutine != null)
+                    {
+                        StopCoroutine(VerticalMoveRoutine);
+                        VerticalMoveRoutine = null;
+                    }
+                    
+
+                    VerticalMoveRoutine = StartCoroutine(MoveToPlatform(platform));
+                
+                    // 等待VerticalMoveRoutine结束或被中断
+                    
+                    yield return new WaitUntil(()=>VerticalMoveRoutine==null);
+                    
+                    
+
+                    //isMove = 0;
+                    isMove = 0;
+                    
+                    yield return new WaitUntil(() =>
+                        anim.GetBool("isGround"));
+                    
+                    if(CheckTargetStandOnSameGround(target) == 0)
+                        break;
+                    // 重新计算路径
+                    //path = GetPath(target);
+                }
+            }
+        
+            yield return null;
+        }
+        isMove = 0;
+        OnMoveFinished?.Invoke(false);
+        _behavior.currentMoveAction = null;
+        //currentMainRoutineType = MainRoutineType.None;
+        isAction = false;
+    }
+
+    public virtual IEnumerator KeepDistanceFromTarget(GameObject target, float maxFollowTime, float minDistance, float maxDistance = 999f, bool continueThoughConditionOK = false)
+    {
+        isAction = true;
+        var currentPlatform = BasicCalculation.CheckRaycastedPlatform(gameObject);
+        var leftbound = currentPlatform.bounds.min.x;
+        var rightbound = currentPlatform.bounds.max.x;
+        
+        if(leftbound < BattleStageManager.Instance.mapBorderL)
+            leftbound = BattleStageManager.Instance.mapBorderL;
+        if(rightbound > BattleStageManager.Instance.mapBorderR)
+            rightbound = BattleStageManager.Instance.mapBorderR;
+        
+        var marginLimit = rightbound - leftbound >= minDistance ? minDistance : (rightbound - leftbound) * 0.33f;
+        //print(marginLimit);
+        yield return new WaitUntil(() => !hurt);
+
+        while (maxFollowTime > 0)
+        {
+            var distance = target.transform.position.x - transform.position.x;
+            if (((distance > minDistance && distance < maxDistance) || (distance < -minDistance && distance > -maxDistance)) 
+                && !continueThoughConditionOK)
+            {
+                //在右边且距离大于最小距离
+                isMove = 0;
+                OnMoveFinished?.Invoke(true);
+                _behavior.currentMoveAction = null;
+                isAction = false;
+                yield break;
+            }
+            else if(distance <= minDistance && distance >= -minDistance)
+            {
+                //目标在自身的右边
+                if (distance > 0)
+                {
+                    if (target.transform.position.x - leftbound > marginLimit)
+                    {
+                        //1.如果目标在自身的右边，且目标远离左边界，则向左移动。
+                        SetFaceDir(-1);
+                        isMove = 1;
+                        //print("正在进行操作1");
+                    }
+                    else
+                    {
+                        //2.如果目标在自身的右边，且目标靠近左边界，则向右移动。
+                        SetFaceDir(1);
+                        isMove = 1;
+                        //print("正在进行操作2");
+                    }
+                }
+                else
+                {
+                    if(target.transform.position.x - rightbound < -marginLimit)
+                    {
+                        //3.如果目标在自身的左边，且目标远离右边界，则向右移动。
+                        SetFaceDir(1);
+                        isMove = 1;
+                        //print("正在进行操作3");
+                    }
+                    else
+                    {
+                        //4.如果目标在自身的左边，且目标靠近右边界，则向左移动。
+                        SetFaceDir(-1);
+                        isMove = 1;
+                        //print("正在进行操作4");
+                    }
+                    
+                }
+            }
+            else if (distance >= maxDistance || distance <= -maxDistance)
+            {
+                TurnMove(target);
+                isMove = 1;
+            }
+            else
+            {
+                isMove = 0;
+                TurnMove(target);
+            }
+            
+            if (transform.position.x <= leftbound)
+            {
+                SetFaceDir(1);
+                isMove = 0;
+                print("正在进行操作5");
+            }
+            else if (transform.position.x >= rightbound)
+            {
+                SetFaceDir(-1);
+                isMove = 0;
+                print("正在进行操作6");
+            }
+
+            maxFollowTime -= Time.deltaTime;
+
+            yield return null;
+        }
+        
+        isMove = 0;
+        OnMoveFinished?.Invoke(false);
+        _behavior.currentMoveAction = null;
+        isAction = false;
+
+    }
 
     # region Old Vertical Moves
     protected virtual IEnumerator TryDoJump(GameObject target, float requiredY)
@@ -636,7 +898,239 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     }
     
     #endregion
-    
+
+    #region New Vertical Moves
+
+    protected virtual IEnumerator MoveToPlatform(APlatformNode node)
+    {
+        
+        yield return new WaitUntil(() => anim.GetBool("isGround"));
+        var targetPlatformCollider = node.platform.collider;
+        var currentPlatformCollider = _groundSensor.GetCurrentAttachedGroundCol();
+        currentNode = node;
+        
+        var targetPlatformLeft = node.platform.leftBorderPos;
+        var targetPlatformRight = node.platform.rightBorderPos;
+        float currentPlatformHeight;
+        try
+        {
+            currentPlatformHeight = currentPlatformCollider.bounds.max.y;
+        }
+        catch
+        {
+            currentPlatformCollider = BasicCalculation.CheckRaycastedPlatform(gameObject);
+            currentPlatformHeight = currentPlatformCollider.bounds.max.y;
+        }
+
+
+        var targetPlatformHeight = node.platform.height;
+
+
+        if (targetPlatformLeft.x > transform.position.x)
+        {
+            facedir = 1;
+            isMove=1;
+        }else if(targetPlatformRight.x < transform.position.x)
+        {
+            facedir = -1;
+            isMove=1;
+        }
+        
+        var runUpInfo = GetRunUpInfo
+            (targetPlatformHeight - currentPlatformHeight,currentPlatformCollider,targetPlatformCollider);
+
+        
+        //助跑阶段
+        while (transform.position.x < targetPlatformLeft.x - runUpInfo[0] ||
+               transform.position.x > targetPlatformRight.x + runUpInfo[0])
+        {
+            yield return null;
+            if (transform.position.x < targetPlatformLeft.x - runUpInfo[0] && facedir == -1)
+            {
+                isMove=1;
+                facedir = 1;
+            }
+            else if (transform.position.x > targetPlatformRight.x + runUpInfo[0] && facedir == 1)
+            {
+                isMove=1;
+                facedir = -1;
+            }
+            print("转身"+runUpInfo[0]);
+
+                    
+        }
+        
+        
+
+
+
+        if (targetPlatformHeight > currentPlatformHeight)
+        {
+            if (runUpInfo[1] == 2)
+            {
+
+                Jump();
+                yield return new WaitForFixedUpdate();
+
+                while (rigid.velocity.y > 0)
+                {
+                    yield return null;
+                }
+                
+                Jump();
+                while(!anim.GetBool("isGround"))
+                {
+                    if (transform.position.x < targetPlatformLeft.x && facedir == -1)
+                    {
+                        isMove=1;
+                        facedir = 1;
+                    }
+                    else if (transform.position.x > targetPlatformRight.x && facedir == 1)
+                    {
+                        isMove=1;
+                        facedir = -1;
+                    }
+
+                    yield return null;
+                }
+
+
+
+
+            }
+            else if (runUpInfo[1] == 1)
+            {
+                Jump();
+                yield return new WaitForSeconds(jumpAscentTime);
+                while(!anim.GetBool("isGround"))
+                {
+                    if (transform.position.x < targetPlatformLeft.x && facedir == -1)
+                    {
+                        isMove=1;
+                        facedir = 1;
+                    }
+                    else if (transform.position.x > targetPlatformRight.x && facedir == 1)
+                    {
+                        isMove=1;
+                        facedir = -1;
+                    }
+
+                    yield return null;
+                }
+            }
+        }
+        else
+        {
+            var relativeHeight = transform.position.y - currentPlatformCollider.bounds.max.y;
+            if (runUpInfo[1] == 2)
+            {
+                yield return new WaitUntil(() => transform.position.y <= _behavior.targetPlayer.transform.position.y
+                || _groundSensor.GetCurrentAttachedGroundInfo() != null);
+                if (_groundSensor.GetCurrentAttachedGroundInfo() != null)
+                {
+                    _groundSensor.StartCoroutine("DisableCollision");
+                }
+
+                yield return new WaitUntil(() => transform.position.y <= _behavior.targetPlayer.transform.position.y);
+                Jump();
+                yield return new WaitForSeconds(jumpAscentTime);
+                yield return new WaitUntil(() => transform.position.y <= _behavior.targetPlayer.transform.position.y);
+                Jump();
+                while (!anim.GetBool("isGround"))
+                {
+                    var leftLimit = targetPlatformLeft.x;
+                    var rightLimit = targetPlatformRight.x;
+                    if (transform.position.x < leftLimit && facedir == -1)
+                    {
+                        isMove=1;
+                        facedir = 1;
+                    }
+                    else if (transform.position.x > rightLimit && facedir == 1)
+                    {
+                        isMove=1;
+                        facedir = -1;
+                    }
+
+                    yield return null;
+                }
+
+            }
+            else if (runUpInfo[1] == 1)
+            {
+                yield return new WaitUntil(() => transform.position.y <= _behavior.targetPlayer.transform.position.y
+                                                 || _groundSensor.GetCurrentAttachedGroundInfo() != null);
+                if (_groundSensor.GetCurrentAttachedGroundInfo() != null)
+                {
+                    _groundSensor.StartCoroutine("DisableCollision");
+                }
+
+                yield return new WaitUntil(() => transform.position.y <= _behavior.targetPlayer.transform.position.y);
+                Jump();
+                //yield return new WaitForSeconds(jumpAscentTime);
+                while (!anim.GetBool("isGround"))
+                {
+                    var leftLimit = Mathf.Max(_behavior.targetPlayer.transform.position.x - 1,targetPlatformLeft.x);
+                    var rightLimit = Mathf.Min(_behavior.targetPlayer.transform.position.x + 1,targetPlatformRight.x);
+                    if (transform.position.x < leftLimit && facedir == -1)
+                    {
+                        isMove=1;
+                        facedir = 1;
+                    }
+                    else if (transform.position.x > rightLimit && facedir == 1)
+                    {
+                        isMove=1;
+                        facedir = -1;
+                    }
+
+                    yield return null;
+                }
+            }
+            else
+            {
+                yield return new WaitUntil(() => transform.position.y <= targetPlatformHeight + relativeHeight
+                                                 || _groundSensor.GetCurrentAttachedGroundInfo() != null);
+                if (_groundSensor.GetCurrentAttachedGroundInfo() != null)
+                {
+                    _groundSensor.StartCoroutine("DisableCollision");
+                }
+                
+                
+                yield return new WaitUntil(() => transform.position.y < currentPlatformCollider.bounds.min.y);
+                yield return new WaitForSeconds(0.1f);
+
+                while (!anim.GetBool("isGround"))
+                {
+                    float rightLimit = targetPlatformRight.x;
+                    float leftLimit = targetPlatformLeft.x;
+                    if (_behavior.targetPlayer != null)
+                    {
+                        //leftLimit = Mathf.Max(_behavior.targetPlayer.transform.position.x - 1,targetPlatformLeft.x);
+                        //rightLimit = Mathf.Min(_behavior.targetPlayer.transform.position.x + 1,targetPlatformRight.x);
+                    }
+
+                    if (transform.position.x < leftLimit)
+                    {
+                        isMove=1;
+                        facedir = 1;
+                    }
+                    else if (transform.position.x > rightLimit)
+                    {
+                        isMove=1;
+                        facedir = -1;
+                    }
+
+                    yield return null;
+                }
+            }
+        }
+
+        yield return new WaitUntil(() => anim.GetBool("isGround"));
+        VerticalMoveRoutine = null;
+        print("跳过了");
+        
+    }
+
+    #endregion
 
     
     /// <summary>
@@ -703,8 +1197,14 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
         rigid.drag = 0;
         SetVelocity(0,rigid.velocity.y);
-        anim.SetBool("hurt",false);
-        hurt = false;
+        
+        if (_statusManager.controlRoutine == null)
+        {
+            anim.SetBool("hurt",false);
+            hurt = false;
+        }
+
+        
         KnockbackRoutine = null;
     }
     
@@ -722,13 +1222,13 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public override void TakeDamage(float kbpower, float kbtime,float kbForce, Vector2 kbDir)
     {
         Flash();
-        if (currentKBRes - kbpower >= 100)
+        if (_statusManager.KnockbackRes + currentKBRes - kbpower >= 100)
         {
             return;
         }
 
         var rand = Random.Range(0, 100);
-        if (rand >= kbpower-currentKBRes)
+        if (rand >= kbpower-currentKBRes-_statusManager.KnockbackRes)
         {
             return;
         }
@@ -778,11 +1278,13 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         // }
 
         var rand = Random.Range(0, 100);
-        if (rand >= kbpower-currentKBRes || currentKBRes - kbpower >= 100)
+        //print(kbpower-currentKBRes-_statusManager.GetKBResBuff() + "<->" + rand);
+        if (rand >= kbpower-currentKBRes-_statusManager.GetKBResBuff()
+            || currentKBRes+_statusManager.GetKBResBuff() - kbpower >= 100)
         {
-            
-            
-            if (counterOn && kbpower > currentKBRes && _statusManager is SpecialStatusManager)
+
+            if (counterOn && kbpower > currentKBRes+_statusManager.GetKBResBuff()
+                          && _statusManager is SpecialStatusManager)
             {
                 DamageNumberManager.GenerateCounterText(transform);
                 atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
@@ -918,8 +1420,95 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
         isAction = true;
         currentKBRes = 100;
-        SetCounter(true);
+        
+        if(currentKBRes + _statusManager.KnockbackRes - _statusManager.knockbackRes < 200)
+            SetCounter(true);
     }
+
+    public override void OnBreakEnter()
+    {
+        SetKBRes(999);
+        OnHurtEnter();
+        isAction = true;
+        _behavior.isAction = true;
+        
+        isMove = 0;
+        BattleEffectManager.Instance.PlayBreakEffect();
+        SetCounter(false);
+        print((_statusManager as SpecialStatusManager).breakTime);
+        UI_BossODBar.Instance?.ODBarClear();
+        breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
+        
+    }
+    
+    public override void OnBreakExit()
+    {
+        OnHurtExit();
+        SetKBRes(_statusManager.knockbackRes);
+        SetCounter(false);
+        //transform.Find("Model/model/Break")?.gameObject.SetActive(false);
+        var spStatus = _statusManager as SpecialStatusManager;
+        if (spStatus.ODLock == false)
+        {
+            spStatus.currentBreak = spStatus.baseBreak;
+        }
+        else spStatus.currentBreak = 0.1f;
+        
+        spStatus.broken = false;
+        isAction = false;
+        _behavior.ActionEnd();
+        _behavior.isAction = false;
+        UI_BossODBar.Instance?.ODBarRecharge();
+    }
+
+    public override void StartBreak()
+    {
+        var spStatus = _statusManager as SpecialStatusManager;
+        if (_behavior.breakable && spStatus.broken == false)
+        {
+            _behavior.isAction = true;
+            if (_behavior.currentAction != null)
+            {
+                StopCoroutine(_behavior.currentAction);
+                _behavior.currentAction = null;
+            }
+            spStatus.broken = true;
+            anim.SetBool("break",true);
+            anim.Play("break_enter");
+        }
+        
+    }
+
+    protected override IEnumerator BreakWait(float time, float recoverTime = 1.67f)
+    {
+        SetKBRes(999);
+        yield return new WaitForSeconds(time - 1.67f);
+        anim.Play("break_exit");
+        yield return new WaitForSeconds(1.67f);
+        
+        // var _statusManagerS = _statusManager as SpecialStatusManager;
+        // if (!_statusManagerS.ODLock)
+        // {
+        //     _statusManagerS.ODLock = true;
+        //     _behavior.breakable = false;
+        //     _statusManagerS.currentBreak = 1f;
+        //     var twc = DOTween.To(() => _statusManagerS.currentBreak,
+        //         x => _statusManagerS.currentBreak = x,
+        //         _statusManagerS.baseBreak, 1f);
+        //     twc.OnComplete(() =>
+        //         {
+        //             _statusManagerS.ODLock = false;
+        //             _behavior.breakable = true;
+        //         }
+        //     );
+        // }
+
+        
+        
+        breakRoutine = null;
+        anim.SetBool("break",false);
+    }
+
 
     protected override void OnDeath()
     {
@@ -935,13 +1524,29 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         transform.Find("MeeleAttackFX").gameObject.SetActive(false);
         transform.Find("HitSensor").gameObject.SetActive(false);
         anim.SetBool("defeat",true);
+        anim.SetBool("break",true);
         MoveManager.PlayVoice(0);//死亡
         anim.SetBool("hurt",false);
         OnAttackInterrupt?.Invoke();
+        _behavior.breakable = false;
         _behavior.enabled = false;
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
-        
+
+        if (_statusManager is SpecialStatusManager)
+        {
+            anim.SetBool("break",false);
+            if (breakRoutine != null)
+            {
+                StopCoroutine(breakRoutine);
+                breakRoutine = null;
+            }
+            (_statusManager as SpecialStatusManager).broken = false;
+            (_statusManager as SpecialStatusManager).ODLock = true;
+            (_statusManager as SpecialStatusManager).currentBreak = 0.1f;
+        }
+
+
         if (VerticalMoveRoutine != null)
         {
             StopCoroutine(VerticalMoveRoutine);
@@ -976,6 +1581,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         {
             StopCoroutine(hurtEffectCoroutine);
             flashBody.SetActive(false);
+            var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
+            flashWeapon.SetActive(false);
+            
             hurtEffectCoroutine = null;
             
         }
@@ -1003,7 +1611,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         isAction = true;
         currentKBRes = newKnockbackRes;
         
-        if(newKnockbackRes<200)
+        if(newKnockbackRes<200 && newKnockbackRes>=100)
             SetCounter(true);
     }
     
@@ -1047,6 +1655,30 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         _groundSensor.StartCoroutine("DisableCollision");
     }
+    
+    public virtual void InertiaMove(float time)
+    {
+
+        StartCoroutine(HorizontalMoveInteria(time, movespeed));
+
+    }
+    
+    public IEnumerator HorizontalMoveInteria(float time, float speed)
+    {
+        while (time > 0)
+        {
+            
+            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+                transform.position.y);
+            
+
+            //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
+            time -= Time.fixedDeltaTime;
+
+            yield return new WaitForFixedUpdate();
+        }
+
+    }
 
     public void DisableMovement()
     {
@@ -1063,5 +1695,98 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         return dodging;
     }
+    
+    protected List<APlatformNode> GetPath(GameObject target)
+    {
+        _aStar = new AStar(_defaultgravityscale,jumpforce,movespeed);
+        pathInfo = _aStar.Execute(mapInfo, transform, target.transform);
+        return pathInfo;
+    }
+    
+    protected float[] GetRunUpInfo(float distanceY, Collider2D from,Collider2D to)
+    {
+        float runUpDistance = 0;
+        int jumpTimes = 0;
+        if (distanceY >= jumpHeight)
+        {
+            //跳跃两次，因为一次跳跃的高度不够。不需要管间隙，因为必须跳跃两次。
+            var freeHangTime = Mathf.Sqrt(2*(jumpHeight * 2 - distanceY) / (_defaultgravityscale*10));
+            runUpDistance = movespeed *(jumpAscentTime * 2 + freeHangTime);
+            jumpTimes = 2;
+        }
+        else
+        {
+            var singleJumpLimit = jumpAscentTime * movespeed;
+            var gapDistance = BasicCalculation.HasGap(from, to);
+            if (gapDistance > singleJumpLimit && distanceY >= 0)
+            {
+                //也是跳跃两次，但是是因为第一次跳跃不够远。跳法为二连跳后自由落体。
+                var freeHangTime = Mathf.Sqrt(2*(jumpHeight * 2 - distanceY) / (_defaultgravityscale*10));
+                runUpDistance = movespeed *(jumpAscentTime * 3 + freeHangTime);
+                jumpTimes = 2;
+            }
+            else if(gapDistance <= singleJumpLimit && distanceY >= 0)
+            {
+                //跳跃一次，因为距离够远。
+                var freeHangTime = Mathf.Sqrt(2*(jumpHeight - distanceY) / (_defaultgravityscale*10));
+                runUpDistance = movespeed *(jumpAscentTime + freeHangTime);
+                jumpTimes = 1;
+                print("从平台"+from.name+"跳到平台"+to.name+"，跳跃1次");
+            }
+            else if (gapDistance > 0 && distanceY < 0)
+            {
+                //自由落体的时间
+                var freeHangTime = Mathf.Sqrt(2*( - distanceY) / (_defaultgravityscale*10));
+                var hangDistance = movespeed * freeHangTime;
+                var jumpHangTime = Mathf.Sqrt(2*(jumpHeight - distanceY) / (_defaultgravityscale*10));
+                var jumpDistanceAfterSingleJump = movespeed * (jumpAscentTime + jumpHangTime);
+                var jumpDistacneAfterDoubleJump = movespeed * (jumpAscentTime * 3 + jumpHangTime);
+                if (gapDistance <= hangDistance)
+                {
+                    //可以自由落体到达
+                    runUpDistance = freeHangTime * movespeed;
+                    jumpTimes = 0;
+                }else if (gapDistance <= jumpDistanceAfterSingleJump)
+                {
+                    //跳一次，跳法为先自由落体到对应Y轴位置，再跳一次。
+                    runUpDistance = jumpDistanceAfterSingleJump;
+                    jumpTimes = 1;
+                }
+                else
+                {
+                    //跳两次，跳法为先自由落体到对应Y轴位置，再跳两次。
+                    runUpDistance = jumpDistacneAfterDoubleJump;
+                    jumpTimes = 2;
+                }
 
+            }
+            else
+            {
+                //没有间隙。且在下方，直接自由落体。
+                var freeHangTime = Mathf.Sqrt(2*( - distanceY) / (_defaultgravityscale*10));
+                runUpDistance = freeHangTime * movespeed;
+                jumpTimes = 0;
+                //print(freeHangTime);
+            }
+        } 
+        return new float[] {runUpDistance, jumpTimes};
+        
+    }
+
+    public void SetFlashBody(bool flag)
+    {
+        flashBody.SetActive(flag);
+        var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
+        flashWeapon.SetActive(flag);
+    }
+
+    public override void SetActionUnable(bool flag)
+    {
+        hurt = true;
+    }
+
+    public override void ResetGravityScale()
+    {
+        rigid.gravityScale = _defaultgravityscale;
+    }
 }

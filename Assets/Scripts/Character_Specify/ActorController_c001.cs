@@ -289,6 +289,7 @@ public class ActorController_c001 : ActorController
 
     public override void OnStandardAttackEnter()
     {
+        base.OnStandardAttackEnter();
         ActionDisable((int)PlayerActionType.MOVE);//move
         ActionDisable((int)PlayerActionType.JUMP);//jump
         pi.SetInputDisabled("move");
@@ -309,6 +310,7 @@ public class ActorController_c001 : ActorController
     }
     public override void OnStandardAttackExit()
     {
+        base.OnStandardAttackExit();
         ActionEnable((int)PlayerActionType.JUMP);
         ActionEnable((int)PlayerActionType.MOVE);
         ExitAttack();

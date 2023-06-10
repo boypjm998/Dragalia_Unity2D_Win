@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using LitJson;
 using UnityEngine;
@@ -35,6 +36,8 @@ public class BattleStageManager : MonoBehaviour
     [Header("Common")]
     public GameObject attackContainer;
     public GameObject attackContainerEnemy;
+    public GameObject attackSubContainer;
+    
     public GameObject buffLogPrefab;
     public GameObject gameFailedPrefab;
     public GameObject gameClearPrefab;
@@ -57,6 +60,14 @@ public class BattleStageManager : MonoBehaviour
 
     public static int currentDisplayingBossInfo = 1;//正在显示的boss信息
 
+
+    public delegate void StageManagerIntegerDelegate(int id);
+
+    public StageManagerIntegerDelegate OnFieldAbilityAdd;
+    public StageManagerIntegerDelegate OnFieldAbilityRemove;
+    
+    
+
     private void Awake()
     {
         //LoadDependency("ui_general");
@@ -70,7 +81,7 @@ public class BattleStageManager : MonoBehaviour
 
     private void Start()
     {
-        GetMapBorderInfo();
+        //GetMapBorderInfo();
         //player = GameObject.Find("PlayerHandle");
 
         var damageManager = GameObject.Find("DamageManager");
@@ -145,19 +156,9 @@ public class BattleStageManager : MonoBehaviour
 
     #endregion
 
-    public void GetLevelInfo(int cid, string qname,int timeLimit,int crownTime,
-        int totalEnemyNum, int maxRevive, int crownRevive)
+    public LevelDetailedInfo GetLevelInfo()
     {
-        chara_id = cid;
-        quest_name = qname;
-        this.timeLimit = timeLimit;
-        this.maxReviveTime = maxRevive;
-        
-        this.crownTimeLimit = crownTime;
-        this.crownReviveTime = crownRevive;
-        this.totalEnemyNum = totalEnemyNum;
-        currentEnemyNum = totalEnemyNum;
-        GameObject.Find("UI").transform.Find("StartScreen").gameObject.SetActive(true);
+        return levelDetailedInfo;
     }
     public void LoadLevelDetailedInfo(int cid, LevelDetailedInfo info)
     {
@@ -165,15 +166,13 @@ public class BattleStageManager : MonoBehaviour
         
         chara_id = cid;
         quest_name = info.name;
-        timeLimit = info.time_limit;
-        maxReviveTime = info.revive_limit;
-        crownTimeLimit = info.crown_time_limit;
-        crownReviveTime = info.crown_revive_limit;
+        timeLimit = info.time_limit>3600?3600:info.time_limit;
+        maxReviveTime = info.revive_limit>10?10:info.revive_limit;
+        crownTimeLimit = info.crown_time_limit>600?600:info.crown_time_limit;
+        crownReviveTime = info.crown_revive_limit>maxReviveTime?maxReviveTime:info.crown_revive_limit;
         totalEnemyNum = info.total_boss_num;
         currentEnemyNum = totalEnemyNum;
-        
-        
-        
+
         GameObject.Find("UI").transform.Find("StartScreen").gameObject.SetActive(true);
     }
 
@@ -432,9 +431,20 @@ public class BattleStageManager : MonoBehaviour
         
         //1.If target is not in invincible state.
         if (!target.transform.Find("HitSensor").GetComponent<Collider2D>().isActiveAndEnabled) return -1;
+        
+        
+        var targetStat = target.GetComponentInChildren<StatusManager>();
+
+        var damageM = new int[attackStat.GetHitCountInfo()];
+
+        var totalDamage = 0;
+
+        var playerstat = player.GetComponentInChildren<StatusManager>();
 
         
-        
+
+
+
         switch (attackStat.attackType)
         {
             //Attack Callback
@@ -449,13 +459,7 @@ public class BattleStageManager : MonoBehaviour
                 break;
         }
 
-        var targetStat = target.GetComponentInChildren<StatusManager>();
-
-        var damageM = new int[attackStat.GetHitCountInfo()];
-
-        var totalDamage = 0;
-
-        var playerstat = player.GetComponentInChildren<StatusManager>();
+        
 
         //2-4 : Calculate the damage in a loop.
         for (var i = 0; i < attackStat.GetHitCountInfo(); i++)
@@ -481,6 +485,11 @@ public class BattleStageManager : MonoBehaviour
             if(damageM[i]<0) damageM[i] = 0;
 
             //3.Special Effect
+            
+            if (targetStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Invincible) > 0)
+            {
+                damageM[i] = 0;
+            }
 
 
             //4.Instantiate the damage number.
@@ -515,9 +524,14 @@ public class BattleStageManager : MonoBehaviour
 
         var container = attackStat.GetComponentInParent<AttackContainer>();
 
-        
+
+        if (targetStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Invincible) > 0)
+        {
+            return -1;
+        }
         
         //5. Affliction/Debuff
+        List<BattleCondition> attachedConditions = new();
         if (attackStat.attackInfo[0].withConditions.Count > 0)
         {
             for (var i = 0; i < attackStat.attackInfo[0].withConditions.Count; i++)
@@ -536,6 +550,7 @@ public class BattleStageManager : MonoBehaviour
 
                     var withCondition = attackStat.attackInfo[0].withConditions[i];
                     
+                    //驱散
                     if (withCondition.condition.buffID == 999)
                     {
                         var dispellCheck = targetStat.DispellTimerBuff();
@@ -551,35 +566,55 @@ public class BattleStageManager : MonoBehaviour
                         }
                     }
                     
-                    var condFlag = CheckAffliction(withCondition.withConditionChance +
-                        playerstat.GetConditionRateBuff((BasicCalculation.BattleCondition)(withCondition.condition.buffID)),
-                        targetStat.GetAfflictionResistance
-                            ((BasicCalculation.BattleCondition)withCondition.condition.buffID));
-                    if (condFlag<1)
+                    //如果是异常状态！
+                    if (StatusManager.IsControlAffliction(withCondition.condition.buffID) ||
+                        StatusManager.IsDotAffliction(withCondition.condition.buffID))
                     {
-                        playerstat.OnAfflictionResist?.Invoke(withCondition.condition);
-                        //1是成功,0是白字resist,-1是黄字resist
-                        if(condFlag == 0)
-                            DamageNumberManager.GenerateResistText(target.transform);
-                        else
+                        var condFlag = CheckAffliction(withCondition.withConditionChance +
+                                                       playerstat.GetConditionRateBuff((BasicCalculation.BattleCondition)(withCondition.condition.buffID)),
+                            targetStat.GetAfflictionResistance
+                                ((BasicCalculation.BattleCondition)withCondition.condition.buffID));
+                        if (condFlag<1)
                         {
-                            DamageNumberManager.GenerateResistText(target.transform, 1);
-                        }
+                            playerstat.OnAfflictionResist?.Invoke(withCondition.condition);
+                            //1是成功,0是白字resist,-1是黄字resist
+                            if(condFlag == 0)
+                                DamageNumberManager.GenerateResistText(target.transform);
+                            else
+                            {
+                                DamageNumberManager.GenerateResistText(target.transform, 1);
+                            }
                         
-                        continue;//检查异常抗性！不一定是异常！
+                            continue;//检查异常抗性！不一定是异常！
+                        }
+                        if(StatusManager.IsDotAffliction(withCondition.condition.buffID)
+                           ||StatusManager.IsControlAffliction(withCondition.condition.buffID))
+                        {
+                            if(attackType!=1)
+                                targetStat.IncreaseAfflictionResistance(withCondition.condition.buffID);
+                        }
                     }
-                    if(StatusManager.IsDotAffliction(withCondition.condition.buffID)
-                            ||StatusManager.IsControlAffliction(withCondition.condition.buffID))
+                    else
                     {
-                        if(attackType!=1)
-                            targetStat.IncreaseAfflictionResistance(withCondition.condition.buffID);
+                        var condFlag = CheckAffliction(
+                            (withCondition.withConditionChance + playerstat.GetConditionRateBuff((BasicCalculation.BattleCondition)(withCondition.condition.buffID)))*
+                            (1+BasicCalculation.CheckSpecialDebuffRateEffect(playerstat,targetStat,attackStat).Item1),
+                            0);
+                        if (condFlag < 1)
+                        {
+                            //failed
+                            continue;
+                        }
                     }
 
 
+
+                    //TODO:异常数值重做！！
+                    
                     var newEffect = withCondition.condition.effect;
                     print(newEffect);
                     if (StatusManager.IsDotAffliction(withCondition.condition.buffID))
-                        newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(playerstat) /
+                        newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(attackStat,playerstat,targetStat) /
                                     BasicCalculation.CalculateDefenseInfo(targetStat);
                     
                     
@@ -604,6 +639,11 @@ public class BattleStageManager : MonoBehaviour
                             withCondition.condition.specialID
                         );
                     }
+                    attachedConditions.Add(new TimerBuff(withCondition.condition.buffID,
+                        newEffect,
+                        withCondition.condition.duration,
+                        withCondition.condition.maxStackNum,
+                        withCondition.condition.specialID));
                     
                 }
 
@@ -658,22 +698,53 @@ public class BattleStageManager : MonoBehaviour
                                      (playerstat,targetSpecialStat,attackStat);
                 if (targetSpecialStat.ODLock == false)
                 {
-                    targetSpecialStat.currentBreak -= totalDamage * (Random.Range(0.95f, 1.05f) + ODModifier) * ODpunisher;
+                    targetSpecialStat.currentBreak -= totalDamage * (Random.Range(0.9f, 1.1f) + ODModifier) * ODpunisher;
                 }
             }
 
         }
+        
+        //10、Special Field Effects
+        
+        CheckSpecialFieldEffect(attackStat, playerstat, targetStat,attachedConditions,damageM);
 
         return totalDamage;
         
         
     }
-    
-    
-    
-    
-    
-    
+
+    public int CauseIndirectDamage(StatusManager stat, int damage,bool causeDeath, bool random = false)
+    {
+        if (stat.GetComponent<ActorBase>().IsInvincible)
+        {
+            return 0;
+        }
+
+        int damageM = damage;
+        if (random)
+        {
+            damageM = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
+        }
+        
+        
+        if (stat.currentHp <= damageM && !causeDeath)
+        {
+            damageM = stat.currentHp - 1;
+        }
+        
+        dnm.IndirectDamagePop(damageM,stat.transform);
+        
+        if(damageM > 0)
+            stat.OnHPChange?.Invoke();
+
+        stat.currentHp -= damageM;
+        
+        return damageM;
+
+    }
+
+
+
 
     public virtual int TargetHeal(GameObject target, float healPotency, float healPotencyPercentage, bool randomRange)
     {
@@ -694,6 +765,34 @@ public class BattleStageManager : MonoBehaviour
 
 
         dnm.HealPop(damageM, target.transform);
+
+        if(stat.currentHp < stat.maxHP)
+            stat.OnHPChange?.Invoke();
+        
+        stat.currentHp += damageM;
+
+        return damageM;
+    }
+
+    public virtual int TargetHeal(StatusManager stat, float healPotency, float healPotencyPercentage,
+        bool randomRange)
+    {
+        //1. 计算回血Part1
+        var damage = BasicCalculation.CalculateHPRegenGeneral(stat, healPotency, healPotencyPercentage);
+
+        int damageM;
+        if (randomRange)
+        { 
+            damageM = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
+        }
+        else
+        {
+            damageM = (int)Mathf.Ceil(damage);
+        }
+
+
+
+        dnm.HealPop(damageM, stat.transform);
 
         if(stat.currentHp < stat.maxHP)
             stat.OnHPChange?.Invoke();
@@ -732,129 +831,33 @@ public class BattleStageManager : MonoBehaviour
         return damageM;
     }
 
-    /*public virtual int EnemyHit(GameObject target, GameObject self, AttackFromEnemy attackStat)
+    public int CheckSpecialFieldEffect(AttackBase attackStat, StatusManager srcStat, StatusManager targetStat,
+        List<BattleCondition> attachedCondition, int[] dmg)
     {
-        //1.If target is not in invincible state.
-        if (target.transform.Find("HitSensor").GetComponent<Collider2D>().isActiveAndEnabled == false) return -1;
-
-        //Attack Callback
-
-        var targetStat = target.GetComponentInParent<StatusManager>();
-        var damageM = new int[attackStat.GetHitCount()];
-        var totalDamage = 0;
-        
-        //var selfstat = attackStat.enemySource;
-        //if (selfstat == null)
-        var selfstat = self.GetComponentInChildren<StatusManager>();
-        //}
-        
-        
-
-
-        for (var i = 0; i < attackStat.GetHitCount(); i++)
+        //反伤
+        if (FieldAbilityIDList.Contains(20033))
         {
-            //2.Calculate the damage deal to target.
-
-            // var isCrit = false;
-            // var damage =
-            //     BasicCalculation.CalculateDamageEnemy(
-            //         selfstat,
-            //         targetStat,
-            //         attackStat.GetDmgModifier(i),
-            //         attackStat,
-            //         ref isCrit
-            //     );
-            //
-            // damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
-
-            //3.Special Effect
-
-
-            //4.Instantiate the damage number.
-
-
-            // if (isCrit)
-            //     dnm.DamagePopPlayer(target.transform, damageM[i], true);
-            // else
-            //     dnm.DamagePopPlayer(target.transform, damageM[i], false);
-            //
-            // totalDamage += damageM[i];
+            var reflectDamage = (int)(dmg.Sum() * 0.1f + srcStat.currentHp*0.02f);
+            CauseIndirectDamage(srcStat, reflectDamage, true);
+            if (attachedCondition.Count > 0)
+            {
+                foreach (var condition in attachedCondition)
+                {
+                    if (StatusManager.IsControlAffliction(condition.buffID) ||
+                        StatusManager.IsDotAffliction(condition.buffID))
+                    {
+                        srcStat.ObtainTimerBuff(condition);
+                    }
+                }
+            }
         }
 
-        var container = attackStat.GetComponentInParent<AttackContainer>();
-
-        //Affliction/Debuff
-        /*if (attackStat.withConditions.Count > 0)
-            if (!container.conditionCheckDone.Contains(target.GetInstanceID()))
-            {
-                for (var i = 0; i < attackStat.withConditionNum[0]; i++)
-                {
-                    if (attackStat.withConditions[i].buffID == 999)
-                    {
-                        targetStat.DispellTimerBuff();
-                        continue;
-                    }
-                    
-                    var condFlag = CheckAffliction(attackStat.withConditionChance[i],
-                        targetStat.GetAfflictionResistance
-                            ((BasicCalculation.BattleCondition)attackStat.withConditions[i].buffID));
-                    if (condFlag<1)
-                    {
-                        DamageNumberManager.GenerateResistText(target.transform);
-                        continue;//检查异常抗性，这里还没有获取Resistance！！不一定是异常！
-                    }
 
 
-                    var newEffect = attackStat.withConditions[i].effect;
-                    //print(newEffect);
-                    if (StatusManager.IsDotAffliction(attackStat.withConditions[i].buffID))
-                        newEffect = 5f / 300f * newEffect * BasicCalculation.CalculateAttackInfo(selfstat) /
-                                    BasicCalculation.CalculateDefenseInfo(targetStat);
-
-                    if (attackStat.withConditions[i].maxStackNum > 1)
-                    {
-                        targetStat.ObtainTimerBuff
-                        (attackStat.withConditions[i].buffID,
-                            newEffect,
-                            attackStat.withConditions[i].duration,
-                            attackStat.withConditions[i].DisplayType,
-                            attackStat.withConditions[i].maxStackNum,
-                            attackStat.withConditions[i].specialID);
-                    }
-                    else
-                    {
-                        targetStat.ObtainUnstackableTimerBuff
-                        (attackStat.withConditions[i].buffID,
-                            newEffect,
-                            attackStat.withConditions[i].duration,
-                            attackStat.withConditions[i].DisplayType,
-                            attackStat.withConditions[i].specialID
-                            );
-                    }
 
 
-                }
-
-                container.conditionCheckDone.Add(target.GetInstanceID());
-            }#1#
-        
-        //击退Knockback
-        // if (attackStat.knockbackPower > 0)
-        // {
-        //     var kbdirtemp = attackStat.knockbackDirection;
-        //     kbdirtemp = attackStat.GetKBDirection(attackStat.KBType, target);
-        //     target.GetComponentInParent<IKnockbackable>().
-        //         TakeDamage(attackStat.knockbackPower,attackStat.knockbackTime,attackStat.knockbackForce,kbdirtemp);
-        // }
-
-        
-
-        //Damage
-        targetStat.currentHp -= totalDamage;
-        targetStat.OnHPChange?.Invoke();
-        
-        return totalDamage;
-    }*/
+        return dmg[0];
+    }
 
     #endregion
 
@@ -889,13 +892,55 @@ public class BattleStageManager : MonoBehaviour
 
     }
 
-    /// <summary>
-    ///   <para>返回obj脚下踩着的地面</para>
-    /// </summary>
-    public Collider2D GetContactGround(GameObject obj)
+    public void AddFieldAbility(int id)
     {
-        return null;
+        //OnFieldAbilityAdd?.Invoke(id);
+        var abilityIcons = FindObjectsOfType<UI_BossAbilityDisplayer>();
+        foreach (var ability in abilityIcons)
+        {
+            if(ability.abilityID == id)
+                ability.SetIconActive(true);
+        }
+        
+        FieldAbilityIDList.Add(id);
     }
+
+    public void RemoveFieldAbility(int id)
+    {
+        //OnFieldAbilityRemove?.Invoke(id);
+        var abilityIcons = FindObjectsOfType<UI_BossAbilityDisplayer>();
+        foreach (var ability in abilityIcons)
+        {
+            if(ability.abilityID == id)
+                ability?.SetIconActive(false);
+        }
+
+        
+        FieldAbilityIDList.Remove(id);
+    }
+
+    public void ClearAllFieldAbility()
+    {
+        foreach (var ability in FieldAbilityIDList)
+        {
+            OnFieldAbilityRemove?.Invoke(ability);
+        }
+        FieldAbilityIDList.Clear();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void SetGamePause(bool flag)
     {
@@ -928,6 +973,25 @@ public class BattleStageManager : MonoBehaviour
 
     IEnumerator GameFailedRoutine()
     {
+        var playerController = FindObjectOfType<PlayerInput>();
+        playerController.DisableAndIdle();
+
+        var actors = FindObjectsOfType<ActorBase>();
+        foreach (var ac in actors)
+        {
+            ac.SetHitSensor(false);
+            ac.enabled = false;
+        }
+        
+        var enemybehaviors = FindObjectsOfType<DragaliaEnemyBehavior>();
+        foreach (var behavior in enemybehaviors)
+        {
+            behavior.playerAlive = false;
+            behavior.enabled = false;
+        }
+        
+        
+        
         var music = GetComponent<AudioSource>();
         music.clip = gameFailedBGM;
         music.Play();
@@ -985,7 +1049,8 @@ public class BattleStageManager : MonoBehaviour
         var playerinput = player.GetComponent<PlayerInput>();
         playerinput.DisableAllInput();
         playerinput.SetMoveDisabled();
-        playerinput.enabled = false;
+        playerinput.DisableAndIdle();
+        
         var playercontroller = player.GetComponent<ActorController>();
         playercontroller.anim.SetFloat("forward",0);
         yield return null;

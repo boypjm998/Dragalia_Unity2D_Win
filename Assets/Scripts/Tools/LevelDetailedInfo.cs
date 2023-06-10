@@ -13,7 +13,7 @@ public class LevelDetailedInfo
     }
     public string name;
     public string scene_prefab_path;
-    public string overall_camera_path;
+    
     public int total_boss_num;
     public List<BossPrefabInfo> boss_prefab;
     public List<double> player_position;

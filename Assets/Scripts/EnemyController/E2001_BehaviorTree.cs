@@ -204,7 +204,7 @@ public class E2001_BehaviorTree : DragaliaEnemyBehavior
                     currentAction = StartCoroutine(ACT_PillarAttack(2));
                     break;
                 case 7:
-                    currentAction = StartCoroutine(ACT_FastApproach(3));
+                    currentAction = StartCoroutine(ACT_FastAroundAttack(3));
                     break;
                 case 8:
                     currentAction = StartCoroutine(ACT_LockAttack(1));

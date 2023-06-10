@@ -32,8 +32,10 @@ public class EnemyController : ActorBase
     public bool canDeath = true;
     //public int facedir = 1;
     public bool hurt;
+    public bool grounded => anim.GetBool("isGround");
+    
     public bool counterOn = false;
-
+    protected float isMove = 0;
 
     //Hurt Effect
     [SerializeField]
@@ -42,6 +44,8 @@ public class EnemyController : ActorBase
     //[SerializeField]private SpriteRenderer animRenderer;
     //protected Material originMaterial;
     protected GameObject counterUI;
+    public GameObject minimapIcon;
+    public MyShadowCaster shadowCaster;
     protected Coroutine hurtEffectCoroutine;
     protected Coroutine KnockbackRoutine;
     public Coroutine VerticalMoveRoutine;
@@ -62,10 +66,12 @@ public class EnemyController : ActorBase
     protected virtual void Start()
     {
         hitSensor = transform.Find("HitSensor").gameObject;
+        minimapIcon = transform.Find("MinimapIcon").gameObject;
         _statusManager = GetComponentInParent<StatusManager>();
         _effectManager = BattleEffectManager.Instance;
         currentKBRes = _statusManager.knockbackRes;
         rigid = GetComponent<Rigidbody2D>();
+        shadowCaster = GetComponentInChildren<MyShadowCaster>();
         var attackfromplayers = FindObjectsOfType<AttackFromPlayer>();
         foreach (var attackfromplayer in attackfromplayers)
         {
@@ -78,8 +84,9 @@ public class EnemyController : ActorBase
         }
 
     }
-    protected virtual void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         anim = GetComponentInChildren<Animator>();
         
     }
@@ -91,7 +98,7 @@ public class EnemyController : ActorBase
         
     }
     
-    protected void CheckFaceDir()
+    protected virtual void CheckFaceDir()
     {
         if (facedir == 1)
         {
@@ -135,7 +142,7 @@ public class EnemyController : ActorBase
         // }
 
         var rand = Random.Range(0, 100);
-        if (rand >= kbpower-currentKBRes || currentKBRes - kbpower >= 100)
+        if (rand > kbpower-currentKBRes || currentKBRes - kbpower >= 100)
         {
             if(_statusManager is not SpecialStatusManager)
                 return;
@@ -213,7 +220,7 @@ public class EnemyController : ActorBase
         throw new NotImplementedException();
     }
     
-    public virtual IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX, float arriveDistanceY, float startFollowDistance)
+    public virtual IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX, float arriveDistanceY, float startFollowDistance,bool continueThoughConditionOK=false)
     {
         throw new NotImplementedException();
     }
@@ -370,7 +377,8 @@ public class EnemyController : ActorBase
             return;
         }
 
-        FindObjectOfType<BattleStageManager>().EnemyEliminated(gameObject);
+        //FindObjectOfType<BattleStageManager>().EnemyEliminated(gameObject);
+        BattleStageManager.Instance.EnemyEliminated(gameObject);
     }
     
     public virtual void SwapWeaponVisibility(bool flag)
@@ -378,9 +386,14 @@ public class EnemyController : ActorBase
         //weaponObject.transform.GetChild(0).gameObject.SetActive(flag);
     }
     
-    public void SetGravityScale(float scale)
+    public override void SetGravityScale(float scale)
     {
         rigid.gravityScale = scale;
+    }
+
+    public override void ResetGravityScale()
+    {
+        rigid.gravityScale = DefaultGravity;
     }
 
     protected void SetGroundCollision(bool on)
@@ -415,7 +428,7 @@ public class EnemyController : ActorBase
         currentKBRes = value;
     }
 
-    protected IEnumerator BreakWait(float time)
+    protected virtual IEnumerator BreakWait(float time,float recoverTime = 1.67f)
     {
         yield return new WaitForSeconds(time);
         breakRoutine = null;
@@ -426,6 +439,11 @@ public class EnemyController : ActorBase
     {
         counterOn = flag;
         BattleEffectManager.Instance.DisplayCounterIcon(gameObject,flag);
+    }
+
+    public void SetMove(float value)
+    {
+        isMove = value;
     }
 
 }

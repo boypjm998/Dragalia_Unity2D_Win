@@ -28,8 +28,9 @@ public class BattleSceneUIManager : MonoBehaviour
         Instance = null;
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         pi = FindObjectOfType<PlayerInput>();
     }
 
@@ -37,7 +38,8 @@ public class BattleSceneUIManager : MonoBehaviour
     {
         if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
-        
+        if(pi == null)
+            return;
         if (pi.buttonEsc.OnPressed)
         {
             if (_stageManager.isGamePaused)

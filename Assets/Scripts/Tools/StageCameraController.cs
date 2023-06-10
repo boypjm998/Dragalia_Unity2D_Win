@@ -32,9 +32,10 @@ public class StageCameraController : MonoBehaviour
         Instance = null;
     }
 
-    void Start()
+    IEnumerator Start()
     {
         mainCameraGameObject = gameObject;
+        yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         overallCameraGameObject = GameObject.Find("OverallCamera");
     }
 
@@ -60,7 +61,8 @@ public class StageCameraController : MonoBehaviour
         ta.enabled = false;
         mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().Priority = 0;
         overallCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().Priority = 10;
-
+        CineMachineOperator.Instance.StopCameraShake();
+        overallCameraGameObject.GetComponentInChildren<CineMachineOperator>()?.SetInstance();
     }
     public static void SwitchMainCamera()
     {
@@ -70,6 +72,8 @@ public class StageCameraController : MonoBehaviour
         ta.enabled = true;
         overallCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().Priority = 0;
         mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().Priority = 10;
+        CineMachineOperator.Instance.StopCameraShake();
+        mainCameraGameObject.GetComponentInChildren<CineMachineOperator>()?.SetInstance();
     }
 
     public static GameObject GetCurrentCamera()

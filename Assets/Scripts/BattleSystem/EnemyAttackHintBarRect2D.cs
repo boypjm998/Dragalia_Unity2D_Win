@@ -18,9 +18,9 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
 
     [SerializeField] private RectFillType fillType;
     
-    protected override void Start()
+    protected override IEnumerator Start()
     {
-        base.Start();
+        yield return base.Start();
         
         Fill = transform.Find("Fill").gameObject;
         MaxFill = transform.Find("Back").gameObject;

@@ -14,6 +14,7 @@ public class AttackContainer : MonoBehaviour
     public bool spGained;
     public List<int> conditionCheckDone;//已检查过的敌人InstanceID
     public HashSet<Tuple<int, int>> checkedConditions = new();
+    public List<AttackSubContainer> SubContainers = new();
     
     //public List<int> specialConditionCheckDone;
 
@@ -48,10 +49,13 @@ public class AttackContainer : MonoBehaviour
     }
     private void OnDestroy()
     {
+        
+
         if (needTotalDisplay)
         {
             DisplayTotalDamage();
         }
+
     }
     private void DisplayTotalDamage()
     {
@@ -67,7 +71,7 @@ public class AttackContainer : MonoBehaviour
     {
         totalDamage += dmg;
     }
-    public void FinishHit()
+    public virtual void FinishHit()
     {
         currentFinishedNum++;
     }
@@ -86,7 +90,17 @@ public class AttackContainer : MonoBehaviour
     public void DestroyInvoke()
     {
         if (!destroyInvoked)
+        {
+            destroyInvoked = true;
+            foreach (var subContainer in SubContainers)
+            {
+                print(subContainer.totalDamage);
+                totalDamage += subContainer.totalDamage;
+            }
             Destroy(gameObject);
+        }
+
+        
     }
 
     public void AddNewCheckedCondition(int instanceID, int internalConditionID)

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class EnemyControllerFlying : EnemyController
 {
-    [SerializeField] protected float isMove = 0;
+    public bool moveEnable;
     public float moveSpeed = 10f;
     public float _defaultgravityscale = 1f;
     
@@ -28,6 +28,20 @@ public class EnemyControllerFlying : EnemyController
         base.Start();
         if(canDeath)
             _statusManager.OnHPBelow0 += OnDeath;
+    }
+    
+    protected void FixedUpdate()
+    {
+        Move();
+    }
+
+    void Move()
+    {
+        if(!moveEnable)
+            return;
+        rigid.position += new Vector2(moveSpeed * facedir * isMove, 0) * Time.fixedDeltaTime;
+        //print(6 * facedir * isMove * Time.fixedDeltaTime);
+        CheckFaceDir();
     }
 
 
@@ -65,7 +79,7 @@ public class EnemyControllerFlying : EnemyController
     /// <param name="startFollowDistance"></param>
     /// <returns></returns>
     public override IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX, float arriveDistanceY,
-        float startFollowDistance)
+        float startFollowDistance,bool continueThoughConditionOK=false)
     {
         SetGravityScale(0);
         SetGroundCollision(false);
@@ -123,8 +137,9 @@ public class EnemyControllerFlying : EnemyController
         }else if(endPoint.x < BattleStageManager.Instance.mapBorderL)
         {
             endPoint.x = BattleStageManager.Instance.mapBorderL;
+            
         }
-
+        
         endPoint.y = target.transform.position.y + 2f;
 
         var tweenerCore = transform.DOMove(endPoint, timeToReach).SetEase(ease).OnComplete(() =>
@@ -155,7 +170,9 @@ public class EnemyControllerFlying : EnemyController
         isMove = 0;
         BattleEffectManager.Instance.PlayBreakEffect();
         SetCounter(false);
+        StageCameraController.SwitchMainCamera();
         breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
+        UI_BossODBar.Instance?.ODBarClear();
     }
     
     public override void OnBreakExit()
@@ -170,6 +187,9 @@ public class EnemyControllerFlying : EnemyController
         
         spStatus.broken = false;
         isAction = false;
+        _behavior.ActionEnd();
+        _behavior.isAction = false;
+        UI_BossODBar.Instance?.ODBarRecharge();
     }
 
     protected override void OnDeath()
@@ -192,6 +212,21 @@ public class EnemyControllerFlying : EnemyController
         _behavior.enabled = false;
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
+        
+        if (_statusManager is SpecialStatusManager)
+        {
+            anim.SetBool("break",false);
+            if (breakRoutine != null)
+            {
+                StopCoroutine(breakRoutine);
+                breakRoutine = null;
+            }
+
+            (_statusManager as SpecialStatusManager).broken = false;
+            (_statusManager as SpecialStatusManager).ODLock = true;
+            (_statusManager as SpecialStatusManager).currentBreak = 0.1f;
+        }
+        
         
         if (VerticalMoveRoutine != null)
         {
@@ -249,4 +284,6 @@ public class EnemyControllerFlying : EnemyController
         if(canDeath)
             _statusManager.OnHPBelow0 -= OnDeath;
     }
+
+    
 }

@@ -39,7 +39,7 @@ public class AttackFromEnemy : AttackBase
     //static int DEFAULT_GRAVITY = 4;
     public Coroutine ConnectCoroutine;
     
-    
+    public bool forcedShake = false;
     public float hitShakeIntensity = 3;
 
     public float damageAutoReset = 0; //自动刷新
@@ -129,7 +129,7 @@ public class AttackFromEnemy : AttackBase
         eff.name = "HitEffect0";
     }
     
-    public void AddWithCondition(int hitNo, BattleCondition condition, int chance, int identifier = 0)
+    public override void AddWithCondition(int hitNo, BattleCondition condition, int chance, int identifier = 0)
     {
         var conditionInfo = new AttackInfo.ConditionWithAttackInfo();
         conditionInfo.condition = condition;
@@ -144,7 +144,7 @@ public class AttackFromEnemy : AttackBase
         }
     }
     
-    public void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
+    public override void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
     {
         var conditionInfo = new AttackInfo.ConditionWithAttackInfo();
         conditionInfo.condition = condition;
@@ -163,16 +163,19 @@ public class AttackFromEnemy : AttackBase
             return;
         hitFlags.Remove(collision.transform.parent.GetInstanceID());
         
-        
 
-
+        print(collision.name);
         int dmg = battleStageManager.CalculateHit
             (collision.transform.parent.gameObject,enemySource, this,1);
+        
+        OnAttackHit?.Invoke(this,collision.transform.parent.gameObject);
 
 
         if (hitConnectEffect != null)
         {
-            Instantiate(hitConnectEffect, new Vector2(collision.transform.position.x,transform.position.y), Quaternion.identity);
+            //new Vector2(collision.transform.position.x,collision.ClosestPoint(transform.position)
+            
+            Instantiate(hitConnectEffect, collision.ClosestPoint(collision.transform.position), Quaternion.identity);
         }
         
         try
@@ -197,6 +200,9 @@ public class AttackFromEnemy : AttackBase
         
         AttackContainer container = gameObject.GetComponentInParent<AttackContainer>();
         container?.AttackOneHit();
+        
+        if(destroyAfterHit)
+            Destroy(gameObject);
         
         if(damageAutoReset>0)
             Invoke("NextAttack",damageAutoReset);
@@ -253,6 +259,11 @@ public class AttackFromEnemy : AttackBase
 
         var container = GetComponentInParent<AttackContainer>();
         container.conditionCheckDone.Clear();
+    }
+
+    public void ChangeAvoidability(AvoidableProperty property)
+    {
+        Avoidable = property;
     }
 
     protected virtual void OnDestroy()

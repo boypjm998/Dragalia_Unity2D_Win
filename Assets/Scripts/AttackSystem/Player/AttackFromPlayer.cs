@@ -68,20 +68,13 @@ public class AttackFromPlayer : AttackBase
     {
         battleStageManager = BattleStageManager.Instance;
         chara_id = battleStageManager.chara_id;
+
+        var stat = playerpos.GetComponent<StatusManager>();
+        
+        CheckSpecialConditionalEffectBeforeAttack(stat);
         
         
         
-        if(playerpos.GetComponent<StatusManager>().
-               GetConditionsOfType((int)BasicCalculation.BattleCondition.StandardAttackBurner).Count>0)
-        {
-            if(attackType!=BasicCalculation.AttackType.STANDARD)
-                return;
-            
-            var effect = playerpos.GetComponent<StatusManager>().GetConditionTotalValue(
-                (int)BasicCalculation.BattleCondition.StandardAttackBurner
-                );
-            AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Burn, effect, 12f,100),100);
-        }
     }
 
     protected virtual void OnDestroy()
@@ -137,6 +130,8 @@ public class AttackFromPlayer : AttackBase
     public virtual void RecoverFromMeeleTimeStop(float gravity)
     {
         var animAttack = GetComponentInParent<Animator>();
+        if(animAttack == null)
+            return;
         var rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
         Animator anim;
         try
@@ -389,7 +384,7 @@ public class AttackFromPlayer : AttackBase
         //withConditions.Add(condition);
     }
     
-    public void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
+    public override void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
     {
         var conditionInfo = new AttackInfo.ConditionWithAttackInfo();
         conditionInfo.condition = condition;

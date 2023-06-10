@@ -62,23 +62,28 @@ public class UI_BattleInfoCaster : MonoBehaviour
     public void PrintSkillName(string actionName)
     {
         string txt;
+        string title;
+        //title为actionName第一个_前的字符串
+        title = actionName.Substring(0, actionName.IndexOf("_"));
+        //print(title);
+        
         switch (_globalController.GameLanguage)
         {
             case GlobalController.Language.JP:
             {
-                txt = BossSkillNameData[actionName]["JP"].ToString();
+                txt = BossSkillNameData[title][actionName]["JP"].ToString();
                 PrintSkillName_ZH(txt);
                 break;
             }
             case GlobalController.Language.ZHCN:
             {
-                txt = BossSkillNameData[actionName]["ZHCN"].ToString();
+                txt = BossSkillNameData[title][actionName]["ZHCN"].ToString();
                 PrintSkillName_ZH(txt);
                 break;
             }
             case GlobalController.Language.EN:
             {
-                txt = BossSkillNameData[actionName]["EN"].ToString();
+                txt = BossSkillNameData[title][actionName]["EN"].ToString();
                 PrintSkillName_ZH(txt);
                 break;
             }

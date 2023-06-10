@@ -54,7 +54,7 @@ public class ActorControllerDagger : ActorController
      public override void Roll()
      {
           anim.SetBool("roll",true);
-          if (pi.rollEnabled && !pi.hurt && !pi.isSkill)
+          if (pi.rollEnabled && !pi.hurt)
           {
                anim.Play("roll");
           }
@@ -96,6 +96,7 @@ public class ActorControllerDagger : ActorController
 
      public override void OnStandardAttackEnter()
      {
+          base.OnStandardAttackEnter();
           pi.stdAtk = false;
           pi.moveEnabled = false;
           pi.attackEnabled = false;
@@ -129,6 +130,7 @@ public class ActorControllerDagger : ActorController
 
      public override void OnStandardAttackExit()
      {
+          base.OnStandardAttackExit();
           pi.jumpEnabled = true;
           pi.moveEnabled = true;
           pi.attackEnabled = true;
@@ -164,6 +166,10 @@ public class ActorControllerDagger : ActorController
           OnAttackInterrupt?.Invoke();
      }
 
+     /// <summary>
+     /// 
+     /// </summary>
+     /// <param name="moveID">1:距离12,2:距离3,3：距离2,4：距离5</param>
      public override void FaceDirectionAutoFix(int moveID)
      {
           switch (moveID)
@@ -171,11 +177,11 @@ public class ActorControllerDagger : ActorController
                case 1:
                {
                     if (ta.GetNearestTargetInRangeDirection
-                        (facedir, 10f, .5f,
+                        (facedir, 12f, .5f,
                              LayerMask.GetMask("Enemies")) == null
                         &&
                         ta.GetNearestTargetInRangeDirection
-                        (-facedir, 10f, .5f,
+                        (-facedir, 12f, .5f,
                              LayerMask.GetMask("Enemies")) != null)
                     {
                          SetFaceDir(-facedir);

@@ -55,7 +55,8 @@ MonoBehaviour:
   sortingGroupID: 1001
   isActive: 0
   initialPosition: {x: 0, y: 0}
-  hideTime: 0.3
+  initialLocalPosition: {x: 0, y: 0}
+  hideTime: 0.1
   _hideDirection: 0
   _hideLocalPosition: {x: 0, y: -100}
 --- !u!225 &8247796220273358518
@@ -136,7 +137,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u8FD4\u56DE"
+  m_text: "\u5207\u6362\u89D2\u8272"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0f371689b72231449b4af96eca013b88, type: 2}
   m_sharedMaterial: {fileID: -1541928157465177710, guid: 0f371689b72231449b4af96eca013b88, type: 2}
@@ -219,7 +220,7 @@ GameObject:
   - component: {fileID: 4974776742462900090}
   - component: {fileID: 4974776742462900089}
   m_Layer: 5
-  m_Name: ReturnButton
+  m_Name: CharacterSelectionButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -292,12 +293,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4974776741667494617}
         m_TargetAssemblyTypeName: UISortingGroup, Assembly-CSharp
-        m_MethodName: ReturnUIState
-        m_Mode: 1
+        m_MethodName: ToUIState
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 102
           m_FloatArgument: 0
           m_StringArgument: ReturnButtonNew
           m_BoolArgument: 0

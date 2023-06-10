@@ -18,6 +18,7 @@ public class MapInformation : MonoBehaviour
     }
     
     [SerializeField] private List<MapSpotInfo> mapSpotInfoList;
+    public bool tutorialCleared;
 
     public void MapClickedEvent(int panelID)
     {
@@ -30,7 +31,7 @@ public class MapInformation : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         questSaveList = GlobalController.Instance.GetQuestInfo();
         //如果questSaveList里面有元素的quest_id等于100001,令除了第一个子物体以外的子物体不可用
@@ -40,6 +41,8 @@ public class MapInformation : MonoBehaviour
             {
                 transform.GetChild(i).gameObject.SetActive(true);
             }
+
+            tutorialCleared = true;
         }
         else
         {
@@ -48,6 +51,8 @@ public class MapInformation : MonoBehaviour
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
+
+            tutorialCleared = false;
         }
     }
 

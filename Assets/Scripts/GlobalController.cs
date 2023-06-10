@@ -9,6 +9,7 @@ using TMPro;
 using GameMechanics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GlobalController : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class GlobalController : MonoBehaviour
     #region GameOption
 
     public Language GameLanguage;
-    public static int currentCharacterID = 4;
+    public static int currentCharacterID = 1;
     
     
     public static string keyRight = "d";
@@ -278,15 +279,57 @@ public class GlobalController : MonoBehaviour
         
         //初始化battleStageManager:
         var battleStageManager = FindObjectOfType<BattleStageManager>();
+
+        battleStageManager.LoadLevelDetailedInfo(currentCharacterID, currentLevelDetailedInfo);
+        var lvl_info = battleStageManager.GetLevelInfo();
         
-        battleStageManager.LoadLevelDetailedInfo(currentCharacterID,currentLevelDetailedInfo);
+        //加载场景地图
+        var scenePath = lvl_info.scene_prefab_path;
+        AssetBundle sceneBundle;
+        if (!loadedBundles.ContainsKey(scenePath))
+        {
+            ar =
+                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, scenePath));
+            yield return ar;
+            loadedBundles.Add(scenePath,ar.assetBundle);
+            assetBundles.Add(ar.assetBundle);
+            sceneBundle = ar.assetBundle;
+        }
+        else
+        {
+            assetBundles.Add(loadedBundles[scenePath]);
+            sceneBundle = loadedBundles[scenePath];
+        }
+
+        var scenePrefab = sceneBundle.LoadAsset<GameObject>("Scene");
+        //将其子物体的父节点全部设置到场景最高级节点
+        var sceneClone = Instantiate(scenePrefab, Vector3.zero, Quaternion.identity);
+        var sceneCloneChildren1 = sceneClone.transform.GetChild(0);
+        var sceneCloneChildren2 = sceneClone.transform.GetChild(1);
+        
+        
+        sceneCloneChildren1.parent = sceneClone.transform.parent;
+        sceneCloneChildren2.parent = sceneClone.transform.parent;
+        
+        Destroy(sceneClone.gameObject);
+        battleStageManager.GetMapBorderInfo();
+        var othercamera = GameObject.Find("OtherCamera/TrigMap").GetComponent<Camera>();
+        GameObject.Find("Main Camera").GetComponentInChildren<CinemachineConfiner2D>().m_BoundingShape2D
+            = GameObject.Find("CameraRange").GetComponent<PolygonCollider2D>();
+
+        var UIElements = GameObject.Find("UI");
+        // othercamera.targetTexture = null;
+        // yield return null;
+        othercamera.targetTexture = UIElements.transform.Find("Minimap/MiniMap").GetComponent<RawImage>().texture as RenderTexture;
+        
+
 
         //实例化UI
-        var UIElements = GameObject.Find("UI");
+        
         var UICharaInfoClone = Instantiate(UICharaInfoAsset, UIElements.transform);
         UICharaInfoClone.name = "CharacterInfo";
         
-        
+        GameObject.Find("UI").transform.Find("Minimap").gameObject.SetActive(true);
         
         
         
@@ -303,7 +346,7 @@ public class GlobalController : MonoBehaviour
         LoadLocalizedUITest(battleStageManager,questID);
         battleStageManager.InitPlayer(plrclone);
         plrclone.GetComponent<PlayerStatusManager>().GetPlayerConditionBar();
-        plrclone.GetComponent<PlayerStatusManager>().remainReviveTimes = 3;
+        plrclone.GetComponent<PlayerStatusManager>().remainReviveTimes = currentLevelDetailedInfo.revive_limit;
         plrclone.GetComponent<PlayerInput>().enabled = false;
         //加载本地化相关
         yield return null;
@@ -541,6 +584,7 @@ public class GlobalController : MonoBehaviour
         Destroy(loadingScreen);
         
         yield return new WaitForSeconds(2.5f);
+        BattleStageManager.Instance.GetMapBorderInfo();
         //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
         loadingEnd = true;
         loadingRoutine = null;

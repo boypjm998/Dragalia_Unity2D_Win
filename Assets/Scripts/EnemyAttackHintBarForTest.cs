@@ -29,15 +29,15 @@ public class EnemyAttackHintBarForTest : EnemyAttackHintBar
     }
 
 
-    protected override void Start()
+    protected override IEnumerator Start()
     {
-        base.Start();
+        yield return base.Start();
         
         warningTime = 2;
 
         Fill = transform.Find("Fill")?.gameObject;
         if(Fill == null)
-            return;
+            yield break;
 
         MaxFill = transform.Find("Back").gameObject;
         var fillRenderer = Fill.GetComponent<SpriteRenderer>();

@@ -23,7 +23,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
             enemySource = selfpos?.gameObject;
             if (firedir == 0)
                 firedir = enemySource.GetComponent<ActorBase>().facedir;
-            print(firedir);
+            //print(firedir);
         }
 
         //print(enemySource);

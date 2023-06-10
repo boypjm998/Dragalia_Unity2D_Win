@@ -16,6 +16,7 @@ public class UI_DialogDisplayer : MonoBehaviour
     protected Queue<DialogFormat> dialogQueue;
     protected Coroutine displayRoutine;
     protected JsonData questDialogInfoData;
+    protected int currentPrority = 0;
 
     public static UI_DialogDisplayer Instance { get; private set; }
 
@@ -46,9 +47,17 @@ public class UI_DialogDisplayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (dialogQueue.Count > 0 && displayRoutine == null)
+        
+        if (dialogQueue.Count > 0)
         {
-            displayRoutine = StartCoroutine(DisplayDialog());
+            if (displayRoutine == null)
+            {
+                displayRoutine = StartCoroutine(DisplayDialog());
+            }else if(dialogQueue.Peek().priority > currentPrority)
+            {
+                StopCoroutine(displayRoutine);
+                displayRoutine = StartCoroutine(DisplayDialog());
+            }
         }
     }
 
@@ -74,7 +83,24 @@ public class UI_DialogDisplayer : MonoBehaviour
         dialogFormat.clip = clip;
         dialogQueue.Enqueue(dialogFormat);
     }
-    
+
+    public void EnqueueDialogShared(int speakerID, int clipID, AudioClip clip)
+    {
+        if(clipID < 0)
+            return;
+        var dialogInfo = questDialogInfoData[$"SPEAKER_{speakerID}"][$"DIALOG_CLIP_{clipID}"];
+        DialogFormat dialogFormat = new DialogFormat();
+        dialogFormat.text = dialogInfo["TEXT"].ToString();
+        dialogFormat.ballonType = Convert.ToInt32(dialogInfo["BALLOON"].ToString());
+        dialogFormat.faceExpression = Convert.ToInt32(dialogInfo["FACE"].ToString());
+        dialogFormat.lastTime_10 = Convert.ToInt32(dialogInfo["TIME"].ToString());
+        dialogFormat.speakerID = speakerID;
+        dialogFormat.audioSource = BattleEffectManager.Instance.sharedVoiceSource;
+        dialogFormat.clip = clip;
+        dialogQueue.Enqueue(dialogFormat);
+    }
+
+
     public void EnqueueDialog(int speakerID, string dialogInfoName, AudioSource audioSource, AudioClip clip)
     {
         var dialogInfo = questDialogInfoData[dialogInfoName];
@@ -83,6 +109,7 @@ public class UI_DialogDisplayer : MonoBehaviour
         dialogFormat.ballonType = Convert.ToInt32(dialogInfo["BALLOON"].ToString());
         dialogFormat.faceExpression = Convert.ToInt32(dialogInfo["FACE"].ToString());
         dialogFormat.lastTime_10 = Convert.ToInt32(dialogInfo["TIME"].ToString());
+        dialogFormat.priority = Convert.ToInt32(dialogInfo["PRIORITY"].ToString());
         dialogFormat.speakerID = speakerID;
         dialogFormat.audioSource = audioSource;
         dialogFormat.clip = clip;
@@ -97,7 +124,11 @@ public class UI_DialogDisplayer : MonoBehaviour
         var dialog = dialogQueue.Dequeue();
         if (dialog.audioSource != null)
         {
-            dialog.audioSource.PlayOneShot(dialog.clip);
+            dialog.audioSource.Stop();
+            dialog.audioSource.clip = dialog.clip;
+            dialog.audioSource.Play();
+            currentPrority = dialog.priority;
+            //dialog.audioSource.PlayOneShot(dialog.clip);
         }
         GameObject balloon;
         if (dialog.ballonType == 1)
@@ -134,7 +165,7 @@ public class UI_DialogDisplayer : MonoBehaviour
             Color.white, 
             0.5f);
         
-        yield return new WaitForSeconds(0.5f + dialog.lastTime_10/10f);
+        yield return new WaitForSeconds(0.3f + dialog.lastTime_10/10f);
         
         DOTween.To(() => image.color, x => image.color = x,
             new Color(1,1,1,0), 
@@ -146,7 +177,7 @@ public class UI_DialogDisplayer : MonoBehaviour
             new Color(1,1,1,0), 
             0.5f);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         balloon.SetActive(false);
         displayRoutine = null;
     }
@@ -160,6 +191,7 @@ public class UI_DialogDisplayer : MonoBehaviour
         public int ballonType;
         public int faceExpression;
         public int lastTime_10;
+        public int priority;
         public AudioSource audioSource;
         public AudioClip clip;
     }

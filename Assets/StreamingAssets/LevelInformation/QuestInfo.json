@@ -1,13 +1,12 @@
 ﻿{
-  "QUEST_010013": {
+  "QUEST_01013": {
     "name": "席菈的试炼 超级",
-    "scene_prefab_path": "",
-    "overall_camera_path": "",
+    "scene_prefab_path": "scenes/s10011",
     "total_boss_num": 1,
     "boss_prefab": [
       {
         "bundle_name":"enemy/hb_1001", 
-        "resources": ["enemy/hb_1001","model/model_c005","eff_c005","voice_c005"],
+        "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice_c005"],
         "prefab_name": "hb_1001_3",
         "load_at_start" : 1,
         "boss_abilities": [
@@ -29,15 +28,14 @@
     "crown_time_limit": 300,
     "crown_revive_limit": 0
   },
-  "QUEST_010012": {
+  "QUEST_01012": {
     "name": "席菈的试炼 高级",
-    "scene_prefab_path": "",
-    "overall_camera_path": "",
+    "scene_prefab_path": "scenes/s10011",
     "total_boss_num": 1,
     "boss_prefab": [
       {
         "bundle_name":"enemy/hb_1001",
-        "resources": ["enemy/hb_1001","model/model_c005","eff_c005","voice_c005"],
+        "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice_c005"],
         "prefab_name": "hb_1001_2",
         "load_at_start" : 1,
         "boss_abilities": [
@@ -58,5 +56,104 @@
     "time_limit": -1,
     "crown_time_limit": 300,
     "crown_revive_limit": 0
+  },
+  "QUEST_01023": {
+    "name": "泽娜的试炼 超级",
+    "scene_prefab_path": "scenes/s10021",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1002",
+        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003"],
+        "prefab_name": "hb_1002_3",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20031"
+        ],
+        "start_position": [
+          4.5,
+          -1
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -1
+    ],
+    "revive_limit": 3,
+    "time_limit": -1,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_01022": {
+    "name": "泽娜的试炼 高级",
+    "scene_prefab_path": "scenes/s10021",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1002",
+        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003"],
+        "prefab_name": "hb_1002_2",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20031"
+        ],
+        "start_position": [
+          4.5,
+          -1
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -1
+    ],
+    "revive_limit": 3,
+    "time_limit": -1,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_01024": {
+    "name": "泽娜的试炼 绝级",
+    "scene_prefab_path": "scenes/s10022",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1002",
+        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003","bgm/bgm005","bgm/bgm006"],
+        "prefab_name": "hb_1002_4_p1",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20031"
+        ],
+        "start_position": [
+          4.5,
+          -1
+        ]
+      },
+      {
+        "bundle_name":"enemy/hb_1002",
+        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003"],
+        "prefab_name": "hb_1002_4_p2",
+        "load_at_start" : 0,
+        "boss_abilities": [
+          "BOSS_ABILITY_20033",
+          "BOSS_ABILITY_20034",
+          "BOSS_ABILITY_20032"
+        ],
+        "start_position": [
+          4.5,
+          -1
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -1
+    ],
+    "revive_limit": 5,
+    "time_limit": 720,
+    "crown_time_limit": 360,
+    "crown_revive_limit": 1
   }
 }

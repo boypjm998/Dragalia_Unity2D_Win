@@ -55,7 +55,7 @@ public class SkillUIBase : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
         //If something happened: swap skill icon to another.
         //SwapSkillIcon();
@@ -111,7 +111,7 @@ public class SkillUIBase : MonoBehaviour
 
 
 
-        if (spGaugeCDValue > 0)
+        if (spGaugeCDValue > 0 && !unableIcon.activeSelf)
         {
             skillIcon.transform.GetChild(1).gameObject.SetActive(true);
             keyHint.SetActive(false);

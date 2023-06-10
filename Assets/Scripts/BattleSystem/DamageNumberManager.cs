@@ -23,13 +23,19 @@ public class DamageNumberManager : MonoBehaviour
     public void HealPop(int dmg,Transform targetTrans)
     {
         Transform dmgNumParent = transform.GetChild(0);
-        GenerateHealNumber(dmg,targetTrans.position,dmgNumParent);
+        GenerateHealNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent);
     }
     
     public void DotPop(int dmg,Transform targetTrans, BasicCalculation.BattleCondition condition)
     {
         Transform dmgNumParent = transform.GetChild(0);
-        GenerateDotDmgNumber(dmg,targetTrans.position,dmgNumParent,condition);
+        GenerateDotDmgNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent,condition);
+    }
+
+    public void IndirectDamagePop(int dmg, Transform targetTrans)
+    {
+        Transform dmgNumParent = transform.GetChild(0);
+        GenerateIndirectDmgNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent);
     }
 
     public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType, float sizeModifier = 1f)
@@ -48,11 +54,11 @@ public class DamageNumberManager : MonoBehaviour
 
         if (dmgType == 1)
         {
-            GenerateNormalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent, sizeModifier);
+            GenerateNormalDamageNumber(dmg, newDmgNumPosVec+ transform.localPosition, enemyPos, dmgNumParent, sizeModifier);
         }
         else if (dmgType == 2)
         {
-            GenerateCriticalDamageNumber(dmg, newDmgNumPosVec, enemyPos, dmgNumParent, sizeModifier);
+            GenerateCriticalDamageNumber(dmg, newDmgNumPosVec+ transform.localPosition, enemyPos, dmgNumParent, sizeModifier);
         }
         
     }
@@ -62,11 +68,11 @@ public class DamageNumberManager : MonoBehaviour
         Transform dmgNumParent = transform.GetChild(0);
         if (isCrit)
         {
-            GeneratePlayerDamageNumberCrit(dmg, playerPos.position, dmgNumParent);
+            GeneratePlayerDamageNumberCrit(dmg, playerPos.position + transform.localPosition, dmgNumParent);
         }
         else
         {
-            GeneratePlayerDamageNumber(dmg, playerPos.position, dmgNumParent);
+            GeneratePlayerDamageNumber(dmg, playerPos.position + transform.localPosition, dmgNumParent);
         }
     }
 
@@ -271,7 +277,7 @@ public class DamageNumberManager : MonoBehaviour
 
         GameObject num =
             Instantiate(totalDamagePrefab,
-            new Vector3(displaypos.position.x + Random.Range(-1f, 1f), displaypos.position.y + Random.Range(-0.5f, 0.5f) + 4f, 0),
+            new Vector3(displaypos.position.x + Random.Range(-1f, 1f), displaypos.position.y + Random.Range(-0.5f, 0.5f) + 4f, -10),
             Quaternion.identity,
             postrans);
 
@@ -292,7 +298,7 @@ public class DamageNumberManager : MonoBehaviour
 
     private void GenerateHealNumber(int dmg, Vector3 pos, Transform _parent)
     {
-        var num = Instantiate(healNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+        var num = Instantiate(healNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f,pos.z),
             Quaternion.identity, _parent.transform);
         
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
@@ -302,7 +308,7 @@ public class DamageNumberManager : MonoBehaviour
     
     private void GenerateDotDmgNumber(int dmg, Vector3 pos, Transform _parent, BasicCalculation.BattleCondition condition)
     {
-        var num = Instantiate(dotNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+        var num = Instantiate(dotNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f,pos.z),
             Quaternion.identity, _parent.transform);
         
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
@@ -314,10 +320,22 @@ public class DamageNumberManager : MonoBehaviour
 
     }
 
+    private void GenerateIndirectDmgNumber(int dmg, Vector3 pos, Transform _parent)
+    {
+        var num = Instantiate(dotNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+            Quaternion.identity, _parent.transform);
+        
+        TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
+        var sb = new StringBuilder();
+        
+        sb.Append(dmg.ToString());
+        dmgText.text = sb.ToString();
+    }
+
 
     private void GeneratePlayerDamageNumber(int dmg, Vector3 pos, Transform _parent)
     {
-        var num = Instantiate(playerDamageNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+        var num = Instantiate(playerDamageNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f,pos.z),
             Quaternion.identity, _parent.transform);
         
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
@@ -327,7 +345,7 @@ public class DamageNumberManager : MonoBehaviour
     
     private void GeneratePlayerDamageNumberCrit(int dmg, Vector3 pos, Transform _parent)
     {
-        var num = Instantiate(playerCritDamageNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f),
+        var num = Instantiate(playerCritDamageNumPrefab, new Vector3(pos.x + Random.Range(-0.5f, 0.5f), pos.y + Random.Range(-0.5f, 0.5f) + 3f,pos.z),
             Quaternion.identity, _parent.transform);
         
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();

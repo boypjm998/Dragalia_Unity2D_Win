@@ -54,6 +54,14 @@ public class UI_CountdownTimer : MonoBehaviour
         if (isCountdown)
         {
             var remainedTime = timeLimit - _battleStageManager.currentTime;
+            if (remainedTime <= 0)
+            {
+                countdownText.text = BasicCalculation.ToTimerFormat(0);
+                _battleStageManager.SetGameFailed();
+                enabled = false;
+                return;
+            }
+
             if (remainedTime < 30 && warningRoutine==null)
             {
                 warningRoutine = StartCoroutine(WarningRoutine());

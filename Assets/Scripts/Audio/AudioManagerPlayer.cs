@@ -34,6 +34,11 @@ public abstract class AudioManagerPlayer : MonoBehaviour, IVoice
     public AudioClip[] Dodge;
 
     protected GlobalController _globalController;
+    
+    private void Start()
+    {
+        voice = GetComponent<AudioSource>();
+    }
 
     public void DebugLoadVoice()
     {

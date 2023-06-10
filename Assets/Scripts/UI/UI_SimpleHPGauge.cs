@@ -50,7 +50,18 @@ public class UI_SimpleHPGauge : MonoBehaviour
         HPValueSpriteRenderer.size = 
             new Vector2(fullSize * statusManager.currentHp / statusManager.maxHP,
                 HPValueSpriteRenderer.size.y);
-        
+
+        if (statusManager.currentHp <= 0)
+        {
+            HPValueSpriteRenderer.color = new Color(HPValueSpriteRenderer.color.r, HPValueSpriteRenderer.color.g,
+                HPValueSpriteRenderer.color.b, 0);
+        }
+        else
+        {
+            HPValueSpriteRenderer.color = new Color(HPValueSpriteRenderer.color.r, HPValueSpriteRenderer.color.g,
+                HPValueSpriteRenderer.color.b, 1);
+        }
+
         if(hpBarAnimationCoroutine != null)
             StopCoroutine(hpBarAnimationCoroutine);
         hpBarAnimationCoroutine = StartCoroutine(HPBarAnimation());

@@ -1155,7 +1155,7 @@ public class NpcController : MonoBehaviour
         else
         {
             var singleJumpLimit = ac.jumpAscentTime * ac.movespeed;
-            var gapDistance = HasGap(from, to);
+            var gapDistance = BasicCalculation.HasGap(from, to);
             if (gapDistance > singleJumpLimit && distanceY >= 0)
             {
                 //也是跳跃两次，但是是因为第一次跳跃不够远。跳法为二连跳后自由落体。
@@ -1532,6 +1532,9 @@ public class NpcController : MonoBehaviour
         
         var lb_low = leftBorder + new Vector2(0, feetModifier);
         var rb_low = rightBorder + new Vector2(0, feetModifier);
+        
+        print("leftborder:"+leftBorder);
+        print("rightborder:"+rightBorder);
         //发射从leftBorder到rightBorder的射线，找到最近的安全点
 
         /*var linecast = Physics2D.LinecastAll(leftBorder,

@@ -50,7 +50,7 @@ public class TargetAimer : MonoBehaviour
         //cameraMoveSpeed = 0f;
         maxCameraMoveSpeed = 6.0f;
         lookAheadDistanceX = 14.0f;
-        lookAheadDistanceY = 7.0f;
+        lookAheadDistanceY = 0f;
         cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 20);
         stopFlagX = true;
         stopFlagY = true;
@@ -117,6 +117,8 @@ public class TargetAimer : MonoBehaviour
             int moveDirX; 
             int moveDirY;
             
+            //print("有敌人");
+            
 
             if (offsetX > 0)
                 moveDirX = 1;
@@ -128,11 +130,11 @@ public class TargetAimer : MonoBehaviour
             //如果摄像头的中心偏移量小于目标偏移量，移动摄像头
             if (Mathf.Abs(offsetX) > 1f || Mathf.Abs(offsetY) > 1f)
             {
-
+                
                 //if( Mathf.Abs(lookAheadDistanceX - Mathf.Abs(cinemachineCameraOffset.m_Offset.x) + CameraFollowTarget.transform.position.x) > Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x))
                 
-                //敌人不在视线范围内，移动摄像头
-                if(Mathf.Abs(mainCamera.transform.position.x - EnemyWatched.transform.position.x) - lookAheadDistanceX > 0.5f)
+                
+                if(Mathf.Abs(mainCamera.transform.position.x  - EnemyWatched.transform.position.x) - lookAheadDistanceX > 1f)
                 //if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) - (Mathf.Abs(EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x) - lookAheadDistanceX) > 0.1f)
                 {
                     cinemachineCameraOffset.m_Offset = new Vector3(
@@ -146,17 +148,20 @@ public class TargetAimer : MonoBehaviour
                     stopFlagX = true;
                 }
                 
-                if(Mathf.Abs(mainCamera.transform.position.y - EnemyWatched.transform.position.y) - lookAheadDistanceY > 0.5f)
+                if(Mathf.Abs(mainCamera.transform.position.y  - EnemyWatched.transform.position.y) - lookAheadDistanceY > 1f)
                 //if (Mathf.Abs(cinemachineCameraOffset.m_Offset.y) - (Mathf.Abs(EnemyWatched.transform.position.y - CameraFollowTarget.transform.position.y) - lookAheadDistanceY) > 0.1f)
                 {
+                    //print(Mathf.Abs(mainCamera.transform.position.y  - EnemyWatched.transform.position.y));
                     cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x,
                     cinemachineCameraOffset.m_Offset.y + cameraMoveSpeed * Time.deltaTime * moveDirY, 0);
                     stopFlagY = false;
+                    //print("StopFlagY is set to false , offsetY:"+offsetY);
 
                 }
                 else {
                     stopFlagY = true;
+                    //print("StopFlagY is set to true , offsetY:"+offsetY);
                 }
                 
                 if (stopFlagY && stopFlagX)
@@ -167,11 +172,11 @@ public class TargetAimer : MonoBehaviour
 
         }
         else {
-            
+            print("镜头归位");
             //敌人消失，镜头归位，同上
             stopFlagY = false;
             stopFlagX = false;
-            if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) < 0.1f)
+            if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) < 0.3f)
             {
                 stopFlagX = true;
                 cinemachineCameraOffset.m_Offset = new Vector3(0, cinemachineCameraOffset.m_Offset.y, 0);
@@ -191,7 +196,7 @@ public class TargetAimer : MonoBehaviour
 
 
 
-            if (Mathf.Abs(cinemachineCameraOffset.m_Offset.y) < 0.1f)
+            if (Mathf.Abs(cinemachineCameraOffset.m_Offset.y) < 0.3f)
             {
                 stopFlagY = true;
                 cinemachineCameraOffset.m_Offset = new Vector3(cinemachineCameraOffset.m_Offset.x, 0, 0);
@@ -214,7 +219,33 @@ public class TargetAimer : MonoBehaviour
             //cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 0);
         }
 
-
+        if (cinemachineCameraOffset.m_Offset.y > lookAheadDistanceY)
+        {
+            cinemachineCameraOffset.m_Offset = new
+                Vector3(cinemachineCameraOffset.m_Offset.x,
+                    lookAheadDistanceY, 0);
+            stopFlagY = true;
+        }else if (cinemachineCameraOffset.m_Offset.y < -lookAheadDistanceY)
+        {
+            cinemachineCameraOffset.m_Offset = new
+                Vector3(cinemachineCameraOffset.m_Offset.x,
+                    -lookAheadDistanceY, 0);
+            stopFlagY = true;
+        }
+        
+        if (cinemachineCameraOffset.m_Offset.x > lookAheadDistanceX)
+        {
+            cinemachineCameraOffset.m_Offset = new
+                Vector3(lookAheadDistanceX,cinemachineCameraOffset.m_Offset.y,
+                    0);
+            stopFlagX = true;
+        }else if (cinemachineCameraOffset.m_Offset.x < -lookAheadDistanceX)
+        {
+            cinemachineCameraOffset.m_Offset = new
+                Vector3(-lookAheadDistanceX,cinemachineCameraOffset.m_Offset.y,
+                    0);
+            stopFlagX = true;
+        }
 
 
 
@@ -271,6 +302,7 @@ public class TargetAimer : MonoBehaviour
             EnemyWatched = EnemyInRange[0];
             stopFlagX = false;
             stopFlagY = false;
+            print("StopFlagY is set to false");
             maxCameraMoveSpeed = 6;
         }
 
@@ -282,7 +314,8 @@ public class TargetAimer : MonoBehaviour
         float offsetX;
         float distanceX;
         
-        offsetX = (EnemyWatched.transform.position.x - CameraFollowTarget.transform.position.x)- cinemachineCameraOffset.m_Offset.x;
+        offsetX = (EnemyWatched.transform.position.x - mainCamera.transform.position.x);
+        //offsetX = mainCamera.transform.position.x  - EnemyWatched.transform.position.x;
         distanceX = Mathf.Abs(offsetX);
 
         if (distanceX > lookAheadDistanceX)
@@ -299,14 +332,15 @@ public class TargetAimer : MonoBehaviour
         float offsetY;
         float distanceY;
 
-        offsetY = (EnemyWatched.transform.position.y - CameraFollowTarget.transform.position.y) - cinemachineCameraOffset.m_Offset.y;
+        offsetY = (EnemyWatched.transform.position.y - mainCamera.transform.position.y);
+        //offsetY = mainCamera.transform.position.y  - EnemyWatched.transform.position.y;
         distanceY = Mathf.Abs(offsetY);
 
         if (distanceY > lookAheadDistanceY)
         {
             if (offsetY > 0)
                 return distanceY - lookAheadDistanceY;
-            else return lookAheadDistanceX - distanceY;
+            else return lookAheadDistanceY - distanceY;
         }
         else return 0;
     }
@@ -484,7 +518,7 @@ public class TargetAimer : MonoBehaviour
                 {
                     EnemyWatched = nextTarget;
                     stopFlagX = false;
-                    stopFlagY = false;
+                    //stopFlagY = false;
 
                     break;
                 }
@@ -499,7 +533,7 @@ public class TargetAimer : MonoBehaviour
                     //Debug.Log("Trans!");
                     EnemyWatched = nextTarget;
                     stopFlagX = false;
-                    stopFlagY = false;
+                    //stopFlagY = false;
                     break;
                 }
             }

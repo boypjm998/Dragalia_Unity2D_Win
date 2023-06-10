@@ -1,104 +1,275 @@
 ManifestFileVersion: 0
-CRC: 1191344886
+CRC: 942265764
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: voice_c001
-      Dependencies: {}
-    Info_1:
-      Name: voice_c005
-      Dependencies: {}
-    Info_2:
       Name: ui_general
       Dependencies:
         Dependency_0: iconsmall
         Dependency_1: allin1
-    Info_3:
-      Name: soundeffect_common
-      Dependencies: {}
-    Info_4:
+    Info_1:
       Name: iconsmall
       Dependencies: {}
-    Info_5:
-      Name: ui_c001
-      Dependencies:
-        Dependency_0: ui_general
-        Dependency_1: iconsmall
-    Info_6:
+    Info_2:
       Name: boss_ability_icon
       Dependencies: {}
-    Info_7:
-      Name: eff_c005
-      Dependencies:
-        Dependency_0: ui_general
-        Dependency_1: eff_general
-        Dependency_2: 118effbundle
-        Dependency_3: c005
-        Dependency_4: allin1
-    Info_8:
-      Name: eff_general
-      Dependencies:
-        Dependency_0: eff_c001
-    Info_9:
+    Info_3:
       Name: 118effbundle
       Dependencies:
-        Dependency_0: eff_c001
-    Info_10:
+        Dependency_0: eff/eff_c001
+    Info_4:
       Name: c005
       Dependencies: {}
-    Info_11:
+    Info_5:
       Name: allin1
       Dependencies:
         Dependency_0: ui_general
-    Info_12:
-      Name: eff_c001
-      Dependencies:
-        Dependency_0: ui_general
-        Dependency_1: iconsmall
-        Dependency_2: ui_c001
-        Dependency_3: eff_general
-        Dependency_4: 118effbundle
-        Dependency_5: allin1
-    Info_13:
+    Info_6:
       Name: model/model_c001
       Dependencies:
-        Dependency_0: ui_general
-        Dependency_1: eff_c001
-        Dependency_2: animation/anim_common
-        Dependency_3: model/model_c005
-        Dependency_4: enemy/hb_1001
-    Info_14:
+        Dependency_0: iconsmall
+        Dependency_1: animation/anim_common
+        Dependency_2: model/model_c005
+        Dependency_3: eff/eff_c001
+        Dependency_4: eff/eff_general
+    Info_7:
       Name: animation/anim_common
-      Dependencies: {}
-    Info_15:
+      Dependencies:
+        Dependency_0: model/model_c004
+    Info_8:
       Name: model/model_c005
       Dependencies: {}
-    Info_16:
+    Info_9:
       Name: enemy/hb_1001
       Dependencies:
         Dependency_0: ui_general
-        Dependency_1: soundeffect_common
-        Dependency_2: iconsmall
-        Dependency_3: eff_c005
-        Dependency_4: eff_general
-        Dependency_5: 118effbundle
-        Dependency_6: animation/anim_common
-        Dependency_7: model/model_c005
-    Info_17:
+        Dependency_1: iconsmall
+        Dependency_2: 118effbundle
+        Dependency_3: animation/anim_common
+        Dependency_4: model/model_c005
+        Dependency_5: eff/eff_c005
+        Dependency_6: eff/eff_general
+        Dependency_7: soundeffect/soundeffect_common
+    Info_10:
       Name: storyportrait/1001
       Dependencies: {}
-    Info_18:
+    Info_11:
       Name: storyportrait/1010
       Dependencies: {}
-    Info_19:
+    Info_12:
       Name: storyportrait/1019
       Dependencies: {}
-    Info_20:
+    Info_13:
       Name: story/ms_voice
       Dependencies: {}
-    Info_21:
+    Info_14:
       Name: story/ms_bgm
       Dependencies: {}
-    Info_22:
+    Info_15:
       Name: storyportrait/2001
       Dependencies: {}
+    Info_16:
+      Name: story/ms_in
+      Dependencies: {}
+    Info_17:
+      Name: eff/eff_c001
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+        Dependency_2: 118effbundle
+        Dependency_3: allin1
+        Dependency_4: eff/eff_general
+        Dependency_5: soundeffect/soundeffect_common
+        Dependency_6: ui/ui_c001
+    Info_18:
+      Name: eff/eff_c005
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: 118effbundle
+        Dependency_2: c005
+        Dependency_3: allin1
+        Dependency_4: eff/eff_general
+    Info_19:
+      Name: eff/eff_general
+      Dependencies:
+        Dependency_0: 118effbundle
+        Dependency_1: model/model_c005
+        Dependency_2: eff/eff_c001
+        Dependency_3: soundeffect/soundeffect_common
+    Info_20:
+      Name: model/model_c010
+      Dependencies:
+        Dependency_0: iconsmall
+        Dependency_1: animation/anim_common
+    Info_21:
+      Name: model/model_c019
+      Dependencies:
+        Dependency_0: iconsmall
+        Dependency_1: animation/anim_common
+        Dependency_2: model/model_c010
+    Info_22:
+      Name: eff/eff_c010
+      Dependencies:
+        Dependency_0: 118effbundle
+        Dependency_1: allin1
+        Dependency_2: eff/eff_general
+        Dependency_3: soundeffect/soundeffect_common
+    Info_23:
+      Name: eff/eff_c019
+      Dependencies:
+        Dependency_0: eff/eff_general
+    Info_24:
+      Name: soundeffect/soundeffect_common
+      Dependencies: {}
+    Info_25:
+      Name: voice/voice_c001
+      Dependencies: {}
+    Info_26:
+      Name: voice/voice_c005
+      Dependencies: {}
+    Info_27:
+      Name: voice/voice_c010
+      Dependencies: {}
+    Info_28:
+      Name: npc/npc_prologue_01
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+        Dependency_2: eff/eff_general
+        Dependency_3: model/model_c019
+        Dependency_4: eff/eff_c019
+    Info_29:
+      Name: npc/npc_prologue_02
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+        Dependency_2: eff/eff_general
+        Dependency_3: model/model_c010
+        Dependency_4: eff/eff_c010
+        Dependency_5: voice/voice_c010
+    Info_30:
+      Name: player/player_c001
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: model/model_c001
+        Dependency_2: eff/eff_c001
+        Dependency_3: eff/eff_general
+    Info_31:
+      Name: ui/ui_c001
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+    Info_32:
+      Name: voice/voice_c004
+      Dependencies: {}
+    Info_33:
+      Name: player/player_c004
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: animation/anim_common
+        Dependency_2: eff/eff_general
+        Dependency_3: voice/voice_c004
+        Dependency_4: model/model_c004
+        Dependency_5: eff/eff_c004
+    Info_34:
+      Name: model/model_c004
+      Dependencies:
+        Dependency_0: iconsmall
+    Info_35:
+      Name: eff/eff_c004
+      Dependencies:
+        Dependency_0: 118effbundle
+        Dependency_1: allin1
+        Dependency_2: eff/eff_general
+        Dependency_3: soundeffect/soundeffect_common
+    Info_36:
+      Name: ui/ui_c004
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+    Info_37:
+      Name: scenes/s10011
+      Dependencies:
+        Dependency_0: eff/eff_general
+    Info_38:
+      Name: scenes/s10021
+      Dependencies:
+        Dependency_0: iconsmall
+        Dependency_1: eff/eff_c001
+        Dependency_2: eff/eff_general
+    Info_39:
+      Name: enemy/hb_1002
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+        Dependency_2: animation/anim_common
+        Dependency_3: eff/eff_c001
+        Dependency_4: eff/eff_general
+        Dependency_5: soundeffect/soundeffect_common
+        Dependency_6: eff/eff_c004
+        Dependency_7: voice/voice_c003
+        Dependency_8: model/model_c003
+        Dependency_9: eff/eff_c003
+        Dependency_10: bgm/bgm006
+        Dependency_11: bgm/bgm005
+    Info_40:
+      Name: voice/voice_c003
+      Dependencies: {}
+    Info_41:
+      Name: model/model_c003
+      Dependencies:
+        Dependency_0: iconsmall
+        Dependency_1: eff/eff_general
+    Info_42:
+      Name: eff/eff_c003
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall
+        Dependency_2: 118effbundle
+        Dependency_3: allin1
+        Dependency_4: eff/eff_c001
+        Dependency_5: eff/eff_general
+        Dependency_6: enemy/hb_1002
+    Info_43:
+      Name: bgm/bgm002
+      Dependencies: {}
+    Info_44:
+      Name: bgm/bgm006
+      Dependencies: {}
+    Info_45:
+      Name: bgm/bgm005
+      Dependencies: {}
+    Info_46:
+      Name: scenes/s10022
+      Dependencies:
+        Dependency_0: scenes/s10021
+        Dependency_1: model/model_c003
+    Info_47:
+      Name: player/player_c002
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: animation/anim_common
+        Dependency_2: eff/eff_general
+        Dependency_3: soundeffect/soundeffect_common
+        Dependency_4: model/model_c004
+        Dependency_5: voice/voice_c002
+        Dependency_6: model/model_c002
+        Dependency_7: eff/eff_c002
+    Info_48:
+      Name: voice/voice_c002
+      Dependencies: {}
+    Info_49:
+      Name: model/model_c002
+      Dependencies:
+        Dependency_0: iconsmall
+    Info_50:
+      Name: eff/eff_c002
+      Dependencies:
+        Dependency_0: 118effbundle
+        Dependency_1: eff/eff_general
+        Dependency_2: eff/eff_c003
+    Info_51:
+      Name: ui/ui_c002
+      Dependencies:
+        Dependency_0: ui_general
+        Dependency_1: iconsmall

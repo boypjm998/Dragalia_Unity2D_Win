@@ -39,7 +39,8 @@ public class AttackManager_C001 : AttackManager
     [SerializeField]
     private TargetAimer ta;
     
-    new private ActorController_c001 ac;
+    protected new ActorController_c001 ac;
+    
     //private PlayerStatusManager _statusManager;
 
     // Start is called before the first frame update
@@ -351,7 +352,7 @@ public class AttackManager_C001 : AttackManager
         _effectManager.SpawnHealEffect(gameObject);
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
         _statusManager.ObtainTimerBuff
-            ((int)BasicCalculation.BattleCondition.HotRecovery,
+            ((int)BasicCalculation.BattleCondition.HealOverTime,
                 -10,15);
         
         // if(_statusManager.healRoutine == null)

@@ -7,10 +7,11 @@ using UnityEngine;
 using DG.Tweening;
 public class EnemyAttackHintBar : MonoBehaviour
 {
+    public float awakeTime = 0;
     public float warningTime;
     public float attackLastTime = 0.5f;
-    public float timeToSendEvadeSignal;
-    [SerializeField]protected float height = -1;
+    [HideInInspector] public float timeToSendEvadeSignal;
+    protected float height = -1;
 
     //protected Tweener _tweener;
     protected GameObject Fill;
@@ -40,13 +41,13 @@ public class EnemyAttackHintBar : MonoBehaviour
         }
     }
 
-    protected virtual void Start()
+    protected virtual IEnumerator Start()
     {
         if (ac == null)
         {
             interruptable = false;
             Debug.LogWarning("HintBar cannot find enemy source.");
-            return;
+            
         }
 
         if(interruptable)
@@ -59,8 +60,15 @@ public class EnemyAttackHintBar : MonoBehaviour
 
         if (autoDestruct)
         {
-            Destroy(gameObject, warningTime + attackLastTime);
+            Destroy(gameObject, awakeTime + warningTime + attackLastTime);
+            print("destroy");
         }
+        
+        transform.Find("Fill")?.gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(awakeTime);
+        
+        transform.Find("Fill")?.gameObject.SetActive(true);
     }
 
     public void SetSource(EnemyController controller)

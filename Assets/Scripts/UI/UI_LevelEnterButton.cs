@@ -57,4 +57,18 @@ public class UI_LevelEnterButton : MonoBehaviour
         }
 
     }
+
+    public void OpenTutMenu(int id)
+    {
+
+        if (UI_QuestDetail.Instance == null)
+        {
+            print("Not found ui_questdetail");
+        }
+
+        MenuUIManager.Instance.currentQuestInfoPageID = id;
+        //FindObjectOfType<UI_QuestDetail>().currentDisplayingPageID = id;
+        GetComponentInParent<UISortingGroup>().ToUIState(2010);
+        
+    }
 }

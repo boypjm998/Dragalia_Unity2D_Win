@@ -44,6 +44,7 @@ public abstract class ProjectileControllerTest : MonoBehaviour
 
     public virtual void SetContactTarget(GameObject obj)
     {
+        contactTarget = obj;
     }
 
     protected virtual void MyDestroySelf(float time)

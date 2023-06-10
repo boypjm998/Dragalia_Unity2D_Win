@@ -24,6 +24,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     
     public bool dodging = false;
+    public bool hurt => pi.hurt;
+    public bool grounded => anim.GetBool("isGround");
 
 
     [SerializeField] public bool[] isAttackSkill = new bool[4];
@@ -57,7 +59,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
             return;
         }
 
-        rigid.position += new Vector2(movespeed * (pi.isMove), 0) * Time.fixedDeltaTime;
+        rigid.position += new Vector2(speedModifier * movespeed * (pi.isMove), 0) * Time.fixedDeltaTime;
 
         if (pi.directionLock == true)
         {
@@ -166,9 +168,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
 
     // Start is called before the first frame update
-    protected virtual void Awake()
+    protected override void Awake()
     {
-
+        base.Awake();
         pi = GetComponent<PlayerInput>();
         rigid = GetComponent<Rigidbody2D>();
         rigid.gravityScale = defaultGravity;
@@ -653,8 +655,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void OnStandardAttackEnter()
     {
-        
-
+        speedModifier = 1;
     }
 
     public virtual void OnStandardAttackExit()
@@ -666,7 +667,19 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void OnSkillEnter()
     {
+        speedModifier = 1;
+        try
+        {
+            _tweener?.Kill();
+        }
+        catch
+        {
+        }
+
+
         pi.isSkill = true;
+        pi.rollEnabled = false;
+        pi.inputRollEnabled = false;
         pi.directionLock = false;
         dodging = true;
 
@@ -676,7 +689,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         ActionDisable((int)PlayerActionType.ATTACK);
         //pi.SetInputDisabled("attack");
         pi.SetInputDisabled("move");
-        print("skillEnter");
+        //print("skillEnter");
 
     }
 
@@ -684,6 +697,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
         pi.isSkill = false;
         dodging = false;
+        pi.rollEnabled = true;
+        pi.inputRollEnabled = true;
         ActionEnable((int)PlayerActionType.MOVE); //move
         ActionEnable((int)PlayerActionType.JUMP); //jump
         ActionEnable((int)PlayerActionType.ROLL); //roll
@@ -714,6 +729,16 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.directionLock = false;
         pi.isSkill = false;
         rigid.gravityScale = 1;
+        speedModifier = 1;
+
+        try
+        {
+            _tweener?.Kill();
+        }
+        catch
+        {
+        }
+
         ActionDisable((int)PlayerActionType.MOVE);
         ActionDisable((int)PlayerActionType.JUMP);
         ActionDisable((int)PlayerActionType.ROLL);
@@ -886,6 +911,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         var kbtime = attackBase.attackInfo[0].knockbackTime;
         var kbForce = attackBase.attackInfo[0].knockbackForce;
         var kbPower = attackBase.attackInfo[0].knockbackPower;
+        
         var random = Random.Range(0, 100);
         if(random > kbPower-_statusManager.KnockbackRes)
         {
@@ -900,9 +926,12 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbdir));
     }
 
-    IEnumerator KnockBackEffect(float time, float force, Vector2 kbDir)
+    protected IEnumerator KnockBackEffect(float time, float force, Vector2 kbDir)
     {
         kbDir = kbDir.normalized;
+        
+        
+        
         pi.hurt = true;
         //anim.SetBool("hurt",true);
         SetVelocity(force * kbDir.x, force * kbDir.y);
@@ -928,15 +957,16 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
         SetVelocity(0, rigid.velocity.y);
         //TODO:如果不在昏迷/睡眠/冰冻状态，恢复。
-        pi.hurt = false;
+        if(_statusManager.controlRoutine == null)
+            pi.hurt = false;
+        
         KnockbackRoutine = null;
     }
 
-
-
-
-
-
+    public override void SetActionUnable(bool flag)
+    {
+        pi.hurt = flag;
+    }
 
 
     ///单独行动指令的开关
@@ -1022,10 +1052,15 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         return dodging;
     }
 
+    public override void SetGravityScale(float value)
+    {
+        rigid.gravityScale = value;
+    }
 
-    
-
-
+    public override void ResetGravityScale()
+    {
+        rigid.gravityScale = defaultGravity;
+    }
 }
 
 

@@ -32,14 +32,22 @@ public class UI_WorldMap : MonoBehaviour
     {
         MapInformation.MapSpotInfo mapSpotInfo;
         lastQuestID = GlobalController.lastQuestSpot;
-        if (lastQuestID == -1)
+        if (lastQuestID == -1 && !GetTutorialCleared())
         {
+            print(_mapInformation.tutorialCleared);
             mapSpotInfo = _mapInformation?.GetSpot(100);
             SetScrollRectDisable();
             StartCoroutine(ZoomToQuestSpot(mapSpotInfo));
         }
         else
         {
+            if (lastQuestID == -1)
+            {
+                GlobalController.lastQuestSpot = 100;
+                mapSpotInfo = _mapInformation?.GetSpot(GlobalController.lastQuestSpot);
+                return;
+            }
+
             mapSpotInfo = _mapInformation?.GetSpot(GlobalController.lastQuestSpot);
             //SetScrollRectDisable();
             content.transform.localPosition = (startPosition - 2 * (Vector3)mapSpotInfo.mapSpotPosition);
@@ -88,6 +96,19 @@ public class UI_WorldMap : MonoBehaviour
     public void InformPanelReload(int panelID)
     {
         _levelSelection.Reload(panelID);
+    }
+
+    public bool GetTutorialCleared()
+    {
+        var questSaveList = GlobalController.Instance.GetQuestInfo();
+        if (questSaveList.Exists(x => x.quest_id == "100001"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

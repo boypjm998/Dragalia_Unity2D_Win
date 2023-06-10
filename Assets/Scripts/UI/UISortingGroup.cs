@@ -42,7 +42,7 @@ public class UISortingGroup : MonoBehaviour
     private void Start()
     {
         _menuUIManager = GameObject.Find("UI").GetComponent<MenuUIManager>();
-        _globalController = FindObjectOfType<GlobalController>();
+        _globalController = GlobalController.Instance;
     }
 
     private void OnEnable()

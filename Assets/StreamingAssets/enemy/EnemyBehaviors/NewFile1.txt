@@ -1,0 +1,161 @@
+﻿{
+  "phasePattern": 
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "ComboA",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "args": [10,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuary",
+          "args": [1],
+          "lock_phase": false,
+          "unbreakable": false,
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "args": [10,18,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboC",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "args": [3,0.5,4,5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "DashAttack",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "args": [10,18,3],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition" : "hp",
+      "loop_start_point" : 0,
+      "args": [80]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "HolyCrown",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "args": [10,18,2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboC",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuary",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "args": [10,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightCrown",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "args": [6,1,4.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "args": [3,0.5,4,5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "DashAttack",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "args": [10,18,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "HolyCrown",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightCrown",
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayer",
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "args": [6,1,2.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboA",
+          "args": [2],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition" : "none",
+      "loop_start_point" : 0,
+      "args": []
+    }
+  ]
+}

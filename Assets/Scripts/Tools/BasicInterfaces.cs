@@ -9,6 +9,12 @@ public interface ICharacterSpecialGauge
     public void ChargeTo(int cp, int level = 0);
 }
 
+public interface IEnemySealedContainer
+{
+    public void SetEnemySource(GameObject source);
+    
+}
+
 public interface IKnockbackable
 {
     public bool GetDodge();

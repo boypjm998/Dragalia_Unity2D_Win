@@ -154,5 +154,15 @@ public abstract class EnemyMoveManager : MonoBehaviour
         prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         return prefabInstance;
     }
+    
+    protected void QuitMove()
+    {
+        ac.currentKBRes = 999;
+        if (ac.VerticalMoveRoutine != null)
+        {
+            StopCoroutine(ac.VerticalMoveRoutine);
+            ac.VerticalMoveRoutine = null;
+        }
+    }
 
 }

@@ -103,6 +103,13 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+        buttonEsc.Tick(Input.GetKey(KeyCode.Escape));
+        
+        if(BattleStageManager.Instance.isGamePaused)
+            return;
+        
+        
         if(keyLeft!=String.Empty)
             buttonLeft.Tick(Input.GetKey(keyLeft));
         if(keyRight!=String.Empty)
@@ -125,7 +132,7 @@ public class PlayerInput : MonoBehaviour
             buttonSkill3.Tick(Input.GetKey(keySkill3));
         if(keySkill4!=String.Empty)
             buttonSkill4.Tick(Input.GetKey(keySkill4));
-        buttonEsc.Tick(Input.GetKey(KeyCode.Escape));
+        
         
         
 

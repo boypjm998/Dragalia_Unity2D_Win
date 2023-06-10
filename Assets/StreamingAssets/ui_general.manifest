@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2364170130
+CRC: 2537570450
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b7d4339f93fe87ff4e083550c9ae6801
+    Hash: 627ec3cfc445b3bf94fcdbaa00ffb9f0
   TypeTreeHash:
     serializedVersion: 2
-    Hash: e22635dab77bdef7af6f954bfcfe9205
+    Hash: 97d96bfd62f42335d074e11a65cef3b0
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -23,6 +23,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 74
   Script: {instanceID: 0}
+- Class: 82
+  Script: {instanceID: 0}
 - Class: 91
   Script: {instanceID: 0}
 - Class: 95
@@ -37,6 +39,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 547fb95fd9b20e14f9e996cf4aaf88a3, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8d608298ee3181940afcd0c09a5e68ee, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
 - Class: 114
@@ -55,6 +59,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: da875d8a419405a4d84bf66d915461ed, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 655a45848c555394a8192fd86808e079, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 66c0bc2dd44dfe0428dbe08ebb501b24, type: 3}
 - Class: 114
@@ -76,6 +82,8 @@ ClassTypes:
 - Class: 223
   Script: {instanceID: 0}
 - Class: 224
+  Script: {instanceID: 0}
+- Class: 225
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Unity.RenderPipelines.Universal.Runtime
@@ -127,8 +135,10 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.SpriteState
 Assets:
+- Assets/TextMesh Pro/Fonts/LiberationSans.ttf
 - Assets/Resources/UI/InBattle/BuffLogText/TextIdle.anim
 - Assets/Resources/UI/InBattle/BuffIcons/Icons/BuffSheet.asset
+- Assets/Characters/Components/SimpleHPGauge.prefab
 - Assets/Fonts/EN_outline.mat
 - Assets/Resources/UI/InBattle/BuffIcons/Basic/BuffIconBack.png
 - Assets/FX/General/AttackSubContainer.prefab
@@ -160,11 +170,13 @@ Assets:
 - Assets/Resources/UI/InBattle/BuffIcons/Basic/BuffIconInner.png
 - Assets/Resources/UI/InBattle/Number/Sprite/HP_base.mat
 - Assets/UserInterface/InBattle/Gauge/HPIcon.png
+- Assets/UserInterface/InBattle/SkillMask/BorderLight.controller
 - Assets/UserInterface/InBattle/Chara_Stat/LifeHeart.prefab
 - Assets/Material/CoodDownMat.mat
 - Assets/UserInterface/InBattle/SkillMask/MaskBack01.png
-- Assets/FX/General/AttackContainerEnemy.prefab
+- Assets/UserInterface/InBattle/SkillMask/Mask04.png
 - Assets/UserInterface/InBattle/Map/Minimap_Icon.png
+- Assets/FX/General/AttackContainerEnemy.prefab
 - "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/UI_affl_Txt.mat"
 - Assets/Resources/UI/InBattle/BuffIcons/Prefabs/Icon_Debuff.prefab
 - Assets/Resources/UI/InBattle/BuffIcons/Basic/DebuffIconInner.png
@@ -175,9 +187,11 @@ Assets:
 - Assets/UserInterface/InBattle/ComboUI/battle_ui.png
 - Assets/Resources/UI/InBattle/BuffIcons/Prefabs/Icon_Affliction.prefab
 - Assets/UserInterface/InBattle/Chara_Stat/Lifeheart.png
+- Assets/UserInterface/InBattle/Chara_Stat/SimpleHPGauge.png
 - Assets/UserInterface/InBattle/SkillMask/Mask02'.png
 - Assets/FX/General/BuffEffect/Prefab/buff_fx_01.prefab
 - Assets/Fonts/fot-rodinntlgpro-b.otf
+- Assets/UserInterface/InBattle/SkillMask/BorderLightShine.anim
 - Assets/Resources/UI/InBattle/BuffLogText/Text.controller
 - Assets/UserInterface/InBattle/BattleHints/inbattle_hint_purple_from_left.png
 - "Assets/Resources/UI/Font/\u6C49\u4EEA\u5927\u9ED1/UI_buff_Txt.mat"
@@ -191,7 +205,7 @@ Assets:
 - Assets/Resources/UI/InBattle/Number/Sprite/HP_base.asset
 - Assets/UserInterface/InBattle/SkillMask/Mask03.png
 - Assets/UserInterface/InBattle/SkillMask/Mask01.png
-- Assets/TextMesh Pro/Fonts/LiberationSans.ttf
+- Assets/UserInterface/InBattle/SkillMask/BorderLightIdle.anim
 - Assets/UserInterface/InBattle/Common/Texture/suipian.mat
 - Assets/UserInterface/InBattle/ComboUI/combo.png
 Dependencies:

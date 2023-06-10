@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 public class VoiceController_HB01 : AudioManagerGeneral
 {
 
-    private UI_DialogDisplayer _dialogDisplayer;
+    
     public enum myMoveList
     {
         SingleDodgeCombo,
@@ -229,10 +229,6 @@ public class VoiceController_HB01 : AudioManagerGeneral
         _dialogDisplayer.EnqueueDialog(1005, clipID, voice, myClips[clipID]);
     }
 
-    IEnumerator WaitForVoiceCooldown()
-    {
-        yield return new WaitForSecondsRealtime(1f);
-        voiceCDRoutine = null;
-    }
+    
     
 }

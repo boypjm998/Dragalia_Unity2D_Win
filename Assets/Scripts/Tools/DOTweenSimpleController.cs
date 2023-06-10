@@ -9,6 +9,8 @@ public class DOTweenSimpleController : MonoBehaviour
 
     [SerializeField] protected bool isLocal = true;
 
+    [SerializeField] protected bool absolutePosition = true;
+
     [SerializeField] public Vector2 moveDirection;
 
     [SerializeField] public float duration = 1;
@@ -25,10 +27,24 @@ public class DOTweenSimpleController : MonoBehaviour
 
         if (isLocal)
         {
-            _tweener = transform.DOLocalMove
+            if (absolutePosition)
+            {
+                _tweener = transform.DOLocalMove
                 (
-                 moveDirection,
+                    moveDirection,
                     duration);
+            }
+            else
+            {
+                //将moveDirection沿着transform.rotation的方向进行旋转。
+                var rotatedVector = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z) * moveDirection;
+                
+                _tweener = transform.DOLocalMove
+                (
+                    rotatedVector + transform.localPosition,
+                    duration);
+                
+            }
             
         }
         else

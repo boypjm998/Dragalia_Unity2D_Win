@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -23,15 +24,20 @@ public class UI_BossStatus : MonoBehaviour
 
     private GlobalController _globalController;
     protected BattleStageManager _battleStageManager;
-    
-    
-    
+
+    public static UI_BossStatus Instance
+    {
+        get;
+        protected set;
+    }
+
     IEnumerator Start()
     {
         _globalController = FindObjectOfType<GlobalController>();
         _battleStageManager = FindObjectOfType<BattleStageManager>();
         _canvasGroup = GetComponent<CanvasGroup>();
         _canvasGroup.alpha = 0;
+        Instance = this;
         yield return new WaitUntil(() => boss != null);
         _canvasGroup.alpha = 1;
         Init();
@@ -68,10 +74,23 @@ public class UI_BossStatus : MonoBehaviour
         
         bossAbilityDetailData = BasicCalculation.
             ReadJsonData("/LevelInformation/BossAbilityDetail_ZH.json");
+        
+        
+        _bossName.text = bossStat.displayedName;
+        _conditionBar.SetTargetStat(bossStat);
+        bossStat.SetConditionBar(_conditionBar);
+        _HPbar.SetTarget(bossStat);
+        this.bossStat = bossStat;
+        _HPbar.OnHPChange();
+        
+        
+        
         var levelDetailedInfo = _battleStageManager.GetLevelDetailedInfo();
         var bossAbilities = 
             levelDetailedInfo.boss_prefab[BattleStageManager.currentDisplayingBossInfo - 1].boss_abilities;
 
+        ClearBossAbility();
+        
         foreach (var ability in bossAbilities)
         {
             AddBossAbility(ability);
@@ -86,11 +105,7 @@ public class UI_BossStatus : MonoBehaviour
         
         
         
-        _bossName.text = bossStat.displayedName;
-        _conditionBar.SetTargetStat(bossStat);
-        bossStat.SetConditionBar(_conditionBar);
-        _HPbar.SetTarget(bossStat);
-        this.bossStat = bossStat;
+        
         
     }
 
@@ -111,9 +126,31 @@ public class UI_BossStatus : MonoBehaviour
             abilityData["DESCRIPTION"].ToString();
         newIcon.transform.Find("Info").Find("Banner").Find("Text").GetComponent<TextMeshProUGUI>().text =
             abilityData["NAME"].ToString();
+        //取出bossABilityIndex字符串中最后一个下划线到结尾的字符串
+        var abilityIndex = bossAbilityIndex.Substring(bossAbilityIndex.LastIndexOf('_') + 1);
+        var index = int.Parse(abilityIndex);
+        newIcon.GetComponent<UI_BossAbilityDisplayer>().abilityID = index;
+
 
 
     }
 
+    void ClearBossAbility()
+    {
+        for (int i = 0; i < _abilityIcons.transform.childCount; i++)
+        {
+            Destroy(_abilityIcons.transform.GetChild(i).gameObject);
+        }
+    }
 
+    public void RedirectBoss(GameObject boss)
+    {
+        SetBoss(boss);
+        Init();
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
 }

@@ -12,9 +12,9 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
     
     
     // Start is called before the first frame update
-    protected override void Start()
+    protected override IEnumerator Start()
     {
-        base.Start();
+        yield return base.Start();
         Fill = transform.Find("Fill").gameObject;
         MaxFill = transform.Find("Back").gameObject;
         fillRenderer = Fill.GetComponent<SpriteRenderer>();

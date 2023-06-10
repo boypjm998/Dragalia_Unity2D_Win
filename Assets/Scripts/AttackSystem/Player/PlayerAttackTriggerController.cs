@@ -80,6 +80,10 @@ public class PlayerAttackTriggerController : MonoBehaviour
     void AttackAwake()
     {
         targetCollider.enabled = true;
+        if (_attackFromPlayer.forcedShake)
+        {
+            CineMachineOperator.Instance.CamaraShake(_attackFromPlayer.hitShakeIntensity,0.1f);
+        }
     }
     void AttackSleep()
     {

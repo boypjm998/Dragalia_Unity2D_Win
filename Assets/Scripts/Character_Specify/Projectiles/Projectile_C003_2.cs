@@ -73,7 +73,7 @@ namespace CharacterSpecificProjectiles
         public override void SetContactTarget(GameObject obj)
         {
             base.SetContactTarget(obj);
-            contactTarget = obj;
+            //contactTarget = obj;
         }
 
         private void BlastEffect()

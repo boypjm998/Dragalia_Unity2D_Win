@@ -1,18 +1,18 @@
 <<<<<<< HEAD
-# DL_2D_Win (Not Realeased) (2023/05/06）
+# DL_2D_Win (Not Realeased) (2023/06/09）
 
 #####
 
-1. 新手剧情关卡完成。
+1. 新关卡：泽娜的试炼：高级，超级，绝级
 
-2. 新角色：拉辛（短剑）
+2. 新角色：艾赛莉特（短剑）
 
-3. 加入Overdrive系统，反击代码重写。
+3. 新的异常状态：昏迷、裂风。
 
 #####
 
-1. Tutorial Level is finished!
+1. New Level: Zena's Trial(Expert,Master,Legend)
 
-2. New Adventurer : Renelle
+2. New Adventurer : Ezelith (Dagger)
 
-3. Overdrive is added, then restructrued the counter part.
+3. New Affliction: Stun, Stormlash

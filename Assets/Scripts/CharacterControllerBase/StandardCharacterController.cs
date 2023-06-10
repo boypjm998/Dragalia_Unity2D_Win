@@ -50,9 +50,9 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
 
     protected AttackManager MoveManager;
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
-        //base.Awake();
+        base.Awake();
         rendererObject = transform.Find("Model").GetChild(0).Find("model").gameObject;
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponentInChildren<Rigidbody2D>();

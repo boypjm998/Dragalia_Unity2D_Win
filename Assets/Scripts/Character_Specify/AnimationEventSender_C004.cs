@@ -28,7 +28,7 @@ public class AnimationEventSender_C004 : AnimationEventSender
     {
         if (eventID == 1)
         {
-            _attackManagerDagger.ComboAttack_Rush(10,"combo1");
+            _attackManagerDagger.ComboAttack_Rush(12,"combo1");
         }
         else
         {
@@ -40,7 +40,7 @@ public class AnimationEventSender_C004 : AnimationEventSender
     {
         if (eventID == 1)
         {
-            _attackManagerDagger.ComboAttack_Rush(2.5f,"combo2");
+            _attackManagerDagger.ComboAttack_Rush(3.5f,"combo2");
         }
         else
         {
@@ -52,7 +52,7 @@ public class AnimationEventSender_C004 : AnimationEventSender
     {
         if (eventID == 1)
         {
-            _attackManagerDagger.ComboAttack_Rush(2f,"combo3");
+            _attackManagerDagger.ComboAttack_Rush(3f,"combo3");
         }
         else
         {

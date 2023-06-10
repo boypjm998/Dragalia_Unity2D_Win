@@ -268,6 +268,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   rigid: {fileID: 0}
   facedir: -1
+  speedModifier: 1
   isSummonEnemy: 0
   rendererObject: {fileID: 0}
   isAction: 0
@@ -275,13 +276,14 @@ MonoBehaviour:
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 5900866050950154640}
+  minimapIcon: {fileID: 0}
+  shadowCaster: {fileID: 0}
   hurtEffectDuration: 0.1
   currentKBRes: 0
   weaponObject: {fileID: 6475141060453262892}
-  movespeed: 7.8
+  movespeed: 9
   rollspeed: 9
   jumpforce: 22
-  isMove: 0
   dodging: 0
   moveEnable: 1
   tar: {fileID: 0}
@@ -325,7 +327,7 @@ MonoBehaviour:
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 0
-  m_LightVolumeIntensity: 0.2
+  m_LightVolumeIntensity: 0.5
   m_LightVolumeIntensityEnabled: 1
   m_ApplyToSortingLayers: 4346cb61
   m_LightCookieSprite: {fileID: 439221359, guid: 1b3da36cae26f9141ad497e4bb924180, type: 3}
@@ -515,6 +517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69abc0cfe148f99479c20476b36dc094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficulty: 3
   awakeTime: 2
   state: 0
   substate: 0
@@ -936,7 +939,7 @@ GameObject:
   - component: {fileID: 6133123883596771250}
   m_Layer: 6
   m_Name: Voice
-  m_TagString: Untagged
+  m_TagString: Voice
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -968,6 +971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f57973ac7e0cf4b8553ed634890d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  voice: {fileID: 0}
   myClips: []
   voiceAssetBundlePath: 
 --- !u!82 &6133123883596771250

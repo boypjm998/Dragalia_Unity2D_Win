@@ -122,7 +122,7 @@ public class AttackManager_C004 : AttackManagerDagger
         BattleEffectManager.Instance.SpawnHealEffect(gameObject);
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
         _statusManager.ObtainTimerBuff
-        ((int)BasicCalculation.BattleCondition.HotRecovery,
+        ((int)BasicCalculation.BattleCondition.HealOverTime,
             -10,15);
         
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BehaviorDesigner.Runtime.Tasks.Unity.UnityNavMeshAgent;
 using UnityEngine;
 
 public class AnimationEventSender_Enemy : MonoBehaviour
@@ -10,6 +11,14 @@ public class AnimationEventSender_Enemy : MonoBehaviour
     protected EnemyMoveManager _moveManager;
     protected SkinnedMeshRenderer _model;
     // Start is called before the first frame update
+    private Coroutine breakShineRoutine;
+
+    private void Awake()
+    {
+        _model = transform.Find("model/mBodyAll").GetComponent<SkinnedMeshRenderer>();
+        _enemyController = transform.parent.parent.GetComponent<EnemyController>();
+        _moveManager = transform.parent.parent.GetComponent<EnemyMoveManager>();
+    }
 
     private void Start()
     {
@@ -64,6 +73,42 @@ public class AnimationEventSender_Enemy : MonoBehaviour
         //_model.materials[2].SetTextureOffset("_SurfaceInput", new Vector2(offset, 0));
         _model.materials[1].mainTextureOffset = new Vector2(offset, 0);
         _model.materials[2].mainTextureOffset = new Vector2(offset, 0);
+        
+    }
+
+    protected IEnumerator BreakShine(float maxTime = 10)
+    {
+        var modelShine = transform.Find("model/Break");
+        while (maxTime > 0)
+        {
+            modelShine.gameObject.SetActive(true);
+            yield return new WaitForSeconds(1f);
+            modelShine.gameObject.SetActive(false);
+            yield return new WaitForSeconds(1f);
+            maxTime -= 2;
+        }
+        modelShine.gameObject.SetActive(false);
+    }
+
+    public void OnBreakEnter()
+    {
+        if (breakShineRoutine != null)
+        {
+            StopCoroutine(breakShineRoutine);
+        }
+        breakShineRoutine = StartCoroutine(BreakShine());
+    }
+    
+    public void OnBreakExit()
+    {
+        if (breakShineRoutine != null)
+        {
+            StopCoroutine(breakShineRoutine);
+        }
+    
+        breakShineRoutine = null;
+        var modelShine = transform.Find("model/Break");
+        modelShine.gameObject.SetActive(false);
     }
 
 }

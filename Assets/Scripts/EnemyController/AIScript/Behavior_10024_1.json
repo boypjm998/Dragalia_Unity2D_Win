@@ -1,0 +1,199 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "GloriousSanctuary",
+          "state": 0,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayer",
+          "state": 1,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 2,
+          "args": [6,2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "EarthBarrier",
+          "state": 3,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "FaithEnhancement",
+          "state": 4,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "WarpAttack",
+          "state": 5,
+          "args": [1.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CombinedTwilightAttack",
+          "state": 6,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "SpinDash",
+          "state": 7,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboC",
+          "state": 8,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "WarpAttack",
+          "state": 9,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 10,
+          "args": [6,1,2.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "HolyCrown",
+          "state": 11,
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        
+        {
+          "action_name": "TwilightMoon",
+          "state": 12,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 13,
+          "args": [
+            3,
+            0.5,
+            4,
+            5
+          ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "DashAttack",
+          "state": 14,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightCrown",
+          "state": 15,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayer",
+          "state": 16,
+          "args": [2],
+          "jump_action": "conditional",
+          "jump_args": ["has_attack_buff",17,18]
+        },
+        {
+          "action_name": "GloriousSanctuary",
+          "state": 17,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboA",
+          "state": 18,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 19,
+          "args": [
+            10,
+            18,
+            3
+          ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "state": 20,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightCrown",
+          "state": 21,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 22,
+          "args": [6,1,4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 24,
+          "args": [3,0.25,4,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "DashAttack",
+          "state": 25,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "HolyCrown",
+          "state": 26,
+          "args": [0.5],
+          "jump_action": "random",
+          "jump_args": [27,28]
+        },
+        {
+          "action_name": "CelestialPrayer",
+          "state": 27,
+          "args": [2],
+          "jump_action": "to",
+          "jump_args": [29]
+        },
+        {
+          "action_name": "ComboC",
+          "state": 28,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 29,
+          "args": [1],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loop_start_point": 2,
+      "args": []
+    }
+  ]
+}

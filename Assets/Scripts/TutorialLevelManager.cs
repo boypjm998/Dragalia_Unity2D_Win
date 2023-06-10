@@ -119,9 +119,8 @@ public class TutorialLevelManager : MonoBehaviour
     {
         if (button && buttonCD >= 999)
         {
-            button = false;
-            buttonCD = 0;
-            UseSupportSkill(14);
+            print(BattleStageManager.Instance.mapBorderL);
+            print(BattleStageManager.Instance.mapBorderR);
         }
         
     }
@@ -322,7 +321,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         GameObject.Find("AttackFXPlayer").transform.Find("GroundEffect").gameObject.SetActive(true);
         Zethia.GetComponentInChildren<Animator>().Play("action08");
-        GiveBuffToAllPlayers(new TimerBuff((int)BasicCalculation.BattleCondition.HotRecovery,
+        GiveBuffToAllPlayers(new TimerBuff((int)BasicCalculation.BattleCondition.HealOverTime,
             30,-1,100),false,9999);
         var dmgCutBuff = new TimerBuff((int)BasicCalculation.BattleCondition.DamageCutConst,2000,-1,BasicCalculation.MAXCONDITIONSTACKNUMBER);
         GiveBuffToPlayer(Zethia, dmgCutBuff, true);
@@ -774,12 +773,16 @@ public class TutorialLevelManager : MonoBehaviour
         
         
         Zethia.GetComponentInChildren<Animator>().Play("defeat");
+        
+        
         attackFXLayer.transform.Find("BlessEffect").gameObject.SetActive(false);
         attackFXLayer.transform.Find("GroundEffect").gameObject.SetActive(false);
         Zethia.transform.Find("BuffLayer/PrayerFX")?.gameObject.SetActive(false);
         cm.Follow = Zethia.transform;
         
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.25f);
+        Zethia.transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression(0.75f);
+        yield return new WaitForSeconds(1.25f);
         
         yield return new WaitForSeconds(2.5f);
         cm.Follow = _playerInput.transform;
@@ -830,7 +833,7 @@ public class TutorialLevelManager : MonoBehaviour
             {
                 var attackBuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 20f, -1f, 100);
                 var deffBuff = new TimerBuff((int)BasicCalculation.BattleCondition.DefBuff, 20f, -1f, 100);
-                var hotBuff = new TimerBuff((int)BasicCalculation.BattleCondition.HotRecovery, 10f, -1f, 100);
+                var hotBuff = new TimerBuff((int)BasicCalculation.BattleCondition.HealOverTime, 10f, -1f, 100);
                 GiveBuffToAllPlayers(attackBuff, true,-1,false);
                 GiveBuffToAllPlayers(deffBuff, true);
                 GiveBuffToAllPlayers(hotBuff, true,-1,false);

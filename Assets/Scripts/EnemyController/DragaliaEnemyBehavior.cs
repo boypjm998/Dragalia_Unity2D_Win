@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityGameObject;
+using GameMechanics;
 using UnityEngine;
 
 public abstract class DragaliaEnemyBehavior : MonoBehaviour
 {
+    public int difficulty = 3;
     public float awakeTime;
     //protected int phaseNum;
     [SerializeField]protected int state = 0;
@@ -62,7 +64,6 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
 
     protected void FinishMove(bool distanceCheck)
     {
-        
         currentMoveAction = null;
         TaskSuccess = distanceCheck;
     }
@@ -82,9 +83,10 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         return new Tuple<int, int>(state, substate);
     }
 
-    protected IEnumerator Start()
+    protected virtual IEnumerator Start()
     {
-        yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
+        yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart
+                                         );
         SearchTarget();
         state = 0;
         substate = 0;
@@ -160,6 +162,20 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     {
         this.state = state;
         this.substate = substate;
+    }
+
+    public void ActionStart()
+    {
+        TaskSuccess = false;
+        isAction = true;
+    }
+
+    public virtual void ActionEnd(bool substateIncrement = true)
+    {
+        isAction = false;
+        
+        if (substateIncrement)
+            substate++;
     }
 
 

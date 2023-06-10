@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -9,16 +10,29 @@ public abstract class ActorBase : MonoBehaviour
     public delegate void OnHurt();
     public bool isAlive = true;
     protected GameObject hitSensor;
+    protected Collider2D groundSensor;
     public Collider2D HitSensor
     {
-        get => hitSensor.GetComponent<Collider2D>();
+        get => hitSensor?.GetComponent<Collider2D>();
+    }
+
+    public bool IsInvincible
+    {
+        get => (!hitSensor.activeSelf || !HitSensor.enabled);
     }
 
     public Animator anim;
     public Rigidbody2D rigid;
     public OnHurt OnAttackInterrupt;   
     public int facedir = 1;
+    public float speedModifier = 1;
     public static float DefaultGravity = 4;
+    protected Tweener _tweener;
+
+    protected virtual void Awake()
+    {
+        groundSensor = transform.Find("GroundSensor")?.GetComponent<Collider2D>();
+    }
 
 
     public virtual void TakeDamage(float kbPower, float kbtime, float kbForce, Vector2 kbDir)
@@ -37,12 +51,30 @@ public abstract class ActorBase : MonoBehaviour
 
     public float GetActorHeight()
     {
-        return transform.position.y - transform.Find("GroundSensor").GetComponent<Collider2D>().bounds.min.y;
+        if (groundSensor == null)
+            return transform.position.y;
+        return transform.position.y - groundSensor.bounds.min.y;
+        //return transform.position.y - transform.Find("GroundSensor").GetComponent<Collider2D>().bounds.min.y;
     }
 
     public void SetHitSensor(bool flag)
     {
         hitSensor.SetActive(flag);
+    }
+
+    public virtual void SetActionUnable(bool flag)
+    {
+        
+    }
+
+    public virtual void SetGravityScale(float value)
+    {
+        
+    }
+
+    public virtual void ResetGravityScale()
+    {
+        
     }
 
 

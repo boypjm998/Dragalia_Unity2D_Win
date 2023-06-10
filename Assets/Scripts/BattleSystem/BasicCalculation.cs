@@ -1,9 +1,12 @@
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using LitJson;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameMechanics
 {
@@ -16,15 +19,16 @@ namespace GameMechanics
             FORCE = 3,
             SKILL = 4,
             ABILITY = 5,
-            OTHER = 6
+            OTHER = 6,
+            NONE = 7
         }
 
         public static int[] conditionsDisplayedByStacknum = new int[]
         {
             5, 13, 14, 15, 19, 57,
-            101, 102, 103, 104, 105, 106, 111,
+            101, 102, 103, 104, 105, 106, 108, 109, 111,
             213, 214, 300,
-            301,
+            301, 302,
             401, 402, 403, 404, 405, 406, 407, 408, 411, 412, 413, 414, 415, 416
         };
         public static int[] conditionsDisplayedByLevel = new int[]
@@ -49,7 +53,7 @@ namespace GameMechanics
             DefBuff = 2,
             CritRateBuff = 3,
             CritDmgBuff = 4,
-            HotRecovery = 5,
+            HealOverTime = 5,
             RecoveryBuff = 6,
             MaxHPBuff = 7,
             SkillDmgBuff = 8,
@@ -124,7 +128,8 @@ namespace GameMechanics
             PowerOfBonds = 105,
             HolyAccord = 106,
             GabrielsBlessing = 107,
-            
+            TwilightMoon = 108,
+            Invincible = 109,
             
             StandardAttackBurner = 111,
             HeartAflame = 112,
@@ -163,6 +168,7 @@ namespace GameMechanics
             Nihility = 300,
             //Special Debuff
             EvilsBane = 301,
+            ManaOverloaded = 302,
     
             //Dot Affliction
             Burn = 401,
@@ -176,8 +182,8 @@ namespace GameMechanics
             ShadowBlight = 408,
     
             //Control Affliction
-            Stun = 411,
-            Sleep = 412,
+            Stun = 412,
+            Sleep = 411,
             Bog = 413,
             Freeze = 414,
             Blindness = 415,
@@ -214,7 +220,7 @@ namespace GameMechanics
                     return ("防御力{0}％アップ");
                 case BattleCondition.DefDebuff:
                     return ("防御力{0}％ダウン");
-                case BattleCondition.HotRecovery:
+                case BattleCondition.HealOverTime:
                     return ("HP継続回復");
                 case BattleCondition.CritRateBuff:
                     return ("クリティカル率{0}％アップ");
@@ -342,7 +348,7 @@ namespace GameMechanics
                     return ("Defense +{0}％");
                 case BattleCondition.DefDebuff:
                     return ("Defense -{0}％");
-                case BattleCondition.HotRecovery:
+                case BattleCondition.HealOverTime:
                     return ("HP Regen");
                 case BattleCondition.CritRateBuff:
                     return ("Critical Rate +{0}％");
@@ -471,7 +477,7 @@ namespace GameMechanics
                     return ("防御力提升{0}%");
                 case BattleCondition.DefDebuff:
                     return ("防御力下降{0}%");
-                case BattleCondition.HotRecovery:
+                case BattleCondition.HealOverTime:
                     return ("HP持续回复");
                 case BattleCondition.CritRateBuff:
                     return ("暴击率提升{0}%");
@@ -489,6 +495,8 @@ namespace GameMechanics
                     return ("技能伤害提升{0}%");
                 case BattleCondition.SkillDmgDebuff:
                     return ("技能伤害下降{0}%");
+                case BattleCondition.ForceStrikeDmgBuff:
+                    return ("爆发攻击伤害提升{0}%");
                 case BattleCondition.LifeShield:
                     return ("生命护盾");
                 case BattleCondition.DamageCut:
@@ -554,11 +562,11 @@ namespace GameMechanics
                 case BattleCondition.PoisonResDown:
                     return ("中毒抗性下降{0}%");
                 case BattleCondition.BurnRateUp:
-                    return ("造成烧伤成功率提升{0:P0}");
+                    return ("造成烧伤成功率提升{0}%");
                 case BattleCondition.FlashburnRateUp:
-                    return ("造成闪热成功率提升{0:P0}");
+                    return ("造成闪热成功率提升{0}%");
                 case BattleCondition.ScorchrendRateUp:
-                    return ("造成劫火成功率提升{0:P0}");
+                    return ("造成劫火成功率提升{0}%");
 
 
 
@@ -587,6 +595,10 @@ namespace GameMechanics
                     return ("信赖之力");
                 case BattleCondition.HolyAccord:
                     return ("圣天启示");
+                case BattleCondition.TwilightMoon:
+                    return ("暮光之月");
+                case BattleCondition.Invincible:
+                    return ("铁壁");
                 
                 case BattleCondition.StandardAttackBurner:
                     return ("普通攻击赋予烧伤");
@@ -596,6 +608,8 @@ namespace GameMechanics
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
                     return ("破邪巫咒");
+                case BattleCondition.ManaOverloaded:
+                    return ("魔力过载");
                 
                 case BattleCondition.Nihility:
                     return ("虚无");
@@ -684,6 +698,8 @@ namespace GameMechanics
                     return 500;
                 case 206:
                     return 200;
+                case 207:
+                    return 30;
                 case 210:
                     return 100;
                 case 214:
@@ -731,48 +747,90 @@ namespace GameMechanics
 
             //攻击 Attack
 
-            var atkBuff = sourceStat.attackBuff;
+            // var atkBuff = sourceStat.attackBuff;
+            // var atkAbility = CheckSpecialAttackEffect(sourceStat,targetStat,atkStat).Item1;
+            // RulesInBattleField.GetFieldEffect_Attack(atkStat,sourceStat,targetStat,ref atkAbility,ref atkBuff);
+            // var atk = sourceStat.baseAtk * (1 + atkBuff) * (1 + atkAbility);
+            float atk = CalculateAttackInfo(atkStat, sourceStat, targetStat);
             
-            var atkAbility = CheckSpecialAttackEffect(sourceStat,targetStat,atkStat);
-    
-            var atk = sourceStat.baseAtk * (1 + atkBuff) * (1 + atkAbility);
+            //攻击威力
+
+            // var dmgBuff = sourceStat.dmgUpBuff;
+            // var dmgAbility = CheckSpecialDamageUpEffect(sourceStat, targetStat, atkStat).Item1;
+            // RulesInBattleField.GetFieldEffect_Damage(atkStat,sourceStat,targetStat,ref dmgAbility,ref dmgBuff);
+            // var dmgBuffModifier = dmgAbility + dmgBuff;
+            var dmgBuffModifier = CalculateDamageUpInfo(atkStat, sourceStat, targetStat);
     
             //暴击 爆伤 crit
     
     
-            var critRate = sourceStat.critRate + sourceStat.critRateBuff;
-    
-            critRate += CheckSpecialCritEffect(sourceStat,targetStat,atkStat);
+            var critRateBuff = sourceStat.critRateBuff;
+            var critAbility= (float)CheckSpecialCritEffect(sourceStat,targetStat,atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_CritRate(atkStat,sourceStat,targetStat,ref critAbility,ref critRateBuff);
+            var critRate = sourceStat.critRate + critAbility + critRateBuff;
+            
             
             float critDmgModifier = 1;
-            //isCrit = false;
             if (Random.Range(0, 100) < critRate)
             {
                 isCrit = true;
-                critDmgModifier += 0.7f + sourceStat.critDmgBuff;
-                critDmgModifier += CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat);
+                critDmgModifier += 0.7f;
+                var critDmgBuff = sourceStat.critDmgBuff;
+                var critDmgAbility = CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat).Item1;
+                RulesInBattleField.GetFieldEffect_CritDamage(atkStat,sourceStat,targetStat,ref critDmgAbility,ref critDmgBuff);
+                critDmgModifier += (critDmgBuff + critDmgAbility);
             }
+            
+            
     
             float skillDmgModifier = 1;
-            if (atkStat.attackType == AttackType.SKILL) skillDmgModifier += sourceStat.skillDmgBuff;
-            
+            if (atkStat.attackType == AttackType.SKILL)
+            {
+                skillDmgModifier += sourceStat.skillDmgBuff;
+                //TODO:检查技能伤害的被动。
+                //TODO:检查技能伤害的场地效果。
+            }
+
+            float fsDmgModifier = 1;
+            if (atkStat.attackType == AttackType.FORCE)
+            {
+                fsDmgModifier += sourceStat.fsDmgBuff;
+                //TODO:检查FS伤害的被动。
+                //TODO:检查FS伤害的场地效果。
+            }
+
             //特攻
-            var punisherModifier = 1 + CheckTotalPunisher(targetStat,sourceStat);
+            var punisherBuff = CheckTotalPunisher(targetStat, sourceStat);
+            var punisherAbility = CheckSpecialPunisherEffect(sourceStat, targetStat, atkStat).Item1;
+            //TODO:检查特攻的场地效果。
+            var punisherModifier = 1 + punisherBuff + punisherAbility;
+            
+            
     
             //Target
-    
-            var tarDef = targetStat.baseDef * (1 + targetStat.defenseBuff);
-            var dmgCutModifier = targetStat.dmgCutBuff;
+            //TODO: 检测目标的防御！
+
+            var tarDefBuff = (targetStat.defenseBuff);
+            var defAbility = CheckSpecialDefenseEffect(sourceStat, targetStat, atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_Defense(atkStat,sourceStat,targetStat,ref defAbility,ref tarDefBuff);
+            var tarDef = targetStat.baseDef * (1 + tarDefBuff + defAbility);
+            
+            //TODO:检查目标的减伤
+            var dmgCutBuff = targetStat.dmgCutBuff;
+            var dmgCutAbility = CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_DamageCut(atkStat,sourceStat,targetStat,ref dmgCutAbility,ref dmgCutBuff);
+            var dmgCutModifier = dmgCutBuff + dmgCutAbility;
+            //Debug.Log(dmgCutModifier);
 
 
 
             //Calculate
             
             //攻击者数值 : 总攻击(基础值*buff*被动) * 技能?伤害(目前只有buff) * 暴击?伤害(buff+被动) * 特攻修正 * 倍率
-            var attackSource = atk * skillDmgModifier * critDmgModifier * punisherModifier * newModifier;
+            var attackSource = atk * skillDmgModifier * fsDmgModifier * critDmgModifier * punisherModifier * newModifier;
             var defendTarget = tarDef;
 
-            attackSource *= (1 - dmgCutModifier); //计算 减伤 + 增伤
+            attackSource *= (1 - dmgCutModifier + dmgBuffModifier); //计算 减伤 + 增伤
 
             if (targetStat is SpecialStatusManager)
             {
@@ -811,6 +869,7 @@ namespace GameMechanics
             var atk = targetStat.baseAtk * (1 + targetStat.attackBuff);
             var hp = targetStat.maxHP;
             var potencybuff = targetStat.recoveryPotencyBuff;
+            potencybuff += CheckSpecialRecoveryBuff(targetStat);
     
             var damagePart1 = (0.16 * hp + 0.06 * atk) * modifier * (1 + potencybuff) * 0.012f;
     
@@ -825,29 +884,81 @@ namespace GameMechanics
 
         #region SpecialAbilityCalculation
         
-        public static float CheckSpecialAttackEffect(StatusManager sourceStat, StatusManager targetStat,
+        public static Tuple<float,float,float> CheckSpecialAttackEffect(StatusManager sourceStat, StatusManager targetStat,
             AttackBase attackStat)
         {
-            float extraAttackModifier = 0;
+            //float extraAttackModifier = 0;
+            float buffModifier = 0;
+            float debuffModifier = 0;
+            
             if (sourceStat.GetAbility(10011))
             {
+                //疾风怒涛攻
                 if(sourceStat.comboHitCount >= 15)
-                    extraAttackModifier += 0.2f;
+                    buffModifier += 0.2f;
             }
 
-            if (sourceStat.GetAbility(10006))
+            if (sourceStat.GetAbility(10006) ||
+                sourceStat.GetAbility(20031)
+                )
             {
-                extraAttackModifier += (sourceStat.currentHp / sourceStat.maxHP) * 0.2f;
+                //巫女之祈愿
+                buffModifier += (sourceStat.currentHp / sourceStat.maxHP) * 0.2f;
             }
 
-            return extraAttackModifier;
-        }
-        
+            if (sourceStat.GetAbility(20032))
+            {
+                buffModifier += (sourceStat.currentHp / sourceStat.maxHP) * 0.2f;
 
-        public static int CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
+                //反伤领域生效，自身的攻击力下降20%。
+                if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20033))
+                {
+                    debuffModifier += 0.2f;
+                }
+
+            }
+            return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
+        }
+
+        public static Tuple<float,float,float> CheckSpecialDamageUpEffect(StatusManager sourceStat, StatusManager targetStat,
             AttackBase attackStat)
         {
-            int extraCritModifier = 0;
+            float buffModifier = 0;
+            float debuffModifier = 0;
+
+            return new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
+        }
+
+
+        /// <summary>
+        /// 对【目标】的防御进行判定。
+        /// </summary>
+        public static Tuple<float,float,float> CheckSpecialDefenseEffect(StatusManager sourceStat, StatusManager targetStat,
+            AttackBase attackStat)
+        {
+            //float extraModifier = 0;
+            float buffModifier = 0;
+            float debuffModifier = 0;
+            
+            //巫女之祈愿（legend）
+            if (targetStat.GetAbility(20032))
+            {
+                //攻击领域生效，自身的防御力下降20%。
+                if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20033))
+                {
+                    debuffModifier += 0.2f;
+                }
+
+            }
+
+            return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
+        }
+
+        public static Tuple<int,int,int> CheckSpecialCritEffect(StatusManager sourceStat, StatusManager targetStat, 
+            AttackBase attackStat)
+        {
+            int buffModifier = 0;
+            int debuffModifier = 0;
 
             
             if (sourceStat.GetAbility(20011) || sourceStat.GetAbility(10009))//闪狼战技
@@ -855,45 +966,111 @@ namespace GameMechanics
                 if (attackStat.skill_id == 2 &&
                     targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
                 {
-                    extraCritModifier = 999;
+                    buffModifier = 999;
                 }
             }
             
             if (sourceStat.GetAbility(10008) && sourceStat.comboHitCount>= 15)
             {
-                extraCritModifier += 15;
+                buffModifier += 15;
             }
 
 
 
-            return extraCritModifier;
+            return new Tuple<int, int, int>(buffModifier-debuffModifier,buffModifier,debuffModifier);
         }
         
     
-        public static float CheckSpecialCritDmgEffect(StatusManager sourceStat, StatusManager targetStat,
+        public static Tuple<float,float,float> CheckSpecialCritDmgEffect(StatusManager sourceStat, StatusManager targetStat,
             AttackBase attackStat)
         {
-            float extraCritDmgModifier = 0;
+            float buffModifier = 0;
+            float debuffModifier = 0;
+
+            if (sourceStat.GetAbility(10002))//暴击输出
+            {
+                if (targetStat.GetConditionStackNumber((int)BattleCondition.Flashburn) > 0)
+                {
+                    buffModifier += 0.3f;
+                }
+            }
+
+
             if (sourceStat.GetAbility(20011) || sourceStat.GetAbility(10009))//闪狼战技
             { 
                 if (attackStat.attackType == AttackType.STANDARD &&
                   targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
                 {
-                    extraCritDmgModifier += 0.2f;
+                    buffModifier += 0.2f;
                 }
             }
             
             
     
-            return extraCritDmgModifier;
+            return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
         }
 
-        public static float CheckSpecialDamageCutEffect(StatusManager sourceStat, StatusManager targetStat,
+        public static float CheckSpecialRecoveryBuff(StatusManager sourceStat)
+        {
+            float extraModifier = 0;
+            return extraModifier;
+        }
+
+        /// <summary>
+        /// 对【目标】的减伤进行判定。
+        /// </summary>
+        public static Tuple<float,float,float> CheckSpecialDamageCutEffect(StatusManager sourceStat, StatusManager targetStat,
             AttackBase attackStat)
         {
-            return 0;
+            float buffModifier = 0;
+            float debuffModifier = 0;
+            
+            if (targetStat.GetAbility(20032))
+            {
+                buffModifier += Mathf.Pow(((float)targetStat.currentHp / (float)targetStat.maxHP),2) * 0.7f;
+            }
+
+            return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
         }
-        
+
+        public static Tuple<int, int, int> CheckSpecialDebuffRateEffect(StatusManager sourceStat,
+            StatusManager targetStat, AttackBase attackStat)
+        {
+            int buffModifier = 0;
+            int debuffModifier = 0;
+
+            if (targetStat.GetAbility(10003))
+            {
+                if (targetStat.comboHitCount >= 15)
+                {
+                    buffModifier += 20;
+                }
+            }
+
+            return new Tuple<int, int, int>(buffModifier - debuffModifier, buffModifier, debuffModifier);
+
+        }
+
+        public static Tuple<float, float, float> CheckSpecialPunisherEffect(StatusManager sourceStat,
+            StatusManager targetStat, AttackBase attackStat)
+        {
+            float buffModifier = 0;
+            float debuffModifier = 0;
+            
+            //防御力下降特效30%
+            if (sourceStat.GetAbility(10004))
+            {
+                if (targetStat.GetConditionTotalValue((int)BasicCalculation.BattleCondition.DefDebuff) > 0)
+                {
+                    buffModifier += 0.3f;
+                }
+            }
+
+            return  new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
+            
+            
+        }
+
         public static float CheckSpecialODAccerleratorEffect(StatusManager sourceStat, StatusManager targetStat,
             AttackBase attackStat)
         {
@@ -908,15 +1085,31 @@ namespace GameMechanics
 
 
         #endregion
+
+        
     
     
     
-        public static float CalculateAttackInfo(StatusManager stat)
+        public static float CalculateAttackInfo(AttackBase atkStat, StatusManager sourceStat,StatusManager targetStat)
         {
-            //stat.baseAtk * (1 + stat.attackBuff);
-            return stat.baseAtk * (1 + stat.attackBuff);
+            var atkBuff = sourceStat.attackBuff;
+            var atkAbility = CheckSpecialAttackEffect(sourceStat,targetStat,atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_Attack(atkStat,sourceStat,targetStat,ref atkAbility,ref atkBuff);
+            var atk = sourceStat.baseAtk * (1 + atkBuff) * (1 + atkAbility);
+            
+            return atk;
         }
-    
+
+        public static float CalculateDamageUpInfo(AttackBase atkStat, StatusManager sourceStat,
+            StatusManager targetStat)
+        {
+            var dmgBuff = sourceStat.dmgUpBuff;
+            var dmgAbility = CheckSpecialDamageUpEffect(sourceStat, targetStat, atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_Damage(atkStat,sourceStat,targetStat,ref dmgAbility,ref dmgBuff);
+            var dmgBuffModifier = dmgAbility + dmgBuff;
+            return dmgBuffModifier;
+        }
+
         public static float CalculateDefenseInfo(StatusManager stat)
         {
             var totalDef = stat.baseDef * (1 + stat.defenseBuff);
@@ -1384,6 +1577,22 @@ namespace GameMechanics
             return result;
         }
     
+        public static float HasGap(Collider2D a, Collider2D b)
+        {
+            var leftA = a.bounds.min.x;
+            var leftB = b.bounds.min.x;
+            var rightA = a.bounds.max.x;
+            var rightB = b.bounds.max.x;
+        
+            if(leftA > rightB || leftB > rightA)
+            {
+                return leftA > rightB ? leftA - rightB : leftB - rightA;
+            }
+            else
+            {
+                return 0;
+            }
+        }
 
     }
 
@@ -1391,11 +1600,128 @@ namespace GameMechanics
     {
         public static int GetFieldResistanceOfCondition(BasicCalculation.BattleCondition condition)
         {
-            var abilityIDList = GameObject.FindObjectOfType<BattleStageManager>().FieldAbilityIDList;
+            var abilityIDList = BattleStageManager.Instance.FieldAbilityIDList;
             
             
             return -1;
             //Unimplemented
+        }
+
+        public static void GetFieldEffect_Attack(AttackBase atkStat,
+            StatusManager sourceStat, StatusManager targetStat, ref float ability, ref float buff)
+        {
+            float totalAbilityUp = 0,totalAbilityDown = 0;
+            float totalBuffUp = 0, totalBuffDown = 0;
+            
+            //巫女的祈愿legend
+            if (sourceStat.GetAbility(20032))
+            {
+                //因果链接生效期间，自身攻击力降低30%
+                if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20033))
+                {
+                    totalAbilityDown += 0.3f;
+                }
+            }
+            
+            ability = ability + totalAbilityUp - totalAbilityDown;
+            buff = buff + totalBuffUp - totalBuffDown;
+        }
+
+        public static void GetFieldEffect_CritRate(AttackBase atkStat,
+                     StatusManager sourceStat, StatusManager targetStat, ref float ability, ref float buff)
+                 {
+                     float totalAbilityUp = 0,totalAbilityDown = 0;
+                     float totalBuffUp = 0, totalBuffDown = 0;
+                     
+                     
+                     
+                     
+                     ability = ability + totalAbilityUp - totalAbilityDown;
+                     buff = buff + totalBuffUp - totalBuffDown;
+                     
+                 }
+
+        
+        public static void GetFieldEffect_CritDamage(AttackBase atkStat,
+            StatusManager sourceStat, StatusManager targetStat, ref float ability, ref float buff)
+        {
+            float totalAbilityUp = 0,totalAbilityDown = 0;
+            float totalBuffUp = 0, totalBuffDown = 0;
+            
+            
+            
+            
+            ability = ability + totalAbilityUp - totalAbilityDown;
+            buff = buff + totalBuffUp - totalBuffDown;
+            
+        }
+
+        public static void GetFieldEffect_Defense(AttackBase atkStat,
+            StatusManager sourceStat, StatusManager targetStat, ref float ability, ref float buff)
+        {
+            float totalAbilityUp = 0,totalAbilityDown = 0;
+            float totalBuffUp = 0, totalBuffDown = 0;
+            
+            //巫女的祈愿legend
+            if (targetStat.GetAbility(20032))
+            {
+                //魔力增幅生效期间，自身防御力降低30%。
+                if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
+                {
+                    totalAbilityDown += 0.3f;
+                }
+            }
+            
+            //无视防御
+            if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
+            {
+                totalAbilityDown += BasicCalculation.CheckSpecialDefenseEffect(sourceStat,targetStat,atkStat).Item3;
+                ability = 0;
+                buff = 0;
+                totalBuffDown = 0.01f*targetStat.GetDefenseBuff(2);
+            }
+
+            ability = ability + totalAbilityUp - totalAbilityDown;
+            buff = buff + totalBuffUp - totalBuffDown;
+
+        }
+        public static void GetFieldEffect_Damage(AttackBase atkStat,
+            StatusManager sourceStat, StatusManager targetStat, ref float ability, ref float buff)
+        {
+            
+            float totalAbilityUp = 0,totalAbilityDown = 0;
+            float totalBuffUp = 0, totalBuffDown = 0;
+            
+            //因果链接魔力增幅:攻击威力+30%
+            if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
+            {
+                totalAbilityUp += 0.3f;
+            }
+            
+            
+            ability = ability + totalAbilityUp - totalAbilityDown;
+            buff = buff + totalBuffUp - totalBuffDown;
+            
+        }
+        public static void GetFieldEffect_DamageCut(AttackBase atkStat,
+            StatusManager sourceStat, StatusManager targetStat, ref float ability, ref float buff)
+        {
+            
+            float totalAbilityUp = 0,totalAbilityDown = 0;
+            float totalBuffUp = 0, totalBuffDown = 0;
+            
+            //无视减伤
+            if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
+            {
+                totalAbilityDown = BasicCalculation.CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item3;
+                //totalBuffDown = 0.01f*targetStat.GetConditionTotalValue((int)(BasicCalculation.BattleCondition.Vulnerable));
+                totalBuffDown = 0.01f*targetStat.GetDamageCut(2);
+                ability = 0;
+                buff = 0;
+            }
+            
+            ability = ability + totalAbilityUp - totalAbilityDown;
+            buff = buff + totalBuffUp - totalBuffDown;
         }
 
 

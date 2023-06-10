@@ -36,7 +36,8 @@ namespace CharacterSpecificProjectiles
             {
                 foreach (var hitinfo in hitinfos)
                 {
-                    if (hitinfo.GetComponentInParent<EnemyController>().currentKBRes >= 100)
+                    if (hitinfo.GetComponentInParent<EnemyController>().currentKBRes + 
+                        hitinfo.GetComponentInParent<StatusManager>().GetKBResBuff() >= 99)
                     {
                         continue;
                     }

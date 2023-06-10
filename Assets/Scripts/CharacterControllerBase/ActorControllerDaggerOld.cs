@@ -389,12 +389,14 @@ public class ActorController_Dagger : ActorController
 
     public override void OnStandardAttackEnter()
     {
+        
         print("OnStandAttackEnter");
         EnterCombo();
     }
 
     public override void OnStandardAttackExit()
     {
+        
         pi.SetInputMove(1);
         ActionEnable((int)PlayerActionType.JUMP);
         ActionEnable((int)PlayerActionType.MOVE);

@@ -550,7 +550,6 @@ GameObject:
   - component: {fileID: 2566749054194293383}
   - component: {fileID: 1469699472597721279}
   - component: {fileID: 6629513488306118797}
-  - component: {fileID: 383785023466541569}
   m_Layer: 11
   m_Name: HB01_ComboC_Hint_01
   m_TagString: Untagged
@@ -590,6 +589,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   warningTime: 0.8
   attackLastTime: 0.5
+  timeToSendEvadeSignal: 0
+  height: -1
   interruptable: 1
   fillType: 0
 --- !u!61 &6629513488306118797
@@ -618,15 +619,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 12, y: 4}
   m_EdgeRadius: 0
---- !u!114 &383785023466541569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7877905205732929544}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5704082493e8f8f41983a2cc52f08a69, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

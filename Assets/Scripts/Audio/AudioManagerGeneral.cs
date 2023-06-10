@@ -6,7 +6,8 @@ using UnityEngine;
 
 public abstract  class AudioManagerGeneral : MonoBehaviour, IVoice
 {
-    protected AudioSource voice;
+    public AudioSource voice;
+    protected UI_DialogDisplayer _dialogDisplayer;
     protected Coroutine voiceCDRoutine;
     public AudioClip[] myClips;
 
@@ -16,6 +17,12 @@ public abstract  class AudioManagerGeneral : MonoBehaviour, IVoice
     public enum MyMoveList
     {
         
+    }
+    
+    protected IEnumerator WaitForVoiceCooldown()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+        voiceCDRoutine = null;
     }
     
     protected virtual void LoadMyVoice()

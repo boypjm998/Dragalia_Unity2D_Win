@@ -10,6 +10,8 @@ public class AttackSubContainer : AttackContainer
 {
     //private int totalDamage;
     public AttackContainer parentContainer;
+
+    public bool hitFinished = false;
     
     void Start()
     {
@@ -39,13 +41,19 @@ public class AttackSubContainer : AttackContainer
     
     private void OnDestroy()
     {
-        parentContainer.AddTotalDamage(totalDamage);
-        parentContainer.FinishHit();
+        
+        parentContainer?.AddTotalDamage(totalDamage);
+
+        parentContainer?.FinishHit();
+
     }
 
     public void InitAttackContainer(int attackTotalNum, GameObject _parent)
     {
         this.attackTotalNum = attackTotalNum;
         parentContainer = _parent.GetComponent<AttackContainer>();
+        parentContainer.SubContainers.Add(this);
     }
+
+    
 }

@@ -5,17 +5,30 @@ using Cinemachine;
 public class CineMachineOperator : MonoBehaviour
 {
 
+    [SerializeField] private int priority;
     private CinemachineVirtualCamera cinemachineVirtualCamera;
     private float shakeTimer;
     private float shakeTimerTotal;
     private float startingIntensity;
+    [SerializeField] float intensityModifier = 1;
     public static CineMachineOperator Instance { get; private set; }
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null && priority >= 0)
+        {
+            Instance = this;
+        }
+
+        
         cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
         
+    }
+
+    public void SetInstance()
+    {
+        Instance = this;
+        cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
     }
 
     public void CamaraShake(float intensity, float time)
@@ -23,10 +36,15 @@ public class CineMachineOperator : MonoBehaviour
         CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin =
             cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
-        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = intensity;
+        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = intensity * intensityModifier;
         startingIntensity = intensity;
         shakeTimerTotal = time;
         shakeTimer = time;
+    }
+
+    public void StopCameraShake()
+    {
+        shakeTimer = 0f;
     }
 
     private void Update()
