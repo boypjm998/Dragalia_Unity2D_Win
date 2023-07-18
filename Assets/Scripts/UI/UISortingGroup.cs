@@ -69,6 +69,11 @@ public class UISortingGroup : MonoBehaviour
         //_menuUIManager.lastDisabledUIGroup = this.sortingGroupID;
     }
 
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
 
 
     public void clicked(string name)
@@ -116,7 +121,8 @@ public class UISortingGroup : MonoBehaviour
 
     public void ToBattle(int questID)
     {
-        if (_globalController.loadingEnd == false)
+        print(_globalController.loadingEnd);
+        if (_globalController.loadingEnd == false || !_globalController.loadingRoutineEnd)
         {
             return;
         }

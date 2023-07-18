@@ -601,17 +601,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   accTime: 0.1
   standardAttackContinious: 1
-  keyRight: d
-  keyLeft: a
-  keyDown: s
-  keyUp: w
-  keyAttack: j
-  keyJump: k
-  keyRoll: l
-  keySkill1: u
-  keySkill2: i
-  keySkill3: o
-  keySkill4: h
+  allowForceStrike: 0
+  keyRight: 0
+  keyLeft: 0
+  keyDown: 0
+  keyUp: 0
+  keyAttack: 0
+  keyJump: 0
+  keyRoll: 0
+  keySkill1: 0
+  keySkill2: 0
+  keySkill3: 0
+  keySkill4: 0
+  keyEsc: 27
   DRight: 0
   isMove: 0
   velocityDRight: 0
@@ -646,9 +648,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a2b467d7ad2811428e3781691fcd9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAlive: 1
   anim: {fileID: 0}
   rigid: {fileID: 0}
   facedir: 1
+  speedModifier: 1
   defaultGravity: 4
   pi: {fileID: 0}
   _statusManager: {fileID: 0}
@@ -656,6 +660,7 @@ MonoBehaviour:
   rollspeed: 9
   jumpforce: 20
   dodging: 0
+  isAttackSkill: 00000000
   ta: {fileID: 0}
 --- !u!114 &8598698706064260262
 MonoBehaviour:
@@ -694,6 +699,8 @@ MonoBehaviour:
   critRate: 12
   maxHP: 4091
   currentHp: 4091
+  comboConnectMaxInterval: 4
+  comboHitCount: 0
   knockbackRes: 0
   burnRes: 0
   poisonRes: 0
@@ -709,9 +716,8 @@ MonoBehaviour:
   freezeRes: 0
   blindnessRes: 0
   cursedRes: 0
+  abilityList: 
   _conditionBar: {fileID: 0}
-  damageCut: 0
-  damageCutConst: 0
   waitForRevive: 0
   maxSkillNum: 4
   requiredSP:
@@ -729,9 +735,7 @@ MonoBehaviour:
   movespeed: 6
   jumpforce: 20
   rollspeed: 9
-  comboConnectMaxInterval: 4
   remainReviveTimes: 9
-  comboHitCount: 0
   _comboIndicator: {fileID: 0}
 --- !u!50 &8598698706064260265
 Rigidbody2D:

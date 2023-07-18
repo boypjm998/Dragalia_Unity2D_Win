@@ -36,7 +36,10 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
 
         //For Manacaster:
         attackStates = new string[]
-            { "combo","crunch", "recover","airdash","dash","s1","s2","s3","s4","s1_boost","s2_boost","s3_boost" };
+        {
+            "combo","crunch", "recover","airdash","dash","s1","s2","s3","s4","s1_boost","s2_boost","s3_boost","combo1",
+            "combo2","combo3","combo4","combo5","combo6","combo7","combo8","combo9"
+        };
     }
 
     protected virtual void Update()
@@ -64,6 +67,7 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
             lastContanctGround = currentGround;
             ContactGroundEvent?.Invoke(currentGround);
         }
+
         
 
     }
@@ -82,8 +86,11 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
         Collider2D platformCollider = currentOnewayPlatform.GetComponent<Collider2D>();
         
         Physics2D.IgnoreCollision(playerCollider, platformCollider);
+        pi.quicklandingEnabled = false;
+        //rigid.velocity = new Vector2(rigid.velocity.x, 0);
         yield return new WaitForSeconds(0.3f);
         Physics2D.IgnoreCollision(playerCollider, platformCollider,false);
+        pi.quicklandingEnabled = true;
         
     }
 

@@ -21,13 +21,19 @@ public class UI_GameOption : MonoBehaviour
     private string defaultKeySkill2 = "i";
     private string defaultKeySkill3 = "o";
     private string defaultKeySkill4 = "h";
+    private string defaultKeyEscape = "escape";
 
     private bool isSettingKey = false;
 
+    private Toggle fullScrrenToggle;
+    
+    
+    
+
     private void Awake()
     {
-        keySettingButton = new Button[11];
-        keyText = new TextMeshProUGUI[11];
+        keySettingButton = new Button[12];
+        keyText = new TextMeshProUGUI[12];
 
         var keyBoardSetting = transform.Find("KeyboardSettings");
         int i = 0;
@@ -37,6 +43,8 @@ public class UI_GameOption : MonoBehaviour
             keyText[i] = item.Find("Key").GetComponent<TextMeshProUGUI>();
             i++;
         }
+        
+        fullScrrenToggle = transform.Find("FullScreenSetting/Panel/Toggle").GetComponent<Toggle>();
 
     }
 
@@ -47,17 +55,28 @@ public class UI_GameOption : MonoBehaviour
 
     void OnEnable()
     {
-        keyText[0].text = GlobalController.keyLeft.ToUpper();
-        keyText[1].text = GlobalController.keyRight.ToUpper();
-        keyText[2].text = GlobalController.keyDown.ToUpper();
-        keyText[3].text = GlobalController.keyAttack.ToUpper();
-        keyText[4].text = GlobalController.keyJump.ToUpper();
-        keyText[5].text = GlobalController.keyRoll.ToUpper();
-        keyText[6].text = GlobalController.keySpecial.ToUpper();
-        keyText[7].text = GlobalController.keySkill1.ToUpper();
-        keyText[8].text = GlobalController.keySkill2.ToUpper();
-        keyText[9].text = GlobalController.keySkill3.ToUpper();
-        keyText[10].text = GlobalController.keySkill4.ToUpper();
+        keyText[0].text = GlobalController.keyLeft.ToString();
+        keyText[1].text = GlobalController.keyRight.ToString();
+        keyText[2].text = GlobalController.keyDown.ToString();
+        keyText[3].text = GlobalController.keyAttack.ToString();
+        keyText[4].text = GlobalController.keyJump.ToString();
+        keyText[5].text = GlobalController.keyRoll.ToString();
+        keyText[6].text = GlobalController.keySpecial.ToString();
+        keyText[7].text = GlobalController.keySkill1.ToString();
+        keyText[8].text = GlobalController.keySkill2.ToString();
+        keyText[9].text = GlobalController.keySkill3.ToString();
+        keyText[10].text = GlobalController.keySkill4.ToString();
+        keyText[11].text = GlobalController.keyEscape.ToString();
+        
+        //检测当前是否全屏
+        if (Screen.fullScreen)
+        {
+            fullScrrenToggle.isOn = true;
+        }
+        else
+        {
+            fullScrrenToggle.isOn = false;
+        }
         
     }
     
@@ -75,12 +94,46 @@ public class UI_GameOption : MonoBehaviour
             StartCoroutine(SetKeyRoutine(keyID));
     }
 
+    public void SettingToggle()
+    {
+        if (!isSettingKey)
+           SettingFullScreenRoutine();
+        
+        
+
+    }
+
+    void SettingFullScreenRoutine()
+    {
+        isSettingKey = true;
+        
+        //如果当前为Unity编辑器模式，下述代码跳过
+        #if !UNITY_EDITOR
+
+        if (fullScrrenToggle.isOn)
+        {
+            //全屏
+            Screen.fullScreen = true;
+        }
+        else
+        {
+            //将屏幕设为全屏
+            Screen.fullScreen = false;
+        }
+        
+        #endif
+        
+        isSettingKey = false;
+        
+
+    }
+
 
     IEnumerator SetKeyRoutine(int keyID)
     {
         isSettingKey = true;
         
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < 12; i++)
         {
             
             keySettingButton[i].interactable = false;
@@ -96,12 +149,13 @@ public class UI_GameOption : MonoBehaviour
         }
 
         yield return new WaitUntil(() => Input.anyKeyDown);
+        
 
         var newKey = "";
 
         foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
         {
-            if (Input.GetKeyDown(key) && (int)key > 27 && (int)key < 315)
+            if (Input.GetKeyDown(key) && ((int)key > 27 && (int)key < 315))
             {
                 newKey = key.ToString();
             }
@@ -112,17 +166,17 @@ public class UI_GameOption : MonoBehaviour
             newKey = keyText[keyID].text;
         }
 
-        keyText[keyID].text = newKey.ToUpper();
+        keyText[keyID].text = newKey;
 
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < 12; i++)
         {
-            if (keyID != i && keyText[i].text == newKey.ToUpper())
+            if (keyID != i && keyText[i].text == newKey)
             {
                 keyText[i].text = string.Empty;
             }
         }
 
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < 12; i++)
         {
             if (keyID == i)
             {
@@ -141,17 +195,30 @@ public class UI_GameOption : MonoBehaviour
 
     void ReloadKeySetting()
     {
-        GlobalController.keyLeft = keyText[0].text.ToLower();
-        GlobalController.keyRight = keyText[1].text.ToLower();
-        GlobalController.keyDown = keyText[2].text.ToLower();
-        GlobalController.keyAttack = keyText[3].text.ToLower();
-        GlobalController.keyJump = keyText[4].text.ToLower();
-        GlobalController.keyRoll = keyText[5].text.ToLower();
-        GlobalController.keySpecial = keyText[6].text.ToLower();
-        GlobalController.keySkill1 = keyText[7].text.ToLower();
-        GlobalController.keySkill2 = keyText[8].text.ToLower();
-        GlobalController.keySkill3 = keyText[9].text.ToLower();
-        GlobalController.keySkill4 = keyText[10].text.ToLower();
+        GlobalController.keyLeft = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[0].text);
+        GlobalController.keyRight = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[1].text);
+        GlobalController.keyDown = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[2].text);
+        GlobalController.keyAttack = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[3].text);
+        GlobalController.keyJump = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[4].text);
+        GlobalController.keyRoll = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[5].text);
+        GlobalController.keySpecial = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[6].text);
+        GlobalController.keySkill1 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[7].text);
+        GlobalController.keySkill2 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[8].text);
+        GlobalController.keySkill3 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[9].text);
+        GlobalController.keySkill4 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[10].text);
+        GlobalController.keyEscape = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[11].text);
+
+        // GlobalController.keyRight = keyText[1].text.ToLower();
+        // GlobalController.keyDown = keyText[2].text.ToLower();
+        // GlobalController.keyAttack = keyText[3].text.ToLower();
+        // GlobalController.keyJump = keyText[4].text.ToLower();
+        // GlobalController.keyRoll = keyText[5].text.ToLower();
+        // GlobalController.keySpecial = keyText[6].text.ToLower();
+        // GlobalController.keySkill1 = keyText[7].text.ToLower();
+        // GlobalController.keySkill2 = keyText[8].text.ToLower();
+        // GlobalController.keySkill3 = keyText[9].text.ToLower();
+        // GlobalController.keySkill4 = keyText[10].text.ToLower();
+        // GlobalController.keyEscape = keyText[11].text.ToLower();
         
         GlobalController.Instance.WritePlayerSettingsToFile();
         

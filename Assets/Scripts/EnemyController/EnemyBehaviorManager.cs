@@ -49,6 +49,8 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
     
     [SerializeField] TextAsset behaviorTextAsset;
     
+    
+    
     protected override void CheckPhase()
     {
         var phase = _currentPhase;
@@ -73,6 +75,12 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
                 state++;
                 _currentPhase = _pattern.phasePattern[state];
             }
+            else if (substate >= _currentPhase.action_list.Count)
+            {
+                substate = _currentPhase.loopStartPoint;
+            }
+            
+            
         }else if (phase.jumpOutCondition == EnemyActionPattern.PhasePattern.JumpOutCondition.None)
         {
             if (substate >= _currentPhase.action_list.Count)
@@ -107,9 +115,14 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
 
     protected override void DoAction(int state, int substate)
     {
+        if (playerAlive == false)
+            return;
+        
         var action = _pattern.phasePattern[state].action_list[substate];
-
-        var action_name = action.action_name;
+        
+        
+        _currentPhase = _pattern.phasePattern[state];
+        _currentActionStage = _currentPhase.action_list[substate];
         
     }
 
@@ -158,9 +171,9 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
         {
             base.ActionEnd(false);
             var cond_args = _currentActionStage.jump_args;
-            print("IS CONDITIONAL");
             int dest;
             CheckCondition(cond_args, out dest);
+            print("IS CONDITIONAL,JUMP TO "+dest);
             this.substate = dest;
         }else if (_currentActionStage.jump_action == "to")
         {

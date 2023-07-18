@@ -46,17 +46,20 @@ public class GlobalController : MonoBehaviour
     public static int currentCharacterID = 1;
     
     
-    public static string keyRight = "d";
-    public static string keyLeft = "a";
-    public static string keyDown = "s";
-    public static string keySpecial = "w";
-    public static string keyAttack = "j";
-    public static string keyJump = "k";
-    public static string keyRoll = "l";
-    public static string keySkill1 = "u";
-    public static string keySkill2 = "i";
-    public static string keySkill3 = "o";
-    public static string keySkill4 = "h";
+    public static KeyCode keyRight = KeyCode.D;
+    public static KeyCode keyLeft = KeyCode.A;
+    public static KeyCode keyDown = KeyCode.S;
+    public static KeyCode keySpecial = KeyCode.Space;
+    public static KeyCode keyAttack = KeyCode.J;
+    public static KeyCode keyJump = KeyCode.K;
+    public static KeyCode keyRoll = KeyCode.L;
+    public static KeyCode keySkill1 = KeyCode.U;
+    public static KeyCode keySkill2 = KeyCode.I;
+    public static KeyCode keySkill3 = KeyCode.O;
+    public static KeyCode keySkill4 = KeyCode.H;
+    public static KeyCode keyEscape = KeyCode.Escape;
+    
+    
     
     #endregion
     
@@ -70,6 +73,7 @@ public class GlobalController : MonoBehaviour
     
     
 
+    public bool loadingRoutineEnd => loadingRoutine == null;
     protected Coroutine loadingRoutine;
     [SerializeField] private GameObject LoadingScreen;
     [SerializeField] private GameObject clickEff;
@@ -123,7 +127,7 @@ public class GlobalController : MonoBehaviour
     {
         if (debug)
         {
-            BattleEffectManager.Instance.PlayOtherSE("SE_ACTION_GUN_001");
+            //BattleEffectManager.Instance.PlayOtherSE("SE_ACTION_GUN_001");
             debug = false;
         }
 
@@ -140,6 +144,7 @@ public class GlobalController : MonoBehaviour
         }
 
         clickEffCD--;
+        //print(loadingEnd);
     }
 
     public void TestReturnMainMenu()
@@ -164,8 +169,15 @@ public class GlobalController : MonoBehaviour
             return;
         loadingRoutine = StartCoroutine(LoadPrologueScene());
     }
+    
+    public void EnterPrologueStory()
+    {
+        if(loadingRoutine!=null)
+            return;
+        loadingRoutine = StartCoroutine(LoadStorySceneOfPrologue());
+    }
 
-    IEnumerator LoadBattleScene(string questID){
+    protected IEnumerator LoadBattleScene(string questID){
         //异步加载场景
 
         GlobalController.questID = questID;
@@ -327,6 +339,7 @@ public class GlobalController : MonoBehaviour
         //实例化UI
         
         var UICharaInfoClone = Instantiate(UICharaInfoAsset, UIElements.transform);
+        
         UICharaInfoClone.name = "CharacterInfo";
         
         GameObject.Find("UI").transform.Find("Minimap").gameObject.SetActive(true);
@@ -388,8 +401,9 @@ public class GlobalController : MonoBehaviour
             //index++;
         }
         
-        battleStageManager.LinkBossStatus();
         
+        battleStageManager.LinkBossStatus();
+        battleStageManager.SetBGM();
         
         
         
@@ -416,7 +430,7 @@ public class GlobalController : MonoBehaviour
 
     }
 
-    IEnumerator LoadMainMenu()
+    protected IEnumerator LoadMainMenu()
     {
         currentGameState = GameState.End;
         loadingEnd = false;
@@ -491,13 +505,56 @@ public class GlobalController : MonoBehaviour
         Destroy(loadingScreen);
         this.enabled = true;
         //print(loadedBundles.ContainsKey("Iconsmall"));
-        loadingEnd = true;
-        currentGameState = GameState.Outbattle;
+        
+        
         onGlobalControllerAwake?.Invoke();
         MenuUIManager.SetMaxMenuLevel(1);
         UpdateQuestSaveData();
 
+        yield return new WaitForSeconds(0.5f);
+        currentGameState = GameState.Outbattle;
+        loadingEnd = true;
+        loadingRoutine = null;
+        
+    }
 
+    protected IEnumerator LoadStorySceneOfPrologue()
+    {
+        GlobalController.questID = "100001";
+        loadingEnd = false;
+        var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
+        var anim = loadingScreen.GetComponent<Animator>();
+
+        //load level
+        //bool levelAssetLoaded = false;
+        
+        //currentGameState = GameState.WaitForStart;
+        AsyncOperation ao = SceneManager.LoadSceneAsync("StoryScene");
+        DontDestroyOnLoad(this.gameObject);
+        yield return ao;
+
+        
+
+        
+        
+        cameraTransform = GameObject.Find("Main Camera").transform;
+        loadingScreen.transform.position = cameraTransform.transform.position;
+        UIFXContainer = GameObject.Find("UIFXContainer");
+        
+        
+        var voiceBundleManager = FindObjectOfType<AudioBundlesTest>();
+        yield return new WaitUntil(()=>voiceBundleManager.loadingEnd);
+
+        FindObjectOfType<StorySceneManager>().started = true;
+        
+        anim.SetBool("loaded",true);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
+        Destroy(loadingScreen);
+        
+        yield return new WaitForSeconds(2.5f);
+        //BattleStageManager.Instance.GetMapBorderInfo();
+        //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
+        loadingEnd = true;
         loadingRoutine = null;
     }
 
@@ -515,26 +572,7 @@ public class GlobalController : MonoBehaviour
         
         List<String> requiredBundleList = new List<string>();
         
-        // requiredBundleList.Add("player/player_c001");
-        //
-        // requiredBundleList.Add("npc/npc_prologue_01");
-        // requiredBundleList.Add("npc/npc_prologue_02");
-        //
-        // requiredBundleList.Add("model/model_c001");
-        // requiredBundleList.Add("model/model_c010");
-        // requiredBundleList.Add("model/model_c019");
-        //
-        // requiredBundleList.Add("ui_general");
-        //
-        // requiredBundleList.Add("eff/eff_general");
-        // requiredBundleList.Add("eff/eff_c001");
-        // requiredBundleList.Add("eff/eff_c010");
-        // requiredBundleList.Add("eff/eff_c019");
-        //
-        // requiredBundleList.Add("animation/anim_common");
-        // requiredBundleList.Add("allin1");
-        // requiredBundleList.Add("118effbundle");
-        // requiredBundleList.Add("boss_ability_icon");
+        
         
         requiredBundleList.Add("voice/voice_c001");
         requiredBundleList.Add("voice/voice_c010");
@@ -603,10 +641,20 @@ public class GlobalController : MonoBehaviour
 
     public AssetBundle GetBundle(string name)
     {
-        if (loadedBundles.ContainsKey(name))
+        try
         {
-            return loadedBundles[name];
+            if (loadedBundles.ContainsKey(name))
+            {
+                return loadedBundles[name];
+            }
         }
+        catch
+        {
+            Debug.LogWarning($"Error when getting bundle {name}");
+            return null;
+        }
+
+
         Debug.LogWarning($"No Bundle called {name} is loaded.");
         return null;
     }
@@ -680,17 +728,28 @@ public class GlobalController : MonoBehaviour
         try
         {
             var keySettings = SettingsInfo["key_settings"];
-            keyAttack = keySettings["keyAttack"].ToString();
-            keySkill1 = keySettings["keySkill1"].ToString();
-            keySkill2 = keySettings["keySkill2"].ToString();
-            keySkill3 = keySettings["keySkill3"].ToString();
-            keySkill4 = keySettings["keySkill4"].ToString();
-            keyJump = keySettings["keyJump"].ToString();
-            keyLeft = keySettings["keyLeft"].ToString();
-            keyRight = keySettings["keyRight"].ToString();
-            keySpecial = keySettings["keySpecial"].ToString();
-            keyRoll = keySettings["keyRoll"].ToString();
-            keyDown = keySettings["keyDown"].ToString();
+            keyAttack = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyAttack"].ToString());
+            keySkill1 = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keySkill1"].ToString());
+            keySkill2 = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keySkill2"].ToString());
+            keySkill3 = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keySkill3"].ToString());
+            keySkill4 = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keySkill4"].ToString());
+            keyJump = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyJump"].ToString());
+            keyLeft = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyLeft"].ToString());
+            keyRight = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyRight"].ToString());
+            keySpecial = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keySpecial"].ToString());
+            keyRoll = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyRoll"].ToString());
+            keyDown = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyDown"].ToString());
+            
+            // keySkill1 = keySettings["keySkill1"].ToString();
+            // keySkill2 = keySettings["keySkill2"].ToString();
+            // keySkill3 = keySettings["keySkill3"].ToString();
+            // keySkill4 = keySettings["keySkill4"].ToString();
+            // keyJump = keySettings["keyJump"].ToString();
+            // keyLeft = keySettings["keyLeft"].ToString();
+            // keyRight = keySettings["keyRight"].ToString();
+            // keySpecial = keySettings["keySpecial"].ToString();
+            // keyRoll = keySettings["keyRoll"].ToString();
+            // keyDown = keySettings["keyDown"].ToString();
         }
         catch 
         {
@@ -702,33 +761,36 @@ public class GlobalController : MonoBehaviour
     {
         //Use LitJson to write keySettings Into PlayerSettings.json
 
-        SettingsInfo["key_settings"]["keyAttack"] = keyAttack;
-        SettingsInfo["key_settings"]["keySkill1"] = keySkill1;
-        SettingsInfo["key_settings"]["keySkill2"] = keySkill2;
-        SettingsInfo["key_settings"]["keySkill3"] = keySkill3;
-        SettingsInfo["key_settings"]["keySkill4"] = keySkill4;
-        SettingsInfo["key_settings"]["keyJump"] = keyJump;
-        SettingsInfo["key_settings"]["keyLeft"] = keyLeft;
-        SettingsInfo["key_settings"]["keyRight"] = keyRight;
-        SettingsInfo["key_settings"]["keySpecial"] = keySpecial;
-        SettingsInfo["key_settings"]["keyRoll"] = keyRoll;
-        SettingsInfo["key_settings"]["keyDown"] = keyDown;
+        SettingsInfo["key_settings"]["keyAttack"] = keyAttack.ToString();
+        SettingsInfo["key_settings"]["keySkill1"] = keySkill1.ToString();
+        SettingsInfo["key_settings"]["keySkill2"] = keySkill2.ToString();
+        SettingsInfo["key_settings"]["keySkill3"] = keySkill3.ToString();
+        SettingsInfo["key_settings"]["keySkill4"] = keySkill4.ToString();
+        SettingsInfo["key_settings"]["keyJump"] = keyJump.ToString();
+        SettingsInfo["key_settings"]["keyLeft"] = keyLeft.ToString();
+        SettingsInfo["key_settings"]["keyRight"] = keyRight.ToString();
+        SettingsInfo["key_settings"]["keySpecial"] = keySpecial.ToString();
+        SettingsInfo["key_settings"]["keyRoll"] = keyRoll.ToString();
+        SettingsInfo["key_settings"]["keyDown"] = keyDown.ToString();
+        SettingsInfo["key_settings"]["keyEscape"] = keyEscape.ToString();
+        
         var path = Application.streamingAssetsPath + "/savedata/PlayerSettings.json";
         print(keySpecial);
 
         var newSettings = new JsonData();
         newSettings["key_settings"] = new JsonData();
-        newSettings["key_settings"]["keyAttack"] = keyAttack;
-        newSettings["key_settings"]["keySkill1"] = keySkill1;
-        newSettings["key_settings"]["keySkill2"] = keySkill2;
-        newSettings["key_settings"]["keySkill3"] = keySkill3;
-        newSettings["key_settings"]["keySkill4"] = keySkill4;
-        newSettings["key_settings"]["keyJump"] = keyJump;
-        newSettings["key_settings"]["keyLeft"] = keyLeft;
-        newSettings["key_settings"]["keyRight"] = keyRight;
-        newSettings["key_settings"]["keySpecial"] = keySpecial;
-        newSettings["key_settings"]["keyRoll"] = keyRoll;
-        newSettings["key_settings"]["keyDown"] = keyDown;
+        newSettings["key_settings"]["keyAttack"] = keyAttack.ToString();
+        newSettings["key_settings"]["keySkill1"] = keySkill1.ToString();
+        newSettings["key_settings"]["keySkill2"] = keySkill2.ToString();
+        newSettings["key_settings"]["keySkill3"] = keySkill3.ToString();
+        newSettings["key_settings"]["keySkill4"] = keySkill4.ToString();
+        newSettings["key_settings"]["keyJump"] = keyJump.ToString();
+        newSettings["key_settings"]["keyLeft"] = keyLeft.ToString();
+        newSettings["key_settings"]["keyRight"] = keyRight.ToString();
+        newSettings["key_settings"]["keySpecial"] = keySpecial.ToString();
+        newSettings["key_settings"]["keyRoll"] = keyRoll.ToString();
+        newSettings["key_settings"]["keyDown"] = keyDown.ToString();
+        newSettings["key_settings"]["keyEscape"] = keyEscape.ToString();
         print(newSettings);
         
         var jsonStr = JsonMapper.ToJson(newSettings);

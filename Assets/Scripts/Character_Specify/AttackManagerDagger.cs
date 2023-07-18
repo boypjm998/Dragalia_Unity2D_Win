@@ -23,7 +23,7 @@ public class AttackManagerDagger : AttackManager
         ta = GetComponentInChildren<TargetAimer>();
     }
 
-    public virtual void ComboAttack_Rush(float range,string moveName)
+    public virtual void ComboAttack_Rush(float range,string moveName,float defaultRange = 3f,bool overborderProtect = false)
     {
         //向前方4格内Enemies层的敌人发一道射线
         var hit = Physics2D.OverlapArea(transform.position + new Vector3(0, 0.5f, 0),
@@ -43,14 +43,39 @@ public class AttackManagerDagger : AttackManager
             targetPos = hitInfo.point.x - ac.facedir * 1.5f;
         }
         else
-            targetPos = transform.position.x + ac.facedir * 3f;
+            targetPos = transform.position.x + ac.facedir * defaultRange;
 
         targetPos = BattleStageManager.Instance.OutOfRangeCheck(new Vector2(targetPos, transform.position.y)).x;
-        
+        if (overborderProtect)
+        {
+            targetPos = BattleStageManager.Instance.OutOfPlatformBoundsCheck(gameObject,targetPos);
+        }
+
+
         //print(hitInfo.collider.gameObject);
 
         StartCoroutine(ac.HorizontalMoveFixedTime
         (targetPos, 0.2f,
+            moveName,Ease.OutCubic));
+
+    }
+
+    public virtual void ComboAttack_RushPenetrate(float range, float time, string moveName,
+        bool overborderProtect = false)
+    {
+        
+        var targetPos = transform.position.x + ac.facedir * range;
+
+        targetPos = BattleStageManager.Instance.OutOfRangeCheck(new Vector2(targetPos, transform.position.y)).x;
+        
+        //print(hitInfo.collider.gameObject);
+        if (overborderProtect)
+        {
+            targetPos = BattleStageManager.Instance.OutOfPlatformBoundsCheck(gameObject,targetPos);
+        }
+
+        StartCoroutine(ac.HorizontalMoveFixedTime
+        (targetPos, time,
             moveName,Ease.OutCubic));
 
     }

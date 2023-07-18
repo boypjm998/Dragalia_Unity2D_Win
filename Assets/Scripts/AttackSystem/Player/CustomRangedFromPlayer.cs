@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomRangedFromPlayer : AttackFromPlayer
 {
-    
+    protected ActorBase ac;
     // Start is called before the first frame update
     protected override void Awake()
     {
@@ -16,6 +16,12 @@ public class CustomRangedFromPlayer : AttackFromPlayer
     protected override void Start()
     {
         base.Start();
+        ac = playerpos.GetComponent<ActorBase>();
+
+        if (isMeele && ac!=null)
+        {
+            ac.OnAttackInterrupt += DestroyContainer;
+        }
     }
   
 
@@ -45,9 +51,12 @@ public class CustomRangedFromPlayer : AttackFromPlayer
         
     }
 
-    
-    
-
-
-
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (ac != null)
+        {
+            ac.OnAttackInterrupt -= DestroyContainer;
+        }
+    }
 }

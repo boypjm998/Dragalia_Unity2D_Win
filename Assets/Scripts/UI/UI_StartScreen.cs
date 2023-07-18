@@ -50,7 +50,7 @@ public class UI_StartScreen : MonoBehaviour
         _battleStageManager = BattleStageManager.Instance;
         transform.Find("Text1").GetComponent<TextMeshProUGUI>().text = _battleStageManager.quest_name;
         var text2 = transform.Find("Text2").GetComponent<TextMeshProUGUI>();
-        //三语本地化
+        //TODO:三语本地化
         //CHINESE
         string reviveTime;
         if (_battleStageManager.maxReviveTime == 0)
@@ -61,7 +61,17 @@ public class UI_StartScreen : MonoBehaviour
         {
             reviveTime = $"最多{_battleStageManager.maxReviveTime}次";
         }
-        text2.text = $"通关条件: 规定时间内，打倒BOSS!\n\n重生次数: {reviveTime}";
+
+        if (_battleStageManager.clearConditionType == 0)
+        {
+            text2.text = $"通关条件: 规定时间内，打倒BOSS!\n\n重生次数: {reviveTime}";
+        }
+        else
+        {
+            text2.text = $"\n重生次数: {reviveTime}";
+        }
+
+
         //ENGLISH
         //JAPANESE
 

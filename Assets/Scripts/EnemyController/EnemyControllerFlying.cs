@@ -170,7 +170,7 @@ public class EnemyControllerFlying : EnemyController
         isMove = 0;
         BattleEffectManager.Instance.PlayBreakEffect();
         SetCounter(false);
-        StageCameraController.SwitchMainCamera();
+        //StageCameraController.SwitchMainCamera();
         breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
         UI_BossODBar.Instance?.ODBarClear();
     }
@@ -198,7 +198,7 @@ public class EnemyControllerFlying : EnemyController
         StartCoroutine(DeathRoutine());
     }
     
-    IEnumerator DeathRoutine()
+    protected IEnumerator DeathRoutine()
     {
         SetKBRes(999);
         _effectManager.DisplayCounterIcon(gameObject,false);
@@ -208,7 +208,16 @@ public class EnemyControllerFlying : EnemyController
         anim.SetBool("defeat",true);
         MoveManager?.PlayVoice(0);//死亡
         anim.SetBool("hurt",false);
-        OnAttackInterrupt?.Invoke();
+        try
+        {
+            OnAttackInterrupt?.Invoke();
+        }
+        catch
+        {
+            Debug.LogWarning("OnAttackInterrupt Failed");
+        }
+
+
         _behavior.enabled = false;
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
@@ -224,7 +233,8 @@ public class EnemyControllerFlying : EnemyController
 
             (_statusManager as SpecialStatusManager).broken = false;
             (_statusManager as SpecialStatusManager).ODLock = true;
-            (_statusManager as SpecialStatusManager).currentBreak = 0.1f;
+            if((_statusManager as SpecialStatusManager).currentBreak <= 0)
+                (_statusManager as SpecialStatusManager).currentBreak = 0.1f;
         }
         
         
@@ -271,8 +281,8 @@ public class EnemyControllerFlying : EnemyController
         anim.Play("defeat");
         yield return null;
         
-        yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f);
-        anim.speed = 0;
+        yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
+        //anim.speed = 0;
         
         if(isSummonEnemy)
             Destroy(gameObject);

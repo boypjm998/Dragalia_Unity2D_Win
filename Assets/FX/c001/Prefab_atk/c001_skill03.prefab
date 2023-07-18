@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 0
   skill_id: 0
+  destroyAfterHit: 0
   attackInfo:
   - dmgModifier:
     - 5.92
@@ -80,32 +81,19 @@ MonoBehaviour:
     firedir: 0
   firedir: 0
   attackType: 4
-  dmgModifier:
-  - 5.92
-  nextDmgModifier:
-  - 5.92
-  - 6.3
-  nextKnockbackPower: []
-  nextKnockbackForce: []
-  nextKnockbackTime: []
-  knockbackPower: 120
-  knockbackForce: 0
-  knockbackTime: 0.6
-  knockbackDirection: {x: 1, y: 0}
-  KBType: 3
   hitSoundEffect: {fileID: 0}
+  attackSE: []
   self: {fileID: 0}
   spGain: 0
-  isMeele: 0
-  withConditionChance: 
-  withConditionNum: 
-  withConditionFlags: 
+  isMeele: 1
   hitFlags: 
   hitConnectEffect: {fileID: 832008921799168349, guid: 9bcb9a422b31b3546a996ba11159f3db, type: 3}
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
+  forcedShake: 0
   defaultGravity: 0
   hitShakeIntensity: 6
+  hitSoundVolume: 1
   damageAutoReset: 0
 --- !u!61 &3915380577712524089
 BoxCollider2D:

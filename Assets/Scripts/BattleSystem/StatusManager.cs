@@ -67,9 +67,13 @@ public class StatusManager : MonoBehaviour
     public SpecialBuffEventDelegate OnSpecialBuffDelegate;
 
     public delegate void StatusManagerVoidDelegate();
+    public delegate void StatusManagerIntDelegate(int value);
+    public delegate void StatusManagerSelfDelegate(StatusManager self);
 
     public StatusManagerVoidDelegate OnHPBelow0;
     public StatusManagerVoidDelegate OnHPChange;
+    public StatusManagerSelfDelegate OnTakeDirectDamage;
+    public StatusManagerIntDelegate OnHPDecrease;
 
     [SerializeField] protected UI_ConditionBar _conditionBar;
 
@@ -142,6 +146,16 @@ public class StatusManager : MonoBehaviour
         {
             if (conditionList.Count > 0)
                 return GetForceStrikeDamageBuff();
+            else return 0;
+        }
+    }
+
+    public float fsSpeedBuff
+    {
+        get
+        {
+            if (conditionList.Count > 0)
+                return GetForceStrikeSpeedBuff();
             else return 0;
         }
     }
@@ -351,7 +365,7 @@ public class StatusManager : MonoBehaviour
         get
         {
             return (int)(poisonRes +
-                         GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes) +
+                         GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonRes) -
                          GetConditionTotalValue((int)BasicCalculation.BattleCondition.PoisonResDown));
         }
     }
@@ -447,6 +461,7 @@ public class StatusManager : MonoBehaviour
     {
         conditionList = new List<BattleCondition>();
         dotRoutineDict = new Dictionary<int, Coroutine>();
+        
     }
 
 
@@ -549,19 +564,18 @@ public class StatusManager : MonoBehaviour
         float hpBuff = 0;
         foreach (var condition in conditionList)
         {
+            
             if (condition.buffID == (int)BasicCalculation.BattleCondition.MaxHPBuff)
             {
                 hpBuff += condition.effect;
             }
-            // else if (condition.buffID == (int)BasicCalculation.BattleCondition.MaxHPDebuff)
-            // {
-            //     hpBuff -= condition.effect;
-            // }
+            
             if (condition.buffID == (int)BasicCalculation.BattleCondition.ManaOverloaded)
             {
                 maxHP = 1;
                 return;
             }
+            
         }
 
         if (hpBuff > 30)
@@ -608,6 +622,15 @@ public class StatusManager : MonoBehaviour
                     debuff += eff;
                 }
             }
+        }
+        
+        if(buff > 0.01f*BasicCalculation.BattleConditionLimit(1))
+        {
+            buff = 0.01f*BasicCalculation.BattleConditionLimit(1);
+        }
+        if(debuff > 0.01f*BasicCalculation.BattleConditionLimit(201))
+        {
+            debuff = 0.01f*BasicCalculation.BattleConditionLimit(201);
         }
 
         if (type == 1)
@@ -710,6 +733,17 @@ public class StatusManager : MonoBehaviour
                 }
             }
         }
+        
+        if(buff > 0.01f*BasicCalculation.BattleConditionLimit(2))
+        {
+            buff = 0.01f*BasicCalculation.BattleConditionLimit(2);
+        }
+        if(debuff > 0.01f*BasicCalculation.BattleConditionLimit(202))
+        {
+            debuff = 0.01f*BasicCalculation.BattleConditionLimit(202);
+        }
+        
+        
         
         if (type == 1)
         {
@@ -840,7 +874,7 @@ public class StatusManager : MonoBehaviour
             }
             else
             {
-                //totalbuff += GetSpecialSkillDamageBuff(condition.buffID, condition.effect);
+                totalbuff += GetSpecialFSDamageBuff(condition.buffID);
             }
         }
 
@@ -855,6 +889,48 @@ public class StatusManager : MonoBehaviour
         else
         {
             return 0.01f * (float)totalbuff;
+        }
+    }
+
+    public float GetForceStrikeSpeedBuff(int type = 0)
+    {
+        float totalbuff = 0;
+        float buff = 0, debuff = 0;
+        //返回一个float.
+        foreach (var condition in conditionList)
+        {
+            var eff = GetSpecialFSSpeedBuff(condition.buffID);
+                totalbuff += eff;
+                if (eff > 0)
+                {
+                    buff += eff;
+                }
+                else
+                {
+                    debuff += eff;
+                }
+            //}
+        }
+        
+        if (type == 1)
+        {
+            totalbuff = buff;
+        }else if (type == 2)
+        {
+            totalbuff = debuff;
+        }
+
+        if (totalbuff > 100)
+        {
+            return 1f;
+        }
+        else if (totalbuff < -50)
+        {
+            return -0.5f;
+        }
+        else
+        {
+            return 0.01f * totalbuff;
         }
     }
 
@@ -1148,7 +1224,7 @@ public class StatusManager : MonoBehaviour
     public int GetConditionRateBuff(BasicCalculation.BattleCondition condition)
     {
         int extraChance = 0;
-        if (IsDotAffliction((int)condition) || IsControlAffliction((int)condition))
+        if (IsAffliction((int)condition))
         {
             switch (condition)
             {
@@ -1176,7 +1252,7 @@ public class StatusManager : MonoBehaviour
     public int GetAfflictionResistance(BasicCalculation.BattleCondition condition)
     {
         int res = 0;
-        if (IsDotAffliction((int)condition) || IsControlAffliction((int)condition))
+        if (IsAffliction((int)condition))
         {
             switch (condition)
             {
@@ -1232,6 +1308,11 @@ public class StatusManager : MonoBehaviour
 
     public void IncreaseAfflictionResistance(int buffID)
     {
+        if (GetAbility(80001))
+        {
+            return;
+        }
+
         BasicCalculation.BattleCondition condition = (BasicCalculation.BattleCondition)buffID;
         switch (condition)
         {
@@ -1366,9 +1447,9 @@ public class StatusManager : MonoBehaviour
         {
             return 1;
         }
-        else if (totalbuff < -50)
+        else if (totalbuff < -100)
         {
-            return -0.5f;
+            return -1f;
         }
         else
         {
@@ -1439,6 +1520,32 @@ public class StatusManager : MonoBehaviour
     {
         return 0;
     }
+    
+    protected float GetSpecialFSDamageBuff(int conditionBuffID)
+    {
+        switch (conditionBuffID)
+        {
+            case ((int)BasicCalculation.BattleCondition.HolyFaith):
+            {
+                if (GetAbility(90002))
+                    return 0;
+                return 20;
+            }
+        }
+        return 0;
+    }
+    
+    protected float GetSpecialFSSpeedBuff(int conditionBuffID)
+    {
+        switch (conditionBuffID)
+        {
+            case ((int)BasicCalculation.BattleCondition.HolyFaith):
+            {
+                return 40;
+            }
+        }
+        return 0;
+    }
 
     protected float GetSpecialRecoveryPotency(int conditionBuffID)
     {
@@ -1488,6 +1595,16 @@ public class StatusManager : MonoBehaviour
     public static bool IsDebuff(int buffID)
     {
         if (buffID > 300 && buffID <= 400)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    
+    public static bool IsAffliction(int buffID)
+    {
+        if (buffID > 400 && buffID <= 420)
         {
             return true;
         }
@@ -1558,7 +1675,7 @@ public class StatusManager : MonoBehaviour
         }
         else
         {
-            print("is not affliction");
+            //print("is not affliction");
             _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
         }
 
@@ -1842,6 +1959,22 @@ public class StatusManager : MonoBehaviour
         OnSpecialBuffDelegate?.Invoke("ReliefAllDebuff");
     }
 
+    public void ReliefAllAfflication()
+    {
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (IsAffliction(conditionList[i].buffID))
+            {
+                //OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
+                RemoveCondition(conditionList[i]);
+
+                _battleEffectManager.SpawnEffect(gameObject, BasicCalculation.BattleCondition.AtkBuff);
+
+            }
+        }
+        OnSpecialBuffDelegate?.Invoke("ReliefAllAffliction");
+    }
+
     protected virtual void RemoveCondition(BattleCondition buff)
     {
         conditionList.Remove(buff);
@@ -1934,10 +2067,10 @@ public class StatusManager : MonoBehaviour
     /// <summary>
     ///   <para>移除角色一个最早的Condition</para>
     /// </summary>
-    public bool RemoveTimerBuff(int buffID, bool log = false)
+    public bool RemoveTimerBuff(int buffID, bool log = false, int spID = -1)
     {
         //角色访问移除BUFF的唯一途径！
-        var list = GetExactConditionsOfType(buffID, -1);
+        var list = GetExactConditionsOfType(buffID, spID);
         if (list.Count > 0)
         {
             if (log)
@@ -1979,7 +2112,7 @@ public class StatusManager : MonoBehaviour
         
         for (int i = conditionList.Count-1; i >= 0; i--)
         {
-            print(i+"个BUFF");
+            //print(i+"个BUFF");
             if (conditionList[i].dispellable == false || (conditionList[i].buffID > 100 && conditionList[i].buffID < 200))
             {
                 continue;
@@ -2053,7 +2186,7 @@ public class StatusManager : MonoBehaviour
             }
         }*/
 
-        if (totalBuffNum > maxStack)
+        while (totalBuffNum > maxStack)
         {
             BattleCondition cond = null;
             foreach (var condition in conditionList)
@@ -2068,7 +2201,9 @@ public class StatusManager : MonoBehaviour
             if (cond != null)
             {
                 conditionList.Remove(cond);
+                totalBuffNum--;
             }
+            
         }
     }
     protected virtual bool RemoveBuffIfReachedLimit(int buffID,float effect,float duration,
@@ -2266,6 +2401,7 @@ public class StatusManager : MonoBehaviour
     }
 
     
+
 
 
 

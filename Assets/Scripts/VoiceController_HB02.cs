@@ -85,11 +85,13 @@ public class VoiceController_HB02 : AudioManagerGeneral
             }
             case myMoveList.TwilightMoon:
             {
+                voiceID = 10;
                 voice.clip = myClips[10];
                 break;
             }
             case myMoveList.TwilightCrown:
             {
+                voiceID = 11;
                 voice.clip = myClips[11];
                 break;
             }

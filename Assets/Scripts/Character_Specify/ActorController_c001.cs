@@ -20,36 +20,43 @@ public class ActorController_c001 : ActorController
         switch (id)
         {
             case 1:
+                pi.isSkill = true;
                 anim.Play("s1");
                 _statusManager.currentSP[0] = 0;
                 break;
 
             case 2:
+                pi.isSkill = true;
                 anim.Play("s2");
                 _statusManager.currentSP[1] = 0;
                 break;
             
             case 3:
+                pi.isSkill = true;
                 anim.Play("s3");
                 _statusManager.currentSP[2] = 0;
                 break;
             
             case 4:
+                pi.isSkill = true;
                 anim.Play("s4");
                 _statusManager.currentSP[3] = 0;
                 break;
             
             case 5:
+                pi.isSkill = true;
                 anim.Play("s1_boost");
                 _statusManager.currentSP[0] = 0;
                 break;
             
             case 6:
+                pi.isSkill = true;
                 anim.Play("s2_boost");
                 _statusManager.currentSP[1] = 0;
                 break;
             
             case 7:
+                pi.isSkill = true;
                 anim.Play("s3_boost");
                 _statusManager.currentSP[2] = 0;
                 break;
@@ -211,10 +218,10 @@ public class ActorController_c001 : ActorController
             {
                 SetFaceDir(-1);
 
-                if (Input.GetKey(pi.keyLeft) && !Input.GetKey(pi.keyRight))
+                if (pi.buttonLeft.IsPressing && !pi.buttonRight.IsPressing)
                 {
                     StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
-                }else if (!Input.GetKey(pi.keyLeft) && Input.GetKey(pi.keyRight))
+                }else if (!pi.buttonLeft.IsPressing && pi.buttonRight.IsPressing)
                 {
                     StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "roll"));
                 }
@@ -232,10 +239,10 @@ public class ActorController_c001 : ActorController
             {
                 SetFaceDir(1);
                 
-                if (Input.GetKey(pi.keyLeft) && !Input.GetKey(pi.keyRight))
+                if (pi.buttonLeft.IsPressing && !pi.buttonRight.IsPressing)
                 {
                     StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "roll"));
-                }else if (!Input.GetKey(pi.keyLeft) && Input.GetKey(pi.keyRight))
+                }else if (!pi.buttonLeft.IsPressing && pi.buttonRight.IsPressing)
                 {
                     StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
                 }
@@ -250,7 +257,7 @@ public class ActorController_c001 : ActorController
         }
         else if (tarTrans != null)
         {
-            if ((Input.GetKey(pi.keyLeft) && facedir == 1) || (Input.GetKey(pi.keyRight) && facedir == -1))
+            if ((pi.buttonLeft.IsPressing && facedir == 1) || (pi.buttonRight.IsPressing && facedir == -1))
             {
                 StartCoroutine(HorizontalMove(-rollspeed, 0.4f, "roll"));
             }
@@ -262,11 +269,11 @@ public class ActorController_c001 : ActorController
         }
         else
         {
-            if (Input.GetKey(pi.keyLeft) && !Input.GetKey(pi.keyRight))
+            if (pi.buttonLeft.IsPressing && !pi.buttonRight.IsPressing)
             {
                 SetFaceDir(-1);
             }
-            else if (Input.GetKey(pi.keyRight) && !Input.GetKey(pi.keyLeft))
+            else if (pi.buttonRight.IsPressing && !pi.buttonLeft.IsPressing)
             {
                 SetFaceDir(1);
             }
@@ -416,6 +423,7 @@ public class ActorController_c001 : ActorController
     /// <param name="moveID">1:普攻,2:s1,3:s2</param>
     public override void FaceDirectionAutoFix(int moveID)
     {
+        base.FaceDirectionAutoFix(moveID);
         switch (moveID)
         {
             case 1:

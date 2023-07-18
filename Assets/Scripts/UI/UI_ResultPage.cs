@@ -95,7 +95,7 @@ public class UI_ResultPage : MonoBehaviour
             OnComplete(DoCrownAnimation);
         
         //获取关卡过关条件
-        condition1.text = $"使用{reviveLimit}次以下重生的情况下过关";
+        condition1.text = $"使用{reviveLimit}次或以下重生的情况下过关";
         condition2.text = $"{getCrownLimitTime}秒内过关";
         if (getCrownReviveTime <= 0)
         {
@@ -103,7 +103,7 @@ public class UI_ResultPage : MonoBehaviour
         }
         else
         {
-            condition3.text = $"使用{getCrownReviveTime}次以下重生的情况下过关";
+            condition3.text = $"使用{getCrownReviveTime}次或以下重生的情况下过关";
         }
         //位移
         returnButton.transform.localPosition =

@@ -26,6 +26,29 @@ public class AnimationEventSender : MonoBehaviour
     
     
     #region Messages Process Moudles
+    
+    protected void TurnToMiddle()
+    {
+        //transform.rotation = Quaternion.Euler(0, 120, 0);
+        if((ActorController as ActorBase)?.facedir ==1)
+            transform.rotation = Quaternion.Euler(0, 120, 0);
+        else if((ActorController as ActorBase)?.facedir ==-1)
+        {
+            transform.rotation = Quaternion.Euler(0, -120, 0);
+        }
+    }
+
+    protected void TurnToSide()
+    {
+        //transform.rotation = Quaternion.Euler(0, 102, 0);
+        if((ActorController as ActorBase)?.facedir ==1)
+            transform.rotation = Quaternion.Euler(0, 102, 0);
+        else if((ActorController as ActorBase)?.facedir ==-1)
+        {
+            transform.rotation = Quaternion.Euler(0, -102, 0);
+        }
+    }
+    
     public void onJumpEnter()
     {
         ActorController.onJumpEnter();
@@ -88,16 +111,16 @@ public class AnimationEventSender : MonoBehaviour
 
     
 
-    public virtual void OnSkillEnter()
-    {
-        ActorController.OnSkillEnter();
-        
-    }
-
-    public virtual void OnSkillExit()
-    {
-        ActorController.OnSkillExit();
-    }
+    // public virtual void OnSkillEnter()
+    // {
+    //     ActorController.OnSkillEnter();
+    //     
+    // }
+    //
+    // public virtual void OnSkillExit()
+    // {
+    //     ActorController.OnSkillExit();
+    // }
 
     public virtual void OnGravityWeaken()
     {
@@ -124,6 +147,7 @@ public class AnimationEventSender : MonoBehaviour
     #endregion
 
     #region Signal Modify Modules
+    
     
     protected void SetInputDisabled(string command)
     {
@@ -228,6 +252,11 @@ public class AnimationEventSender : MonoBehaviour
     protected void FaceDirectionAutoFix(int moveID)
     {
         ActorController.FaceDirectionAutoFix(moveID);
+    }
+
+    protected void CancelSkill()
+    {
+        (ActorController as ActorController)?.SkillCancelFrame();
     }
 
     #endregion

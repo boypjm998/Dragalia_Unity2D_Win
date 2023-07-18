@@ -13,6 +13,7 @@ public class LevelDetailedInfo
     }
     public string name;
     public string scene_prefab_path;
+    public string bgm_path;
     
     public int total_boss_num;
     public List<BossPrefabInfo> boss_prefab;
@@ -21,6 +22,7 @@ public class LevelDetailedInfo
     public int time_limit;
     public int crown_time_limit;
     public int crown_revive_limit;
+    public int clear_condition = 0;
 
 
 }

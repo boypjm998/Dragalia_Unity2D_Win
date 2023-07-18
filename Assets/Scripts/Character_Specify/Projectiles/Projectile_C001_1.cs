@@ -9,9 +9,9 @@ namespace CharacterSpecificProjectiles
     public class Projectile_C001_1 : ProjectileControllerTest
     {
         [SerializeField]
-        private GameObject destroyEffect;
+        protected GameObject destroyEffect;
     
-        private float startVelocityY;
+        protected float startVelocityY;
         public AttackFromPlayer attackSet;
         
         // Projectile of Ilia: Alchemic Grenade
@@ -76,7 +76,7 @@ namespace CharacterSpecificProjectiles
         }
     
     
-        private void BurstEffect(Collider2D col)
+        protected virtual void BurstEffect(Collider2D col)
         {
             Vector3 hitpoint = col.bounds.ClosestPoint(transform.position);
             GameObject burst = Instantiate(destroyEffect,new Vector3(hitpoint.x,hitpoint.y+3f,hitpoint.z),Quaternion.identity,transform.parent);
@@ -84,7 +84,7 @@ namespace CharacterSpecificProjectiles
             Destroy(gameObject);
             //burst.GetComponent<AttackFromPlayer>().InitAttackBasicAttributes(0,0,0,2.35f,0,firedir);
             //burst.GetComponent<AttackFromPlayer>().AppendAttackSets(200, 9, 1.5f, 23.54f);
-            burst.GetComponent<AttackFromPlayer>().attackInfo[0].KBType = BasicCalculation.KnockBackType.FromCenterFixed;
+            burst.GetComponent<AttackBase>().attackInfo[0].KBType = BasicCalculation.KnockBackType.FromCenterFixed;
             
         }
     }

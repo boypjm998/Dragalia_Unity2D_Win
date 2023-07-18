@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using GameMechanics;
 
 public abstract class EnemyMoveManager : MonoBehaviour
 {
@@ -39,6 +41,8 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected BattleEffectManager _effectManager;
     protected Animator anim;
 
+    protected List<NPCNavigateAnchorSensor> _navigateAnchorSensors = new();
+
     public virtual void UseMove(int moveID)
     {
     }
@@ -53,8 +57,9 @@ public abstract class EnemyMoveManager : MonoBehaviour
 
     protected virtual void Start()
     {
-        MeeleAttackFXLayer = transform.Find("MeeleAttackFX").gameObject;
+        MeeleAttackFXLayer = transform.Find("MeeleAttackFX")?.gameObject;
         RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
+        BuffFXLayer = transform.Find("BuffLayer")?.gameObject;
         _behavior = GetComponent<DragaliaEnemyBehavior>();
         anim = GetComponentInChildren<Animator>();
         _statusManager = GetComponent<StatusManager>();
@@ -63,8 +68,13 @@ public abstract class EnemyMoveManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    
-    
+
+    protected void GetAllAnchors()
+    {
+        _navigateAnchorSensors = FindObjectsOfType<NPCNavigateAnchorSensor>().ToList();
+    }
+
+
     public void SetGroundCollider(bool flag)
     {
         if (flag)
@@ -81,8 +91,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
 
     public virtual void PlayVoice(int id)
     {
-        
-        
+
     }
     
     protected GameObject InstantiateDirectional(GameObject prefab, Vector3 position, Transform _parent, int facedir, int axis = 0, int rotateMode = 0)
@@ -143,8 +152,15 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected GameObject InstantiateRanged(GameObject prefab, Vector3 position, GameObject container,int facedir, int rotateMode = 1)
     {
         var prefabInstance = InstantiateDirectional(prefab, position, container.transform, facedir, 0, rotateMode);
-        prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
-        prefabInstance.GetComponent<AttackBase>().firedir = facedir;
+        try
+        {
+            prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+            prefabInstance.GetComponent<AttackBase>().firedir = facedir;
+        }
+        catch
+        {
+            print("No AttackFromEnemy Component");
+        }
         return prefabInstance;
     }
     
@@ -165,4 +181,21 @@ public abstract class EnemyMoveManager : MonoBehaviour
         }
     }
 
+    public virtual List<APlatformNode> GetDesignedRoutine()
+    {
+        return null;
+    }
+
+    public virtual APlatformNode GetNextRoutineNode(ref GameObject anchorTarget)
+    {
+        return null;
+    }
+
+    public GameObject GetAnchoredSensorOfName(string name)
+    {
+        return _navigateAnchorSensors.Find
+        (x =>
+            x.gameObject.name.Equals(name))?.gameObject;
+    }
+   
 }

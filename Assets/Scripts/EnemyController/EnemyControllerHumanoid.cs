@@ -10,16 +10,18 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public GameObject weaponObject; //need SeriazeField
     
     public float movespeed = 6.0f;
-    public float rollspeed = 9.0f;
+    public float rollspeed = 10.0f;
     public float jumpforce = 20.0f;
     protected int jumpTime = 2;
     protected float jumpAscentTime = 0.5f;
-    protected float jumpHeight = 5f;
+    [SerializeField] protected float jumpHeight = 5f;
+    public float disappearTimeAfterDeath = 0;
     
     
     public bool dodging = false;
 
-    [HideInInspector] public bool moveEnable;
+    public bool moveEnable;
+    
     
     public GameObject tar;
     
@@ -28,7 +30,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     
     
     public float _defaultgravityscale;
-    protected StandardGroundSensor _groundSensor;
+    public StandardGroundSensor _groundSensor;
 
     
     protected AStar _aStar;
@@ -57,7 +59,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         currentKBRes = _statusManager.knockbackRes;
 
         _groundSensor.IsGround += GroundCheck;
+        mapInfo = BattleStageManager.InitMapInfo();
 
+        jumpHeight = jumpforce * jumpforce / (2 * _defaultgravityscale * 10);
     }
 
     protected void OnDestroy()
@@ -374,18 +378,28 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 }
 
             }
-            else if (VerticalMoveRoutine == null )
+            else if (VerticalMoveRoutine == null)
             {
-
-                if (CheckTargetStandOnSameGround(target)==1 && jumpTime > 0)
+                float targetPlatformY;
+                
+                if (CheckTargetStandOnSameGround(target) == 1 && jumpTime > 0)
                 {
-                    if (!PlatformIsAccessible())
+                    print("needJump");
+                    if (!PlatformIsAccessible(out targetPlatformY))
                     {
+                        //if(targetPlatformY < BasicCalculation.CheckRaycastedPlatform(target).bounds.max.y)
                         isMove = 1;
+                        //else isMove = 0;
+                        print(targetPlatformY);
                     }
                     else
                     {
-                        isMove = 0;
+                        if(targetPlatformY > 1 + BasicCalculation.CheckRaycastedPlatform(target).bounds.max.y)
+                            isMove = 1;
+                        else isMove = 0;
+                        print(targetPlatformY);
+                        
+                        //isMove = 0;
                         VerticalMoveRoutine = StartCoroutine(TryDoJump(target,.1f));
                     }
 
@@ -393,6 +407,46 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 }else if (CheckTargetStandOnSameGround(target)==-1 && _groundSensor.currentPlatform)
                 {
                     VerticalMoveRoutine = StartCoroutine(TryDownPlatform(target));
+                    //  2023/7/1添加
+                    var targetPlatform = BasicCalculation.CheckRaycastedPlatform(target);
+                    
+                    if (targetPlatform.bounds.max.x < transform.position.x)
+                    {
+                        isMove = 1;
+                        SetFaceDir(1);
+                    }
+                    else if (targetPlatform.bounds.min.x > transform.position.x)
+                    {
+                        isMove = 1;
+                        SetFaceDir(-1);
+                    }
+                    else
+                    {
+                        isMove = 0;
+                    }
+                    
+                }
+                else if (CheckTargetStandOnSameGround(target) == -1 && !_groundSensor.currentPlatform)
+                {
+                    var targetPlatform = BasicCalculation.CheckRaycastedPlatform(target);
+
+                    if (targetPlatform != null)
+                    {
+                        if (targetPlatform.bounds.max.x < transform.position.x)
+                        {
+                            isMove = 1;
+                            SetFaceDir(-1);
+                        }
+                        else if (targetPlatform.bounds.min.x > transform.position.x)
+                        {
+                            isMove = 1;
+                            SetFaceDir(1);
+                        }
+                    }
+                    else
+                    {
+                        isMove = 0;
+                    }
                 }
             }
 
@@ -543,28 +597,6 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         while (maxFollowTime>0)
         {
 
-            // if (VerticalMoveRoutine == null && anim.GetBool("isGround") == false)
-            // {
-            //     if(currentTarget == null)
-            //         currentTarget = target;
-            //     if (JumpTime > 0 && currentTarget.transform.position.x -transform.position.x > 1)
-            //     {
-            //         var targetPlatform = GetAccessiblePlatforms(JumpTime);
-            //         VerticalMoveRoutine = StartCoroutine(StruggleInAir(targetPlatform,JumpTime));
-            //         yield return new WaitUntil(()=>VerticalMoveRoutine==null);
-            //     }
-            // }
-
-
-            //处理失足
-            // if (VerticalMoveRoutine != null)
-            // {
-            //     StopCoroutine(VerticalMoveRoutine);
-            //     VerticalMoveRoutine = null;
-            // }
-            
-            //targetSensor.GetCurrentAttachedGroundCol() != null && 
-            
             yield return new WaitUntil(() =>
                 anim.GetBool("isGround") && !hurt);
             
@@ -784,6 +816,53 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     }
 
+    public virtual IEnumerator JumpToTarget(GameObject target, float arriveDistanceY, float arriveDistanceX)
+    {
+        //TODO: DOJUMPTOTARGET
+        isAction = true;
+        yield return new WaitUntil(() =>
+            !hurt && grounded);
+        isMove = 1;
+        
+        while (jumpTime > 0)
+        {
+            if (Mathf.Abs(target.transform.position.y - transform.position.y) < arriveDistanceY &&
+                Mathf.Abs(target.transform.position.x - transform.position.x) < arriveDistanceX)
+            {
+                isMove = 0;
+                TurnMove(target);
+                OnMoveFinished?.Invoke(true);
+                //_behavior.currentMoveAction = null;
+                isAction = false;
+                yield break;
+            }
+            if(target.transform.position.x > transform.position.x + arriveDistanceX)
+                SetFaceDir(1);
+            if(target.transform.position.x < transform.position.x - arriveDistanceX)
+                SetFaceDir(-1);
+
+            if (target.transform.position.y > transform.position.y + arriveDistanceY &&
+                rigid.velocity.y < 0.5f)
+            {
+                Jump();
+            }
+            yield return new WaitForFixedUpdate();
+            if(CheckTargetStandOnSameGround(target)!=0)
+            {
+                isMove = 0;
+                TurnMove(target);
+                OnMoveFinished?.Invoke(false);
+                //_behavior.currentMoveAction = null;
+                isAction = false;
+                yield break;
+            }
+            
+
+        }
+
+
+    }
+
     # region Old Vertical Moves
     protected virtual IEnumerator TryDoJump(GameObject target, float requiredY)
     {
@@ -799,8 +878,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             distanceY = GetTargetDistanceY(target);
         }
 
-        if (Math.Abs(distanceY) > jumpHeight * 2 && !PlatformIsAccessible())
+        var targetY = 999f;
+        if (Math.Abs(distanceY) > jumpHeight * 2 && !PlatformIsAccessible(out targetY))
         {
+            print("PlatformIsNotAccessible");
             VerticalMoveRoutine = null;
             yield break;
         }
@@ -808,10 +889,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         //print(distanceY);
         if ((Math.Abs(distanceY) > jumpHeight))
         {
-            //print("2段跳");
+            print("2段跳");
             Jump();
             yield return new WaitUntil(() => rigid.velocity.y < 0.5f);
-            yield return new WaitForFixedUpdate();
+            
             if (_groundSensor.currentPlatform || _groundSensor.currentGround)
             {
                 VerticalMoveRoutine = null;
@@ -832,7 +913,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             Jump();
             
             //yield return new WaitUntil(() => rigid.velocity.y < 0.5f);
-            //yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
             VerticalMoveRoutine = null;
             
             //一段跳
@@ -939,6 +1020,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         var runUpInfo = GetRunUpInfo
             (targetPlatformHeight - currentPlatformHeight,currentPlatformCollider,targetPlatformCollider);
 
+        print("JumpHeight:"+(targetPlatformHeight - currentPlatformHeight));
         
         //助跑阶段
         while (transform.position.x < targetPlatformLeft.x - runUpInfo[0] ||
@@ -966,6 +1048,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
         if (targetPlatformHeight > currentPlatformHeight)
         {
+            print(runUpInfo[1]);
             if (runUpInfo[1] == 2)
             {
 
@@ -1138,8 +1221,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     /// </summary>
     /// <param name="groundTarget">弃用</param>
     /// <returns></returns>
-    protected virtual bool PlatformIsAccessible()
+    protected virtual bool PlatformIsAccessible(out float targetY)
     {
+        //7.6修改
+        targetY = 999;
         //var pos = groundTarget.GetComponent<Collider2D>().
         RaycastHit2D[] hitinfo =
             Physics2D.RaycastAll
@@ -1167,6 +1252,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 return false;
             }
         }
+
+        targetY = PlatformPosition[1];
         return true;
 
 
@@ -1318,6 +1405,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             ((int)BasicCalculation.BattleCondition.AtkDebuff,
                 30,7,9999);
             atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+            
+            OnBeingCountered?.Invoke();
+            
             SetCounter(false);
             
         }
@@ -1377,6 +1467,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         rigid.gravityScale = 1;
         //SetVelocity(rigid.velocity.x,0);
         moveEnable = false;
+        dodging = false;
         anim.speed = 1;
         MoveManager.SetGroundCollider(true);
         var meeles = transform.Find("MeeleAttackFX");
@@ -1512,6 +1603,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     protected override void OnDeath()
     {
+        //TODO:信赖之力不会导致死亡
+
         base.OnDeath();
         StartCoroutine(DeathRoutine());
     }
@@ -1593,9 +1686,18 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         
         anim.Play("defeat");
         yield return null;
+        anim.SetFloat("forward",0);
         
         yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f);
         anim.speed = 0;
+
+        if (disappearTimeAfterDeath > 0)
+        {
+            yield return new WaitForSeconds(disappearTimeAfterDeath);
+            Destroy(gameObject);
+        }
+
+        
         
     }
 
@@ -1656,19 +1758,24 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         _groundSensor.StartCoroutine("DisableCollision");
     }
     
-    public virtual void InertiaMove(float time)
+    public virtual void InertiaMove(float time,int movedir = 0)
     {
 
-        StartCoroutine(HorizontalMoveInteria(time, movespeed));
+        StartCoroutine(HorizontalMoveInteria(time, movespeed, movedir));
 
     }
     
-    public IEnumerator HorizontalMoveInteria(float time, float speed)
+    public IEnumerator HorizontalMoveInteria(float time, float speed, int movedir = 0)
     {
+        //6.24修改
+        if (movedir == 0)
+            movedir = this.facedir;
+        
+        
         while (time > 0)
         {
             
-            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+            transform.position = new Vector2(transform.position.x + movedir * speed * Time.fixedDeltaTime,
                 transform.position.y);
             
 
@@ -1698,6 +1805,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     
     protected List<APlatformNode> GetPath(GameObject target)
     {
+        print(_defaultgravityscale);
         _aStar = new AStar(_defaultgravityscale,jumpforce,movespeed);
         pathInfo = _aStar.Execute(mapInfo, transform, target.transform);
         return pathInfo;
@@ -1707,6 +1815,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         float runUpDistance = 0;
         int jumpTimes = 0;
+        print(jumpHeight+" is jump height");
         if (distanceY >= jumpHeight)
         {
             //跳跃两次，因为一次跳跃的高度不够。不需要管间隙，因为必须跳跃两次。
@@ -1782,7 +1891,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     public override void SetActionUnable(bool flag)
     {
-        hurt = true;
+        hurt = flag;
     }
 
     public override void ResetGravityScale()

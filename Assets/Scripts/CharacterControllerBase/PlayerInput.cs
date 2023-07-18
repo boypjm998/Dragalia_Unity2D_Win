@@ -13,22 +13,25 @@ public class PlayerInput : MonoBehaviour
     //variables
     private PlayerStatusManager stat;
     private ActorController ac;
+    
+    public bool quicklandingEnabled = false;
 
     [Header("Key Settings")] 
     [SerializeField]private float accTime = 0.1f;
     public bool standardAttackContinious = true;
-    public string keyRight = "d";
-    public string keyLeft = "a";
-    public string keyDown = "s";
-    public string keyUp = "w";
-    public string keyAttack = "j";
-    public string keyJump = "k";
-    public string keyRoll = "l";
-    public string keySkill1 = "u";
-    public string keySkill2 = "i";
-    public string keySkill3 = "o";
-    public string keySkill4 = "h";
-    //public string keyMenu = "Escape";
+    public bool allowForceStrike = false;
+    public KeyCode keyRight = KeyCode.D;
+    public KeyCode keyLeft = KeyCode.A;
+    public KeyCode keyDown = KeyCode.S;
+    public KeyCode keyUp = KeyCode.Space;
+    public KeyCode keyAttack = KeyCode.J;
+    public KeyCode keyJump = KeyCode.K;
+    public KeyCode keyRoll = KeyCode.L;
+    public KeyCode keySkill1 = KeyCode.U;
+    public KeyCode keySkill2 = KeyCode.I;
+    public KeyCode keySkill3 = KeyCode.O;
+    public KeyCode keySkill4 = KeyCode.H;
+    public KeyCode keyEsc = KeyCode.Escape;
 
     public MyInputMoudle buttonRight = new MyInputMoudle();
     public MyInputMoudle buttonLeft = new MyInputMoudle();
@@ -41,7 +44,6 @@ public class PlayerInput : MonoBehaviour
     public MyInputMoudle buttonSkill2 = new MyInputMoudle();
     public MyInputMoudle buttonSkill3 = new MyInputMoudle();
     public MyInputMoudle buttonSkill4 = new MyInputMoudle();
-    
     public MyInputMoudle buttonEsc = new MyInputMoudle();
 
 
@@ -104,33 +106,36 @@ public class PlayerInput : MonoBehaviour
     void Update()
     {
         
-        buttonEsc.Tick(Input.GetKey(KeyCode.Escape));
+        buttonEsc.Tick(Input.GetKey(keyEsc));
         
         if(BattleStageManager.Instance.isGamePaused)
             return;
         
         
-        if(keyLeft!=String.Empty)
+        // buttonLeft.Tick(CheckSwipeLeft());
+        // buttonRight.Tick(CheckSwipeRight());
+        
+        if(keyLeft!=KeyCode.None)
             buttonLeft.Tick(Input.GetKey(keyLeft));
-        if(keyRight!=String.Empty)
+        if(keyRight!=KeyCode.None)
             buttonRight.Tick(Input.GetKey(keyRight));
-        if(keyAttack!=String.Empty)
+        if(keyAttack!=KeyCode.None)
             buttonAttack.Tick(Input.GetKey(keyAttack));
-        if(keyJump!=String.Empty)
+        if(keyJump!=KeyCode.None)
             buttonJump.Tick(Input.GetKey(keyJump));
-        if(keyRoll!=String.Empty)
+        if(keyRoll!=KeyCode.None)
             buttonRoll.Tick(Input.GetKey(keyRoll));
-        if(keyDown!=String.Empty)
+        if(keyDown!=KeyCode.None)
             buttonDown.Tick(Input.GetKey(keyDown));
-        if(keyUp!=String.Empty)
+        if(keyUp!=KeyCode.None)
             buttonUp.Tick(Input.GetKey(keyUp));
-        if(keySkill1!=String.Empty)
+        if(keySkill1!=KeyCode.None)
             buttonSkill1.Tick(Input.GetKey(keySkill1));
-        if(keySkill2!=String.Empty)
+        if(keySkill2!=KeyCode.None)
             buttonSkill2.Tick(Input.GetKey(keySkill2));
-        if(keySkill3!=String.Empty)
+        if(keySkill3!=KeyCode.None)
             buttonSkill3.Tick(Input.GetKey(keySkill3));
-        if(keySkill4!=String.Empty)
+        if(keySkill4!=KeyCode.None)
             buttonSkill4.Tick(Input.GetKey(keySkill4));
         
         
@@ -257,6 +262,11 @@ public class PlayerInput : MonoBehaviour
         else
         {
             stdAtk = buttonAttack.OnPressed;
+        }
+
+        if (allowForceStrike)
+        {
+            stdAtk = buttonAttack.OnReleased;
         }
 
 
@@ -536,9 +546,9 @@ public class PlayerInput : MonoBehaviour
     /// 设置按键
     /// </summary>
     /// <param name="keys">0:Attack / 1-4:Skills / 5:Left / 6:Right / 7:Special / 8:Down / 9:Roll / 10:Jump</param>
-    public void SetKeySetting(string[] keys)
+    public void SetKeySetting(KeyCode[] keys)
     {
-        if(keys.Length != 11)
+        if(keys.Length != 12)
         {
             return;
         }
@@ -552,8 +562,20 @@ public class PlayerInput : MonoBehaviour
         keyRight = keys[6];
         keyUp = keys[7]; //special
         keyDown = keys[8];
-        keyRoll = keys[9];
-        keyJump = keys[10];
+        keyRoll =  keys[9];
+        keyJump =  keys[10];
+        keyEsc =  keys[11];
+
+        // keySkill1 = keys[1];
+        // keySkill2 = keys[2];
+        // keySkill3 = keys[3];
+        // keySkill4 = keys[4];
+        // keyLeft = keys[5];
+        // keyRight = keys[6];
+        // keyUp = keys[7]; //special
+        // keyDown = keys[8];
+        // keyRoll = keys[9];
+        // keyJump = keys[10];
     }
 
     public void InvokeAttackSignal()
@@ -561,7 +583,7 @@ public class PlayerInput : MonoBehaviour
         OnPressAttack?.Invoke();
     }
 
-    public void DisableAndIdle()
+    public void DisableAndIdle(bool idle = true)
     {
         inputAttackEnabled = false;
         enabled = false;
@@ -575,7 +597,8 @@ public class PlayerInput : MonoBehaviour
         {
             skill[i] = false;
         }
-        ac.anim.Play("idle");
+        if(idle)
+            ac.anim.Play("idle");
         DRight = 0;
     }
     
@@ -591,7 +614,42 @@ public class PlayerInput : MonoBehaviour
         DRight = 0;
     }
 
+    private bool CheckSwipeLeft()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Moved)
+            {
+                if (touch.deltaPosition.x < 0f)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     
+    private bool CheckSwipeRight()
+    {
+        print(Input.touchCount);
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Moved)
+            {
+                if (touch.deltaPosition.x > 0f)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
 }
 
 

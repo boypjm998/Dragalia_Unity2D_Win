@@ -40,6 +40,7 @@ public abstract class ActorBase : MonoBehaviour
     }
 
     public abstract void TakeDamage(AttackBase attackBase,Vector2 kbdir);
+    public abstract void TakeDamage(AttackInfo attackInfo, Vector2 kbdir);
 
     public virtual void DisappearRenderer()
     {

@@ -357,7 +357,27 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
 
         KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbdir));
     }
+    public override void TakeDamage(AttackInfo attackInfo, Vector2 kbdir)
+    {
+        if (_statusManager.knockbackRes >= 100)
+            return;
+        
+        var kbtime = attackInfo.knockbackTime;
+        var kbForce = attackInfo.knockbackForce;
+        var kbPower = attackInfo.knockbackPower;
+        var random = Random.Range(0, 100);
+        if(random > kbPower-_statusManager.KnockbackRes)
+        {
+            return;
+        }
 
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+        }
+
+        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbdir));
+    }
     
 
     protected void SetAnimSpeed(float percentage)

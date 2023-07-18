@@ -439,6 +439,7 @@ public class MenuUIManager : MonoBehaviour
     public void EnterLevel(int questID)
     {
         DisableAll();
+        print("DisableAll has Called");
         
         string questIDStr = questID.ToString();
         //如果questIDStr长度不足6位，就在前面补0
@@ -447,7 +448,7 @@ public class MenuUIManager : MonoBehaviour
 
         if (questID == 100001)
         {
-            _globalController.EnterPrologue();
+            _globalController.EnterPrologueStory();
         }
         else
         {

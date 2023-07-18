@@ -51,6 +51,12 @@ public abstract class ProjectileControllerTest : MonoBehaviour
     {
         Destroy(gameObject,time);
     }
+    
+    public void SetVelocity(Vector2 velocity)
+    {
+        horizontalVelocity = velocity.x;
+        verticalVelocity = velocity.y;
+    }
 
 
 }

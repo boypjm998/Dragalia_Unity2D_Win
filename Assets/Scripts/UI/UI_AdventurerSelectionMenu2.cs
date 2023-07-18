@@ -52,14 +52,15 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
         print(id);
         for(int i = 0 ; i < ContentTransform.childCount; i++)
         {
-            print(ContentTransform.GetChild(i).name);
+            print(ContentTransform.GetChild(i).GetChild(0).name);
             if (i == id && ContentTransform.GetChild(i).childCount == 1)
             {
-                ContentTransform.GetChild(i).GetChild(0).gameObject.SetActive(true);
+                print(ContentTransform.GetChild(i).Find("Light").gameObject);
+                ContentTransform.GetChild(i).Find("Light").gameObject.SetActive(true);
             }
             else
             {
-                print(ContentTransform.GetChild(i).childCount);
+                //print(ContentTransform.GetChild(i).Find("Light").gameObject);
                 ContentTransform.GetChild(i).Find("Light")?.gameObject.SetActive(false);
             }
         }

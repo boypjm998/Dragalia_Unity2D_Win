@@ -44,6 +44,9 @@ public class PlayerStatusManager : StatusManager
         
         if(_conditionBar == null)
             _conditionBar = GameObject.Find("ConditionBar")?.GetComponent<UI_ConditionBar>();
+        
+        if(maxBaseHP > 9999999)
+            maxBaseHP = 9999999;
     }
 
     public void GetPlayerConditionBar()
@@ -143,7 +146,12 @@ public class PlayerStatusManager : StatusManager
         requiredSP[sidFromZero] = sp;
     }
 
-    
+    public void ChargeSP(int skillID, float sp)
+    {
+        currentSP[skillID] += sp;
+    }
+
+
 
 
     #region Buff Related

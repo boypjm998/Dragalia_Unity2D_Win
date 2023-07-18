@@ -19,11 +19,19 @@ public class StorySceneManager : MonoBehaviour
     private Coroutine currentCoroutine;
     private bool taskRunning = false;
     private bool skip;
-    private bool moveNext=false;
-    
+    private bool moveNext = false;
+    public bool autoMode = false;
+    public bool paused = false;
+    public GameObject skipMenu;
+    public float autoNextTime = 1f;
+    protected float autoTime = 0;
+    public bool started = false;
     
     private string storyStr = "main_story_001";
     public float[] voiceData;
+
+
+    private string storyJumpInfo;
     
     // Story Components
     
@@ -31,27 +39,60 @@ public class StorySceneManager : MonoBehaviour
     private StoryBackgroundSprites storyBackgroundSprites;
     private AudioBundlesTest audioBundlesTest;
 
-    private void Update()
+    private void LateUpdate()
     {
+        if(started == false)
+            return;
+
         moveNext = false;
-        if (Input.GetMouseButtonDown(0))
+
+        if(_globalController.loadingEnd == false || paused)
+            return;
+        
+        if (autoMode)
         {
-            if(currentCoroutine!=null)
-                skip = true;
-            else
+            if (currentCoroutine == null && characterIsSpeaking == false && !taskRunning &&
+                storyComponent.dialog.voiceSource.isPlaying == false)
             {
-                moveNext = true;
+                autoTime+= Time.deltaTime;
+                if (autoTime >= autoNextTime)
+                {
+                    moveNext = true;
+                    autoTime = 0;
+                }
+
+                
             }
+
+            
         }
+    }
+
+    public void ClickEventInStory()
+    {
+        print("clicked");
+        if(_globalController.loadingEnd == false || paused)
+            return;
+        
+        
+        
+        if(currentCoroutine!=null)
+            skip = true;
+        else
+        {
+            moveNext = true;
+        }
+        
+
         
     }
 
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         
-        _globalController = FindObjectOfType<GlobalController>();
+        
         //storyJsonData = storyData.ToString();
         storyComponent = new StoryComponent();
         storyComponent.Init();
@@ -59,7 +100,14 @@ public class StorySceneManager : MonoBehaviour
         storyBackgroundSprites = 
             storyComponent.backGround.gameObject.GetComponent<StoryBackgroundSprites>();
         InitScene();
+        
+        //TODO: 设置剧情ID
+        
         ReadCommands();
+        
+        yield return new WaitUntil(() => started);
+        
+        _globalController = FindObjectOfType<GlobalController>();
         StartCoroutine(StartStory());
     }
 
@@ -96,6 +144,31 @@ public class StorySceneManager : MonoBehaviour
             }
             _storyCommands.Enqueue(storyCommand);
         }
+        string storyContent = storyJsonData[storyStr]["content"].ToString();
+        skipMenu.transform.Find("Borders/Banner2/Text").
+            GetComponentInChildren<TextMeshProUGUI>().text = storyContent;
+
+        //todo: 读取剧情跳转信息
+        
+        storyJumpInfo = (storyJsonData[storyStr]["jump_arg"].ToString());
+        var returnMenuButton = skipMenu.transform.Find("ReturnMenuButton").GetComponent<Button>();
+
+        if (storyJumpInfo == "100001")
+        {
+            returnMenuButton.onClick.AddListener(() =>
+            {
+                ToBattle();
+            });
+        }
+        else
+        {
+            returnMenuButton.onClick.RemoveAllListeners();
+            returnMenuButton.onClick.AddListener(() =>
+            {
+                ToStoryBattle(storyJumpInfo);
+            });
+        }
+
     }
 
 
@@ -113,6 +186,13 @@ public class StorySceneManager : MonoBehaviour
             DoCommand(currentCommand.commandType, currentCommand.args.ToArray(), currentCommand.end);
 
         }
+        
+        if(storyJumpInfo == "100001")
+            ToBattle();
+        else
+            ToStoryBattle(storyJumpInfo);
+        //_globalController.EnterPrologue();
+        
     }
 
     protected IEnumerator TestCommands()
@@ -553,8 +633,22 @@ public class StorySceneManager : MonoBehaviour
             if (VARIABLE.portraitParts.speakerID == args[0])
             {
                 found = true;
-                if(currentSpeakingChara?.portraitParts.blinkingAnimationRoutine != null)
-                    StopCoroutine(currentSpeakingChara.portraitParts.blinkingAnimationRoutine);
+                try
+                {
+                    if (currentSpeakingChara != null)
+                    {
+                        if (currentSpeakingChara?.portraitParts.blinkingAnimationRoutine != null)
+                            StopCoroutine(currentSpeakingChara.portraitParts.blinkingAnimationRoutine);
+                    }
+                }
+                catch
+                {
+                    Debug.LogWarning("NotFoundError");
+                }
+
+
+
+
 
 
                 currentSpeakingChara = VARIABLE;
@@ -593,7 +687,7 @@ public class StorySceneManager : MonoBehaviour
     private void InstantiateCharacter(string id)
     {
         //Load assetbundle from streamingAssets/storyPortrait/{id}
-        var bundle = AssetBundle.LoadFromFile("Assets/StreamingAssets/storyportrait/" + id);
+        var bundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath+"/storyportrait/" + id);
         _globalController.loadedBundles.Add("storyportrait/"+id,bundle);
         //Load PortraitBase from assetbundle
         var portraitBase = bundle.LoadAsset<GameObject>("PortraitBase");
@@ -992,8 +1086,57 @@ public class StorySceneManager : MonoBehaviour
     {
         characterIsSpeaking = false;
     }
+    
+    public void SwapAutoMode()
+    {
+        if(paused)
+            return;
+        
+        
+        autoMode = !autoMode;
+        autoTime = 0;
+        if(autoMode)
+            storyComponent.dialog.storyRecordButton.GetComponent<Animation>().Play();
+        else
+        {
+            storyComponent.dialog.storyRecordButton.GetComponent<Animation>().Stop();
+            storyComponent.dialog.storyRecordButton.GetComponent<CanvasGroup>().alpha = 1;
+        }
+    }
+
+    public void SetGaumePaused()
+    {
+        if (paused || !_globalController.loadingEnd)
+        {
+            return;
+        }
+        paused = true;
+        skipMenu?.SetActive(true);
+    }
+    
+    public void SetGameContinue()
+    {
+        if (!paused || !_globalController.loadingEnd)
+        {
+            return;
+        }
+        paused = false;
+        moveNext = false;
+        skipMenu?.SetActive(false);
+        
+    }
 
 
+
+    public void ToBattle()
+    {
+        _globalController.EnterPrologue();
+    }
+
+    public void ToStoryBattle(string levelName)
+    {
+        _globalController.TestEnterLevel(levelName);
+    }
 
 
 
@@ -1139,6 +1282,8 @@ public class StoryComponent
         dialog.Init();
         
     }
+
+    
 
 }
 

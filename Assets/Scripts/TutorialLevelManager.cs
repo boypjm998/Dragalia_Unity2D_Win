@@ -26,17 +26,18 @@ public class TutorialLevelManager : MonoBehaviour
     private GameObject UIElements;
 
     private PlayerInput _playerInput;
-    public string keyDown = "";
-    public string keyLeft = "";
-    public string keyRight = "";
-    public string keyJump = "";
-    public string keyAttack = "";
-    public string keyRoll = "";
-    public string keySkill1 = "";
-    public string keySkill2 = "";
-    public string keySkill3 = "";
-    public string keySkill4 = "";
-    public string keySpecial = "";
+    public KeyCode keyDown = KeyCode.None;
+    public KeyCode keyLeft = KeyCode.None;
+    public KeyCode keyRight = KeyCode.None;
+    public KeyCode keyJump = KeyCode.None;
+    public KeyCode keyAttack = KeyCode.None;
+    public KeyCode keyRoll = KeyCode.None;
+    public KeyCode keySkill1 = KeyCode.None;
+    public KeyCode keySkill2 = KeyCode.None;
+    public KeyCode keySkill3 = KeyCode.None;
+    public KeyCode keySkill4 = KeyCode.None;
+    public KeyCode keySpecial = KeyCode.None;
+    public KeyCode keyEsc = KeyCode.Escape;
     private bool moveNext = false;
     
     [Header("Debug")]
@@ -69,6 +70,14 @@ public class TutorialLevelManager : MonoBehaviour
     public GameObject prayerFX;
     public GameObject laserFX;
     public GameObject holyCrownFX;
+
+    protected GameObject SkillUseHint1;
+    protected GameObject SkillUseHint2;
+    protected GameObject SkillUseHint3;
+    public bool lastStage = false;
+    
+    AlchemicGauge playerAlchemicGauge;
+    private EnemyControllerFlying bossController;
     
     
     private void Awake()
@@ -111,7 +120,13 @@ public class TutorialLevelManager : MonoBehaviour
         LoadDialogAsset();
         UIElements = GameObject.Find("UI");
         sharedVoice = BattleStageManager.Instance.transform.Find("SharedVoice").GetComponent<AudioSource>();
+
+        SkillUseHint1 = UIElements.transform.Find("CharacterInfo/Skill01/FX").gameObject;
+        SkillUseHint2 = UIElements.transform.Find("CharacterInfo/Skill02/FX").gameObject;
+        SkillUseHint3 = UIElements.transform.Find("CharacterInfo/Skill03/FX").gameObject;
         
+        playerAlchemicGauge = FindObjectOfType<AlchemicGauge>();
+        bossController = BossTerminal.GetComponent<EnemyControllerFlying>();
 
     }
 
@@ -119,10 +134,42 @@ public class TutorialLevelManager : MonoBehaviour
     {
         if (button && buttonCD >= 999)
         {
-            print(BattleStageManager.Instance.mapBorderL);
-            print(BattleStageManager.Instance.mapBorderR);
+            button = false;
+            var resultPage = Instantiate(this.resultPage, UIElements.transform);
+            UIElements.transform.Find("Minimap").gameObject.SetActive(false);
+            UIElements.transform.Find("MenuButton").gameObject.SetActive(false);
         }
-        
+
+        if (lastStage)
+        {
+            if (!playerAlchemicGauge.IsCatridgeActive())
+            {
+                SkillUseHint2.SetActive(true);
+                SkillUseHint1.SetActive(false);
+                SkillUseHint3.SetActive(false);
+            }
+            else
+            {
+                if (bossController.counterOn)
+                {
+                    SkillUseHint1.SetActive(true);
+                    SkillUseHint2.SetActive(true);
+                    SkillUseHint3.SetActive(true);
+                }
+                else
+                {
+                    SkillUseHint1.SetActive(false);
+                    SkillUseHint2.SetActive(false);
+                    SkillUseHint3.SetActive(false);
+                }
+            }
+        }
+        else
+        {
+            
+        }
+
+
     }
 
     public void HideCharacterUI()
@@ -132,35 +179,36 @@ public class TutorialLevelManager : MonoBehaviour
 
     public void ResetKeySettingsToDefault(int defaultSettingGroupID)
     {
-        keyDown = "s";
-        keyLeft = "a";
-        keyRight = "d";
-        keySpecial = "space";
+        keyDown = KeyCode.S;
+        keyLeft = KeyCode.A;
+        keyRight = KeyCode.D;
+        keySpecial = KeyCode.Space;
         if (defaultSettingGroupID == 1)
         {
-            keyJump = "w";
-            keyAttack = "j";
-            keyRoll = "k";
-            keySkill1 = "h";
-            keySkill2 = "u";
-            keySkill3 = "i";
-            keySkill4 = "l";
+            keyJump = KeyCode.W;
+            keyAttack = KeyCode.J;
+            keyRoll = KeyCode.K;
+            keySkill1 = KeyCode.H;
+            keySkill2 = KeyCode.U;
+            keySkill3 = KeyCode.I;
+            keySkill4 = KeyCode.L;
         }
         else
         {
-            keyJump = "k";
-            keyAttack = "j";
-            keyRoll = "l";
-            keySkill1 = "u";
-            keySkill2 = "i";
-            keySkill3 = "o";
-            keySkill4 = "h";
+            keyJump = KeyCode.K;
+            keyAttack = KeyCode.J;
+            keyRoll = KeyCode.L;
+            keySkill1 = KeyCode.U;
+            keySkill2 = KeyCode.I;
+            keySkill3 = KeyCode.O;
+            keySkill4 = KeyCode.H;
         }
         var playerInput = FindObjectOfType<PlayerInput>();
         
-        var settings = new[] {keyAttack, keySkill1, keySkill2, keySkill3, keySkill4, keyLeft, keyRight, keySpecial, keyDown, keyRoll, keyJump};
+        var settings = new[] {keyAttack, keySkill1, keySkill2, keySkill3, keySkill4, keyLeft, keyRight, keySpecial, keyDown, keyRoll, keyJump, keyEsc};
         
         playerInput.SetKeySetting(settings);
+        print(playerInput.keyLeft);
         playerInput.GetComponent<PlayerStatusManager>().remainReviveTimes = 3;
         
         GlobalController.keyAttack = keyAttack;
@@ -174,6 +222,9 @@ public class TutorialLevelManager : MonoBehaviour
         GlobalController.keyDown = keyDown;
         GlobalController.keyRoll = keyRoll;
         GlobalController.keyJump = keyJump;
+        
+        GlobalController.Instance.WritePlayerSettingsToFile();
+        
         
     }
 
@@ -292,15 +343,15 @@ public class TutorialLevelManager : MonoBehaviour
         _playerInput = player;
         
         //GlobalController.Instance.StartGame();
-        player.keyAttack = "";
-        player.keySkill1 = "";
-        player.keySkill2 = "";
-        player.keySkill3 = "";
-        player.keySkill4 = "";
-        player.keyJump = "";
-        player.keyRoll = "";
-        player.keyDown = "";
-        player.keyUp = "";
+        player.keyAttack = KeyCode.None;
+        player.keySkill1 = KeyCode.None;
+        player.keySkill2 = KeyCode.None;
+        player.keySkill3 = KeyCode.None;
+        player.keySkill4 = KeyCode.None;
+        player.keyJump = KeyCode.None;
+        player.keyRoll = KeyCode.None;
+        player.keyDown = KeyCode.None;
+        player.keyUp = KeyCode.None;
         //player.enabled = true;
 
         yield return new WaitForSeconds(1f);
@@ -475,6 +526,7 @@ public class TutorialLevelManager : MonoBehaviour
         var alchemicGaugeObj = UIElements.transform.Find("CharacterInfo/AlchemicGauge");
         UIElements.transform.Find("CharacterInfo/AlchemicGauge").gameObject.SetActive(true);
         var alchemicGauge = alchemicGaugeObj.GetComponent<AlchemicGauge>();
+        playerAlchemicGauge = alchemicGauge;
         alchemicGauge.Reset();
         alchemicGauge.ChargeTo(33,3);
         cm.Follow = _playerInput.transform;
@@ -482,9 +534,11 @@ public class TutorialLevelManager : MonoBehaviour
         _playerInput.GetComponentInChildren<TargetAimer>().enabled = true;
 
         yield return new WaitForSeconds(1f);
+        SkillUseHint2.SetActive(true);
         bossBehavior.playerAlive = true;
 
         yield return new WaitUntil(() => alchemicGauge.IsCatridgeActive());
+        SkillUseHint2.SetActive(false);
         yield return new WaitForSeconds(1.5f);
         OpenTutorialHintPauseMenuAndTurnToNewestPage();
         var bossStatus = UIElements.transform.Find("BossStatusBarTutBoss").GetComponent<UI_BossStatus>();
@@ -683,6 +737,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitUntil(() => !bossBehavior.isAction);
         
         bossBehavior.SetState(3);
+        //PlayStoryVoiceWithDialog(30,8003,sharedVoice);
         //bossStatusManager.baseBreak *= 2;
         //Dotween将float类型的bossStatusManager.currentBreak增加到baseBreak的数值
         DOTween.To(() => bossStatusManager.currentBreak, x => bossStatusManager.currentBreak = x, bossStatusManager.baseBreak, 1f);
@@ -696,9 +751,19 @@ public class TutorialLevelManager : MonoBehaviour
         bossStatusManager.HPRegenImmediatelyWithoutRandom(0,30-potency);
         yield return new WaitForSeconds(2f);
         OpenTutorialHintPauseMenuAndTurnToNewestPage();
+        lastStage = true;
+        
+        
         yield return new WaitUntil(() => !bossStatusManager.broken);
+        
 
         yield return new WaitUntil(() => bossStatusManager.broken && bossBehavior.GetState().Item1 == 3);
+        lastStage = false;
+        SkillUseHint1.SetActive(false);
+        SkillUseHint2.SetActive(false);
+        SkillUseHint3.SetActive(false);
+        
+        
         PlayStoryVoiceWithDialog(31,8003,sharedVoice);
         bossBehavior.SetState(998);
         

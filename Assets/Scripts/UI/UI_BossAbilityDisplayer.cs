@@ -24,11 +24,7 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
         _rectTransform = abilityInfo.GetComponent<RectTransform>();
     }
 
-    void OnDestory()
-    {
-        BattleStageManager.Instance.OnFieldAbilityAdd -= CheckAbilityActive;
-        BattleStageManager.Instance.OnFieldAbilityRemove -= CheckAbilityInactive;
-    }
+    
 
     private void CheckAbilityActive(int id)
     {

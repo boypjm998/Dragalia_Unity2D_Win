@@ -56,6 +56,7 @@ MonoBehaviour:
   - 0.3
   volume: 0.5
   withContainer: 0
+  playEvenNotInView: 0
 --- !u!114 &2897026326124226578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,6 +118,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 0
   skill_id: 0
+  destroyAfterHit: 0
   attackInfo:
   - dmgModifier:
     - 2.1
@@ -133,7 +135,7 @@ MonoBehaviour:
   attackSE: []
   self: {fileID: 0}
   spGain: 0
-  isMeele: 0
+  isMeele: 1
   hitFlags: 
   hitConnectEffect: {fileID: 0}
   attackCollider: {fileID: 0}

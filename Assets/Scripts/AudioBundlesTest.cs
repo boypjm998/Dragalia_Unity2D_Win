@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using LitJson;
 
@@ -11,13 +12,13 @@ public class AudioBundlesTest : MonoBehaviour
     StorySceneManager _storySceneManager;
     private AssetBundle _bgmBundle;
     private AssetBundle _voiceBundle;
-    private bool loadingEnd = false;
+    public bool loadingEnd = false;
     [SerializeField] private TextAsset storyVoiceInfo;
     JsonData currentLevelVoiceData;
 
     private void Awake()
     {
-        _globalController = FindObjectOfType<GlobalController>();
+        _globalController = GlobalController.Instance;
         _storySceneManager = FindObjectOfType<StorySceneManager>();
         InitVoiceData();
         StartCoroutine(loadBundles());
@@ -27,17 +28,17 @@ public class AudioBundlesTest : MonoBehaviour
     IEnumerator loadBundles()
     {
         //load asset bundles asynchronously
-        var bgmBundleRequest = AssetBundle.LoadFromFileAsync("Assets/StreamingAssets/story/ms_bgm");
+        var bgmBundleRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath+"/story/ms_bgm");
         yield return bgmBundleRequest;
         
         _bgmBundle = bgmBundleRequest.assetBundle;
-        _globalController.loadedBundles.Add("ms_bgm", _bgmBundle);
+        _globalController.loadedBundles.Add("story/ms_bgm", _bgmBundle);
         
-        var voiceBundleRequest = AssetBundle.LoadFromFileAsync("Assets/StreamingAssets/story/ms_voice");
+        var voiceBundleRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath+"/story/ms_voice");
         yield return voiceBundleRequest;
         
         _voiceBundle = voiceBundleRequest.assetBundle;
-        _globalController.loadedBundles.Add("ms_voice", _voiceBundle);
+        _globalController.loadedBundles.Add("story/ms_voice", _voiceBundle);
         loadingEnd = true;
     }
     

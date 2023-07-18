@@ -5,7 +5,11 @@ using UnityEngine;
 
 public class UI_BossStatusSpecial : UI_BossStatus
 {
-    
+    void Awake()
+    {
+        _canvasGroup = GetComponent<CanvasGroup>();
+    }
+
     void Start()
     {
         _battleStageManager = BattleStageManager.Instance;

@@ -164,7 +164,8 @@ public class AttackFromEnemy : AttackBase
         hitFlags.Remove(collision.transform.parent.GetInstanceID());
         
 
-        print(collision.name);
+        //print(collision.name);
+        //print(battleStageManager);
         int dmg = battleStageManager.CalculateHit
             (collision.transform.parent.gameObject,enemySource, this,1);
         
@@ -272,6 +273,31 @@ public class AttackFromEnemy : AttackBase
         CancelInvoke();
     }
     
+    public virtual void DamageCheckRaycast(RaycastHit2D hitinfo)
+    {
+        if (hitinfo.collider != null)
+            if (hitinfo.collider.CompareTag("Player") &&
+                hitFlags.Contains(hitinfo.collider.transform.parent.GetInstanceID()))
+            {
+                CauseDamage(hitinfo.collider);
+
+                Destroy(gameObject);
+                
+            }
+    }
+
+    public virtual void DamageCheckCollider(Collider2D hitinfo)
+    {
+        if (hitinfo != null)
+            if (hitinfo.CompareTag("Player") && hitFlags.Contains(hitinfo.transform.parent.GetInstanceID()))
+            {
+                CauseDamage(hitinfo);
+
+                Destroy(gameObject);
+
+                
+            }
+    }
     
     
 }

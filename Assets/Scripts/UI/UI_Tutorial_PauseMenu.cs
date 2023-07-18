@@ -119,33 +119,33 @@ public class UI_Tutorial_PauseMenu : UI_PauseMenu
             {
                 var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
                 var txt = tmp.text;
-                tmp.text = String.Format(txt,controller.keyLeft.ToUpper(),controller.keyRight.ToUpper(),
-                    GlobalController.keyDown.ToUpper());
+                tmp.text = String.Format(txt,GlobalController.keyLeft.ToString(),GlobalController.keyRight.ToString(),
+                    GlobalController.keyDown.ToString());
                 break;
             }
             case 2:
             {
                 var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                tmp.text = String.Format(tmp.text,controller.keyAttack.ToUpper());
+                tmp.text = String.Format(tmp.text,GlobalController.keyAttack.ToString());
                 break;
             }
             case 3:
             {
                 var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                tmp.text = String.Format(tmp.text,controller.keyRoll.ToUpper());
+                tmp.text = String.Format(tmp.text,GlobalController.keyRoll.ToString());
                 break;
             }
             case 5:
             {
                 var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                tmp.text = String.Format(tmp.text,controller.keyJump.ToUpper());
+                tmp.text = String.Format(tmp.text,GlobalController.keyJump.ToString());
                 break;
             }
             case 9:
             {
                 var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
                 print(controller.keySpecial);
-                tmp.text = String.Format(tmp.text,controller.keySpecial.ToUpper());
+                tmp.text = String.Format(tmp.text,GlobalController.keySpecial.ToString());
                 break;
             }
         }

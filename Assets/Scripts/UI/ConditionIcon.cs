@@ -102,9 +102,11 @@ public class ConditionIcon : MonoBehaviour
 
     void GetGaugeTimeInfo()
     {
-        //var list = _statusManager.GetConditionOfType(conditionInfo.buffID);
-        
-        //list.Sort(CompareTime);
+        if(list.Count == 0)
+        {
+            list = _statusManager.GetConditionsOfType(conditionInfo.buffID);
+            return;
+        }
         
         if (list[0].duration > 0)
         {

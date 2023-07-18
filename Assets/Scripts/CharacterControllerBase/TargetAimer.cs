@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Cinemachine;
+using GameMechanics;
 
 public class TargetAimer : MonoBehaviour
 {
@@ -172,7 +174,7 @@ public class TargetAimer : MonoBehaviour
 
         }
         else {
-            print("镜头归位");
+            //print("镜头归位");
             //敌人消失，镜头归位，同上
             stopFlagY = false;
             stopFlagX = false;
@@ -347,8 +349,17 @@ public class TargetAimer : MonoBehaviour
 
     private float DistanceFromPlayerToTarget(Transform target)
     {
+        Transform playerTransform;
+        try
+        {
+            playerTransform = CameraFollowTarget.transform;
+        }
+        catch
+        {
+            playerTransform = FindObjectOfType<PlayerInput>().transform;
+        }
+
         
-        Transform playerTransform = CameraFollowTarget.transform;
 
         return Mathf.Sqrt(Mathf.Pow(playerTransform.position.x - target.position.x, 2) + Mathf.Pow(playerTransform.position.y - target.position.y, 2)); ;
     }
@@ -420,7 +431,7 @@ public class TargetAimer : MonoBehaviour
         return target;
     }
 
-    public Transform GetNearestTargetInRangeDirection(int dir, float sizeX, float sizeY, LayerMask targetLayers)
+    public Transform GetNearestTargetInRangeDirection(int dir, float sizeX, float sizeY, LayerMask targetLayers,float shootStartPointX=0)
     {
         float leftModifier = 0;
         float rightModifier = 0;
@@ -434,11 +445,20 @@ public class TargetAimer : MonoBehaviour
             rightModifier = 0;
         }
         Collider2D[] AttackRangeAreaInfo =
-            Physics2D.OverlapAreaAll(transform.parent.position + new Vector3(sizeX*rightModifier, sizeY), transform.parent.position + new Vector3(-sizeX*leftModifier, -sizeY),
+            Physics2D.OverlapAreaAll(transform.parent.position + new Vector3(sizeX*rightModifier, sizeY), transform.parent.position + new Vector3(-sizeX*leftModifier + shootStartPointX*dir, -sizeY),
             targetLayers);
-
+        
         if (AttackRangeAreaInfo.Length == 0)
             return null;
+        
+        AttackRangeAreaInfo = MarkingCheck(AttackRangeAreaInfo.ToList()).ToArray();
+        
+        
+        
+        // print("Marked:"+AttackRangeAreaInfo.Length + " Target:"+
+        //       AttackRangeAreaInfo[0].transform.parent.name);
+        
+
 
         Transform target = AttackRangeAreaInfo[0].transform;
         float minDistance = Vector3.Distance(transform.parent.position, target.position);
@@ -451,6 +471,7 @@ public class TargetAimer : MonoBehaviour
                 target = AttackRangeAreaInfo[i].transform;
                 minDistance = Vector3.Distance(transform.parent.position, target.position);
             }
+            
         }
 
 
@@ -458,6 +479,8 @@ public class TargetAimer : MonoBehaviour
 
         return target;
     }
+
+    
 
 
     //射线检测，获取最近能攻击到的敌人
@@ -492,6 +515,8 @@ public class TargetAimer : MonoBehaviour
         if (ObjectReachable.Count > 0)
         {
             ObjectReachable.Sort(SortDistance);
+            //TODO:2023 / 7 / 2 修改
+            ObjectReachable = MarkingCheck(ObjectReachable);
             return ObjectReachable[0].transform;
         }
         else {
@@ -583,6 +608,101 @@ public class TargetAimer : MonoBehaviour
         else return 0;
         
 
+    }
+
+    public bool HasMarking(Transform transform)
+    {
+        var status = transform.GetComponentInParent<StatusManager>();
+        if (status.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Taunt) > 0)
+            return true;
+        return false;
+    }
+
+    private List<GameObject> MarkingCheck(List<GameObject> list)
+    {
+        //如果list中有被嘲讽的目标，就只返回被嘲讽的目标
+        List<GameObject> result = new List<GameObject>();
+        foreach (GameObject obj in list)
+        {
+            if (HasMarking(obj.transform))
+            {
+                result.Add(obj);
+            }
+        }
+
+        if (result.Count > 0)
+        {
+            return result;
+        }
+
+        return list;
+    }
+    
+    //将MarkingCheck改为泛型方法
+
+    /// <summary>
+    /// 返回被嘲讽的目标，可以为空。
+    /// </summary>
+    /// <param name="list"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    private List<T> MarkingCheck<T>(List<T> list) where T : Component
+    {
+        //如果list中有被嘲讽的目标，就只返回被嘲讽的目标
+        List<T> result = new List<T>();
+        foreach (T obj in list)
+        {
+            if (HasMarking(obj.transform))
+            {
+                result.Add(obj);
+            }
+        }
+        
+
+        if (result.Count > 0)
+        {
+            return result;
+        }
+
+        return list;
+    }
+    
+    private List<GameObject> MarkingCheck(List<GameObject> list, out bool markingExist)
+    {
+        //如果list中有被嘲讽的目标，就只返回被嘲讽的目标
+        List<GameObject> result = new List<GameObject>();
+        foreach (var obj in list)
+        {
+            if (HasMarking(obj.transform))
+            {
+                result.Add(obj);
+            }
+        }
+
+        if (result.Count > 0)
+        {
+            markingExist = true;
+            return result;
+        }
+
+        markingExist = false;
+        return list;
+    }
+
+    public void FaceDirectionAutofixWithMarking()
+    {
+        bool markingExist;
+        var enemyInRange = MarkingCheck(EnemyInRange,out markingExist);
+        if(markingExist == false)
+            return;
+        else
+        {
+            enemyInRange.Sort(SortDistance);
+            if (enemyInRange[0].transform.position.x > transform.parent.position.x)
+                GetComponentInParent<ActorController>().SetFaceDir(1);
+            else
+                GetComponentInParent<ActorController>().SetFaceDir(-1);
+        }
     }
 
 }

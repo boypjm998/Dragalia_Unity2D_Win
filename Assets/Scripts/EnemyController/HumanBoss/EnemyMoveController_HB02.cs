@@ -337,7 +337,7 @@ public class EnemyMoveController_HB02 : EnemyMoveManager
         
         ac.SetMove(0);
         anim.Play("forcing_idle");
-        voice?.PlayMyVoice(VoiceController_HB02.myMoveList.TwilightMoon);
+        voice?.PlayMyVoice(VoiceController_HB02.myMoveList.TwilightMoon,true);
         forctingController.DisplayHint();
         yield return new WaitForSeconds(0.5f);
         
@@ -568,7 +568,7 @@ public class EnemyMoveController_HB02 : EnemyMoveManager
         yield return new WaitUntil(() => forctingController.forceLevel >= 1);
         anim.Play("force_strike");
         forctingController.DisplayHint();
-        voice?.PlayMyVoice(VoiceController_HB02.myMoveList.TwilightMoon);
+        voice?.PlayMyVoice(VoiceController_HB02.myMoveList.TwilightMoon,true);
         yield return new WaitForSeconds(0.4f);
         forctingController.StartAttack();
         forctingController.HideHint();
@@ -603,6 +603,7 @@ public class EnemyMoveController_HB02 : EnemyMoveManager
         voice?.BroadCastMyVoice(1);
         transform.position = Vector3.zero + new Vector3(0,3,0);
         ac.SetGravityScale(0);
+        SetGroundCollider(false);
         yield return new WaitForSeconds(4f);
         yield return new WaitUntil(()=>voice.voice.isPlaying == false);
         
@@ -633,6 +634,7 @@ public class EnemyMoveController_HB02 : EnemyMoveManager
         
         yield return new WaitForSeconds(0.1f);
         var _tweener = transform.DOMoveY(-1f, 0.75f);
+        SetGroundCollider(true);
         _tweener.SetEase(Ease.InCubic);
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.42f);
         

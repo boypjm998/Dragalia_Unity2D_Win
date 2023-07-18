@@ -23,7 +23,7 @@ public class UI_FullScreenEffect_Blind : UI_FullScreenEffect
         playerStatusManager.OnBuffEventDelegate += OnBlindStart;
         playerStatusManager.OnBuffExpiredEventDelegate += OnBlindRelease;
         playerStatusManager.OnBuffDispelledEventDelegate += OnBlindRelease;
-        miniMapCanvasGroup = transform.parent.parent.Find("Minimap").GetComponent<CanvasGroup>();
+        miniMapCanvasGroup = transform.parent.parent.Find("Minimap")?.GetComponent<CanvasGroup>();
     }
 
     public override void Disable()

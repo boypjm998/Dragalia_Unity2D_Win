@@ -9,6 +9,13 @@ public class UI_LevelEnterButton : MonoBehaviour
     // Start is called before the first frame update
     public void OnClick(int id)
     {
+        if (GlobalController.Instance.loadingEnd == false || !GlobalController.Instance.loadingRoutineEnd)
+        {
+            return;
+        }
+        if(GlobalController.currentGameState != GlobalController.GameState.Outbattle)
+            return;
+        
         GetComponentInParent<UISortingGroup>().ToBattle(id);
     }
 

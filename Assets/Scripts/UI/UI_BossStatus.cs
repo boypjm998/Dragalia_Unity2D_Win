@@ -25,19 +25,30 @@ public class UI_BossStatus : MonoBehaviour
     private GlobalController _globalController;
     protected BattleStageManager _battleStageManager;
 
-    public static UI_BossStatus Instance
+    public int bossIndex;
+
+    public bool visible
     {
-        get;
-        protected set;
+        get => _canvasGroup.alpha > 0;
+        set
+        {
+            _canvasGroup.alpha = value ? 1 : 0;
+            _canvasGroup.blocksRaycasts = value;
+        }
+    }
+
+    private void Awake()
+    {
+        _canvasGroup = GetComponent<CanvasGroup>();
+        _canvasGroup.alpha = 0;
     }
 
     IEnumerator Start()
     {
         _globalController = FindObjectOfType<GlobalController>();
         _battleStageManager = FindObjectOfType<BattleStageManager>();
-        _canvasGroup = GetComponent<CanvasGroup>();
-        _canvasGroup.alpha = 0;
-        Instance = this;
+        
+        
         yield return new WaitUntil(() => boss != null);
         _canvasGroup.alpha = 1;
         Init();
@@ -49,10 +60,13 @@ public class UI_BossStatus : MonoBehaviour
         
     }
 
-    public void SetBoss(GameObject boss)
+    public void SetBoss(GameObject boss,int bossIndex = 0)
     {
+        this.bossIndex = bossIndex;
         this.boss = boss;
     }
+    
+    
 
     protected virtual void Init()
     {
@@ -87,7 +101,7 @@ public class UI_BossStatus : MonoBehaviour
         
         var levelDetailedInfo = _battleStageManager.GetLevelDetailedInfo();
         var bossAbilities = 
-            levelDetailedInfo.boss_prefab[BattleStageManager.currentDisplayingBossInfo - 1].boss_abilities;
+            levelDetailedInfo.boss_prefab[bossIndex].boss_abilities;
 
         ClearBossAbility();
         
@@ -151,6 +165,6 @@ public class UI_BossStatus : MonoBehaviour
 
     private void OnDestroy()
     {
-        Instance = null;
+        
     }
 }

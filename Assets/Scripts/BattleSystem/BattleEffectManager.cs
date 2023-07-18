@@ -132,6 +132,13 @@ public class BattleEffectManager : MonoBehaviour
                     }
                     SpawnAnimation(target, burnFXPrefab);
                     break;
+                case BasicCalculation.BattleCondition.Poison:
+                    if (light.intensity == 0)
+                    {
+                        StartCoroutine(LightEffectRoutine(light,poisonColor,1,0.6f));
+                    }
+                    SpawnAnimation(target, poisonFXPrefab);
+                    break;
                 case BasicCalculation.BattleCondition.Scorchrend:
                     if (light.intensity == 0)
                     {
@@ -176,7 +183,7 @@ public class BattleEffectManager : MonoBehaviour
 
         var width = hitsensor.bounds.size.x;
         var height = hitsensor.bounds.size.y;
-        var scaleFactor = Mathf.Max(width, height);
+        var scaleFactor = Mathf.Min(width, height);
         if (scaleFactor > 2f)
         {
             fx.transform.localScale = new Vector3(1, 1, 1) * (scaleFactor*0.5f);
@@ -236,6 +243,13 @@ public class BattleEffectManager : MonoBehaviour
             Instantiate(targetLockPrefab, layer.position, Quaternion.identity, layer.transform);
         fx.GetComponent<ObjectInvokeDestroy>().destroyTime = lastTime;
 
+    }
+
+    public void SpawnTargetLockIndicator(Vector3 position, Transform _parent, float lastTime)
+    {
+        var fx =
+            Instantiate(targetLockPrefab, position, Quaternion.identity, _parent.transform);
+        fx.GetComponent<ObjectInvokeDestroy>().destroyTime = lastTime;
     }
 
     public void SpawnExclamation(GameObject target, Vector3 position)
@@ -300,6 +314,9 @@ public class BattleEffectManager : MonoBehaviour
     public void DisplayCounterIcon(GameObject target, bool flag)
     {
         Transform bufflayer = target.transform.Find("BuffLayer");
+        if(bufflayer == null)
+            return;
+        
         float height = target.transform.Find("HitSensor").GetComponent<Collider2D>().bounds.max.y;
         GameObject icon;
 

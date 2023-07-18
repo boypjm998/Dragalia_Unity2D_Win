@@ -12,6 +12,7 @@ public class MuzzleSESender : MonoBehaviour
     [Range(0,1)]public float volume = 1;
     public bool withContainer = false;
     AudioSource _audioSource;
+    public bool playEvenNotInView = false;
     private void Start()
     {
         if (SEClip!=null)
@@ -26,6 +27,7 @@ public class MuzzleSESender : MonoBehaviour
                 Invoke(nameof(PlayNextSound),sendTime);
             }
         }
+        
     }
 
     private void OnDestroy()
@@ -33,7 +35,7 @@ public class MuzzleSESender : MonoBehaviour
         CancelInvoke();
     }
 
-    protected void SendVoiceToPlay(AudioClip SEClip)
+    public void SendVoiceToPlay(AudioClip SEClip)
     {
         if (withContainer)
         {
@@ -44,17 +46,21 @@ public class MuzzleSESender : MonoBehaviour
         {
             _audioSource = BattleEffectManager.Instance.soundEffectSource;
         }
-        
-        
+
+        if (playEvenNotInView)
+        {
+            _audioSource.PlayOneShot(SEClip,volume);
+            return;
+        }
+
         try
         {
             Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
             if (viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1)
             {
-                // 在摄像机范围内
-                //BattleEffectManager.Instance.PlayOtherSE(SEClip.name,volume);
+                
                 _audioSource.PlayOneShot(SEClip,volume);
-                //print("Play normal");
+                
             }
         }
         catch

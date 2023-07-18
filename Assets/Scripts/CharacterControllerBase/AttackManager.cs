@@ -82,7 +82,16 @@ public class AttackManager : MonoBehaviour
     protected GameObject InstantiateMeele(GameObject prefab, Vector3 position, GameObject container)
     {
         var prefabInstance = Instantiate(prefab, position, Quaternion.identity, container.transform);
-        prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+
+        try
+        {
+            prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+        }
+        catch
+        {
+            Debug.Log("No AttackFromPlayer Component");
+        }
+        
         return prefabInstance;
     }
 

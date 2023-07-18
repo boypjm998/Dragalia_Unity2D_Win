@@ -34,6 +34,8 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     private Sprite[] iconSprites1;
     private Sprite[] iconSprites2;
 
+    private GameObject resistanceParent;
+
     private GameObject detailedInfoMenu;
     private Image iconInDetailedInfoMenu;
     private TextMeshProUGUI detailedMenuTitle;
@@ -69,6 +71,9 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         
         Portrait = transform.Find("Portrait").GetComponent<Image>();
         characterName = transform.Find("Banner").GetComponentInChildren<TextMeshProUGUI>();
+        resistanceParent = transform.Find("Resistances").gameObject;
+        
+        
         skillIcons = new Image[4];
         skillName = new TextMeshProUGUI[4];
         skillPath = new string[4];
@@ -247,6 +252,29 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             abilityName[i].text = CharacterAbilityInfo[abPath[i]]["NAME"].ToString();
             descriptionString[i+4] = CharacterAbilityInfo[abPath[i]]["DESCRIPTION"].ToString();
         }
+
+        var resistances = 
+            CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["RES"];
+        int indexOfResistance = 0;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (i <= resistances.Count - 1)
+            {
+                //print(int.Parse(resistances[i].ToString()));
+                resistanceParent.transform.GetChild(i).gameObject.SetActive(true);
+                resistanceParent.transform.GetChild(i).GetComponent<Image>().sprite =
+                    new TimerBuff(int.Parse(resistances[i].ToString()),-1,-1,100,-1).
+                        GetIcon();
+            }else
+            {
+                resistanceParent.transform.GetChild(i).gameObject.SetActive(false);
+                resistanceParent.transform.GetChild(i).GetComponent<Image>().sprite = null;
+            }
+        }
+
+
+
     }
 
     public static string GetCharacterEntirePathUpper(int id)
@@ -291,4 +319,10 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
         //Destroy(iconBundle);
     }
+    
+    
+    
+    
+    
+    
 }

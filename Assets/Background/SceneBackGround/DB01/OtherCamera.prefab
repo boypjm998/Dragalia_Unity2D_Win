@@ -190,6 +190,7 @@ GameObject:
   - component: {fileID: 8143559404774967123}
   - component: {fileID: 8143559404774967124}
   - component: {fileID: 5772279040493529347}
+  - component: {fileID: 1464791345}
   m_Layer: 0
   m_Name: CM vcam2
   m_TagString: Untagged
@@ -237,15 +238,15 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 16
     NearClipPlane: -20
-    FarClipPlane: 5000
+    FarClipPlane: 200
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1, y: 1}
   m_Transitions:
-    m_BlendHint: 0
-    m_InheritPosition: 0
+    m_BlendHint: 3
+    m_InheritPosition: 1
     m_OnCameraLive:
       m_PersistentCalls:
         m_Calls: []
@@ -265,7 +266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 0}
   m_Damping: 0
-  m_MaxWindowSize: 14
+  m_MaxWindowSize: -1
 --- !u!114 &5772279040493529347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +281,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: -1
   intensityModifier: 0.5
+--- !u!114 &1464791345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8143559404774967121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 449ef5ebbe24720439ec31d15f7b6f3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FocusTracksTarget: 0
+  m_FocusTracking: 0
+  m_FocusTarget: {fileID: 0}
+  m_FocusOffset: 0
+  m_Profile: {fileID: 0}
 --- !u!1 &8143559405144187730
 GameObject:
   m_ObjectHideFlags: 0

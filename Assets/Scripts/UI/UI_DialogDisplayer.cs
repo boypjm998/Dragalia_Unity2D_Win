@@ -39,8 +39,18 @@ public class UI_DialogDisplayer : MonoBehaviour
         portraitIcon = transform.Find("Icon").GetComponent<Image>();
         _swapper = transform.Find("Icon").GetComponent<UI_DialogImageSwapper>();
         balloons = transform.Find("Balloons").gameObject;
-        questDialogInfoData = 
-            BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfo.json");
+        if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+        {
+            questDialogInfoData = 
+                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfo_EN.json");
+        }
+        else
+        {
+            questDialogInfoData = 
+                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfo.json");
+        }
+
+        
         
     }
 

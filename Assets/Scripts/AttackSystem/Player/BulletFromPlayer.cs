@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 
 public class BulletFromPlayer : AttackFromPlayer
@@ -51,8 +52,24 @@ public class BulletFromPlayer : AttackFromPlayer
         {
             if (hitinfo.collider.CompareTag("Enemy") && hitFlags.Contains(hitinfo.collider.transform.parent.GetInstanceID()))
             {
-                //print("Hit:" + hitinfo.collider.name);
+                try
+                {
+                    if (hitinfo.collider.GetComponentInParent<IKnockbackable>().GetDodge())
+                    {
+                        transform.Translate(Vector2.right * speed * lifeTime);
+                        BulletLinearSplitDamageCheck(hitDistance);
+                        return;
+                    }
+                    
+                }
+                catch
+                {
+                    transform.Translate(Vector2.right * speed * lifeTime);
+                }
                 BulletLinearSplitDamageCheck(hitDistance);
+
+                //print("Hit:" + hitinfo.collider.name);
+                
             }
         }
 

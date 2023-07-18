@@ -81,12 +81,16 @@ public class ActorController_c002 : ActorControllerDagger
             
             pi.LockDirection(0);
             SetGravityScale(0);
-            _tweener = transform.DOMoveY(transform.position.y + 5f, 0.3f).SetEase(Ease.OutSine);
+            _tweener = transform.DOMoveY(transform.position.y + 6f, 0.3f).SetEase(Ease.OutSine);
         }
         else if (eventID == 4)
         {
             //222
+            var originHeight = transform.position.y - 6;
             var targetGroundHeight = BasicCalculation.GetRaycastedPlatformY(gameObject) + GetActorHeight();
+
+            targetGroundHeight = Mathf.Min(originHeight, targetGroundHeight);
+            
             try
             {
                 _tweener.Kill();
@@ -96,12 +100,15 @@ public class ActorController_c002 : ActorControllerDagger
                 
             }
 
+            SetGroundCollision(false);
             _tweener = transform.DOMoveY(targetGroundHeight, 0.1f).SetEase(Ease.InSine)
                 .OnComplete(() =>
                 {
+                    SetGroundCollision(true);
                     ResetGravityScale();
                 }).OnKill(() =>
                 {
+                    SetGroundCollision(true);
                     ResetGravityScale();
                 });
 

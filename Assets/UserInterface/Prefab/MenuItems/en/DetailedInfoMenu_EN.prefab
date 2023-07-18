@@ -9,17 +9,17 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_text
-      value: "Deals damage to enemies directly ahead, and creates a portal. \r\nThe
-        portal can exist at most ONE in the field.\r\nWhen the portal exist, user
-        can press the [Special Move Key] to transport to its position immediately.
-        \r\nThe portal will disappear after user\u2019s transportation. \r\n\nIf
-        the user has one or more alchemic cartridges, it will instead generate an
-        otherworld gate to pull nearby enemies towards it, deal damage to enemies
-        for 5 seconds, and consume one alchemic catridge. \n"
+      value: "Teleports behind the enemy directly ahead,\r\ndeals damage to the target
+        and nearby enemies\r,\nand leaves a \"Crimson Phantom\" in the original position.\n\nOnly
+        one \"Crimson Phantom\" can exist on the field at a time.\nWhile it's on
+        the field, reduces damage taken from burned and scorchrent foes by 30%.\n\nAlso,when
+        the user uses Skill 1 or Skill 2, the \u2018Crimson Phantom\u2019 will use
+        the same skill then disappear, but its damage will be reduced by 20%.\n\nThis
+        skill can be used in the air."
       objectReference: {fileID: 0}
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_fontSize
-      value: 27
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_fontAsset
@@ -28,6 +28,10 @@ PrefabInstance:
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_fontStyle
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_lineSpacing
@@ -43,24 +47,24 @@ PrefabInstance:
       objectReference: {fileID: -2951846498462636569, guid: d7d3cfe6856189e41800c4adbb88e7dd, type: 2}
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_characterSpacing
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 143969746586441175, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_enableAutoSizing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1915140656543532728, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
-      propertyPath: m_Size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1915140656543532728, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
+      propertyPath: m_Size
+      value: 0.8355655
+      objectReference: {fileID: 0}
+    - target: {fileID: 1915140656543532728, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2938573306214318333, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 120587195, guid: 19cd661a036be8540a79222b9ee2c418, type: 3}
+      objectReference: {fileID: -730405836, guid: 19cd661a036be8540a79222b9ee2c418, type: 3}
     - target: {fileID: 3327185271478180931, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -75,7 +79,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3907894012249275591, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_text
-      value: Otherworld Gate
+      value: Blazing Blitz
       objectReference: {fileID: 0}
     - target: {fileID: 3907894012249275591, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_fontAsset
@@ -109,6 +113,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: -2951846498462636569, guid: d7d3cfe6856189e41800c4adbb88e7dd, type: 2}
+    - target: {fileID: 5134250755144884920, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
+      propertyPath: m_TargetGraphic
+      value: 
+      objectReference: {fileID: 8908876367101531852}
     - target: {fileID: 5134250755606827068, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -219,3 +227,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
+--- !u!114 &8908876367101531852 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5134250755144884922, guid: 6f3c33b1d28f11f45a8ad706ae86cecf, type: 3}
+  m_PrefabInstance: {fileID: 4387115195638789238}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

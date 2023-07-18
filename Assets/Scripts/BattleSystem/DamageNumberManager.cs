@@ -390,5 +390,18 @@ public class DamageNumberManager : MonoBehaviour
             txt.GetComponentInChildren<TextMeshPro>().color = Color.yellow;
         
     }
+    
+    public static void GenerateDodgeText(Transform targetTransform)
+    {
+        var CounterText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/DodgeText");
+        
+
+        GameObject txt =
+            Instantiate(CounterText,
+                targetTransform.position+Vector3.up*3+Random.Range(-.5f,.5f)*new Vector3(1,0),
+                Quaternion.identity);
+        
+        
+    }
 
 }

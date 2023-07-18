@@ -10,8 +10,8 @@ namespace CharacterSpecificProjectiles
 {
     public class Projectile_C005_3 : MonoBehaviour
     {
-        private float lengthA = 15f;
-        private float lengthB = 10f;
+        [SerializeField]private float lengthA = 15f;
+        [SerializeField]private float lengthB = 10f;
         private float angle;
         [SerializeField] private float startAngle;
         [SerializeField] private float rotateSpeed = 18;

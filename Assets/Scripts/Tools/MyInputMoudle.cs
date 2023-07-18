@@ -18,7 +18,7 @@ public class MyInputMoudle
     private MyTimer delayTimer = new MyTimer();
 
     private float extendingDuration = 0.2f;
-    public float delayingDuration = 0.6f;
+    public float delayingDuration = 0.8f;
 
     public void Tick(bool input)
     {

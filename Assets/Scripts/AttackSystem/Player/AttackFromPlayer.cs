@@ -253,6 +253,11 @@ public class AttackFromPlayer : AttackBase
     {
         return spGain;
     }
+    
+    public float SetSpGain(int spGain)
+    {
+        return this.spGain = spGain;
+    }
 
 
     public void AppendAttackSets(float knockbackPower, float knockbackForce, float knockbackTime, float dmgModifier)
@@ -336,7 +341,27 @@ public class AttackFromPlayer : AttackBase
         {
             attackSource = 2;
         }
-        
+
+        //敌人的闪避
+        try
+        {
+            var enemyController = target.transform.parent.GetComponent<EnemyController>();
+            if (enemyController is EnemyControllerHumanoid)
+            {
+                var dodge = (enemyController as EnemyControllerHumanoid).dodging;
+                if (dodge && attackType != BasicCalculation.AttackType.SKILL && attackType != BasicCalculation.AttackType.FORCE)
+                {
+                    DamageNumberManager.GenerateDodgeText(target.transform);
+                    enemyController.OnDodgeSuccess?.Invoke(this,playerpos.gameObject);
+                    return;
+                }
+            }
+        }
+        catch
+        {
+            Debug.LogWarning("No EnemyControllerHumanoid");
+        }
+
 
         var dmg = battleStageManager.CalculateHit(target.transform.parent.gameObject, playerpos.gameObject,this,attackSource);
         
@@ -374,6 +399,9 @@ public class AttackFromPlayer : AttackBase
         
         if (container.NeedTotalDisplay() && dmg > 0)
             container.AddTotalDamage(dmg);
+        
+        if(destroyAfterHit)
+            Destroy(gameObject);
         
         if(damageAutoReset>0)
             Invoke("NextAttack",damageAutoReset);

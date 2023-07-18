@@ -337,6 +337,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         enemyController.SetCounter(false);
         enemyController.OnAttackInterrupt?.Invoke();
         enemyController.SetFlashBody(false);
+        
         try
         {
             Destroy(FindObjectOfType<Projectile_C003_1_Boss>().gameObject);
@@ -368,7 +369,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         //UI_BossStatus.Instance.RedirectBoss(p2_boss);
         //BattleEffectManager.Instance.bgmVoiceSource.Stop();
         BattleStageManager.currentDisplayingBossInfo = 2;
-        UI_BossStatus.Instance.RedirectBoss(p2_boss);
+        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss);
         p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
         ActionEnd();
         yield return null;
@@ -514,6 +515,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         enemyController.SetKBRes(status.knockbackRes);
         yield return new WaitForSeconds(interval);
         ActionEnd();
+        
     }
     
     protected IEnumerator ACT_HolyCrownG(float interval)

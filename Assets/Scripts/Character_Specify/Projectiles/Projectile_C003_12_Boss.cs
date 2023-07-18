@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace CharacterSpecificProjectiles
 {
+    /// <summary>
+    /// twilight crown genesis
+    /// </summary>
     public class Projectile_C003_12_Boss : MonoBehaviour
     {
         private AttackFromEnemy _attack;

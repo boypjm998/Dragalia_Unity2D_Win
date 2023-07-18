@@ -33,6 +33,7 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
 
         if (isMeele && ac!=null)
         {
+            print("注册事件");
             ac.OnAttackInterrupt += DestroyContainer;
         }
     }

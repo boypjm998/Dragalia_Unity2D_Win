@@ -32,6 +32,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public TargetAimer ta;
     private Coroutine KnockbackRoutine = null;
 
+    public List<GameObject> rendererObjects = new();
+
     public enum PlayerActionType
     {
         MOVE = 1,
@@ -61,6 +63,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
         rigid.position += new Vector2(speedModifier * movespeed * (pi.isMove), 0) * Time.fixedDeltaTime;
 
+        //print("moved rigid");
+        
+        
         if (pi.directionLock == true)
         {
             return;
@@ -116,21 +121,25 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         switch (id)
         {
             case 1:
+                pi.isSkill = true;
                 anim.Play("s1");
                 _statusManager.currentSP[0] = 0;
                 break;
 
             case 2:
+                pi.isSkill = true;
                 anim.Play("s2");
                 _statusManager.currentSP[1] = 0;
                 break;
 
             case 3:
+                pi.isSkill = true;
                 anim.Play("s3");
                 _statusManager.currentSP[2] = 0;
                 break;
 
             case 4:
+                pi.isSkill = true;
                 anim.Play("s4");
                 _statusManager.currentSP[3] = 0;
                 break;
@@ -242,15 +251,6 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     protected virtual void Update()
     {
 
-
-        //if (rigid.transform.eulerAngles.y == 0)
-        //{
-        //    facedir = 1;
-        //}
-        //else if (rigid.transform.eulerAngles.y == 180)
-        //{
-        //    facedir = -1;
-        //}
         if (rigid.transform.localScale.x == 1)
         {
             facedir = 1;
@@ -362,7 +362,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         while (time > 0)
         {
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector3(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+            rigid.position = new Vector3(transform.position.x + facedir * speed * Time.fixedDeltaTime,
                 transform.position.y, transform.position.z);
             //transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
@@ -370,7 +370,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
             if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
             {
                 //print("interrupt");
-                if (Mathf.Abs(rigid.velocity.x) > movespeed)
+                if (Mathf.Abs(rigid.velocity.x) > movespeed && hurt==false)
                     rigid.velocity = new Vector2(movespeed, rigid.velocity.y);
                 //pi.SetMoveEnabled();
                 yield break;
@@ -508,6 +508,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void InertiaMove(float time)
     {
+        ta.FaceDirectionAutofixWithMarking();
         float speedrate = anim.GetFloat("forward");
 
         if (speedrate < 0.1f && anim.GetBool("isGround"))
@@ -526,6 +527,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         hitsensor.enabled = false;
         _statusManager.HPRegenImmediatelyWithoutRandom(0, 100);
         _statusManager.currentHp = _statusManager.maxHP;
+        SetActionUnable(false);
 
 
         yield return new WaitForSeconds(waitTime);
@@ -579,14 +581,19 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         //print("onJumpExit");
     }
 
-    public void IsGround()
+    public virtual void IsGround()
     {
         //print("GROUND:"+transform.position.x);
 
         anim.SetBool("isGround", true);
 
         pi.jumptime = 2;
+        
+        
         pi.rollEnabled = true;
+        
+        
+        print("set roll true");
     }
 
     public void isNotGround()
@@ -632,6 +639,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void OnDashEnter()
     {
+        ta.FaceDirectionAutofixWithMarking();
+        
         ActionDisable((int)PlayerActionType.MOVE);
         ActionDisable((int)PlayerActionType.JUMP);
         ActionDisable((int)PlayerActionType.ROLL);
@@ -655,6 +664,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void OnStandardAttackEnter()
     {
+        ta.FaceDirectionAutofixWithMarking();
         speedModifier = 1;
     }
 
@@ -667,14 +677,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void OnSkillEnter()
     {
+        ta.FaceDirectionAutofixWithMarking();
         speedModifier = 1;
-        try
-        {
-            _tweener?.Kill();
-        }
-        catch
-        {
-        }
+        
 
 
         pi.isSkill = true;
@@ -682,6 +687,13 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.inputRollEnabled = false;
         pi.directionLock = false;
         dodging = true;
+        try
+        {
+            _tweener?.Kill();
+        }
+        catch
+        {
+        }
 
         ActionDisable((int)PlayerActionType.MOVE);
         ActionDisable((int)PlayerActionType.JUMP);
@@ -704,6 +716,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         ActionEnable((int)PlayerActionType.ROLL); //roll
         ActionEnable((int)PlayerActionType.ATTACK);
         pi.SetInputEnabled("move");
+        //2023.6.19
+        anim.SetFloat("forward",0);
     }
 
     public virtual void OnGravityWeaken()
@@ -730,6 +744,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.isSkill = false;
         rigid.gravityScale = 1;
         speedModifier = 1;
+        SetGroundCollision(true);
 
         try
         {
@@ -746,10 +761,13 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         //SetVelocity(rigid.velocity.x,0);
         anim.speed = 1;
         var meeles = transform.Find("MeeleAttackFX");
-        for (int i = 0; i < meeles.childCount; i++)
-        {
-            meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
-        }
+        // for (int i = 0; i < meeles.childCount; i++)
+        // {
+        //     var meele = meeles.GetChild(i);
+        //     
+        //     
+        //     meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
+        // }
 
         voiceController?.PlayHurtVoice(_statusManager);
         transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression(0.75f);
@@ -903,6 +921,29 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     }
 
+    public override void TakeDamage(AttackInfo attackInfo, Vector2 kbdir)
+    {
+        if (_statusManager.knockbackRes >= 100)
+            return;
+        
+        var kbtime = attackInfo.knockbackTime;
+        var kbForce = attackInfo.knockbackForce;
+        var kbPower = attackInfo.knockbackPower;
+        
+        var random = Random.Range(0, 100);
+        if(random > kbPower-_statusManager.KnockbackRes)
+        {
+            return;
+        }
+
+        if (KnockbackRoutine != null)
+        {
+            StopCoroutine(KnockbackRoutine);
+        }
+
+        KnockbackRoutine = StartCoroutine(KnockBackEffect(kbtime, kbForce, kbdir));
+    }
+
     public override void TakeDamage(AttackBase attackBase, Vector2 kbdir)
     {
         if (_statusManager.knockbackRes >= 100)
@@ -1032,7 +1073,15 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void FaceDirectionAutoFix(int moveID)
     {
+        
+    }
 
+    public void SkillCancelFrame()
+    {
+        pi.isSkill = false;
+        pi.inputRollEnabled = true;
+        pi.rollEnabled = true;
+        pi.attackEnabled = true;
     }
 
     protected virtual void CheckSignal()
@@ -1052,9 +1101,39 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         return dodging;
     }
 
+    public override void DisappearRenderer()
+    {
+        foreach (var rendererObject in rendererObjects)
+        {
+            rendererObject.SetActive(false);
+        }
+    }
+
+    public override void AppearRenderer()
+    {
+        foreach (var rendererObject in rendererObjects)
+        {
+            rendererObject.SetActive(true);
+        }
+    }
+
     public override void SetGravityScale(float value)
     {
         rigid.gravityScale = value;
+    }
+
+    public void SetGroundCollision(bool flag)
+    {
+        var pltformCol = transform.Find("Platform Sensor").GetComponentInChildren<BoxCollider2D>();
+        if(pltformCol == null)
+            return;
+    
+    
+        if (pltformCol != null)
+        {
+            pltformCol.enabled = flag;
+        }
+        groundSensor.enabled = flag;
     }
 
     public override void ResetGravityScale()

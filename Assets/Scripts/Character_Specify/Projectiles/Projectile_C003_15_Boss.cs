@@ -33,7 +33,7 @@ namespace CharacterSpecificProjectiles
 
             if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20033))
             {
-                AttackFromEnemy.attackInfo[0].dmgModifier[0] = 5.33f * 1.5f;
+                AttackFromEnemy.attackInfo[0].dmgModifier[0] = 5.33f * 1.2f;
             }
             else if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
             {

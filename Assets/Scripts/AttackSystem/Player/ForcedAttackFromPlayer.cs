@@ -27,6 +27,8 @@ public class ForcedAttackFromPlayer : AttackFromPlayer
         var col = target.transform.Find("HitSensor")?.GetComponent<Collider2D>();
         if(col == null)
             return;
+        if(col.CompareTag("Player"))
+            return;
         
         CauseDamage(col.gameObject);
         

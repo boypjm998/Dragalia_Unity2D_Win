@@ -178,6 +178,18 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
             substate++;
     }
 
+    public void StopAction()
+    {
+        // if(currentMoveAction != null)
+        //     StopCoroutine(currentMoveAction);
+        // if (currentAttackAction != null)
+        //     StopCoroutine(currentAttackAction);
+        if(currentAction != null)
+            StopCoroutine(currentAction);
+        isAction = false;
+        
+    }
+
 
 
 }

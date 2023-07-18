@@ -94,9 +94,9 @@ public class StandardGroundSensor : MonoBehaviour , IGroundSensable
         }
 
         
-        
+        print("Disable Collision With Platform"+platformCollider.name);
         Physics2D.IgnoreCollision(box, platformCollider);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.15f);
         Physics2D.IgnoreCollision(box, platformCollider,false);
         
     }

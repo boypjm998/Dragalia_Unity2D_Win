@@ -21,6 +21,8 @@ public class SkillUIBase : MonoBehaviour
 
     protected GameObject keyHint;
 
+    protected Transform maskTransform;
+
     // Start is called before the first frame update
     protected virtual void Start()
     {
@@ -30,21 +32,22 @@ public class SkillUIBase : MonoBehaviour
         skillIcon = transform.Find("IconBody").Find("Mask").GetChild(0).gameObject;
         unableIcon = transform.Find("IconBody").Find("UnableIcon").gameObject;
         keyHint = transform.Find("SkillText").gameObject;
+        maskTransform = transform.Find("IconBody").Find("Mask");
 
         string skillButton;
         switch (this.sid)
         {
             case 1:
-                skillButton = GlobalController.keySkill1.ToUpper();
+                skillButton = GlobalController.keySkill1.ToString().ToUpper();
                 break;
             case 2:
-                skillButton = GlobalController.keySkill2.ToUpper();
+                skillButton = GlobalController.keySkill2.ToString().ToUpper();
                 break;
             case 3:
-                skillButton = GlobalController.keySkill3.ToUpper();
+                skillButton = GlobalController.keySkill3.ToString().ToUpper();
                 break;
             case 4:
-                skillButton = GlobalController.keySkill4.ToUpper();
+                skillButton = GlobalController.keySkill4.ToString().ToUpper();
                 break;
             default:
                 skillButton = "UNDEFINED";
@@ -74,7 +77,7 @@ public class SkillUIBase : MonoBehaviour
     }
 
 
-    protected void SwapSkillIcon(int iconID)
+    protected virtual void SwapSkillIcon(int iconID)
     {
         Transform _parent = skillIcon.transform.parent;
 

@@ -68,9 +68,29 @@ public class ActorControllerDagger : ActorController
           
      }
 
+     public void OnRollEnterBase()
+     {
+          base.onRollEnter();
+     }
+     public void OnRollExitBase()
+     {
+          base.onRollExit();
+     }
+
+     public void OnStandardAttackEnterBase()
+     {
+          base.OnStandardAttackEnter();
+     }
+
+     public void OnStandardAttackExitBase()
+     {
+          base.OnStandardAttackExit();
+     }
+
      public override void onRollEnter()
      {
           base.onRollEnter();
+          pi.directionLock = false;
           //comboStage = 0;
           //anim.SetInteger("combo",0);
           Combo = 0;
@@ -172,6 +192,7 @@ public class ActorControllerDagger : ActorController
      /// <param name="moveID">1:距离12,2:距离3,3：距离2,4：距离5</param>
      public override void FaceDirectionAutoFix(int moveID)
      {
+          base.FaceDirectionAutoFix(moveID);
           switch (moveID)
           {
                case 1:
@@ -238,7 +259,7 @@ public class ActorControllerDagger : ActorController
      }
 
 
-     IEnumerator ResetComboStage(float time)
+     protected IEnumerator ResetComboStage(float time)
      {
           //print("reset_before");
           yield return new WaitForSeconds(time);

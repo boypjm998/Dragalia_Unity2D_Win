@@ -7,13 +7,13 @@ using GameMechanics;
 
 public class EnemyControllerFlyingHigh : EnemyControllerFlying
 {
-      protected StandardGroundSensor groundSensor;
-      public bool flyingGrounded => groundSensor.GetCurrentAttachedGroundInfo() != null;
+      protected StandardGroundSensor groundSensable;
+      public bool flyingGrounded => groundSensable.GetCurrentAttachedGroundInfo() != null;
       
       protected override void Awake()
       {
             base.Awake();
-            groundSensor = GetComponentInChildren<StandardGroundSensor>();
+            groundSensable = GetComponentInChildren<StandardGroundSensor>();
       }
 
 
@@ -38,7 +38,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
             var tweenerCore = transform.DOMove(endPoint, timeToReach).SetEase(ease).OnComplete(() =>
             {
                   SetGroundCollision(true);
-                  SetGravityScale(1);
+                  ResetGravityScale();
                   OnMoveFinished?.Invoke(true);
             });
             yield return new WaitUntil(() => !tweenerCore.IsPlaying());
@@ -211,12 +211,19 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
             OnHurtEnter();
             isAction = true;
             _behavior.isAction = true;
+            ResetGravityScale();
         
             isMove = 0;
             BattleEffectManager.Instance.PlayBreakEffect();
+            StageCameraController.SwitchMainCamera();
             SetCounter(false);
             print((_statusManager as SpecialStatusManager).breakTime);
             UI_BossODBar.Instance?.ODBarClear();
             breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
+      }
+
+      public override void ResetGravityScale()
+      { 
+            rigid.gravityScale = _defaultgravityscale;
       }
 }

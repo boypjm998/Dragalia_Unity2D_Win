@@ -304,8 +304,31 @@ namespace GameMechanics
                 mapNodes.Add(new APlatformNode(platform));
             }
         }
-        
-        
+
+        public static List<APlatformNode> GetAllNodes()
+        {
+            var allNodes = new List<APlatformNode>();
+            var mapNodes = BattleStageManager.InitMapInfo();
+            foreach (var mapNode in mapNodes)
+            {
+                allNodes.Add(new APlatformNode(mapNode));
+            }
+
+            return allNodes;
+        }
+
+        public static APlatformNode GetNodeOfName(string name)
+        {
+            var mapNodes = BattleStageManager.InitMapInfo();
+            foreach (var mapNode in mapNodes)
+            {
+                if (mapNode.collider.name == name)
+                    return new APlatformNode(mapNode);
+            }
+
+            return null;
+        }
+
 
         /// <summary>
         /// </summary>
@@ -545,6 +568,7 @@ namespace GameMechanics
         public float h;
         public APlatformNode parent;
         public Platform platform;
+        public string colliderName;
 
         /// <summary>
         ///     人物在该平台上的落脚点
@@ -558,11 +582,13 @@ namespace GameMechanics
             this.g = g;
             this.h = h;
             this.pos = pos;
+            colliderName = platform.collider.name;
         }
 
         public APlatformNode(Platform platform)
         {
             this.platform = platform;
+            colliderName = platform.collider.name;
         }
 
         public float f => g + h;
@@ -774,4 +800,47 @@ namespace GameMechanics
 
 
     }
+    
+    [Serializable]
+    public class AllMapNode{
+
+        [Serializable]
+        public class PlatformInfo
+        {
+            public float leftBorder;
+            public float rightBorder;
+            public float height;
+            
+            public PlatformInfo(float leftBorder, float rightBorder, float height)
+            {
+                this.leftBorder = leftBorder;
+                this.rightBorder = rightBorder;
+                this.height = height;
+            }
+        }
+
+        public string nodeName;
+        public List<PlatformInfo> platformInfos = new();
+
+        public AllMapNode()
+        {
+            
+        }
+
+        public void InitInfo()
+        {
+            var nodes = AStar.GetAllNodes();
+            foreach (var node in nodes)
+            {
+                nodeName = node.colliderName;
+                platformInfos.Add
+                (new PlatformInfo
+                    (node.platform.leftBorderPos.x,node.platform.rightBorderPos.x,node.platform.height));
+                
+            }
+        }
+
+
+    }
+    
 }

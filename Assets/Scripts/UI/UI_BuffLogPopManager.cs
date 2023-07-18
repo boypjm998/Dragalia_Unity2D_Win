@@ -223,9 +223,13 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("全减益状态解除");
                 ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
+            case "ReliefAllAffliction":
+                EnqueueNewCondition("全异常状态解除");
+                ConditionStrInfo.Enqueue(new(1002,0));//Other
+                break;
             case "SPCharge":
                 EnqueueNewCondition("技能充能");
-                ConditionStrInfo.Enqueue(new(1002,0));//Other
+                ConditionStrInfo.Enqueue(new(1003,0));//Other
                 break;
                 
         }
@@ -236,14 +240,23 @@ public class UI_BuffLogPopManager : MonoBehaviour
         switch (message)
         {
             case "Reset":
-                EnqueueNewCondition("Empty");
+                EnqueueNewCondition("Reset All Status");
                 ConditionStrInfo.Enqueue(new(1000,0));//Other
                 break;
             case "ReliefAllDebuff":
-                EnqueueNewCondition("全减益状态解除");
+                EnqueueNewCondition("Recover from Debuffs");
                 ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
-                
+            case "ReliefAllAffliction":
+                EnqueueNewCondition("Recover from Afflictions");
+                ConditionStrInfo.Enqueue(new(1002,0));//Other
+                break;
+            case "SPCharge":
+                EnqueueNewCondition("Skill Prep");
+                ConditionStrInfo.Enqueue(new(1003,0));//Other
+                break;
+            default:
+                break;
         }
     }
     
@@ -252,12 +265,16 @@ public class UI_BuffLogPopManager : MonoBehaviour
         switch (message)
         {
             case "Reset":
-                EnqueueNewCondition("Empty");
+                EnqueueNewCondition("Reset All Status");
                 ConditionStrInfo.Enqueue(new(1000,0));//Other
                 break;
             case "ReliefAllDebuff":
-                EnqueueNewCondition("全减益状态解除");
+                EnqueueNewCondition("Recover from Debuffs");
                 ConditionStrInfo.Enqueue(new(1001,0));//Other
+                break;
+            case "SPCharge":
+                EnqueueNewCondition("Skill Prep");
+                ConditionStrInfo.Enqueue(new(1002,0));//Other
                 break;
                 
         }

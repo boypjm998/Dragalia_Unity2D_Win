@@ -135,6 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 1
   skill_id: 1
+  destroyAfterHit: 0
   attackInfo:
   - dmgModifier:
     - 3.48
@@ -151,7 +152,7 @@ MonoBehaviour:
   attackSE: []
   self: {fileID: 0}
   spGain: 0
-  isMeele: 0
+  isMeele: 1
   hitFlags: 
   hitConnectEffect: {fileID: 832008921799168349, guid: 9bcb9a422b31b3546a996ba11159f3db, type: 3}
   attackCollider: {fileID: 0}
@@ -200,5 +201,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SEClip: {fileID: 8300000, guid: fe8210eeeecc86b4d93ccab8e87cf9db, type: 3}
+  extraClips: []
+  sendTimes: []
   volume: 1
   withContainer: 0
+  playEvenNotInView: 0

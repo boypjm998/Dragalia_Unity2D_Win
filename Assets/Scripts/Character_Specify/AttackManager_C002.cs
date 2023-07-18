@@ -57,7 +57,7 @@ public class AttackManager_C002 : AttackManagerDagger
         if ((ac as ActorController_c002).skillBoosted)
         {
             var atk = proj.GetComponent<AttackFromPlayer>();
-            atk.attackInfo[0].dmgModifier[0] *= 3;
+            atk.attackInfo[0].dmgModifier[0] *= 2;
             atk.attackInfo[0].knockbackPower = 180;
             (ac as ActorController_c002).skillBoosted = false;
         }
