@@ -1,16 +1,15 @@
 <<<<<<< HEAD
-# DL_2D_Win (Not Realeased) (2023/07/18）
+# DL_2D_Win (Not Realeased) (2023/08/15）
 
 #####
 
-1. 新关卡：伊莉雅的试炼
-
-2. 新角色：席菈（短剑）
+1. 新关卡：席菈的试炼 绝级
+2. 英文版支持
 
 
 #####
 
-1. New Level: Ilia's Trial(Expert,Master)
+1. New Level: Sheila's Trial Legend
+2. English Supported
 
-2. New Adventurer : Sheila (Dagger)
 
