@@ -26,11 +26,15 @@ public class EnemySealedContainer : MonoBehaviour, IEnemySealedContainer
             
         }
 
-        
+        if (GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+        {
+            yield break;
+        }
 
         if (nextAttackTime.Count == 0)
         {
-            ReleaseAttack();yield break;
+            ReleaseAttack();
+            yield break;
         }
         
         ReleaseAttack(0);
@@ -56,6 +60,17 @@ public class EnemySealedContainer : MonoBehaviour, IEnemySealedContainer
     public void SetEnemySource(GameObject source)
     {
         enemySource = source;
+        try
+        {
+            foreach (var atk in attacks)
+            {
+                atk.GetComponent<AttackFromEnemy>().enemySource = enemySource;
+            }
+            hint.GetComponent<EnemyAttackHintBar>().SetSource(source.GetComponent<EnemyController>());
+        }
+        catch
+        {
+        }
     }
     
     public void SetFireDir(int dir)

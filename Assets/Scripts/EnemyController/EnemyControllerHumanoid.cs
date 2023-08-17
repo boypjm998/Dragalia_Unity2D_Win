@@ -1522,6 +1522,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         OnHurtEnter();
         isAction = true;
         _behavior.isAction = true;
+        StageCameraController.SwitchMainCamera();
         
         isMove = 0;
         BattleEffectManager.Instance.PlayBreakEffect();
@@ -1564,6 +1565,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 _behavior.currentAction = null;
             }
             spStatus.broken = true;
+            SetKBRes(999);
             anim.SetBool("break",true);
             anim.Play("break_enter");
         }
@@ -1623,6 +1625,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         OnAttackInterrupt?.Invoke();
         _behavior.breakable = false;
         _behavior.enabled = false;
+        moveEnable = false;
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
 

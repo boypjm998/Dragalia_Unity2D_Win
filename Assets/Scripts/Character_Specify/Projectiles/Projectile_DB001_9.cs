@@ -18,6 +18,20 @@ namespace CharacterSpecificProjectiles
         protected Tweener _tweenerPlayer;
 
         private List<ActorBase> caughtTargetsAc = new();
+
+
+        public void SetCollisionOff()
+        {
+            GetComponent<Collider2D>().enabled = false;
+            Invoke("SetCollisionOn",10f);
+        }
+        
+        private void SetCollisionOn()
+        {
+            GetComponent<Collider2D>().enabled = true;
+
+        }
+
         private IEnumerator Start()
         {
             var hint = GetComponentInChildren<EnemyAttackHintBarCircle>();

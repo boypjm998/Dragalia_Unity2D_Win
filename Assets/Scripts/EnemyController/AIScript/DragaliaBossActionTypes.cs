@@ -18,9 +18,19 @@ public class DragaliaBossActionTypes
         DashAttack,
         CarmineRush,
         FlameRaid,
+        BrightCarmineRush,
+        SavageFlameRaid,
         Inferno,
-        Buff
-
+        Heaven,
+        Buff,
+        ScorArea,
+        UpdateBuff,
+        SetWorld,
+        Mirage,
+        Counter,
+        Charge,
+        AOE,
+        DualFlame
     }
     public enum HB1002
     {

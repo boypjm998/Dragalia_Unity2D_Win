@@ -255,7 +255,7 @@ public class ActorControllerStaff : ActorController
           {
                StopCoroutine(comboStageResetRoutine);
                comboStageResetRoutine = null;
-               print("interrupted");
+               //print("interrupted");
           }
 
           comboStageResetRoutine = StartCoroutine(ResetComboStage(0.5f));

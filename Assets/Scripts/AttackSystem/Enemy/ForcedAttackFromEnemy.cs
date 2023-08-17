@@ -11,6 +11,7 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
     public GameObject target;
     public List<GameObject> extraTargets = new();
     public float triggerTime;
+    public bool isAoE = false;
     protected override void Awake()
     {
         base.Awake();
@@ -22,25 +23,40 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
         {
             ac.OnAttackInterrupt += DestroyContainer;
         }
+
+        if (isAoE)
+        {
+            extraTargets.AddRange(DragaliaEnemyBehavior.GetPlayerList());
+        }
+
+
         Invoke("CauseDamageInstantly", triggerTime);
     }
+    
+    
 
     private void CauseDamageInstantly()
     {
 
-        var col = target.transform.Find("HitSensor")?.GetComponent<Collider2D>();
-        if(col == null)
-            return;
+        if (target != null)
+        {
+            var col = target.transform.Find("HitSensor")?.GetComponent<Collider2D>();
+            if (col != null)
+            {
+                CauseDamage(col);
+            }
+        }
+
         
-        CauseDamage(col);
         
         if(extraTargets.Count > 0)
             foreach (var t in extraTargets)
             {
-                col = t.transform.Find("HitSensor").GetComponent<Collider2D>();
+                var col = t.transform.Find("HitSensor").GetComponent<Collider2D>();
                 if(col == null)
                     continue;
-                CauseDamage(col);
+                if(t!=target)
+                    CauseDamage(col);
             }
         
     }

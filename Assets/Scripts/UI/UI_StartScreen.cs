@@ -50,8 +50,43 @@ public class UI_StartScreen : MonoBehaviour
         _battleStageManager = BattleStageManager.Instance;
         transform.Find("Text1").GetComponent<TextMeshProUGUI>().text = _battleStageManager.quest_name;
         var text2 = transform.Find("Text2").GetComponent<TextMeshProUGUI>();
-        //TODO:三语本地化
+        //TODO: 三语本地化
         //CHINESE
+        switch (GlobalController.Instance.GameLanguage)
+        {
+            case GlobalController.Language.ZHCN:
+                SetLocalizedText_ZHCN(text2);
+                break;
+            case GlobalController.Language.EN:
+                SetLocalizedText_EN(text2);
+                break;
+            default:
+                Debug.LogError("No such language");
+                break;
+        }
+        
+
+
+        //ENGLISH
+        //JAPANESE
+
+        var timeLimit = transform.Find("TimeLimit").GetComponent<TextMeshProUGUI>();
+        //string time;
+        if (_battleStageManager.timeLimit < 0)
+        {
+            timeLimit.text = $"<sprite=0> ∞";
+        }
+        else
+        {
+            var min = (int)Mathf.Floor(_battleStageManager.timeLimit / 60);
+            var sec = _battleStageManager.timeLimit % 60;
+            timeLimit.text = $"<sprite=0> {min:D2}:{sec:D2}";
+            //battleStageManager.StartCountDown(); //开始计时
+        }
+    }
+
+    private void SetLocalizedText_ZHCN(TextMeshProUGUI text2)
+    {
         string reviveTime;
         if (_battleStageManager.maxReviveTime == 0)
         {
@@ -70,23 +105,27 @@ public class UI_StartScreen : MonoBehaviour
         {
             text2.text = $"\n重生次数: {reviveTime}";
         }
-
-
-        //ENGLISH
-        //JAPANESE
-
-        var timeLimit = transform.Find("TimeLimit").GetComponent<TextMeshProUGUI>();
-        //string time;
-        if (_battleStageManager.timeLimit < 0)
+    }
+    
+    private void SetLocalizedText_EN(TextMeshProUGUI text2)
+    {
+        string reviveTime;
+        if (_battleStageManager.maxReviveTime == 0)
         {
-            timeLimit.text = $"<sprite=0> ∞";
+            reviveTime = "Cannot Revive";
         }
         else
         {
-            var min = (int)Mathf.Floor(_battleStageManager.timeLimit / 60);
-            var sec = _battleStageManager.timeLimit % 60;
-            timeLimit.text = $"<sprite=0> {min:D2}:{sec:D2}";
-            //battleStageManager.StartCountDown(); //开始计时
+            reviveTime = $"Revives: {_battleStageManager.maxReviveTime}";
+        }
+
+        if (_battleStageManager.clearConditionType == 0)
+        {
+            text2.text = $"Objective: Defeat the boss before time expired\n\n{reviveTime}";
+        }
+        else
+        {
+            text2.text = $"\n{reviveTime}";
         }
     }
 }

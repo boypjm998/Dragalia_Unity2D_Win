@@ -27,10 +27,21 @@ public class ForcedAttackFromPlayer : AttackFromPlayer
         var col = target.transform.Find("HitSensor")?.GetComponent<Collider2D>();
         if(col == null)
             return;
-        if(col.CompareTag("Player"))
+        if (col.CompareTag("Player"))
+        {
+            
             return;
+        }
+        print("FORCE TARGET:"+col.transform.parent.name);
+
         
-        CauseDamage(col.gameObject);
+
+        if (hitFlags.Contains(col.transform.parent.GetInstanceID()))
+        {
+            //print("ForcedAttackCausedAuto");
+            CauseDamage(col);
+        }
+
         
         if(extraTargets.Count > 0)
             foreach (var t in extraTargets)
@@ -38,7 +49,7 @@ public class ForcedAttackFromPlayer : AttackFromPlayer
                 col = t.transform.Find("HitSensor").GetComponent<Collider2D>();
                 if(col == null)
                     continue;
-                CauseDamage(col.gameObject);
+                CauseDamage(col);
             }
         
     }
@@ -49,7 +60,8 @@ public class ForcedAttackFromPlayer : AttackFromPlayer
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
 
-            CauseDamage(collision.gameObject);
+            print("ForcedAttackCausedByCollision");
+            CauseDamage(collision);
 
         }
         

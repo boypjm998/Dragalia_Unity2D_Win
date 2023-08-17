@@ -24,7 +24,12 @@ public class AudioBundlesTest : MonoBehaviour
         StartCoroutine(loadBundles());
         
     }
-    
+
+    private void Start()
+    {
+        
+    }
+
     IEnumerator loadBundles()
     {
         //load asset bundles asynchronously

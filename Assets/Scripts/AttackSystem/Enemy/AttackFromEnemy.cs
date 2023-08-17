@@ -64,8 +64,23 @@ public class AttackFromEnemy : AttackBase
         //withConditionFlags = SearchPlayerList();
         battleStageManager = BattleStageManager.Instance;
         
+        
 
     }
+
+    protected virtual void Start()
+    {
+        try
+        {
+            CheckSpecialConditionalEffectBeforeAttack(enemySource.GetComponent<StatusManager>());
+        }
+        catch
+        {
+            Debug.LogWarning("enemySourceNotFoundWhenCheckSpecialConditionalEffect");
+        }
+        
+    }
+
 
     // Update is called once per frame
     

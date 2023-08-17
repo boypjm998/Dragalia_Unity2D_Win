@@ -70,6 +70,7 @@ public class TutorialLevelManager : MonoBehaviour
     public GameObject prayerFX;
     public GameObject laserFX;
     public GameObject holyCrownFX;
+    public GameObject absorbingPrayerFX;
 
     protected GameObject SkillUseHint1;
     protected GameObject SkillUseHint2;
@@ -186,12 +187,12 @@ public class TutorialLevelManager : MonoBehaviour
         if (defaultSettingGroupID == 1)
         {
             keyJump = KeyCode.W;
-            keyAttack = KeyCode.J;
-            keyRoll = KeyCode.K;
-            keySkill1 = KeyCode.H;
-            keySkill2 = KeyCode.U;
-            keySkill3 = KeyCode.I;
-            keySkill4 = KeyCode.L;
+            keyAttack = KeyCode.H;
+            keyRoll = KeyCode.LeftShift;
+            keySkill1 = KeyCode.J;
+            keySkill2 = KeyCode.K;
+            keySkill3 = KeyCode.L;
+            keySkill4 = KeyCode.C;
         }
         else
         {
@@ -374,6 +375,9 @@ public class TutorialLevelManager : MonoBehaviour
         Zethia.GetComponentInChildren<Animator>().Play("action08");
         GiveBuffToAllPlayers(new TimerBuff((int)BasicCalculation.BattleCondition.HealOverTime,
             30,-1,100),false,9999);
+        
+        
+        
         var dmgCutBuff = new TimerBuff((int)BasicCalculation.BattleCondition.DamageCutConst,2000,-1,BasicCalculation.MAXCONDITIONSTACKNUMBER);
         GiveBuffToPlayer(Zethia, dmgCutBuff, true);
         
@@ -508,6 +512,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitForSeconds(13.5f);
         
         bossBehavior.playerAlive = false;
+        absorbingPrayerFX.SetActive(true);
         yield return new WaitUntil(() => bossBehavior.isAction == false);
         _playerInput.GetComponentInChildren<TargetAimer>().enabled = false;
         var cm = StageCameraController.MainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -610,7 +615,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitForSeconds(7.5f);
         PlayStoryVoiceWithDialog(15,8003,sharedVoice);
         
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.7f);
         _tweener = blackinEffectImg.DOFade(1, 1.5f);
         yield return new WaitForSeconds(1.5f);
         Destroy(attackFXPlayer.transform.Find("PrologueCutscene").gameObject,1f);
@@ -630,7 +635,7 @@ public class TutorialLevelManager : MonoBehaviour
         
         yield return new WaitForSeconds(1f);
         PlayStoryVoiceWithDialog(28,8003,sharedVoice);
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(2.8f);
         bossBehavior.SetState(2);
         bossBehavior.isAction = false;
         
@@ -665,14 +670,14 @@ public class TutorialLevelManager : MonoBehaviour
         UseSupportSkill(6);
         EmitEffect();
         
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(3f);
         SupportSkillCutIn(7);
         PlayStoryVoiceWithDialog(19,9001,sharedVoice);
         yield return new WaitForSeconds(2.5f);
         UseSupportSkill(7);
         EmitEffect();
         
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.5f);
         SupportSkillCutIn(8);
         PlayStoryVoiceWithDialog(20,1011,sharedVoice);
         yield return new WaitForSeconds(2f);
@@ -686,7 +691,7 @@ public class TutorialLevelManager : MonoBehaviour
         UseSupportSkill(9);
         EmitEffect();
         
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3f);
         SupportSkillCutIn(10);
         PlayStoryVoiceWithDialog(22,1009,sharedVoice);
         yield return new WaitForSeconds(2f);
@@ -834,9 +839,9 @@ public class TutorialLevelManager : MonoBehaviour
         Destroy(BossTerminal);
         ClearAllConditions();
         yield return new WaitForSeconds(1.5f);
-        Instantiate(enemyDeathVFX,positionBoss,Quaternion.identity,attackFXLayer.transform);
         
         
+        absorbingPrayerFX.SetActive(false);
         Zethia.GetComponentInChildren<Animator>().Play("defeat");
         
         
@@ -846,6 +851,7 @@ public class TutorialLevelManager : MonoBehaviour
         cm.Follow = Zethia.transform;
         
         yield return new WaitForSeconds(0.25f);
+        Instantiate(enemyDeathVFX,positionBoss,Quaternion.identity,attackFXLayer.transform);
         Zethia.transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression(0.75f);
         yield return new WaitForSeconds(1.25f);
         

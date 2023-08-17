@@ -10,8 +10,8 @@ public class UI_PauseMenu : MonoBehaviour
     protected BattleSceneUIManager _battleSceneUIManager;
     protected string quest_name;
     protected BattleStageManager _battleStageManager;
-
     protected TextMeshProUGUI questNameText;
+    
     private void Awake()
     {
         _battleSceneUIManager = transform.parent.GetComponent<BattleSceneUIManager>();

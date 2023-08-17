@@ -235,9 +235,7 @@ namespace GameMechanics
             {
                 startPos = new Vector2(startNode.pos.x,destNode.pos.y); //刚刚登上平台的位置
             }
-
-
-
+            
             destPos = destNode.pos; //目标平台的位置
             var horiziontalMoveTime = Mathf.Abs(destPos.x - startPos.x) / horizontalSpeed;
             float verticalMoveTime;
@@ -264,11 +262,7 @@ namespace GameMechanics
 
                 verticalMoveTime = (singleJumpTimeEstimate) * (jumpTimesRequire) + timeToFallDown;
                 
-                
-                
-                
             }
-            
 
             return Mathf.Max(verticalMoveTime, horiziontalMoveTime);
         }
@@ -363,12 +357,7 @@ namespace GameMechanics
             startNode.parent = null;
             endNode.pos = target.position;
             startNode.h = Platform.EstimateArriveTime(startNode, endNode, gravity, jumpSpeed, horizontalSpeed);
-            
 
-            
-
-            
-            
             if(startNode.platform.collider == endNode.platform.collider)
             {
                 Debug.Log("Start and End are the same platform");

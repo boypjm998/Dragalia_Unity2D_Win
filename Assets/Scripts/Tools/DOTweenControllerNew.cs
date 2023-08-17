@@ -26,14 +26,17 @@ public class DOTweenControllerNew : MonoBehaviour
 
         if (isLocal)
         {
-            moveDirection.x *= transform.localScale.x;
-            moveDirection.y *= transform.localScale.y;
-            
+            //将moveDirection沿着transform.rotation的方向进行旋转。
+            var rotatedVector = (Vector3)moveDirection;
+            rotatedVector = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z) * rotatedVector;
             _tweener = transform.DOLocalMove
             (
-                moveDirection,
+                rotatedVector+transform.localPosition,
                 duration);
-            
+
+
+
+
         }
         else
         {

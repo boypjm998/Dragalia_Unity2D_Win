@@ -748,7 +748,6 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         yield return new WaitForSeconds(3f);
         
         fullScreenUI.SetActive(false);
-        
         rawImg.texture = null;
         RTScene.SetActive(false);
 

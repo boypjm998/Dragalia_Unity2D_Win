@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GameMechanics;
 
+[Serializable]
 public abstract class BattleCondition
 {
     protected Sprite buffIcon;
@@ -16,6 +18,9 @@ public abstract class BattleCondition
 
     public int specialID = -1;
 
+    /// <summary>
+    /// obsoleted
+    /// </summary>
     public bool canStack { get; protected set; } = true;
 
     public float lastTime { set; get; }
@@ -47,13 +52,18 @@ public abstract class BattleCondition
         this.displayInBar = false;
     }
 
-    protected virtual void OnBuffEnable()
+    public void SetEffect(float newEffect)
     {
+        effect = newEffect;
     }
 
-    protected virtual void OnBuffDisable()
-    {
-    }
+    // protected virtual void OnBuffEnable()
+    // {
+    // }
+    //
+    // protected virtual void OnBuffDisable()
+    // {
+    // }
     
     
 

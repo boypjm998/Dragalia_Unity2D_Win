@@ -151,6 +151,16 @@ public class UI_Tutorial_PauseMenu : UI_PauseMenu
         }
     }
 
+    public override string ToString()
+    {
+        var str = base.ToString();
+        if(str == "Mouse0")
+            return "Left Mouse Button";
+        if(str == "Mouse1")
+            return "Right Mouse Button";
+        return str;
+    }
+
 
     /// <summary>
     /// 

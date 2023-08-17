@@ -11,7 +11,14 @@ public class IdentityRetainer : MonoBehaviour
 
     private void Awake()
     {
-        _transform = GetComponentInParent<StatusManager>().transform;
+        try
+        {
+            _transform = GetComponentInParent<StatusManager>().transform;
+        }
+        catch
+        {
+            _transform = transform.parent;
+        }
     }
 
     void Update()

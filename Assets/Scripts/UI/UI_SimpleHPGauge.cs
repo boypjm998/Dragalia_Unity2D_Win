@@ -15,6 +15,7 @@ public class UI_SimpleHPGauge : MonoBehaviour
     private SpriteRenderer HPValueSpriteRenderer;
     private TextMeshPro nameText;
     private Tweener[] _tweeners;
+    
 
     private float currentHP;
     private float fullSize;
@@ -27,16 +28,24 @@ public class UI_SimpleHPGauge : MonoBehaviour
         HPGaugeSpriteRenderer = GetComponent<SpriteRenderer>();
         HPValueSpriteRenderer = transform.Find("Value").GetComponent<SpriteRenderer>();
         statusManager = GetComponentInParent<StatusManager>();
-        displayedName = statusManager.displayedName;
-        nameText.text = displayedName;
+        
+        
         statusManager.OnHPChange += ExcuteHPBar;
+        statusManager.OnHPBelow0 += ExcuteHPBar;
         fullSize = HPValueSpriteRenderer.size.x;
         SetFakeInactive();
+    }
+
+    private void Start()
+    {
+        displayedName = statusManager.displayedName;
+        nameText.text = displayedName;
     }
 
     private void OnDestroy()
     {
         statusManager.OnHPChange -= ExcuteHPBar;
+        statusManager.OnHPBelow0 -= ExcuteHPBar;
     }
 
     // Update is called once per frame

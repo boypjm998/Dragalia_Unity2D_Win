@@ -38,10 +38,11 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
 
     public void ChooseCharacter(int id)
     {
-        if (upperMenu.currentSelectedCharaID == id && ContentTransform.GetChild(id-1).childCount==1)
+        if (upperMenu.currentSelectedCharaID == id && ContentTransform.Find($"{id}").childCount==1)
         {
             GlobalController.currentCharacterID = id;
             RedirectSelectionArrow(id);
+            print(GlobalController.currentCharacterID);
         }
         upperMenu.ChangeCurrentSelectedCharacter(id);
     }

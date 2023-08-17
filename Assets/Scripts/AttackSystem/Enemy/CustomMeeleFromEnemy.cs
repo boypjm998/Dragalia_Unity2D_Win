@@ -15,6 +15,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
 
     protected void Start()
     {
+        
         if(attackCollider==null)
             attackCollider = GetComponent<Collider2D>();
         selfpos = transform.parent.parent.parent;
@@ -32,6 +33,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
         {
             ac.OnAttackInterrupt += DestroyContainer;
         }
+        base.Start();
     }
 
     

@@ -10,6 +10,9 @@ public class UI_ResultPageSpecial : UI_ResultPage
     // Start is called before the first frame update
     private static string zhcn_levelname1 = "终焉与伊始";
     private static string zhcn_levelname2 = "起始之“人”";
+    
+    private static string en_levelname1 = "The Final Battle";
+    private static string en_levelname2 = "A New Beginning";
     public float backspaceTotalTime = 1.5f;
     
     void Awake()
@@ -104,7 +107,13 @@ public class UI_ResultPageSpecial : UI_ResultPage
         {
             levelNameText1 = zhcn_levelname1;
             levelNameText2 = zhcn_levelname2;
-        }else yield break;
+        }
+        else if(GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+        {
+            levelNameText1 = en_levelname1;
+            levelNameText2 = en_levelname2;
+        }
+        else yield break;
         
         //blink
         int blinkTime = 2;

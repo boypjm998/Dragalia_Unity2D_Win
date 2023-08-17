@@ -40,7 +40,22 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         
         UI_DialogDisplayer.Instance.EnqueueDialogShared(10101,90012,null);
         var UIElements = GameObject.Find("UI");
-        var prefab = Instantiate(projectile1, UIElements.transform);
+
+        GameObject prefab;
+
+        if (GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN)
+        {
+            prefab = Instantiate(projectile1, UIElements.transform);
+        }else if(GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+        {
+            prefab = Instantiate(projectile2, UIElements.transform);
+        }
+        else
+        {
+            yield break;
+        }
+        
+        
 
         //TODO: 检查特殊行动
         SetHintTxt(prefab);
@@ -60,7 +75,7 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         
         var playerInput = FindObjectOfType<PlayerInput>();
 
-        tmp.text = BasicCalculation.GetTraningHintString(playerInput);
+        tmp.text = BasicCalculation.GetTraningHintString(playerInput,GlobalController.Instance.GameLanguage);
 
     }
 

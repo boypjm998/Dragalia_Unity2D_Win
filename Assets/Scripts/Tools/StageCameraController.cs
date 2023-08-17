@@ -7,12 +7,19 @@ using UnityEngine;
 public class StageCameraController : MonoBehaviour
 {
     public static StageCameraController Instance;
+
+    public Vector2 startPosition = Vector2.zero;
     
 
     public static GameObject MainCameraGameObject
     {
         get => mainCameraGameObject;
         //set => mainCameraGameObject = value;
+    }
+
+    public Transform MainCameraFollowObject
+    {
+        get => mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().Follow;
     }
 
     private static GameObject overallCameraGameObject;
@@ -94,6 +101,19 @@ public class StageCameraController : MonoBehaviour
         camera.Follow = target.transform;
 
     }
+
+    public static void SwitchOverallCameraFollowObject(GameObject target)
+    {
+        var camera = overallCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
+        if(target == null)
+            camera.Follow = null;
+        else
+        {
+            camera.Follow = target.transform;
+        }
+        
+    }
+
     public static void SetMainCameraSize(int size)
     {
         var camera = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();

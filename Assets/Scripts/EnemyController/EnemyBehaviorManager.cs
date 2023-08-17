@@ -110,6 +110,14 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
                 state++;
                 _currentPhase = _pattern.phasePattern[state];
             }
+        }else if (phase.jumpOutCondition == EnemyActionPattern.PhasePattern.JumpOutCondition.Function)
+        {
+            if (CustomJumpActionConditionCheck(phase.args))
+            {
+                substate = 0;
+                state++;
+                _currentPhase = _pattern.phasePattern[state];
+            }
         }
     }
 
@@ -204,4 +212,9 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
         return false;
     }
     
+    protected virtual bool CustomJumpActionConditionCheck(string[] args)
+    {
+        return false;
+    }
+
 }

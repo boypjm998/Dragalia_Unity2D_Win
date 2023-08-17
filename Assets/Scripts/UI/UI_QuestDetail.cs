@@ -44,9 +44,17 @@ public class UI_QuestDetail : MonoBehaviour
 
     private void DisplayPage()
     {
+        string language;
+        
+        if(GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN)
+            language = "zh";
+        else
+            language = "en";
+        
+        
         
         var res = Resources.Load<GameObject>
-            ($"UI/OutBattle/QuestDetailedTutorial/zh/{MenuUIManager.Instance.currentQuestInfoPageID}_DetailedTutPage");
+            ($"UI/OutBattle/QuestDetailedTutorial/{language}/{MenuUIManager.Instance.currentQuestInfoPageID}_DetailedTutPage");
         Instantiate(res, contentParent.transform);
     }
 

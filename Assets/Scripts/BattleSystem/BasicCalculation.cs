@@ -7,12 +7,25 @@ using System.Text;
 using CharacterSpecificProjectiles;
 using LitJson;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace GameMechanics
 {
     public static class BasicCalculation
     {
+
+        public static string ToButtonString(KeyCode obj)
+        {
+            string str = obj.ToString();
+            if(str == "Mouse0")
+                return "LMouse";
+            if(str == "Mouse1")
+                return "RMouse";
+            return str;
+
+        }
+
         public enum AttackType
         {
             STANDARD = 1,
@@ -34,7 +47,7 @@ namespace GameMechanics
         };
         public static int[] conditionsDisplayedByLevel = new int[]
         {
-            112
+            112,113
         };
 
         public static int[] conditionDisplayedByExactValue = new int[]
@@ -85,7 +98,7 @@ namespace GameMechanics
             FreezeRes = 34,
             BlindnessRes = 35,
             
-            OverdriveAccerlerator = 37,
+            OverdriveAccerlerator = 38,
             
             BurnPunisher = 41,
             PoisonPunisher = 42,
@@ -103,6 +116,8 @@ namespace GameMechanics
             BlindnessPunisher = 55,
             
             AfflictedPunisher = 57,
+            
+            BreakPunisher = 59,
             
             BurnRateUp = 61,
             PoisonRateUp = 62,
@@ -134,6 +149,7 @@ namespace GameMechanics
             
             StandardAttackBurner = 111,
             HeartAflame = 112,
+            ScorchingEnergy = 113,
             
             
             
@@ -195,24 +211,59 @@ namespace GameMechanics
             
         }
 
-        public static string GetTraningHintString(PlayerInput playerInput)
+        public static string GetTraningHintString(PlayerInput playerInput,GlobalController.Language language = GlobalController.Language.ZHCN)
         {
             StringBuilder sb = new();
+            string attackText = String.Empty;
+            string jumpText = String.Empty;
+            string rollText = String.Empty;
+            string specialText_c001 = String.Empty;
+            string specialText_c001_cond = String.Empty;
+            string specialText_c003 = String.Empty;
+            string specialText_c003_cond = String.Empty;
             
-            sb.Append($"攻击键:{playerInput.keyAttack.ToString().ToUpper()}\n");
-            sb.Append($"跳跃键:{playerInput.keyJump.ToString().ToUpper()}\n");
-            sb.Append($"回避键:{playerInput.keyRoll.ToString().ToUpper()}\n");
+            
+
+            if (language == GlobalController.Language.ZHCN)
+            {
+                attackText = "攻击键";
+                jumpText = "跳跃键";
+                rollText = "回避键";
+                specialText_c001 = "特殊行动(传送)";
+                specialText_c003 = "蓄力攻击:持续按下";
+                specialText_c001_cond = "(当传送门存在时)";
+                specialText_c003_cond = "(当【暮光之月】增益存在时)";
+            }else if (language == GlobalController.Language.EN)
+            {
+                attackText = "Attack Key";
+                jumpText = "Jump Key";
+                rollText = "Dodge Key";
+                specialText_c001 = "Special Action(Teleport)";
+                specialText_c003 = "Force Strike:Hold ";
+                specialText_c001_cond = "(When the portal is on the field)";
+                specialText_c003_cond = "(When the user has 'Twilight Moon')";
+                
+            }
+
+
+
+
+            
+
+            sb.Append($"{attackText}:{ToButtonString(playerInput.keyAttack)}\n");
+            sb.Append($"{jumpText}:{ToButtonString(playerInput.keyJump)}\n");
+            sb.Append($"{rollText}:{ToButtonString(playerInput.keyRoll)}\n");
         
             
             if (GlobalController.currentCharacterID == 1)
             {
 
-                sb.Append($"特殊行动(传送):{playerInput.keyUp.ToString().ToUpper()}\n(当传送门存在时)");
+                sb.Append($"{specialText_c001}:{ToButtonString(playerInput.keyUp)}\n{specialText_c001_cond}");
             }
             if (GlobalController.currentCharacterID == 3)
             {
 
-                sb.Append($"蓄力攻击:持续按下{playerInput.keyAttack.ToString().ToUpper()}\n(当【暮光之月】增益存在时)");
+                sb.Append($"{specialText_c003}{ToButtonString(playerInput.keyAttack)}\n{specialText_c003_cond}");
             }
 
             return sb.ToString();
@@ -366,9 +417,9 @@ namespace GameMechanics
             {
                 //Basic Conditions
                 case BattleCondition.AtkBuff:
-                    return ("Attack +{0}%");
+                    return ("Strength +{0}%");
                 case BattleCondition.AtkDebuff:
-                    return ("Attack -{0}%");
+                    return ("Strength -{0}%");
                 case BattleCondition.DefBuff:
                     return ("Defense +{0}%");
                 case BattleCondition.DefDebuff:
@@ -384,25 +435,31 @@ namespace GameMechanics
                 case BattleCondition.CritDmgDebuff:
                     return ("Critical Damage -{0}%");
                 case BattleCondition.RecoveryBuff:
-                    return ("回復スキル効果{0}％アップ");
+                    return ("Recovery Potency +{0}%");
                 case BattleCondition.RecoveryDebuff:
-                    return ("回復スキル効果{0}％ダウン");
+                    return ("Recovery Potency -{0}%");
                 case BattleCondition.SkillDmgBuff:
                     return ("Skill Damage +{0}%");
                 case BattleCondition.SkillDmgDebuff:
                     return ("Skill Damage -{0}%");
+                case BattleCondition.ForceStrikeDmgBuff:
+                    return ("Force Strike Damage +{0}%");
+                case BattleCondition.Shield:
+                    return ("Shield");
                 case BattleCondition.LifeShield:
                     return ("Life Shield");
                 case BattleCondition.DamageCut:
                     return ("Damage Taken -{0}%");
                 case BattleCondition.DamageCutConst:
                     return ("Damage Taken -{0}");
-                case BattleCondition.Shield:
-                    return ("");
+                case BattleCondition.DamageUp:
+                    return ("Damage Dealt +{0}%");
+                
+                
                 case BattleCondition.SkillHasteBuff:
-                    return ("Skill Haste +{0}%");
+                    return ("Skill Fill Rate +{0}%");
                 case BattleCondition.SkillHasteDebuff:
-                    return ("Skill Haste -{0}%");
+                    return ("Skill Fill Rate -{0}%");
                 case BattleCondition.SPRegen:
                     return ("Skill Energy Regen");
                 case BattleCondition.SPDegen:
@@ -410,30 +467,32 @@ namespace GameMechanics
                 case BattleCondition.Vulnerable:
                     return ("Damage Taken +{0}%");
                 
+                case BattleCondition.KnockBackImmune:
+                    return ("Knockback Immunity");
                 case BattleCondition.ScorchrendRes:
-                    return ("劫火抗性提升");
+                    return ("Scorchrend Res +{0}%");
                 case BattleCondition.FlashburnRes:
-                    return ("闪热抗性提升");
+                    return ("Flashburn Res +{0}%");
                 case BattleCondition.BurnRes:
-                    return ("烧伤抗性提升");
+                    return ("Burn Res +{0}%");
                 case BattleCondition.ShadowBlightRes:
-                    return ("暗殇抗性提升");
+                    return ("Shadowblight Res +{0}%");
                 case BattleCondition.ParalysisRes:
-                    return ("麻痹抗性提升");
+                    return ("Paralysis Res +{0}%");
                 case BattleCondition.FrostbiteRes:
-                    return ("冻伤抗性提升");
+                    return ("Frostbite Res +{0}%");
                 case BattleCondition.StormlashRes:
-                    return ("裂风抗性提升");
+                    return ("Stormlash Res +{0}%");
                 case BattleCondition.PoisonRes:
-                    return ("中毒抗性提升");
+                    return ("Poison Res +{0}%");
                 case BattleCondition.FreezeRes:
-                    return ("冰冻抗性提升");
+                    return ("Freeze Res +{0}%");
                 case BattleCondition.StunRes:
-                    return ("昏迷抗性提升");
+                    return ("Stun Res +{0}%");
                 case BattleCondition.SleepRes:
-                    return ("睡眠抗性提升");
+                    return ("Sleep Res +{0}%");
                 case BattleCondition.BlindnessRes:
-                    return ("黑暗抗性提升");
+                    return ("Blindness Res +{0}%");
                 case BattleCondition.FlashburnResDown:
                     return ("Flashburn Res -{0}%");
                 case BattleCondition.ScorchrendResDown:
@@ -441,23 +500,65 @@ namespace GameMechanics
                 case BattleCondition.BurnResDown:
                     return ("Burn Res -{0}%");
                 case BattleCondition.ShadowBlightResDown:
-                    return ("暗殇抗性下降{0}%");
+                    return ("Shadowblight Res -{0}%");
                 case BattleCondition.ParalysisResDown:
-                    return ("麻痹抗性下降{0}%");
+                    return ("Paralysis Res -{0}%");
                 case BattleCondition.FrostbiteResDown:
-                    return ("冻伤抗性下降{0}%");
+                    return ("Frostbite Res -{0}%");
                 case BattleCondition.StormlashResDown:
-                    return ("裂风抗性下降{0}%");
+                    return ("Stormlash Res -{0}%");
                 case BattleCondition.PoisonResDown:
                     return ("Poison Res -{0}%");
                 case BattleCondition.BurnRateUp:
-                    return ("造成烧伤成功率提升{0}%");
+                    return ("Burn Infliction Rate +{0}%");
                 case BattleCondition.FlashburnRateUp:
-                    return ("造成闪热成功率提升{0}%");
+                    return ("Flashburn Infliction Rate +{0}%");
                 case BattleCondition.ScorchrendRateUp:
-                    return ("造成劫火成功率提升{0}%");
+                    return ("Flashburn Infliction Rate +{0}%");
+                
+                case BattleCondition.Energy:
+                    return ("Energy Level +{0}");
+                case BattleCondition.Inspiration:
+                    return ("Inspiration Level +{0}");
+                
+                case BattleCondition.OverdriveAccerlerator:
+                    return ("OD Gauge Decrease Rate +{0}%");
+                
+                
+                case BattleCondition.AfflictedPunisher:
+                    return ("Afflicted Punisher");
+                case BattleCondition.BreakPunisher:
+                    return ("Break Punisher +{0}%");
+                case BattleCondition.BlindnessPunisher:
+                    return ("Blindness Punisher +{0}%");
+                case BattleCondition.BogPunisher:
+                    return ("Bog Punisher +{0}%");
+                case BattleCondition.BurnPunisher:
+                    return ("Burn Punisher +{0}%");
+                case BattleCondition.FlashburnPunisher:
+                    return ("Flashburn Punisher +{0}%");
+                case BattleCondition.FreezePunisher:
+                    return ("Freeze Punisher +{0}%");
+                case BattleCondition.FrostbitePunisher:
+                    return ("Frostbite Punisher +{0}%");
+                case BattleCondition.ParalysisPunisher:
+                    return ("Paralysis Punisher +{0}%");
+                case BattleCondition.PoisonPunisher:
+                    return ("Poison Punisher +{0}%");
+                case BattleCondition.ScorchrendPunisher:
+                    return ("Scorchrend Punisher +{0}%");
+                case BattleCondition.ShadowblightPunisher:
+                    return ("Shadowblight Punisher +{0}%");
+                case BattleCondition.SleepPunisher:
+                    return ("Sleep Punisher +{0}%");
+                case BattleCondition.StormlashPunisher:
+                    return ("Stormlash Punisher +{0}%");
+                case BattleCondition.StunPunisher:
+                    return ("Stun Punisher +{0}%");
+                
     
                 //Special buffs:
+                
                 case BattleCondition.AlchemicCatridge:
                     return ("Cartridges Loaded");
                 case BattleCondition.InfernoMode:
@@ -468,11 +569,35 @@ namespace GameMechanics
                     return ("Blazewolf's Rush");
                 case BattleCondition.PowerOfBonds:
                     return ("Power of Bonds");
+                case BattleCondition.HolyAccord:
+                    return ("Holy Accord");
+                case BattleCondition.GabrielsBlessing:
+                    return ("Gabriel's Blessing");
+                case BattleCondition.TwilightMoon:
+                    return ("Twilight Moon");
+                case BattleCondition.Invincible:
+                    return ("Invulnerability");
+                
+                case BattleCondition.StandardAttackBurner:
+                    return ("Standard Attacks Inflicts Burn");
+                case BattleCondition.HeartAflame:
+                    return ("Heart Aflame {0}");
+                case BattleCondition.ScorchingEnergy:
+                    return ("Scorching Energy {0}");
+                ;
+                    
     
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
                     return ("Evil's Bane");
-    
+                case BattleCondition.ManaOverloaded:
+                    return ("Energy Overloaded");
+                
+                case BattleCondition.Taunt:
+                    return ("Marked");
+                case BattleCondition.Nihility:
+                    return ("Nihility");
+
                 //Afflictions
                 case BattleCondition.Flashburn:
                     return ("Flashburn");
@@ -552,6 +677,8 @@ namespace GameMechanics
                     return ("所受伤害减少{0}%");
                 case BattleCondition.DamageCutConst:
                     return ("所受伤害减少{0}");
+                case BattleCondition.DamageUp:
+                    return ("攻击威力提升{0}%");
                 
                 
                 case BattleCondition.SkillHasteBuff:
@@ -625,12 +752,15 @@ namespace GameMechanics
                     return ("灵感提升×{0}");
                 
                 
-                
+                case BattleCondition.OverdriveAccerlerator:
+                    return ("怒气槽削减提升{0}%");
                 
                 
                 
                 case BattleCondition.AfflictedPunisher:
                     return ("异常状态特效");
+                case BattleCondition.BreakPunisher:
+                    return ("破防特效提升{0}%");
                 case BattleCondition.BlindnessPunisher:
                     return ("黑暗特效提升{0}%");
                 case BattleCondition.BogPunisher:
@@ -681,7 +811,9 @@ namespace GameMechanics
                 case BattleCondition.StandardAttackBurner:
                     return ("普通攻击赋予烧伤");
                 case BattleCondition.HeartAflame:
-                    return ("炽热之恋Lv.{0}");
+                    return ("炽热之恋{0}");
+                case BattleCondition.ScorchingEnergy:
+                    return ("灼热炽焰{0}");
     
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
@@ -743,13 +875,13 @@ namespace GameMechanics
             //TODO: 只是显示上限，实际上限还需要在计算时再次判断，以后记得修改
             switch (id)
             {
-                case 1:
+                case (int)BattleCondition.AtkBuff:
                     return 200;
-                case 2:
+                case (int)BattleCondition.DefBuff:
                     return 200;
-                case 3:
+                case (int)BattleCondition.CritRateBuff:
                     return 200;
-                case 4:
+                case (int)BattleCondition.CritDmgBuff:
                     return 500;
                 case 6:
                     return 200;
@@ -757,8 +889,8 @@ namespace GameMechanics
                     return 30;
                 case 8:
                     return 200;
-                case 9:
-                    return 200;
+                case (int)BattleCondition.SkillHasteBuff:
+                    return 100;
                 case 10:
                     return 100;
                 case 11:
@@ -769,6 +901,9 @@ namespace GameMechanics
                     return 99999;
                 case 14:
                     return 99999;
+                
+                case (int)(BattleCondition.DamageUp):
+                    return 500;
                 
                 case 201:
                     return 50;
@@ -782,10 +917,15 @@ namespace GameMechanics
                     return 200;
                 case 207:
                     return 30;
+                case (int)BattleCondition.SkillHasteDebuff:
+                    return 100;
                 case 210:
                     return 100;
                 case 214:
                     return 99999;
+                
+                case (int)(BattleCondition.DamageDown):
+                    return 100;
                 
                 
                 
@@ -966,10 +1106,28 @@ namespace GameMechanics
             
             
         }
-    
-        
 
-        
+
+
+        #region SpecialConditionCalculation
+
+        /// <summary>
+        /// 处理一些条件下，buff生效条件与目标有关的判断。
+        /// TODO:将StatusManger里的SpeicalConditionCheck移动到这里。
+        /// </summary>
+        /// <param name="sourceStat"></param>
+        /// <param name="targetStat"></param>
+        /// <param name="attackStat"></param>
+        /// <returns></returns>
+        public static Tuple<float, float, float> CheckSpecialAttackCondition(StatusManager sourceStat,
+            StatusManager targetStat,
+            AttackBase attackStat)
+        {
+            return new Tuple<float, float, float>(0, 0, 0);
+        }
+
+
+        #endregion
 
         #region SpecialAbilityCalculation
         
@@ -1014,7 +1172,14 @@ namespace GameMechanics
         {
             float buffModifier = 0;
             float debuffModifier = 0;
-
+            
+            //炽热之炎（legend）
+            // if (sourceStat.GetConditionTotalValue((int)BattleCondition.ScorchingEnergy) >
+            //     targetStat.GetConditionTotalValue((int)BattleCondition.ScorchingEnergy))
+            // {
+            //     buffModifier += 0.3f;
+            // }
+            
             return new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
         }
 
@@ -1197,6 +1362,14 @@ namespace GameMechanics
             AttackBase attackStat)
         {
             float totalODAccerlerator = 0;
+
+            if (sourceStat.GetAbility(80009))
+            {
+                //铳的补正
+                totalODAccerlerator += 0.2f;
+            }
+
+
             if (sourceStat.GetAbility(90001))
             {
                 totalODAccerlerator += 2f;
@@ -1247,6 +1420,7 @@ namespace GameMechanics
             return totalDef;
             
         }
+
 
         private static float CheckTotalPunisher(StatusManager targetStat, StatusManager sourceStat)
         {
@@ -1515,6 +1689,24 @@ namespace GameMechanics
             }
 
             return myGround.GetComponentInChildren<Collider2D>();
+        }
+
+        public static float GetRaycastedPlatformY(Vector2 position)
+        {
+            RaycastHit2D myRay = 
+                Physics2D.Raycast(position, Vector2.down,
+                    999f,LayerMask.GetMask("Ground","Platforms"));
+            
+            var myGround = myRay.collider.gameObject;
+            
+            if (myGround == null)
+                return 0;
+            
+            var col = myGround.GetComponentInChildren<Collider2D>();
+            
+            //var distance = col.bounds.max.y - selfCollider.bounds.min.y;
+
+            return col.bounds.max.y;
         }
 
         public static float GetRaycastedPlatformY(GameObject target)

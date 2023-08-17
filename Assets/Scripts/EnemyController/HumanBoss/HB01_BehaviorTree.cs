@@ -302,7 +302,6 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
     protected IEnumerator ACT_CarmineRush(float interval)
     {
         SetTarget(FurthestTarget);
-        
         MoveTowardTarget(targetPlayer,3,12f);
         
         yield return new WaitUntil
@@ -574,8 +573,6 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         
         if (TaskSuccess)
         {
-            
-
             currentAttackAction =
                 StartCoroutine(enemyAttackManager.HB01_Action08());
         }
@@ -592,12 +589,7 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
         enemyController.SetKBRes(status.knockbackRes);
         //Wait For Attack Interval
         yield return new WaitForSeconds(interval);
-        // if (interval == 0)
-        // { 
-        //     enemyAttackManager.GenerateWarningPrefab(9,transform.position,
-        //         enemyController.facedir==1?Quaternion.identity:
-        //             Quaternion.Euler(0,180,0),enemyAttackManager.RangedAttackFXLayer.transform);
-        // }
+        
         substate++;
         isAction = false;
         
@@ -643,8 +635,8 @@ public class HB01_BehaviorTree : DragaliaEnemyBehavior
 
             currentAttackAction =
                 StartCoroutine(enemyAttackManager.HB01_Action08());
-            
         }
+        
         yield return new WaitUntil(() => currentAttackAction == null);
         enemyController.SetKBRes(status.knockbackRes);
         //Wait For Attack Interval

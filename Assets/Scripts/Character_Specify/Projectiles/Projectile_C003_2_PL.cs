@@ -7,6 +7,7 @@ namespace CharacterSpecificProjectiles
 {
     public class Projectile_C003_2_PL : ProjectileControllerTest
     {
+        public bool blasted = false;
         public GameObject playerSource;
         public GameObject blastPrefab;
         private void Awake()
@@ -49,9 +50,16 @@ namespace CharacterSpecificProjectiles
         
         private void OnTriggerStay2D(Collider2D other)
         {
+            if (blasted)
+            {
+                return;
+            }
+            
+            
             if (other.CompareTag("Ground"))
             {
                 BlastEffect(2);
+                blasted = true;
                 return;
             }
 
@@ -64,6 +72,7 @@ namespace CharacterSpecificProjectiles
                     if (statusEnemy.gameObject == contactTarget)
                     {
                         BlastEffect();
+                        blasted = true;
                     }
                 }
                 //BlastEffect();

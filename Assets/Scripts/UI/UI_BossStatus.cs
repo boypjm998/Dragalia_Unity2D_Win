@@ -85,9 +85,22 @@ public class UI_BossStatus : MonoBehaviour
         _conditionBar = GetComponentInChildren<UI_BossConditionBar>();
         _abilityIcons = transform.Find("BossAbilities").gameObject;
 
-        
-        bossAbilityDetailData = BasicCalculation.
-            ReadJsonData("/LevelInformation/BossAbilityDetail_ZH.json");
+        switch (GlobalController.Instance.GameLanguage)
+        {
+            case GlobalController.Language.ZHCN:
+                bossAbilityDetailData = BasicCalculation.
+                    ReadJsonData("/LevelInformation/BossAbilityDetail_ZH.json");
+                break;
+            case GlobalController.Language.EN:
+                bossAbilityDetailData = BasicCalculation.
+                    ReadJsonData("/LevelInformation/BossAbilityDetail_EN.json");
+                break;
+            default:
+                Debug.LogError("No such language");
+                break;
+        }
+        // bossAbilityDetailData = BasicCalculation.
+        //     ReadJsonData("/LevelInformation/BossAbilityDetail_ZH.json");
         
         
         _bossName.text = bossStat.displayedName;
@@ -157,9 +170,9 @@ public class UI_BossStatus : MonoBehaviour
         }
     }
 
-    public void RedirectBoss(GameObject boss)
+    public void RedirectBoss(GameObject boss,int index = 0)
     {
-        SetBoss(boss);
+        SetBoss(boss,index);
         Init();
     }
 

@@ -39,6 +39,8 @@ public class AttackManager_C019 : AttackManager
                 Instantiate(skill2Projectile_sub, new Vector2(stat.transform.position.x, stat.transform.position.y - 1.85f),Quaternion.identity,stat.transform.Find("BuffLayer"));
             }
             stat.ObtainUnstackableTimerBuff((int)BasicCalculation.BattleCondition.PowerOfBonds,-1,-1);
+            stat.ObtainTimerBuff(new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,10,90,3,101901)
+            ,false);
         }
     }
 

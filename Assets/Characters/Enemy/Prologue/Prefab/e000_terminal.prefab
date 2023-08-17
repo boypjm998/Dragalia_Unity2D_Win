@@ -10701,7 +10701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayedName: ???
-  dialogIconID: 2001
+  dialogIconID: 9999
   maxBaseHP: 4194304
   baseDef: 8
   baseAtk: 1024
@@ -10772,6 +10772,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   rigid: {fileID: 0}
   facedir: 1
+  speedModifier: 1
   isSummonEnemy: 0
   rendererObject: {fileID: 0}
   isAction: 0
@@ -10779,9 +10780,11 @@ MonoBehaviour:
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 1640484551480282916}
+  minimapIcon: {fileID: 0}
+  shadowCaster: {fileID: 0}
   hurtEffectDuration: 0.15
   currentKBRes: 0
-  isMove: 0
+  moveEnable: 0
   moveSpeed: 10
   _defaultgravityscale: 1
 --- !u!114 &3230742684288475668
@@ -10796,6 +10799,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8de2b00c566f01429534e56dbfa465e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficulty: 3
   awakeTime: 3
   state: 0
   substate: 0

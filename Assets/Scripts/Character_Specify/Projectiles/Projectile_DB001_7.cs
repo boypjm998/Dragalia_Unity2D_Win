@@ -60,6 +60,8 @@ namespace CharacterSpecificProjectiles
             foreach (var proj in projectiles)
             {
                 proj.GetComponent<AttackFromEnemy>().enemySource = enemySource;
+                proj.GetComponent<AttackFromEnemy>()
+                    .CheckSpecialConditionalEffectBeforeAttack(enemySource.GetComponent<StatusManager>());
             }
             waitlists.Clear();
             if (order == 1)

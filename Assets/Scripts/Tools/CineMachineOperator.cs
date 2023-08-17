@@ -44,7 +44,8 @@ public class CineMachineOperator : MonoBehaviour
 
     public void StopCameraShake()
     {
-        shakeTimer = 0f;
+        //shakeTimer = 0f;
+        CamaraShake(0, 0);
     }
 
     private void Update()

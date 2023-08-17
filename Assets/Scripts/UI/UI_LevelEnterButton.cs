@@ -22,8 +22,13 @@ public class UI_LevelEnterButton : MonoBehaviour
     private void OnEnable()
     {
         var questSaveData = GlobalController.questSaveDataString;
-        if(questSaveData == null)
+        if (questSaveData == null)
+        {
+            Debug.LogWarning("questSaveDataString为空");
             return;
+        }
+
+        
         var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveData);
         var questInfoList = questSaveDataList.quest_info;
         //遍历transform下所有子物体

@@ -143,8 +143,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5E2D\u83C8\u7684\u8BD5\u70BC \u7EDD\u7EA7\n<align=left><size=16>          
-    \u656C\u8BF7\u671F\u5F85</size></align>"
+  m_text: "\u5E2D\u83C8\u7684\u8BD5\u70BC \u7EDD\u7EA7"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0f371689b72231449b4af96eca013b88, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: a45e1daca39a89e4f86b9541178c17d9, type: 2}
@@ -1908,11 +1907,23 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 5711287941745580803}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1509970128326926071}
+        m_TargetAssemblyTypeName: UI_LevelEnterButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1014
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &6997442353620084635
 Animator:
   serializedVersion: 4
@@ -2470,7 +2481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2677,11 +2688,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2594530377893798083, guid: c9098f21c3c5a7c47b02d7d3e74f5990, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 2594530377893798083, guid: c9098f21c3c5a7c47b02d7d3e74f5990, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 2594530377893798083, guid: c9098f21c3c5a7c47b02d7d3e74f5990, type: 3}
       propertyPath: m_LocalPosition.x

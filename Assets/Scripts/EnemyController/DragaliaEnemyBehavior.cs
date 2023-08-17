@@ -122,6 +122,28 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         }
     }
     
+    public static List<GameObject> GetPlayerList()
+    {
+        var players = GameObject.Find("Player");
+        List<GameObject> playerList = new List<GameObject>();
+        for (int i = 0; i < players.transform.childCount; i++)
+        {
+            if(players.transform.GetChild(i).Find("HitSensor").gameObject.activeSelf)
+                playerList.Add(players.transform.GetChild(i).gameObject);
+        }
+        return playerList;
+    }
+    public static List<GameObject> GetPlayerListDeadAlive()
+    {
+        var players = GameObject.Find("Player");
+        List<GameObject> playerList = new List<GameObject>();
+        for (int i = 0; i < players.transform.childCount; i++)
+        {
+            playerList.Add(players.transform.GetChild(i).gameObject);
+        }
+        return playerList;
+    }
+    
 
     protected IEnumerator UpdateBehavior()
     {
@@ -188,6 +210,37 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
             StopCoroutine(currentAction);
         isAction = false;
         
+    }
+
+    protected void ResetHumanActionsBeforeTransform()
+    {
+        isAction = true;
+        
+        var enemyController = GetComponent<EnemyControllerHumanoid>();
+        if(enemyController == null)
+            return;
+        var enemyAttackManager = GetComponent<EnemyMoveManager>();
+        if (enemyAttackManager == null)
+            return;
+        
+        
+        StopAllCoroutines();
+        enemyController.SetKBRes(999);
+        enemyController.SetHitSensor(false);
+        enemyController.StopAllCoroutines();
+        enemyController.SetMove(0);
+        enemyAttackManager.StopAllCoroutines();
+        enemyController.SetActionUnable(false);
+        enemyController.anim.Play("idle");
+        status.ResetAllStatusForced();
+        status.enabled = false;
+        enemyController.SetCounter(false);
+        enemyController.OnAttackInterrupt?.Invoke();
+        enemyController.SetFlashBody(false);
+        for(int i = 0; i < enemyAttackManager.MeeleAttackFXLayer.transform.childCount; i++)
+        {
+            Destroy(enemyAttackManager.MeeleAttackFXLayer.transform.GetChild(i).gameObject);
+        }
     }
 
 

@@ -42,6 +42,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     private TextMeshProUGUI detailedItemName;
     private TextMeshProUGUI description;
     private string[] descriptionString;
+    private ScrollRect scrollRect;
 
     public AssetBundle iconBundle;
 
@@ -68,6 +69,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         detailedItemName = detailedInfoMenu.transform.Find("Board").GetChild(1).GetComponent<TextMeshProUGUI>();
         description = detailedInfoMenu.transform.Find("Scroll View").Find("Viewport")
             .Find("Text").GetComponentInChildren<TextMeshProUGUI>();
+        scrollRect = detailedInfoMenu.transform.Find("Scroll View").GetComponent<ScrollRect>();
         
         Portrait = transform.Find("Portrait").GetComponent<Image>();
         characterName = transform.Find("Banner").GetComponentInChildren<TextMeshProUGUI>();
@@ -104,7 +106,12 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         {
             Init();
         }
-        
+        else
+        {
+            currentSelectedCharaID = GlobalController.currentCharacterID;
+            ReloadDisplayedCharacter();
+        }
+
     }
 
     private void OnDisable()
@@ -114,21 +121,27 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
     public void Init()
     {
-        print("Init");
+        //print("Init");
         InitAllChildren();
         _globalController = FindObjectOfType<GlobalController>();
         //日语！！！！！！！！！！！！！！！！！
-        if (SceneManager.GetActiveScene().name == "MainMenu_JP")
+        if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
         {
-            CharacterInfo = ReadCharacterInfoData("CharacterInfo_JP.json");
-            CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo_JP.json");
-            CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo_JP.json");
+            CharacterInfo = ReadCharacterInfoData("CharacterInfo_EN.json");
+            CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo_EN.json");
+            CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo_EN.json");
         }
-        else
+        else if (GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN)
         {
             CharacterInfo = ReadCharacterInfoData("CharacterInfo.json");
             CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo.json");
             CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo.json");
+        }
+        else
+        {
+            CharacterInfo = ReadCharacterInfoData("CharacterInfo_JP.json");
+            CharacterSkillInfo = ReadCharacterInfoData("SkillDetailedInfo_JP.json");
+            CharacterAbilityInfo = ReadCharacterInfoData("AbilityDetailedInfo_JP.json");
         }
         
         var bundle = AssetBundle.GetAllLoadedAssetBundles();
@@ -150,6 +163,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         iconSprites1 = iconBundle.LoadAssetWithSubAssets<Sprite>("Icon_Skill_Sheet_pro");
         iconSprites2 = iconBundle.LoadAssetWithSubAssets<Sprite>("Ability_Sheet");
         //print(iconSprites1.Length);
+        currentSelectedCharaID = GlobalController.currentCharacterID;
         ReloadDisplayedCharacter();
     }
 
@@ -180,7 +194,11 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     private void ReloadDisplayedCharacter()
     {
         Resources.UnloadUnusedAssets();
+        
+        
         currentSelectedCharaID = currentSelectedCharaID;
+        
+        
         Portrait.sprite = Resources.Load<Sprite>($"Portrait/portrait_c{currentSelectedCharaID}");
         var text1 = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["WEAPON"].ToString();
         switch (text1)
@@ -292,9 +310,25 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
     public void DisplayItemDetailedMenu(int id)
     {
+        //令scrollView 的bar回到顶部
+        
+        scrollRect.verticalNormalizedPosition = 1;
+        
         if (id > 4)
         {
-            detailedMenuTitle.text = "能力详情";
+            switch (GlobalController.Instance.GameLanguage)
+            {
+                case GlobalController.Language.EN:
+                    detailedMenuTitle.text = "Ability Details";
+                    break;
+                case GlobalController.Language.ZHCN:
+                    detailedMenuTitle.text = "能力详情";
+                    break;
+                case GlobalController.Language.JP:
+                    detailedMenuTitle.text = "アビリティ詳細";
+                    break;
+            }
+            //detailedMenuTitle.text = "能力详情";
             //detailedMenuTitle.text = "アビリティ詳細";
             detailedItemName.text = abilityName[id - 5].text;
             iconInDetailedInfoMenu.sprite = abilityIcons[id - 5].sprite;
@@ -302,7 +336,19 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         }
         else
         {
-            detailedMenuTitle.text = "技能详情";
+            switch (GlobalController.Instance.GameLanguage)
+            {
+                case GlobalController.Language.EN:
+                    detailedMenuTitle.text = "Skill Details";
+                    break;
+                case GlobalController.Language.ZHCN:
+                    detailedMenuTitle.text = "技能详情";
+                    break;
+                case GlobalController.Language.JP:
+                    detailedMenuTitle.text = "スキル詳細";
+                    break;
+            }
+            //detailedMenuTitle.text = "技能详情";
             //detailedMenuTitle.text = "スキル詳細";
             detailedItemName.text = skillName[id - 1].text;
             iconInDetailedInfoMenu.sprite = skillIcons[id - 1].sprite;
@@ -319,10 +365,6 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
         //Destroy(iconBundle);
     }
-    
-    
-    
-    
-    
+
     
 }

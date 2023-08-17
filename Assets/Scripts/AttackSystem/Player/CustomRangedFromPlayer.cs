@@ -35,13 +35,11 @@ public class CustomRangedFromPlayer : AttackFromPlayer
     {
         //Transform enemyTrans;
         //Debug.Log(collision.gameObject.GetInstanceID());
-        print(collision.gameObject);
+        //print(collision.gameObject);
         
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
-            CauseDamage(collision.gameObject);
-            
-            
+            CauseDamage(collision);
             
             
             

@@ -37,12 +37,13 @@ public class DOTweenSimpleController : MonoBehaviour
             else
             {
                 //将moveDirection沿着transform.rotation的方向进行旋转。
-                var rotatedVector = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z) * moveDirection;
+                var rotatedVector = (Vector3)moveDirection;
                 
                 _tweener = transform.DOLocalMove
                 (
-                    rotatedVector + transform.localPosition,
+                    rotatedVector+transform.localPosition,
                     duration);
+                
                 
             }
             

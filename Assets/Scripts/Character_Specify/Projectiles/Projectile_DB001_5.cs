@@ -21,6 +21,7 @@ namespace CharacterSpecificProjectiles
             Invoke(nameof(ReleaseAttack),hintBar.awakeTime + hintBar.warningTime);
             if(difficulty > 2)
                 hintBar.gameObject.SetActive(false);
+            Destroy(gameObject,10f);
         }
 
 

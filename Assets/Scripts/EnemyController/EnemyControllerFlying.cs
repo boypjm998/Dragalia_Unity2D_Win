@@ -283,9 +283,14 @@ public class EnemyControllerFlying : EnemyController
         
         yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
         //anim.speed = 0;
+
+        if (isSummonEnemy)
+        {
+            Destroy(gameObject,0.5f);
+            gameObject.SetActive(false);
+        }
+
         
-        if(isSummonEnemy)
-            Destroy(gameObject);
         
     }
 

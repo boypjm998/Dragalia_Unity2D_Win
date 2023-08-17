@@ -35,6 +35,9 @@ public class EnemyController : ActorBase
     private int enemyid;
     private bool isBoss;
     public bool canDeath = true;
+
+    public bool displayHPBar = false;
+    public Vector2 HPBarOffset = new Vector2(0, 0);
     //public int facedir = 1;
     public bool hurt;
     public bool grounded => anim.GetBool("isGround");
@@ -86,6 +89,11 @@ public class EnemyController : ActorBase
         if (_statusManager is SpecialStatusManager)
         {
             ((SpecialStatusManager)_statusManager).onBreak += StartBreak;
+        }
+
+        if (displayHPBar)
+        {
+            InitSimpleHealthBar();
         }
 
     }
@@ -156,7 +164,7 @@ public class EnemyController : ActorBase
             {
                 if (atkBase.GetComponentInParent<AttackContainer>().IfODCounter == false)
                 {
-                    DamageNumberManager.GenerateCounterText(transform);
+                    DamageNumberManager.GenerateCounterText(transform, true);
                     atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
                 }
             }
@@ -564,6 +572,19 @@ public class EnemyController : ActorBase
     public void SetMove(float value)
     {
         isMove = value;
+    }
+
+    protected void InitSimpleHealthBar()
+    {
+        if(GetComponentInChildren<UI_SimpleHPGauge>() != null)
+            return;
+        
+        var hpbar = Instantiate(BattleStageManager.Instance.simpleHealthBar,
+            transform.position + (Vector3)HPBarOffset, Quaternion.identity, transform);
+        
+        hpbar.name = "SimpleHPGauge";
+        
+        
     }
 
 }

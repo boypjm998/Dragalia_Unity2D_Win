@@ -482,6 +482,7 @@ public class EnemyMoveController_DB01 : EnemyMoveManager
 
 
         anim.Play("idle");
+        Action14_DisableTornadoUp();
         //StageCameraController.SwitchMainCamera();
 
         QuitAttack();
@@ -861,6 +862,17 @@ public class EnemyMoveController_DB01 : EnemyMoveManager
         var wind = InstantiateRanged(projectilePoolEX[4],
             Vector3.zero, container, 1);
     }
+    
+    protected void Action14_DisableTornadoUp()
+    {
+        var tonados = FindObjectsOfType<Projectile_DB001_9>();
+        
+        foreach (var tornado in tonados)
+        {
+            tornado.SetCollisionOff();
+        }
+
+    }
 
     protected void Action15_SummonLeif()
     {
@@ -903,12 +915,12 @@ public class EnemyMoveController_DB01 : EnemyMoveManager
         if (target.transform.position.x - targetPlatform.bounds.center.x > 3f)
         {
             targetPos.x = Mathf.Min(target.transform.position.x - 3f, targetPlatform.bounds.max.x);
-            dir = -1;
+            dir = 1;
         }
         else if (targetPlatform.bounds.center.x - target.transform.position.x > 3f)
         {
             targetPos.x = Mathf.Max(target.transform.position.x + 3f, targetPlatform.bounds.min.x);
-            dir = 1;
+            dir = -1;
         }
         else
         {

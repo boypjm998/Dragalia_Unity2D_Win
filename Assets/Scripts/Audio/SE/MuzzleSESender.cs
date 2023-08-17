@@ -37,6 +37,11 @@ public class MuzzleSESender : MonoBehaviour
 
     public void SendVoiceToPlay(AudioClip SEClip)
     {
+        if(GlobalController.Instance.gameOptions.soundSettings[2]==0)
+            return;
+        
+        
+        
         if (withContainer)
         {
             var container = GetComponentInParent<AttackContainer>();

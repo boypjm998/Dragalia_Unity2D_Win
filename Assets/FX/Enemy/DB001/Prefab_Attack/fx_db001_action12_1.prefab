@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2770637456287397096}
   - component: {fileID: 7696814195283545536}
   - component: {fileID: 1892065168202844918}
+  - component: {fileID: 3135717651637758631}
   m_Layer: 11
   m_Name: fx_db001_action12_1
   m_TagString: Untagged
@@ -98,7 +99,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5111172037629190868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e86e4fd654383e408dccc6aba277c25, type: 3}
   m_Name: 
@@ -123,6 +124,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 4
+--- !u!114 &3135717651637758631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111172037629190868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b86d8a81934b7eb689dc76ccf2a29b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isLocal: 1
+  moveDirection: {x: 60, y: 0}
+  duration: 4
+  targetObject: {fileID: 0}
+  EaseType: 1
+  waitTime: 0
 --- !u!1001 &6364275867209877933
 PrefabInstance:
   m_ObjectHideFlags: 0

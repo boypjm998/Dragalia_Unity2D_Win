@@ -221,7 +221,7 @@ public class AttackFromPlayer : AttackBase
             if (hitinfo.collider.CompareTag("Enemy") &&
                 hitFlags.Contains(hitinfo.collider.transform.parent.GetInstanceID()))
             {
-                CauseDamage(hitinfo.collider.gameObject);
+                CauseDamage(hitinfo.collider);
 
                 Destroy(gameObject);
                 
@@ -233,7 +233,7 @@ public class AttackFromPlayer : AttackBase
         if (hitinfo != null)
             if (hitinfo.CompareTag("Enemy") && hitFlags.Contains(hitinfo.transform.parent.GetInstanceID()))
             {
-                CauseDamage(hitinfo.gameObject);
+                CauseDamage(hitinfo);
 
                 Destroy(gameObject);
 
@@ -328,9 +328,9 @@ public class AttackFromPlayer : AttackBase
     /// <summary>
     ///     <para>target:碰撞体所在的游戏对象</para>
     /// </summary>
-    public virtual void CauseDamage(GameObject target)
+    public virtual void CauseDamage(Collider2D collision)
     {
-        hitFlags.Remove(target.transform.parent.GetInstanceID());
+        hitFlags.Remove(collision.gameObject.transform.parent.GetInstanceID());
         //withConditionFlags.Remove(target.transform.parent.GetInstanceID());
         
         if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
@@ -345,13 +345,13 @@ public class AttackFromPlayer : AttackBase
         //敌人的闪避
         try
         {
-            var enemyController = target.transform.parent.GetComponent<EnemyController>();
+            var enemyController = collision.gameObject.transform.parent.GetComponent<EnemyController>();
             if (enemyController is EnemyControllerHumanoid)
             {
                 var dodge = (enemyController as EnemyControllerHumanoid).dodging;
                 if (dodge && attackType != BasicCalculation.AttackType.SKILL && attackType != BasicCalculation.AttackType.FORCE)
                 {
-                    DamageNumberManager.GenerateDodgeText(target.transform);
+                    DamageNumberManager.GenerateDodgeText(collision.gameObject.transform);
                     enemyController.OnDodgeSuccess?.Invoke(this,playerpos.gameObject);
                     return;
                 }
@@ -363,13 +363,18 @@ public class AttackFromPlayer : AttackBase
         }
 
 
-        var dmg = battleStageManager.CalculateHit(target.transform.parent.gameObject, playerpos.gameObject,this,attackSource);
-        
+        var dmg = battleStageManager.CalculateHit(collision.gameObject.transform.parent.gameObject, playerpos.gameObject,this,attackSource);
+
 
 
         if (hitConnectEffect != null)
-            Instantiate(hitConnectEffect, new Vector2(target.transform.position.x, transform.position.y),
+        {
+            Instantiate(hitConnectEffect,
+                collision.ClosestPoint(collision.transform.position),
                 Quaternion.identity);
+        }
+
+        
 
         if(attackSource == 0 || forcedShake)
             CineMachineOperator.Instance.CamaraShake(hitShakeIntensity, .1f);

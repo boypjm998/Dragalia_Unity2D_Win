@@ -18,7 +18,19 @@ public abstract  class AudioManagerGeneral : MonoBehaviour, IVoice
     {
         
     }
-    
+
+    protected void CheckVoiceVolume()
+    {
+        if (GlobalController.Instance.gameOptions.soundSettings[1] == 0)
+        {
+            voice.mute = true;
+        }
+        else
+        {
+            voice.mute = false;
+        }
+    }
+
     protected IEnumerator WaitForVoiceCooldown()
     {
         yield return new WaitForSecondsRealtime(1f);

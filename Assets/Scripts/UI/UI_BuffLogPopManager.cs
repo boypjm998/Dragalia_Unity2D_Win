@@ -34,10 +34,9 @@ public class UI_BuffLogPopManager : MonoBehaviour
         {
             _language = FindObjectOfType<GlobalController>().GameLanguage;
         }
-        catch (Exception e)
+        catch
         {
-            Console.WriteLine(e);
-            print("not found");
+            
             _language = GlobalController.Language.ZHCN;
         }
         
@@ -83,11 +82,20 @@ public class UI_BuffLogPopManager : MonoBehaviour
        else if(ConditionStr.Count > 0)
        {
            txtGameObject.SetActive(true);
+           
+           if(ConditionStr.Count>5)
+               anim.speed = 1.5f;
+           else
+               anim.speed = 1;
+           
+           
+           
            if (anim.GetCurrentAnimatorStateInfo(0).IsName("idle"))
            {
                txt.text = ConditionStr.Dequeue();
                var type = ConditionStrInfo.Dequeue();
-               if (type.Item1 > 400 && type.Item1<500)
+               
+               if (StatusManager.IsAffliction(type.Item1))
                {
                    txt.fontSize = 7;
                    var num = (type.Item2);
@@ -129,7 +137,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
         else if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Level)
         {
             var formatStr = String.Format
-                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
+                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),$"Lv.{condition.effect}");
             sb.Append(formatStr);
         }
         else
@@ -163,6 +171,12 @@ public class UI_BuffLogPopManager : MonoBehaviour
         {
             var formatStr = String.Format
                 (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
+            sb.Append(formatStr);
+        }
+        else if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Level)
+        {
+            var formatStr = String.Format
+                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),String.Empty);
             sb.Append(formatStr);
         }
         else
@@ -231,6 +245,10 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("技能充能");
                 ConditionStrInfo.Enqueue(new(1003,0));//Other
                 break;
+            case "CounterReady":
+                EnqueueNewCondition("反击待命");
+                ConditionStrInfo.Enqueue(new(1004,0));//Other
+                break;
                 
         }
     }
@@ -255,6 +273,10 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("Skill Prep");
                 ConditionStrInfo.Enqueue(new(1003,0));//Other
                 break;
+            case "CounterReady":
+                EnqueueNewCondition("Counter Ready");
+                ConditionStrInfo.Enqueue(new(1004,0));//Other
+                break;
             default:
                 break;
         }
@@ -272,9 +294,17 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("Recover from Debuffs");
                 ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
+            case "ReliefAllAffliction":
+                EnqueueNewCondition("Recover from Afflictions");
+                ConditionStrInfo.Enqueue(new(1002,0));//Other
+                break;
             case "SPCharge":
                 EnqueueNewCondition("Skill Prep");
-                ConditionStrInfo.Enqueue(new(1002,0));//Other
+                ConditionStrInfo.Enqueue(new(1003,0));//Other
+                break;
+            case "CounterReady":
+                EnqueueNewCondition("Counter Stance");
+                ConditionStrInfo.Enqueue(new(1004,0));//Other
                 break;
                 
         }
@@ -289,8 +319,13 @@ public class UI_BuffLogPopManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        _statusManager.OnBuffEventDelegate -= Condition2Text; //delegate
-        _statusManager.OnBuffDispelledEventDelegate -= DispellCondition2Text;
-        _statusManager.OnSpecialBuffDelegate -= CustomText;
+        try
+        {
+            _statusManager.OnBuffEventDelegate -= Condition2Text; //delegate
+            _statusManager.OnBuffDispelledEventDelegate -= DispellCondition2Text;
+            _statusManager.OnSpecialBuffDelegate -= CustomText;
+        }catch{}
+
+        
     }
 }

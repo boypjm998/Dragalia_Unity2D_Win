@@ -95,16 +95,9 @@ public class UI_ResultPage : MonoBehaviour
             OnComplete(DoCrownAnimation);
         
         //获取关卡过关条件
-        condition1.text = $"使用{reviveLimit}次或以下重生的情况下过关";
-        condition2.text = $"{getCrownLimitTime}秒内过关";
-        if (getCrownReviveTime <= 0)
-        {
-            condition3.text = "不使用重生的情况下过关";
-        }
-        else
-        {
-            condition3.text = $"使用{getCrownReviveTime}次或以下重生的情况下过关";
-        }
+        PrintObjectiveText();
+        
+        
         //位移
         returnButton.transform.localPosition =
             new Vector3(-1000, returnButton.transform.localPosition.y);
@@ -210,6 +203,47 @@ public class UI_ResultPage : MonoBehaviour
         crown1?.SetActive(false);
         crown2?.SetActive(false);
         crown3?.SetActive(false);
+        
+    }
+
+    private void PrintObjectiveText()
+    {
+        switch (GlobalController.Instance.GameLanguage)
+        {
+            case GlobalController.Language.ZHCN:
+            {
+                condition1.text = $"使用{reviveLimit}次或以下重生的情况下过关";
+                condition2.text = $"{getCrownLimitTime}秒内过关";
+                if (getCrownReviveTime <= 0)
+                {
+                    condition3.text = "不使用重生的情况下过关";
+                }
+                else
+                {
+                    condition3.text = $"使用{getCrownReviveTime}次或以下重生的情况下过关";
+                }
+                break;
+            }
+            case GlobalController.Language.EN:
+            {
+                condition1.text = $"Use no more than {reviveLimit} revives";
+                condition2.text = $"Clear in {getCrownLimitTime} seconds";
+                if (getCrownReviveTime <= 0)
+                {
+                    condition3.text = "Don't use any revives";
+                }
+                else
+                {
+                    condition3.text = $"Use no more than {getCrownReviveTime} revives";
+                }
+                break;
+            }
+            default:
+            {
+                Debug.LogError("No such language");
+                break;
+            }
+        }
         
     }
 

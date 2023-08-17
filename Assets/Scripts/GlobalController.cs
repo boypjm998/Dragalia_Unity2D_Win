@@ -37,8 +37,11 @@ public class GlobalController : MonoBehaviour
     public Dictionary<string, AssetBundle> loadedBundles;
     protected JsonData QuestInfo;
     protected JsonData SettingsInfo;
+    public GameOptions gameOptions;
+    protected List<StatusInformation> StatusInfoList;
     public delegate void OnGlobalControllerAwake();
     public static OnGlobalControllerAwake onGlobalControllerAwake;
+    public event OnGlobalControllerAwake OnLoadFinish;
 
     #region GameOption
 
@@ -88,7 +91,22 @@ public class GlobalController : MonoBehaviour
     protected void Awake()
     {
         //读入各种文件
-        QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
+        if (GameLanguage == Language.ZHCN)
+        {
+            QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
+        }else if (GameLanguage == Language.EN)
+        {
+            QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo_EN.json");
+        }
+        else
+        {
+            Debug.LogError("Language not supported");
+        }
+
+        //QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
+        
+        
+        
         SettingsInfo = BasicCalculation.ReadJsonData("savedata/PlayerSettings.json");
         
         var other = FindObjectsOfType<GlobalController>();
@@ -96,10 +114,13 @@ public class GlobalController : MonoBehaviour
         {
             this.enabled = false;
             Destroy(gameObject);
+            return;
         }
         Instance = this;
         this.loadedBundles = new Dictionary<string, AssetBundle>();
         LoadPlayerSettings();
+        LoadGameOptionsFromFile();
+        ReadStatusInformation();
         UIFXContainer = GameObject.Find("UIFXContainer");
         
         
@@ -108,12 +129,36 @@ public class GlobalController : MonoBehaviour
 
     void Start()
     {
+        SceneManager.sceneLoaded += ResetAllAudioSources;
+        
+        ResetAllAudioSources(SceneManager.GetActiveScene(),LoadSceneMode.Single);
+        
         if (GetBundle("iconsmall") == null || GetBundle("allin1") == null)
         {
             var ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/iconsmall");
             loadedBundles.Add("iconsmall",ab);
             ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/allin1");
             loadedBundles.Add("allin1",ab);
+            try
+            {
+                ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/eff/eff_general");
+                loadedBundles.Add("eff/eff_general", ab);
+            }
+            catch
+            {
+                
+            }
+
+            try
+            {
+                ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/animation/anim_common");
+                loadedBundles.Add("animation/anim_common",ab);
+            }
+            catch
+            {
+                print("重复加载animation/anim_common");
+            }
+
         }
         cameraTransform = GameObject.Find("Main Camera").transform;
         currentGameState = GameState.Outbattle;
@@ -127,6 +172,7 @@ public class GlobalController : MonoBehaviour
     {
         if (debug)
         {
+            print("currentChara:"+currentCharacterID);
             //BattleEffectManager.Instance.PlayOtherSE("SE_ACTION_GUN_001");
             debug = false;
         }
@@ -143,8 +189,22 @@ public class GlobalController : MonoBehaviour
             
         }
 
-        clickEffCD--;
+        if (clickEffCD<-1)
+        {
+            clickEffCD = -1;
+        }
+        else
+        {
+            clickEffCD--;
+        }
+
+
         //print(loadingEnd);
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= ResetAllAudioSources;
     }
 
     public void TestReturnMainMenu()
@@ -181,7 +241,7 @@ public class GlobalController : MonoBehaviour
         //异步加载场景
 
         GlobalController.questID = questID;
-        loadingEnd = false;
+        FinishLoad(false);
         var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
         var anim = loadingScreen.GetComponent<Animator>();
         //yield return new WaitForSecondsRealtime(2f);
@@ -221,9 +281,9 @@ public class GlobalController : MonoBehaviour
         requiredBundleList.Add(needLoad[2]);
         requiredBundleList.Add(needLoad[3]);
         requiredBundleList.Add("ui_general");
-        requiredBundleList.Add("eff/eff_general");
-        requiredBundleList.Add("animation/anim_common");
-        requiredBundleList.Add("allin1");
+        //requiredBundleList.Add("eff/eff_general");
+        //requiredBundleList.Add("animation/anim_common");
+        //requiredBundleList.Add("allin1");
         requiredBundleList.Add("soundeffect/soundeffect_common");
         requiredBundleList.Add("118effbundle");
         requiredBundleList.Add("boss_ability_icon");
@@ -274,13 +334,24 @@ public class GlobalController : MonoBehaviour
         var voiceAssetReq = assetBundles[3].LoadAllAssetsAsync<AudioClip>();
         yield return voiceAssetReq;
         
-        
-        
-        
         //Load ab file end
         
+        string sceneName;
+        switch (GameLanguage)
+        {
+            case Language.ZHCN:
+                sceneName = "BattleScene";
+                break;
+            case Language.EN:
+                sceneName = "BattleScene_EN";
+                break;
+            default:
+                Debug.LogError("GameLanguage is not set");
+                yield break;
+        }
+
         currentGameState = GameState.WaitForStart;
-        AsyncOperation ao = SceneManager.LoadSceneAsync("BattleScene");
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
         DontDestroyOnLoad(this.gameObject);
         yield return ao;
         
@@ -403,13 +474,13 @@ public class GlobalController : MonoBehaviour
         
         
         battleStageManager.LinkBossStatus();
-        battleStageManager.SetBGM();
+        battleStageManager.InitBGM();
         
         
         
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
         Destroy(loadingScreen);
-        loadingEnd = true;
+        FinishLoad(true);
         //Time.timeScale = 1;
         //var mainCamera = GameObject.Find("Main Camera");
         //var cinemachineVirtualCamera = mainCamera.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -433,7 +504,7 @@ public class GlobalController : MonoBehaviour
     protected IEnumerator LoadMainMenu()
     {
         currentGameState = GameState.End;
-        loadingEnd = false;
+        FinishLoad(false);
         FindObjectOfType<TargetAimer>().enabled = false;
         yield return null;
 
@@ -442,8 +513,14 @@ public class GlobalController : MonoBehaviour
         
         yield return new WaitForSecondsRealtime(2);
 
-        
-        AsyncOperation ao = SceneManager.LoadSceneAsync("MainMenu");
+        string sceneName = "MainMenu";
+        if (GameLanguage == Language.EN)
+        {
+            sceneName = "MainMenu_EN";
+        }
+
+
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
         DontDestroyOnLoad(this.gameObject);
         yield return ao;
         cameraTransform = GameObject.Find("Main Camera").transform;
@@ -454,7 +531,7 @@ public class GlobalController : MonoBehaviour
         print(bundles.Count());
         foreach (var ab in bundles)
         {
-            if (ab.name == "iconsmall" || ab.name == "allin1")
+            if (ab.name == "iconsmall" || ab.name == "allin1" || ab.name == "eff/eff_general" || ab.name == "animation/anim_common")
             {
                 continue;
             }
@@ -474,7 +551,7 @@ public class GlobalController : MonoBehaviour
         cameraTransform = Camera.main.transform;
         UIFXContainer = GameObject.Find("UIFXContainer");
         
-        onGlobalControllerAwake?.Invoke();
+        //onGlobalControllerAwake?.Invoke();
         var menuUIManager = FindObjectOfType<MenuUIManager>();
         menuUIManager.menuLevelStack.Push(101);
         yield return null;
@@ -504,7 +581,7 @@ public class GlobalController : MonoBehaviour
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
         Destroy(loadingScreen);
         this.enabled = true;
-        //print(loadedBundles.ContainsKey("Iconsmall"));
+        
         
         
         onGlobalControllerAwake?.Invoke();
@@ -513,7 +590,8 @@ public class GlobalController : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         currentGameState = GameState.Outbattle;
-        loadingEnd = true;
+        FinishLoad(true);
+        //loadingEnd = true;
         loadingRoutine = null;
         
     }
@@ -521,15 +599,30 @@ public class GlobalController : MonoBehaviour
     protected IEnumerator LoadStorySceneOfPrologue()
     {
         GlobalController.questID = "100001";
-        loadingEnd = false;
+        FinishLoad(false);
+        //loadingEnd = false;
         var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
         var anim = loadingScreen.GetComponent<Animator>();
 
         //load level
         //bool levelAssetLoaded = false;
+
+        string sceneName;
+        switch (GameLanguage)
+        {
+            case Language.ZHCN:
+                sceneName = "StoryScene";
+                break;
+            case Language.EN:
+                sceneName = "StoryScene_EN";
+                break;
+            default:
+                Debug.LogError("GameLanguage is not set");
+                yield break;
+        }
         
-        //currentGameState = GameState.WaitForStart;
-        AsyncOperation ao = SceneManager.LoadSceneAsync("StoryScene");
+        
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
         DontDestroyOnLoad(this.gameObject);
         yield return ao;
 
@@ -554,14 +647,15 @@ public class GlobalController : MonoBehaviour
         yield return new WaitForSeconds(2.5f);
         //BattleStageManager.Instance.GetMapBorderInfo();
         //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
-        loadingEnd = true;
+        FinishLoad(true);
         loadingRoutine = null;
     }
 
     IEnumerator LoadPrologueScene()
     {
         GlobalController.questID = "100001";
-        loadingEnd = false;
+        FinishLoad(false);
+        //loadingEnd = false;
         var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
         var anim = loadingScreen.GetComponent<Animator>();
 
@@ -608,7 +702,31 @@ public class GlobalController : MonoBehaviour
         
         
         currentGameState = GameState.WaitForStart;
-        AsyncOperation ao = SceneManager.LoadSceneAsync("BattleScenePrologue");
+
+        string sceneName;
+        
+        if(GameLanguage == Language.ZHCN)
+        {
+            sceneName = "BattleScenePrologue";
+        }
+        else if(GameLanguage == Language.EN)
+        {
+            sceneName = "BattleScenePrologue_EN";
+        }
+        else
+        {
+            Debug.LogError("GameLanguage Error");
+            yield break;
+        }
+
+
+
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
+        
+        
+        
+        
+        
         DontDestroyOnLoad(this.gameObject);
         yield return ao;
         
@@ -624,7 +742,8 @@ public class GlobalController : MonoBehaviour
         yield return new WaitForSeconds(2.5f);
         BattleStageManager.Instance.GetMapBorderInfo();
         //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
-        loadingEnd = true;
+        FinishLoad(true);
+        //loadingEnd = true;
         loadingRoutine = null;
         
     }
@@ -799,6 +918,8 @@ public class GlobalController : MonoBehaviour
         {
             writer.Write(jsonStr);
         }
+
+
     }
 
     public void StartGame()
@@ -811,12 +932,176 @@ public class GlobalController : MonoBehaviour
         currentGameState = GameState.End;
     }
 
+    protected void ReadStatusInformation()
+    {
+        var path = Application.streamingAssetsPath + "/LevelInformation/Stat_info.json";
+        
+        string jsonStr;
+        using (StreamReader reader = new StreamReader(path))
+        {
+            jsonStr = reader.ReadToEnd();
+        }
+
+        StatusInfoList = JsonUtility.FromJson<StatusInformationList>(jsonStr).statusInformationList;
+    }
+
+    public string GetNameOfID(int id)
+    {
+        //找到StatusInfoList中id为id的StatusInformation，返回其name
+        var statusInfo = StatusInfoList.Find(x => x.id == id);
+        
+        
+        //如果找不到，返回空字符串
+        if (statusInfo == null)
+        {
+            return "";
+        }
+        else
+        {
+            switch (GameLanguage)
+            {
+                case Language.EN:
+                {
+                    return statusInfo.name_en;
+                }
+                case Language.ZHCN:
+                {
+                    return statusInfo.name_zh;
+                }
+                default:
+                {
+                    return String.Empty;
+                }
+            }
+            
+        }
+    }
+
     public List<QuestSave> GetQuestInfo()
     {
+        print(questSaveDataString);
         var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
         return questSaveDataList.quest_info;
     }
 
+    void LoadGameOptionsFromFile()
+    {
+        //Load GameOptions from file, Use JsonUtility.FromJson<GameOptions>
+        var path = Application.streamingAssetsPath + "/savedata/GameOptions.json";
+        StreamReader sr = new StreamReader(path);
+        var str = sr.ReadToEnd();
+        sr.Close();
+
+        try
+        {
+            gameOptions = JsonUtility.FromJson<GameOptions>(str);
+        }
+        catch
+        {
+            gameOptions = new();
+        }
+
+        currentCharacterID = gameOptions.last_adventurer_id;
+
+    }
+
+    public void ChangeFontSizeOfDamageNum(int size)
+    {
+        gameOptions.damage_font_size = size;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="type">0:music; 1:voice 2:SE</param>
+    /// <param name="mute"></param>
+    public void ChangeSoundMute(int type, bool mute)
+    {
+        if (mute)
+        {
+            gameOptions.soundSettings[type] = 0;
+        }
+        else
+        {
+            gameOptions.soundSettings[type] = 1;
+        }
+
+        if (type == 0)
+        {
+            ResetMusicSources();
+        }
+    }
+
+    private void ResetAllAudioSources(Scene scene,LoadSceneMode mode)
+    {
+        var musicSources = GameObject.FindGameObjectsWithTag("Music");
+
+        foreach (var audioObject in musicSources)
+        {
+            audioObject.GetComponent<AudioSource>().mute = (gameOptions.soundSettings[0] == 0);
+        }
+
+        var voiceSources = GameObject.FindGameObjectsWithTag("Voice");
+
+        foreach (var audioObject in voiceSources)
+        {
+            audioObject.GetComponent<AudioSource>().mute = (gameOptions.soundSettings[1] == 0);
+        }
+        
+        var soundEffectSources = GameObject.FindGameObjectsWithTag("SoundEffect");
+
+        foreach (var audioObject in soundEffectSources)
+        {
+            audioObject.GetComponent<AudioSource>().mute = (gameOptions.soundSettings[2] == 0);
+        }
+
+    }
+    
+    private void ResetMusicSources()
+    {
+        var musicSources = GameObject.FindGameObjectsWithTag("Music");
+
+        foreach (var audioObject in musicSources)
+        {
+            audioObject.GetComponent<AudioSource>().mute = (gameOptions.soundSettings[0] == 0);
+        }
+
+    }
+
+    public void WriteGameOptionToFile()
+    {
+        //Write GameOptions to file of path, Use JsonUtility.ToJson
+        
+        var path = Application.streamingAssetsPath + "/savedata/GameOptions.json";
+        
+        var jsonStr = JsonUtility.ToJson(gameOptions);
+
+        try
+        {
+            File.WriteAllText(path, jsonStr);
+        }
+        catch
+        {
+            //TODO:抛出异常
+        }
+        
+    }
+
+    private void FinishLoad(bool flag)
+    {
+        loadingEnd = flag;
+        if (flag == true)
+        {
+            ResetAllAudioSources(SceneManager.GetActiveScene(),LoadSceneMode.Single);
+            //OnLoadFinish?.Invoke();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        gameOptions.last_adventurer_id = currentCharacterID;
+        WriteGameOptionToFile();
+    }
 
 }
 // "key_settings": {
@@ -832,3 +1117,16 @@ public class GlobalController : MonoBehaviour
 //     "keySkill3": "o",
 //     "keySkill4": "h"
 // }
+
+[Serializable]
+public class GameOptions
+{
+    public int last_adventurer_id = 1;
+    public int fullscreen = 1;
+    public int damage_font_size = 2;
+
+    /// <summary>
+    /// Music, Voice, SoundEffect
+    /// </summary>
+    public int[] soundSettings = new[] { 1, 1, 1 };
+}

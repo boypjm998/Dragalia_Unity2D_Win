@@ -10,9 +10,12 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
     private Image iconImage;
     public int abilityID;
 
+    
     private bool mouseIsFollowing = false;
 
     private RectTransform _rectTransform;
+
+    private Vector3 offset = Vector2.zero;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +31,7 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
 
     private void CheckAbilityActive(int id)
     {
-        print("enter_start");
+        //print("enter_start");
         if (id == abilityID)
         {
             print("enter_in");
@@ -38,8 +41,8 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
     
     private void CheckAbilityInactive(int id)
     {
-        print("enter_start");
-        print(id+"/"+abilityID);
+        //print("enter_start");
+        //print(id+"/"+abilityID);
         if (id == this.abilityID)
         {
             print("enter_in");
@@ -59,19 +62,33 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
         if (mouseIsFollowing)
         {
             //_rectTransform.anchoredPosition
+            var screenPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             
-            //abilityInfo.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            _rectTransform.anchoredPosition= Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //_rectTransform.anchoredPosition= screenPoint;
+            UpdateInfoPanelPosition();
 
             
         }
         else
         {
             _rectTransform.anchoredPosition= Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            //abilityInfo.transform.localPosition = Vector3.zero;
+            offset = Vector3.zero;
         }
     }
-    
+
+    private void UpdateInfoPanelPosition()
+    {
+        var screenPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 anchoredPosition = screenPoint;
+
+        Vector2 minPosition = new Vector2(75, 50);
+        print(_rectTransform.sizeDelta);
+        Vector2 maxPosition = new Vector2(Screen.width, Screen.height) / 2;
+        anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, minPosition.x, maxPosition.x);
+        
+        _rectTransform.anchoredPosition = anchoredPosition;
+    }
+
     public void OnMouseEnter()
     {
         //print("In");

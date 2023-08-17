@@ -15,14 +15,26 @@ public class CustomRangedFromEnemy : AttackFromEnemy
         
     }
 
-    private void Start()
+    protected override void Start()
     {
+        
         if (isMeele)
         {
             if(ac == null)
                 ac = enemySource?.GetComponent<EnemyController>();
             ac.OnAttackInterrupt += DestroyContainer;
         }
+
+        try
+        {
+            ac = enemySource?.GetComponent<EnemyController>();
+            base.Start();
+        }
+        catch
+        {
+            
+        }
+        
     }
 
 

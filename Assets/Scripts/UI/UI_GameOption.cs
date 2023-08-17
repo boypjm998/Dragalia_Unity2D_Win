@@ -25,10 +25,16 @@ public class UI_GameOption : MonoBehaviour
 
     private bool isSettingKey = false;
 
-    private Toggle fullScrrenToggle;
+    [SerializeField]private Toggle fullScrrenToggle;
     
-    
-    
+    [SerializeField]private Toggle[] fontSizeToggles;
+    [SerializeField]private Toggle[] musicToggles;
+    [SerializeField]private Toggle[] voiceToggles;
+    [SerializeField]private Toggle[] soundEffectToggles;
+
+
+
+
 
     private void Awake()
     {
@@ -44,12 +50,13 @@ public class UI_GameOption : MonoBehaviour
             i++;
         }
         
-        fullScrrenToggle = transform.Find("FullScreenSetting/Panel/Toggle").GetComponent<Toggle>();
+        
 
     }
 
     private void OnDisable()
     {
+        GlobalController.Instance.WriteGameOptionToFile();
         StopAllCoroutines();
     }
 
@@ -68,6 +75,9 @@ public class UI_GameOption : MonoBehaviour
         keyText[10].text = GlobalController.keySkill4.ToString();
         keyText[11].text = GlobalController.keyEscape.ToString();
         
+        ReloadDamageFontSettings();
+        ReloadSoundSettings();
+        
         //检测当前是否全屏
         if (Screen.fullScreen)
         {
@@ -78,7 +88,10 @@ public class UI_GameOption : MonoBehaviour
             fullScrrenToggle.isOn = false;
         }
         
+        
+        
     }
+    
     
 
     // Update is called once per frame
@@ -155,7 +168,7 @@ public class UI_GameOption : MonoBehaviour
 
         foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
         {
-            if (Input.GetKeyDown(key) && ((int)key > 27 && (int)key < 315))
+            if (Input.GetKeyDown(key) && (((int)key > 27 && (int)key < 315) || key == KeyCode.Mouse0 || key == KeyCode.Mouse1))
             {
                 newKey = key.ToString();
             }
@@ -223,6 +236,86 @@ public class UI_GameOption : MonoBehaviour
         GlobalController.Instance.WritePlayerSettingsToFile();
         
     }
+
+    public void SetSmallFontSize(bool flag)
+    {
+        if (flag)
+        {
+            GlobalController.Instance.ChangeFontSizeOfDamageNum(1);
+            //GlobalController.Instance.WriteGameOptionToFile();
+        }
+        //GlobalController.Instance.WriteGameOptionToFile();
+    }
+    
+    public void SetMidFontSize(bool flag)
+    {
+        if (flag)
+        {
+            GlobalController.Instance.ChangeFontSizeOfDamageNum(2);
+            //GlobalController.Instance.WriteGameOptionToFile();
+        }
+        //GlobalController.Instance.WriteGameOptionToFile();
+    }
+    
+    public void SetBigFontSize(bool flag)
+    {
+        if (flag)
+        {
+            GlobalController.Instance.ChangeFontSizeOfDamageNum(3);
+            //GlobalController.Instance.WriteGameOptionToFile();
+        }
+        
+    }
+
+    public void SetBGM(bool flag)
+    {
+        GlobalController.Instance.ChangeSoundMute(0,!flag);
+    }
+    public void SetVoice(bool flag)
+    {
+        GlobalController.Instance.ChangeSoundMute(1,!flag);
+    }
+    public void SetSE(bool flag)
+    {
+        GlobalController.Instance.ChangeSoundMute(2,!flag);
+    }
+
+    private void ReloadDamageFontSettings()
+    {
+        
+        if(GlobalController.Instance.gameOptions.damage_font_size == 1)
+        {
+            print("size:1");
+            fontSizeToggles[0].isOn = true;
+            //fontSizeToggles[0].onValueChanged.Invoke(true);
+        }
+        else if(GlobalController.Instance.gameOptions.damage_font_size == 2)
+        {
+            print("size:2");
+            fontSizeToggles[1].isOn = true;
+            //fontSizeToggles[0].onValueChanged.Invoke(true);
+        }
+        else if(GlobalController.Instance.gameOptions.damage_font_size == 3)
+        {
+            print("size:3");
+            fontSizeToggles[2].isOn = true;
+            //fontSizeToggles[0].onValueChanged.Invoke(true);
+        }
+
+    }
+
+    private void ReloadSoundSettings()
+    {
+        var bgmToggle = GlobalController.Instance.gameOptions.soundSettings[0];
+        var voiceToggle = GlobalController.Instance.gameOptions.soundSettings[1];
+        var seToggle = GlobalController.Instance.gameOptions.soundSettings[2];
+        
+        musicToggles[bgmToggle].isOn = true;
+        voiceToggles[voiceToggle].isOn = true;
+        soundEffectToggles[seToggle].isOn = true;
+
+    }
+
 
 
 }

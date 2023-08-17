@@ -26,6 +26,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         _behavior = GetComponent<DragaliaEnemyBehavior>();
         _effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
         _statusManager = GetComponent<StatusManager>();
+        CopyProjectilesToPool();
     }
 
     // Update is called once per frame
@@ -58,7 +59,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// 普通的闪避攻击
     /// </summary>
     /// <returns></returns>
-    public IEnumerator HB01_Action01()
+    public virtual IEnumerator HB01_Action01()
     {
         QuitMove();
         
@@ -83,7 +84,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// 瞬移攻击
     /// </summary>
     /// <returns></returns>
-    public IEnumerator HB01_Action02()
+    public virtual IEnumerator HB01_Action02()
     {
         QuitMove();
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
@@ -128,7 +129,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
 
     /// 普通的c1-c3
-    public IEnumerator HB01_Action03()
+    public virtual IEnumerator HB01_Action03()
     {
         QuitMove();
         
@@ -181,7 +182,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     
     
     /// Camine Rush 焰红突袭
-    public IEnumerator HB01_Action04()
+    public virtual IEnumerator HB01_Action04()
     {
         QuitMove();
         
@@ -227,7 +228,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     }
 
     /// Combo 7
-    public IEnumerator HB01_Action05()
+    public virtual IEnumerator HB01_Action05()
     {
         QuitMove();
         
@@ -277,7 +278,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     }
     
     /// Combo4
-    public IEnumerator HB01_Action06()
+    public virtual IEnumerator HB01_Action06()
     {
         QuitMove();
         
@@ -316,7 +317,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     }
 
     /// Combo5 - Combo6
-    public IEnumerator HB01_Action07()
+    public virtual IEnumerator HB01_Action07()
     {
         QuitMove();
         
@@ -356,7 +357,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     }
 
     /// S2: Flame Raid
-    public IEnumerator HB01_Action08()
+    public virtual IEnumerator HB01_Action08()
     {
         QuitMove();
 
@@ -384,7 +385,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     }
     
     /// Bright Camine Rush
-    public IEnumerator HB01_Action09()
+    public virtual IEnumerator HB01_Action09()
     {
         QuitMove();
         
@@ -466,7 +467,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     
     
     /// Savage Flame Raid
-    public IEnumerator HB01_Action10()
+    public virtual IEnumerator HB01_Action10()
     {
         QuitMove();
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
@@ -493,7 +494,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     }
     
     /// Scarlet Inferno+ 猩红咒焰
-    public IEnumerator HB01_Action11()
+    public virtual IEnumerator HB01_Action11()
     {
         QuitMove();
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
@@ -525,7 +526,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// <summary>
     /// Blazing Enhancement 闪焰强化
     /// </summary>
-    public IEnumerator HB01_Action13()
+    public virtual IEnumerator HB01_Action13()
     {
         QuitMove();
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
@@ -550,7 +551,8 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         QuitAttack();
     }
     
-    public IEnumerator HB01_Action13_2()
+    
+    public virtual IEnumerator HB01_Action13_2()
     {
         QuitMove();
         yield return new WaitUntil(() => anim.GetBool("isGround") && !ac.hurt);
@@ -581,7 +583,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
     #region DetailedAction
 
-    private void WarpAttack_ShadowEffect()
+    protected void WarpAttack_ShadowEffect()
     {
         InstantiateDirectional(projectilePoolEX[11], transform.position, RangedAttackFXLayer.transform, ac.facedir, 0,
             1);
@@ -593,7 +595,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// 隐身
     /// </summary>
     /// <param name="invincible">是否进入无敌状态</param>
-    void WarpAttack_Disappear(bool invincible)
+    protected void WarpAttack_Disappear(bool invincible)
     {
         
         if (invincible)
@@ -604,42 +606,30 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         var miniIcon = transform.Find("MinimapIcon").gameObject;
         miniIcon.SetActive(false);
-        
-        //var spriteRenderer1 = GetComponent<SpriteRenderer>();
-        
-        //spriteRenderer;
         DisappearRenderer();
-
         
-
     }
     
-    void WarpAttack_Appear()
+    protected void WarpAttack_Appear()
     {
         
-        //var spriteRenderer1 = GetComponent<SpriteRenderer>();
         AppearRenderer();
-        //spriteRenderer;
-        //spriteRenderer1.color = 
-            //new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);
-
+        
         var miniIcon = transform.Find("MinimapIcon").gameObject;
         miniIcon.SetActive(true);
 
-       
         var col = transform.Find("HitSensor").GetComponent<Collider2D>();
         col.enabled = true;
-
-
+        
 
     }
 
-    Vector3 LockPosition(GameObject target)
+    protected Vector3 LockPosition(GameObject target)
     {
         return target.transform.position;
     }
 
-    int LockFaceDir(GameObject target)
+    protected int LockFaceDir(GameObject target)
     {
         var ac = target.GetComponentInChildren<ActorController>();
         if (ac == null)
@@ -658,7 +648,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
     /// <param name="dir">X方向</param>
     /// <param name="distanceX">距离X</param>
     /// <param name="distanceY">距离Y</param>
-    void BackWarp(Vector3 position, int dir, float distanceX, float distanceY)
+    protected void BackWarp(Vector3 position, int dir, float distanceX, float distanceY)
     {
         var map = GameObject.Find("StageManager").GetComponent<BattleStageManager>();
         float posX, posY;
@@ -686,7 +676,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
     }
 
-    void SetGravityScale(float value)
+    protected void SetGravityScale(float value)
     {
         ac.rigid.gravityScale = value;
     }
@@ -695,7 +685,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
 
 
-    void Combo1()
+    protected void Combo1()
     {
 
         GameObject projectile_clone1 = InstantiateDirectional(projectile3, transform.position, MeeleAttackFXLayer.transform, ac.facedir,0,1);
@@ -719,7 +709,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
-    void Combo2()
+    protected void Combo2()
     {
         StraightDashMove();
         //RushForward();
@@ -735,8 +725,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             partical.startRotationY = new ParticleSystem.MinMaxCurve(partical.startRotationY.constant+Mathf.PI);
         }
     }
+    
+    
 
-    void Combo3()
+    protected void Combo3()
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
@@ -750,7 +742,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         }
     }
 
-    void Combo4_Part1()
+    protected void Combo4_Part1()
     {
         _statusManager.ObtainTimerBuff
         ((int)BasicCalculation.BattleCondition.CritRateBuff,20,10);
@@ -768,16 +760,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         if (ac.facedir == -1)
         {
-            var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            //foreach (var particle in particles)
-            //{
-            //    var main = particle.main;
-            //    main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            //}
         }
     }
 
-    void Combo4_Part2()
+    protected void Combo4_Part2()
     {
         GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
             RangedAttackFXLayer.transform);
@@ -793,16 +779,10 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
         if (ac.facedir == -1)
         {
-            var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            //foreach (var particle in particles)
-            //{
-            //    var main = particle.main;
-            //    main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            //}
         }
     }
 
-    void Combo4_Landing()
+    protected void Combo4_Landing()
     {
         _tweener = transform.DOMove
             (new Vector2(transform.position.x+1.5f*ac.facedir,transform.position.y-4f), 0.1f).SetEase(Ease.InCubic);
@@ -810,7 +790,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             
     }
 
-    void Combo5()
+    protected void Combo5()
     {
         GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
             RangedAttackFXLayer.transform);
@@ -835,7 +815,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         // }
     }
     
-    void Combo6()
+    protected void Combo6()
     {
         _tweener = transform.DOMoveX(transform.position.x + ac.facedir * 8, 0.1f);
         
@@ -856,16 +836,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             var particles = proj.GetComponentsInChildren<ParticleSystem>();
             var shadow = particles[0].GetComponent<DOTweenSimpleController>();
             shadow.moveDirection.x *= -1;
-
-            // foreach (var particle in particles)
-            // {
-            //     var main = particle.main;
-            //     main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            // }
+            
         }
     }
 
-    void Combo7_Part1()
+    protected void Combo7_Part1()
     {
         GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
             MeeleAttackFXLayer.transform);
@@ -873,24 +848,15 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
         GameObject proj = Instantiate
             (projectile10, transform.position,transform.rotation, container.transform);
-        if (ac.facedir == -1)
-        {
-            // var particles = proj.GetComponentsInChildren<ParticleSystem>();
-            // foreach (var particle in particles)
-            // {
-            //     var main = particle.main;
-            //     main.startRotationY = new ParticleSystem.MinMaxCurve(main.startRotationY.constant+Mathf.PI);
-            // }
-        }
 
     }
 
-    void Combo7_DashDownward()
+    protected void Combo7_DashDownward()
     {
         _tweener = transform.DOMoveY(transform.position.y-2.5f, 0.3f).SetEase(Ease.OutExpo);
     }
 
-    void Combo7_Part2()
+    protected void Combo7_Part2()
     {
         GameObject container = Instantiate(attackContainer,transform.position, transform.rotation,
             RangedAttackFXLayer.transform);
@@ -914,7 +880,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         // }
     }
 
-    void ComboDodge1()
+    protected void ComboDodge1()
     {
         
         
@@ -938,14 +904,14 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
     }
 
-    void ComboDodge2_WarpAttack1(Vector3 target)
+    protected void ComboDodge2_WarpAttack1(Vector3 target)
     {
         _tweener = transform.DOMove(target, 0.3f);
         _tweener.SetEase(Ease.OutExpo);
         //OnComplete(OnTweenComplete);
     }
     
-    void ComboDodge2_WarpAttack2()
+    protected void ComboDodge2_WarpAttack2()
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
@@ -962,7 +928,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         }
     }
 
-    GameObject CamineRush_Part1()
+    protected GameObject CamineRush_Part1()
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, RangedAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(2);
@@ -991,8 +957,12 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         return container;
     }
 
-    void CamineRush_Part2(GameObject container)
+    /// <summary>
+    /// 直着的火焰轨迹+伤害。
+    /// </summary>
+    protected void CamineRush_Part2(GameObject container)
     {
+
         var proj2 = 
             InstantiateDirectional(projectile9, transform.position, container.transform, ac.facedir);
         //proj2.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
@@ -1014,7 +984,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         }
     }
     
-    GameObject BrightCamineRush_Part1()
+    protected GameObject BrightCamineRush_Part1()
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, RangedAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(7);
@@ -1076,7 +1046,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         return container;
     }
     
-    void BrightCamineRush_Part2(GameObject container, Quaternion rotation)
+    protected void BrightCamineRush_Part2(GameObject container, Quaternion rotation)
     {
         Quaternion newRot;
         if(ac.facedir == 1)
@@ -1088,6 +1058,9 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             newRot = Quaternion.Euler(0,180,0);
         }
 
+        //追踪狼头+伤害
+        
+        
         var proj2 = 
             Instantiate(projectilePoolEX[7],
                 transform.position+new Vector3(ac.facedir-ac.facedir,0),
@@ -1103,7 +1076,6 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             transform.position+new Vector3(ac.facedir-ac.facedir,0,0),
             rotation, container.transform);
         
-        Debug.Log(projfx1.transform.rotation.eulerAngles);
         if(projfx1.transform.rotation.eulerAngles.z<270 && projfx1.transform.rotation.eulerAngles.z>90)
             projfx1.transform.rotation = 
                 Quaternion.Euler(projfx1.transform.rotation.eulerAngles.x,
@@ -1124,11 +1096,17 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
     }
     
-    void BrightCamineRush_Part3(GameObject container)
+    /// <summary>
+    /// 第二次攻击的狼头伤害部分
+    /// </summary>
+    /// <param name="container"></param>
+    protected void BrightCamineRush_Part3(GameObject container)
     {
 
         //GameObject subcontainer = Instantiate(attackSubContainer, transform.position, transform.rotation, RangedAttackFXLayer.transform);
         //subcontainer.GetComponent<AttackSubContainer>().InitAttackContainer(1,container);
+        
+        //狼头+伤害，第二次的攻击。
         var proj1 = 
             InstantiateDirectional(projectile7, transform.position+new Vector3(ac.facedir,0), container.transform,ac.facedir);
         
@@ -1151,7 +1129,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
-    private void FlameRaid()
+    protected void FlameRaid()
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
@@ -1166,7 +1144,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         proj1.GetComponent<AttackFromEnemy>().firedir = ac.facedir;
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
     }
-    private void SavageFlameRaid()
+    protected void SavageFlameRaid()
     {
         GameObject container = Instantiate(attackContainer, transform.position, transform.rotation, MeeleAttackFXLayer.transform);
         container.GetComponent<AttackContainerEnemy>().InitAttackContainer(1);
@@ -1182,7 +1160,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         proj1.GetComponent<AttackFromEnemy>().enemySource = gameObject;
     }
 
-    private void ScarletInferno()
+    protected virtual void ScarletInferno()
     {
         var proj = FindObjectOfType<Projectile_C005_3>();
         if (proj != null)
@@ -1201,7 +1179,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
-    void BlazingEnhancementBuff(int difficulty=3)
+    protected void BlazingEnhancementBuff(int difficulty=3)
     {
         var buffEffect1 = 200f;
         var buffEffect2 = 100f;
@@ -1221,7 +1199,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         _statusManager.ObtainTimerBuff(buff_hard);
     }
 
-    void StraightDashMove()
+    protected void StraightDashMove()
     {
         var target = _behavior.targetPlayer;
         
@@ -1273,7 +1251,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         
     }
 
-    Vector3 RushForward()
+    protected Vector3 RushForward()
     {
         //Sequence sequence = DOTween.Sequence();
         //SetGravityScale(0);
@@ -1294,7 +1272,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
         return origin;
     }
-    void RushBack(Vector3 origin)
+    protected void RushBack(Vector3 origin)
     {
         _tweener = transform.DOMove(origin, 0.1f).SetEase(Ease.OutExpo).OnComplete(AppearRenderer);
         _tweener.Play();
@@ -1306,6 +1284,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         //var spriteRenderer1 = GetComponent<SpriteRenderer>();
         ac.rendererObject.SetActive(false);
         ac.SwapWeaponVisibility(false);
+        ac.minimapIcon.SetActive(false);
         //spriteRenderer;
         //spriteRenderer1.color = 
             //new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 0);
@@ -1316,6 +1295,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
         //var spriteRenderer1 = GetComponent<SpriteRenderer>();
         ac.rendererObject.SetActive(true);
         ac.SwapWeaponVisibility(true);
+        ac.minimapIcon.SetActive(true);
         //spriteRenderer;
         //spriteRenderer1.color = 
             //new Color(spriteRenderer1.color.r, spriteRenderer1.color.g, spriteRenderer1.color.b, 100);

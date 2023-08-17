@@ -307,6 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab606344964fa144aa22f56e7da715b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  quicklandingEnabled: 0
   accTime: 0.1
   standardAttackContinious: 0
   allowForceStrike: 1
@@ -358,12 +359,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayedName: "\u6CFD\u5A1C"
   dialogIconID: 1003
-  maxBaseHP: 4110
+  maxBaseHP: 4206
   baseDef: 8
-  baseAtk: 5710
+  baseAtk: 5944
   critRate: 12
-  maxHP: 4110
-  currentHp: 4110
+  maxHP: 4206
+  currentHp: 4206
   comboConnectMaxInterval: 4
   comboHitCount: 0
   knockbackRes: 0
@@ -401,6 +402,7 @@ MonoBehaviour:
   jumpforce: 20
   rollspeed: 10
   remainReviveTimes: 3
+  debug: 0
   _comboIndicator: {fileID: 0}
 --- !u!114 &922399884477065113
 MonoBehaviour:
@@ -662,6 +664,7 @@ MonoBehaviour:
   dodging: 0
   isAttackSkill: 00000000
   ta: {fileID: 0}
+  rendererObjects: []
   forcingRequireTime: 0.8
   forcingTime: 0
   maxForceLevel: 5

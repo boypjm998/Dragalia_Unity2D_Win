@@ -26,14 +26,20 @@ public class PlayerStatusManager : StatusManager
     public float rollspeed = 10.0f;
     
     public int remainReviveTimes = 9;
+    public bool debug;
 
     
 
     [HideInInspector] public ComboIndicatorUI _comboIndicator;
     private ActorController ac;
 
-    //[SerializeField]
-    //private UI_ConditionBar _conditionBar;
+    public float skillHasteUp
+    {
+        get => GetSkillHasteBuff();
+    }
+
+
+
 
 
     protected override void Awake()
@@ -78,7 +84,12 @@ public class PlayerStatusManager : StatusManager
         SpGainInStatus(2, spRegenPerSecond * Time.deltaTime,true);
         SpGainInStatus(3, spRegenPerSecond * Time.deltaTime,true);
 
-        
+        if (debug)
+        {
+            debug = false;
+            print(conditionList.Count);
+        }
+
 
     }
 
@@ -156,54 +167,50 @@ public class PlayerStatusManager : StatusManager
 
     #region Buff Related
 
-    
-    
-    
-        
-    
-        /// <summary>
-        ///   <para>目标获得多层同类BUFF</para>
-        /// </summary>
-        
-        
-        /*public override void ObtainUnstackableTimerBuff(int buffID, float effect, float duration,
-            int spID = -1)
+    protected float GetSkillHasteBuff(int type = 0)
+    {
+        float buff = 0, debuff = 0;
+        foreach (var condition in conditionList)
         {
-            OverrideUnstackableBuff(buffID, spID,effect,duration);
-        
-            var buff = new TimerBuff(buffID, effect, duration, 1);
-            
-            if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count==0)
+            if (condition.buffID == (int)BasicCalculation.BattleCondition.SkillHasteBuff)
             {
-                if (dotRoutineDict.ContainsKey(buffID))
-                {
-                    Coroutine oldRoutine;
-                    dotRoutineDict.Remove(buffID,out oldRoutine);
-                    StopCoroutine(oldRoutine);
-                }
-                var newRoutine = StartCoroutine(DotTick((BasicCalculation.BattleCondition)buffID));
-                dotRoutineDict.Add(buffID,newRoutine);
+                buff += (int)condition.effect;
             }
-            else
+            if (condition.buffID == (int)BasicCalculation.BattleCondition.SkillHasteDebuff)
             {
-                _battleEffectManager.SpawnEffect(gameObject,(BasicCalculation.BattleCondition)buffID);
+                debuff += (int)condition.effect;
             }
+
+        }
+
+        if (buff > BasicCalculation.BattleConditionLimit(9))
+        {
+            buff = BasicCalculation.BattleConditionLimit(9);
+        }
+
+        if (debuff > BasicCalculation.BattleConditionLimit(209))
+        {
+            debuff = BasicCalculation.BattleConditionLimit(209);
+        }
         
-            buff.SetUniqueBuffInfo(spID);
+        buff *= 0.01f;
+        debuff *= 0.01f;
+
+        if (type == 1)
+        {
+            return buff;
+        }
+        else if (type == 2)
+        {
+            return debuff;
+        }
+
+
+        return buff - debuff;
         
-            conditionList.Add(buff);
-            
-            if (GetRecoveryPotency() > 0 && healRoutine == null)
-            {
-                healRoutine = StartCoroutine(HotRecoveryTick());
-            }
-            
-            _conditionBar.OnConditionAdd(buff);
-        
-            OnBuffEventDelegate?.Invoke(buff);
-        }*/
-        
-        
+    }
+
+
 
     #endregion
 

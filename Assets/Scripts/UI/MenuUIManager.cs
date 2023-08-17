@@ -41,8 +41,6 @@ public class MenuUIManager : MonoBehaviour
         
         _globalController = FindObjectOfType<GlobalController>();
         
-
-        
     }
 
     public void InitAllChildrenElements()
@@ -352,7 +350,15 @@ public class MenuUIManager : MonoBehaviour
         if (!UIDict.ContainsKey(name))
         {
             var ab = _globalController.GetBundle("iconsmall");
-            var asset = ab.LoadAsset<GameObject>(name);
+            var extraString = "";
+            if (_globalController.GameLanguage == GlobalController.Language.EN)
+            {
+                extraString = "_EN";
+            }
+
+            var asset = ab.LoadAsset<GameObject>(name+extraString);
+            
+            
             var obj = Instantiate(asset, transform);
             obj.SetActive(false);
             print("因为实例化而被禁用");
@@ -535,7 +541,7 @@ public class MenuUIManager : MonoBehaviour
         {
             case 0:
             {
-                activeList = new[] {"MenuButton_01"};
+                activeList = new[] {"MenuButton_01","Logo"};
                 break;
             }
             case 101:

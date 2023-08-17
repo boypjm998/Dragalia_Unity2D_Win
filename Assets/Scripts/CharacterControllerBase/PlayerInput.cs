@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -85,6 +86,8 @@ public class PlayerInput : MonoBehaviour
     public bool inputJumpEnabled = true;
     public bool inputRollEnabled = true;
 
+    private int pointerIsOnClickableUINum = 0;
+
 
 
     private void Awake()
@@ -98,45 +101,119 @@ public class PlayerInput : MonoBehaviour
         //DisableAllInput();
         LoadKeySetting();
     }
-    
-    
-    
+
+
+    private bool ControlEnable(KeyCode keyCode)
+    {
+        // if (keyCode == KeyCode.Mouse0 || keyCode == KeyCode.Mouse1)
+        // {
+        //     if (EventSystem.current == null)
+        //     {
+        //         
+        //     }
+        //
+        //     if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.CompareTag("ClickableUI"))
+        //     {
+        //         return false;
+        //     }
+        // }
+
+        return true;
+    }
 
     // Update is called once per frame
     void Update()
     {
-        
-        buttonEsc.Tick(Input.GetKey(keyEsc));
+        if(ControlEnable(keyEsc))
+            buttonEsc.Tick(Input.GetKey(keyEsc));
         
         if(BattleStageManager.Instance.isGamePaused)
             return;
         
+        //
+        if(hurt)
+            return;
         
         // buttonLeft.Tick(CheckSwipeLeft());
         // buttonRight.Tick(CheckSwipeRight());
+
+        if (keyLeft != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonLeft.Tick(Input.GetKey(keyLeft));
+        }
+
+
+        if (keyRight != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonRight.Tick(Input.GetKey(keyRight));
+        }
+
+
+        if (keyAttack != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonAttack.Tick(Input.GetKey(keyAttack));
+        }
+
+
+        if (keyJump != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonJump.Tick(Input.GetKey(keyJump));
+        }
+
+
+
+        if (keyRoll != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonRoll.Tick(Input.GetKey(keyRoll));
+        }
+
+
+        if (keyDown != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonDown.Tick(Input.GetKey(keyDown));
+        }
+
+
+        if (keyUp != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonUp.Tick(Input.GetKey(keyUp));
+        }
+
+
+        if (keySkill1 != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonSkill1.Tick(Input.GetKey(keySkill1));
+        }
+
+        if (keySkill2 != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonSkill2.Tick(Input.GetKey(keySkill2));
+        }
+
+
+        if (keySkill3 != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonSkill3.Tick(Input.GetKey(keySkill3));
+        }
+
+
+        if (keySkill4 != KeyCode.None)
+        {
+            if(ControlEnable(keyLeft))
+                buttonSkill4.Tick(Input.GetKey(keySkill4));
+        }
+
         
-        if(keyLeft!=KeyCode.None)
-            buttonLeft.Tick(Input.GetKey(keyLeft));
-        if(keyRight!=KeyCode.None)
-            buttonRight.Tick(Input.GetKey(keyRight));
-        if(keyAttack!=KeyCode.None)
-            buttonAttack.Tick(Input.GetKey(keyAttack));
-        if(keyJump!=KeyCode.None)
-            buttonJump.Tick(Input.GetKey(keyJump));
-        if(keyRoll!=KeyCode.None)
-            buttonRoll.Tick(Input.GetKey(keyRoll));
-        if(keyDown!=KeyCode.None)
-            buttonDown.Tick(Input.GetKey(keyDown));
-        if(keyUp!=KeyCode.None)
-            buttonUp.Tick(Input.GetKey(keyUp));
-        if(keySkill1!=KeyCode.None)
-            buttonSkill1.Tick(Input.GetKey(keySkill1));
-        if(keySkill2!=KeyCode.None)
-            buttonSkill2.Tick(Input.GetKey(keySkill2));
-        if(keySkill3!=KeyCode.None)
-            buttonSkill3.Tick(Input.GetKey(keySkill3));
-        if(keySkill4!=KeyCode.None)
-            buttonSkill4.Tick(Input.GetKey(keySkill4));
         
         
         

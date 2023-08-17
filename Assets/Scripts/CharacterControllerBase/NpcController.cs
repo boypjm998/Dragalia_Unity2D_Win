@@ -542,12 +542,36 @@ public class NpcController : MonoBehaviour
     public virtual IEnumerator RollAction()
     {
         isAction = true;
-        // if (currentTarget.transform.position.x < transform.position.x)
-        // {
-        //     ac.SetFaceDir(1);
-        // }else
-        //     ac.SetFaceDir(-1);
-        // ac.dodging = true;
+
+        try
+        {
+            var currentPlatform = 
+                BasicCalculation.CheckRaycastedPlatform(gameObject);
+            
+            if (ac.facedir == 1)
+            {
+                float rightborder = BattleStageManager.Instance.OutOfRangeCheck
+                    (currentPlatform.bounds.max).x;
+                
+                if(transform.position.x + ac.rollspeed*0.4f >= rightborder)
+                    ac.SetFaceDir(-1);
+            }else if(ac.facedir == -1)
+            {
+                float leftborder = BattleStageManager.Instance.OutOfRangeCheck
+                    (currentPlatform.bounds.min).x;
+                
+                if(transform.position.x - ac.rollspeed*0.4f <= leftborder)
+                    ac.SetFaceDir(1);
+            }
+
+        }
+        catch
+        {
+            Debug.LogWarning("RollAction: No platform found");
+        }
+
+
+
         ac.anim.Play("roll");
         yield return null;
         yield return new WaitUntil(() =>

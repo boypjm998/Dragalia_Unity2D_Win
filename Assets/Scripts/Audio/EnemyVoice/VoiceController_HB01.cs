@@ -27,6 +27,7 @@ public class VoiceController_HB01 : AudioManagerGeneral
         voice = gameObject.GetComponent<AudioSource>();
         voiceAssetBundlePath = "voice_c005";
         LoadMyVoice();
+        CheckVoiceVolume();
     }
 
     // Update is called once per frame

@@ -31,7 +31,7 @@ public class VoiceController_HB02 : AudioManagerGeneral
     {
         _dialogDisplayer = FindObjectOfType<UI_DialogDisplayer>();
         voice = gameObject.GetComponent<AudioSource>();
-        
+        CheckVoiceVolume();
     }
     
     public void PlayMyVoice(myMoveList moveName,bool broadcast = false)

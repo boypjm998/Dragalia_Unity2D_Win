@@ -255,7 +255,7 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
                         angle = 180 - angle;
                     }
 
-                    print("angle=" + angle);
+                    //print("angle=" + angle);
                     if (angle < 30)
                     {
                         // 更新最近的有效位置

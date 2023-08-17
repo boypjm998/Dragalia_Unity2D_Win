@@ -35,6 +35,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
     [SerializeField] protected GameObject projectile10;
 
     [SerializeField] protected GameObject[] projectilePoolEX;
+    protected GameObject[] projectilePool = new GameObject[10];
 
     protected StatusManager _statusManager;
     protected BattleStageManager _stageManager;
@@ -65,6 +66,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
         _statusManager = GetComponent<StatusManager>();
         _stageManager = BattleStageManager.Instance;
         attackContainer = _stageManager.attackContainerEnemy;
+        CopyProjectilesToPool();
     }
 
     // Update is called once per frame
@@ -141,7 +143,34 @@ public abstract class EnemyMoveManager : MonoBehaviour
         clone.GetComponent<EnemyAttackHintBar>()?.SetSource(ac);
         return clone;
     }
-    
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="prefabName">最后一个横线后的后缀名</param>
+    /// <param name="where"></param>
+    /// <param name="rot"></param>
+    /// <param name="_parent"></param>
+    /// <returns></returns>
+    public GameObject GenerateWarningPrefab(string prefabName, Vector3 where,Quaternion rot, Transform _parent)
+    {
+        GameObject prefab;
+        try
+        {
+            prefab = WarningPrefabs.ToList().Find(
+                x =>
+                    x.name.EndsWith("_" + prefabName))?.gameObject;
+        }
+        catch
+        {
+            return null;
+        }
+
+        var clone = Instantiate(prefab, where, rot, _parent);
+        clone.GetComponent<EnemyAttackHintBar>()?.SetSource(ac);
+        return clone;
+    }
+
     protected virtual void QuitAttack()
     {
         _behavior.currentAttackAction = null;
@@ -196,6 +225,64 @@ public abstract class EnemyMoveManager : MonoBehaviour
         return _navigateAnchorSensors.Find
         (x =>
             x.gameObject.name.Equals(name))?.gameObject;
+    }
+
+    protected void CopyProjectilesToPool()
+    {
+        //projectilePool = new GameObject[10];
+        projectilePool[0] = projectile1;
+        projectilePool[1] = projectile2;
+        projectilePool[2] = projectile3;
+        projectilePool[3] = projectile4;
+        projectilePool[4] = projectile5;
+        projectilePool[5] = projectile6;
+        projectilePool[6] = projectile7;
+        projectilePool[7] = projectile8;
+        projectilePool[8] = projectile9;
+        projectilePool[9] = projectile10;
+    }
+
+    /// <summary>
+    /// 寻找格式化名字的projectile
+    /// </summary>
+    /// <param name="nameFromAction">例如fx_hb001_action14_1,该参数输入"action14_1"</param>
+    /// <returns></returns>
+    public GameObject GetProjectileOfFormatName(string nameFromAction)
+    {
+        //查找尾部是_{nameFromAction}的projectile
+        
+        foreach (var projectile in projectilePool)
+        {
+            if(projectile == null)
+                continue;
+            if (projectile.name.EndsWith("_" + nameFromAction))
+            {
+                return projectile;
+            }
+        }
+        
+        
+        return projectilePoolEX.ToList().Find(
+            x =>
+                x.name.EndsWith("_" + nameFromAction))?.gameObject;
+    }
+
+    public GameObject GetProjectileOfName(string name)
+    {
+        //遍历projectilePool，找到名字相同的projectile
+        foreach (var projectile in projectilePool)
+        {
+            if(projectile == null)
+                continue;
+            if (projectile.name.Equals(name))
+            {
+                return projectile;
+            }
+        }
+
+        return projectilePoolEX.ToList().Find
+        (x =>
+            x.name.Equals(name))?.gameObject;
     }
    
 }

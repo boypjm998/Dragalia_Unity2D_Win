@@ -722,6 +722,8 @@ MonoBehaviour:
   rendererObject: {fileID: 7774180018057235689}
   isAction: 0
   canDeath: 0
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 2439020815123085857}
@@ -733,10 +735,13 @@ MonoBehaviour:
   movespeed: 6
   rollspeed: 9
   jumpforce: 20
+  jumpHeight: 5
+  disappearTimeAfterDeath: 0
   dodging: 0
   moveEnable: 0
   tar: {fileID: 0}
   _defaultgravityscale: 4
+  _groundSensor: {fileID: 0}
 --- !u!50 &5901961084830312506
 Rigidbody2D:
   serializedVersion: 4
@@ -777,7 +782,7 @@ MonoBehaviour:
   attackSubContainer: {fileID: 0}
   WarningPrefabs: []
   projectile1: {fileID: 585842958626449015, guid: 6cb1dac30b1c41b469cd794edb679a47, type: 3}
-  projectile2: {fileID: 0}
+  projectile2: {fileID: 8047068393625721755, guid: 6d6086eb28c9bc64abeda931ec4d2050, type: 3}
   projectile3: {fileID: 0}
   projectile4: {fileID: 0}
   projectile5: {fileID: 0}
@@ -787,6 +792,7 @@ MonoBehaviour:
   projectile9: {fileID: 0}
   projectile10: {fileID: 0}
   projectilePoolEX: []
+  damageTotal: 0
 --- !u!114 &6612964628922197937
 MonoBehaviour:
   m_ObjectHideFlags: 0

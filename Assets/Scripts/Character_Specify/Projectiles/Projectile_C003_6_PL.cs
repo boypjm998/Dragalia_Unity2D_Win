@@ -91,6 +91,15 @@ namespace CharacterSpecificProjectiles
 
         private void Update()
         {
+            if (GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            {
+                Destroy(gameObject);
+                ac.anim.SetInteger("force_level",-1);
+                Destroy(GetComponentInParent<AttackContainer>().gameObject);
+                return;
+            }
+
+
             if (ac.forceLevel < 0)
             {
                 Destroy(gameObject);

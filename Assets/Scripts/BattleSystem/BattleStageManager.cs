@@ -20,7 +20,7 @@ public class BattleStageManager : MonoBehaviour
     public int chara_id;
     public string quest_name;
     public string quest_id { get; set; }
-    public List<int> FieldAbilityIDList;
+    public List<int> FieldAbilityIDList = new();
     public GameObject boss;
     public int timeLimit;
     public int totalEnemyNum;
@@ -38,6 +38,7 @@ public class BattleStageManager : MonoBehaviour
     public GameObject attackContainer;
     public GameObject attackContainerEnemy;
     public GameObject attackSubContainer;
+    public GameObject simpleHealthBar;
     
     public GameObject buffLogPrefab;
     public GameObject gameFailedPrefab;
@@ -66,6 +67,15 @@ public class BattleStageManager : MonoBehaviour
 
     public StageManagerIntegerDelegate OnFieldAbilityAdd;
     public StageManagerIntegerDelegate OnFieldAbilityRemove;
+    
+    public delegate void OnMouseOverDelegate();
+    public event OnMouseOverDelegate OnPointerEnter;
+    public event OnMouseOverDelegate OnPointerExit;
+    
+    public bool debugAddFieldAbility1 = false;
+    public bool debugRemoveFieldAbility1 = false;
+    public bool debugAddFieldAbility2 = false;
+    public bool debugRemoveFieldAbility2 = false;
     
     
     public GameObject RangedAttackFXLayer { get; private set; }
@@ -102,6 +112,27 @@ public class BattleStageManager : MonoBehaviour
         {
             currentTime += Time.deltaTime;
         }
+        if(debugAddFieldAbility1)
+        {
+            debugAddFieldAbility1 = false;
+            AddFieldAbility(20081);
+        }
+        if(debugRemoveFieldAbility1)
+        {
+            debugRemoveFieldAbility1 = false;
+            RemoveFieldAbility(20081);
+        }
+        if(debugAddFieldAbility2)
+        {
+            debugAddFieldAbility2 = false;
+            AddFieldAbility(20091);
+        }
+        if(debugRemoveFieldAbility2)
+        {
+            debugRemoveFieldAbility2 = false;
+            RemoveFieldAbility(20091);
+        }
+        
     }
 
     #region LoadAssets
@@ -151,6 +182,9 @@ public class BattleStageManager : MonoBehaviour
         player.GetComponent<AttackManager>().RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
 
         var buffLayer = player.transform.Find("BuffLayer");
+        
+        if(buffLayer.GetComponentInChildren<UI_BuffLogPopManager>()!= null)
+            return;
         
         var bufftxt = 
             Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
@@ -271,7 +305,7 @@ public class BattleStageManager : MonoBehaviour
         
     }
 
-    public void SetBGM()
+    public void InitBGM()
     {
         
         var globalController = GameObject.Find("GlobalController").GetComponent<GlobalController>();
@@ -295,10 +329,24 @@ public class BattleStageManager : MonoBehaviour
         }
 
         
-        if (BattleEffectManager.Instance.bgmVoiceSource.clip == null)
+        if (BattleEffectManager.Instance.BGMHasSet == false)
         {
-            BattleEffectManager.Instance.bgmVoiceSource.clip = bgm;
+            BattleEffectManager.Instance.SetBGM(bgm);
         }
+    }
+
+    public AudioClip LoadBGMFromAssetBundle(string assetBundlePath,string name)
+    {
+        var bundle = GlobalController.Instance.GetBundle(assetBundlePath);
+        var bgm = bundle.LoadAsset<AudioClip>(name);
+        
+        if (bgm == null)
+        {
+            Debug.LogWarning("BGM not found!");
+            return null;
+        }
+
+        return bgm;
     }
 
     public void SpChargeAll(GameObject playerHandle, float sp)
@@ -310,10 +358,14 @@ public class BattleStageManager : MonoBehaviour
 
         //1、计算技速BUFF
 
+        var spBuff = playerStatusManager.skillHasteUp;
+        //TODO: 计算技速被动
+        //TODO: 计算技速场地效果
+        var spGain = sp * (1 + spBuff);
 
         //2、自充sp
 
-        for (var i = 0; i < playerStatusManager.maxSkillNum; i++) playerStatusManager.SpGainInStatus(i, sp);
+        for (var i = 0; i < playerStatusManager.maxSkillNum; i++) playerStatusManager.SpGainInStatus(i, spGain);
     }
 
     public void SpCharge(GameObject playerHandle, float sp, int skillID)
@@ -550,6 +602,7 @@ public class BattleStageManager : MonoBehaviour
             }
             
             targetStat.OnTakeDirectDamage?.Invoke(targetStat);
+            targetStat.OnTakeDirectDamageFrom?.Invoke(targetStat,playerstat);
 
 
             //4.Instantiate the damage number.
@@ -802,6 +855,33 @@ public class BattleStageManager : MonoBehaviour
 
     }
 
+    public int CauseIndirectDamageToOverdriveBar(SpecialStatusManager stat, int damage,
+        bool random = false)
+    {
+        if (stat.GetComponent<ActorBase>().IsInvincible)
+        {
+            return 0;
+        }
+
+        int damageM = damage;
+        if (random)
+        {
+            damageM = (int)Mathf.Ceil(damage * Random.Range(0.9f, 1.1f));
+        }
+
+        if (stat.baseBreak <= 0 || stat.ODLock)
+            return 0;
+        
+        
+        if (stat.currentBreak <= damageM)
+        {
+            damageM = (int)(stat.currentBreak - 1);
+        }
+
+        stat.currentBreak -= damageM;
+        
+        return damageM;
+    }
 
 
 
@@ -962,8 +1042,10 @@ public class BattleStageManager : MonoBehaviour
             if(ability.abilityID == id)
                 ability.SetIconActive(true);
         }
-        
+        if(FieldAbilityIDList.Contains(id))
+            return;
         FieldAbilityIDList.Add(id);
+        OnFieldAbilityAdd?.Invoke(id);
     }
 
     public void RemoveFieldAbility(int id)
@@ -978,6 +1060,7 @@ public class BattleStageManager : MonoBehaviour
 
         
         FieldAbilityIDList.Remove(id);
+        OnFieldAbilityRemove?.Invoke(id);
     }
 
     public void ClearAllFieldAbility()
@@ -1170,7 +1253,7 @@ public class BattleStageManager : MonoBehaviour
             targetTransform);
         
         
-        GameObject.Find("BossStatusBar").SetActive(false);
+        FindObjectOfType<UI_MultiBossManager>().gameObject.SetActive(false);
         
         playerinput.DisableAllInput();
         playerinput.SetMoveDisabled();
@@ -1221,6 +1304,7 @@ public class BattleStageManager : MonoBehaviour
             GlobalController.BattleFinished(true);
         }
     }
+    
 
 
     public void UpdateQuestSaveData(QuestSave newQuestState,ref bool newRecord)
@@ -1392,15 +1476,14 @@ public class BattleStageManager : MonoBehaviour
 
 
     }
-    public void ObtainAfflictionDirectlyWithCheck(StatusManager sourceStat, StatusManager targetStat,BattleCondition condition, int chance,int attackType=0)
+    public int ObtainAfflictionDirectlyWithCheck(StatusManager targetStat,BattleCondition condition, int chance,int attackType=1)
     {
-        var condFlag = CheckAffliction(chance +
-                                                          sourceStat.GetConditionRateBuff((BasicCalculation.BattleCondition)(condition.buffID)),
+        var condFlag = CheckAffliction(chance,
             targetStat.GetAfflictionResistance
                 ((BasicCalculation.BattleCondition)condition.buffID));
         if (condFlag<1)
         {
-            sourceStat.OnAfflictionResist?.Invoke(condition);
+            //sourceStat.OnAfflictionResist?.Invoke(condition);
             //1是成功,0是白字resist,-1是黄字resist
             if(condFlag == 0)
                 DamageNumberManager.GenerateResistText(targetStat.transform);
@@ -1409,14 +1492,46 @@ public class BattleStageManager : MonoBehaviour
                 DamageNumberManager.GenerateResistText(targetStat.transform, 1);
             }
                         
-            return;//检查异常抗性！不一定是异常！
+            return condFlag;//检查异常抗性！不一定是异常！
         }
+        targetStat.ObtainTimerBuff(condition);
         if(StatusManager.IsAffliction(condition.buffID))
         {
             if(attackType!=1)
                 targetStat.IncreaseAfflictionResistance(condition.buffID);
         }
+
+        return condFlag;
     }
+
+    public static List<StatusManager> GetAllStatusManagers()
+    {
+        var list =  FindObjectsOfType<StatusManager>().ToList();
+        var result = new List<StatusManager>();
+        foreach(var status in list)
+        {
+            if(status.GetComponent<ActorBase>() != null)
+            {
+                result.Add(status);
+            }
+        }
+
+        return result;
+
+    }
+    
+    public void InvokePointerEvent(bool flag)
+    {
+        if (flag)
+        {
+            OnPointerEnter?.Invoke();
+        }
+        else
+        {
+            OnPointerExit?.Invoke();
+        }
+    }
+
 
 
 }

@@ -15,8 +15,18 @@ public class UI_DialogDisplayerStory : UI_DialogDisplayer
         portraitIcon = transform.Find("Icon").GetComponent<Image>();
         _swapper = transform.Find("Icon").GetComponent<UI_DialogImageSwapper>();
         balloons = transform.Find("Balloons").gameObject;
-        questDialogInfoData = 
-            BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoStory.json");
+        if (GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN)
+        {
+            questDialogInfoData = 
+                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoStory.json");
+        }
+        else if(GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+        {
+            questDialogInfoData = 
+                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoStory_EN.json");
+        }
+
+
     }
     
     

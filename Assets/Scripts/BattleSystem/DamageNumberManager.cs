@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -5,6 +6,8 @@ using UnityEngine;
 using TMPro;
 using System.Text;
 using GameMechanics;
+using Random = UnityEngine.Random;
+
 public class DamageNumberManager : MonoBehaviour
 {
     public int fontSize = 10;
@@ -19,6 +22,30 @@ public class DamageNumberManager : MonoBehaviour
     [SerializeField]
     private GameObject totalDamagePrefab;
 
+
+    private void Start()
+    {
+        print(GlobalController.Instance.gameOptions.damage_font_size);
+        try
+        {
+            if (GlobalController.Instance.gameOptions.damage_font_size == 1)
+            {
+                fontSize = 8;
+            }else if (GlobalController.Instance.gameOptions.damage_font_size == 2)
+            {
+                fontSize = 10;
+            }else if (GlobalController.Instance.gameOptions.damage_font_size == 3)
+            {
+                fontSize = 12;
+            }
+        }
+        catch
+        {
+            print("No GlobalController Instance Found");
+        }
+
+
+    }
 
     public void HealPop(int dmg,Transform targetTrans)
     {
@@ -303,6 +330,15 @@ public class DamageNumberManager : MonoBehaviour
         
         TextMeshPro dmgText = num.transform.GetChild(0).GetComponent<TextMeshPro>();
         dmgText.text = dmg.ToString();
+        if (fontSize > 10)
+        {
+            dmgText.fontSize *= 1.1f;
+        }else if (fontSize < 10)
+        {
+            dmgText.fontSize *= 0.8f;
+        }
+
+
 
     }
     
@@ -359,7 +395,7 @@ public class DamageNumberManager : MonoBehaviour
 
     }
 
-    public static void GenerateCounterText(Transform targetTransform)
+    public static void GenerateCounterText(Transform targetTransform, bool notSuccess = false)
     {
         var CounterText = Resources.Load<GameObject>("UI/InBattle/General/Counter/CounterText");
         
@@ -368,7 +404,18 @@ public class DamageNumberManager : MonoBehaviour
             Instantiate(CounterText,
                 targetTransform.position,
                 Quaternion.identity);
-        
+
+        if (notSuccess)
+        {
+            try
+            {
+                txt.GetComponentInChildren<TextMeshPro>().color = Color.blue;
+            }
+            catch
+            {
+            }
+        }
+
     }
     
     /// <summary>

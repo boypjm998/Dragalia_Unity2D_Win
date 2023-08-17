@@ -614,7 +614,15 @@ public class EnemyMoveController_HB03_M1 : EnemyMoveManager
             container);
         var fx1 = Instantiate(projectilePoolEX[3],container.transform.position,
             Quaternion.identity,MeeleAttackFXLayer.transform);
-        _tweener = transform.DOMoveX(transform.position.x + ac.facedir*6,0.25f).SetEase(Ease.OutSine);
+
+        var goal = BattleStageManager.Instance.
+            OutOfRangeCheck(new Vector2(transform.position.x + ac.facedir * 6,
+            transform.position.y));
+        
+        
+        
+        
+        _tweener = transform.DOMoveX(goal.x,0.25f).SetEase(Ease.OutSine);
     }
 
     protected void ForceAttackCharging()

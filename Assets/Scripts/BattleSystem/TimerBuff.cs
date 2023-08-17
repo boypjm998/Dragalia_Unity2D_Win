@@ -50,6 +50,22 @@ public class TimerBuff : BattleCondition
                 this.buffID = 999;
         }
 
+        public TimerBuff(TimerBuff origin)
+        {
+            //deep copy
+            this.buffID = origin.buffID;
+            this.duration = origin.duration;
+            this.effect = origin.effect;
+            this.DisplayType = origin.DisplayType;
+            this.maxStackNum = origin.maxStackNum;
+            this.lastTime = origin.duration;
+            this.specialID = origin.specialID;
+            this.dispellable = origin.dispellable;
+            this.extra_iconID = origin.extra_iconID;
+            
+            
+        }
+
 
 
 

@@ -25,16 +25,17 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         {
             if (bgm1 != null)
             {
-                //BattleEffectManager.Instance.bgmVoiceSource.Stop();
-                BattleEffectManager.Instance.bgmVoiceSource.clip = bgm1;
+                BattleEffectManager.Instance.SetBGM(bgm1);
+                //BattleEffectManager.Instance.bgmVoiceSource.clip = bgm1;
                 //BattleEffectManager.Instance.bgmVoiceSource.Play();
                 print("change bgm");
             }
         }
         else
         {
-            BattleEffectManager.Instance.bgmVoiceSource.clip = bgm2;
-            BattleEffectManager.Instance.bgmVoiceSource.Play();
+            BattleEffectManager.Instance.SetBGM(bgm2);
+            //BattleEffectManager.Instance.bgmVoiceSource.clip = bgm2;
+            BattleEffectManager.Instance.PlayBGM();
             status.OnHPBelow0 += WorldBreakEffect;
         }
     }
@@ -337,6 +338,10 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         enemyController.SetCounter(false);
         enemyController.OnAttackInterrupt?.Invoke();
         enemyController.SetFlashBody(false);
+        for(int i = 0; i < enemyAttackManager.MeeleAttackFXLayer.transform.childCount; i++)
+        {
+            Destroy(enemyAttackManager.MeeleAttackFXLayer.transform.GetChild(i).gameObject);
+        }
         
         try
         {
@@ -346,12 +351,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         {
             
         }
-        
-        for(int i = 0; i < enemyAttackManager.MeeleAttackFXLayer.transform.childCount; i++)
-        {
-            Destroy(enemyAttackManager.MeeleAttackFXLayer.transform.GetChild(i).gameObject);
-        }
-        
+
         isTransformed = true;
         currentAction = StartCoroutine(ChangePhaseAnimationRoutine());
 
@@ -369,7 +369,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         //UI_BossStatus.Instance.RedirectBoss(p2_boss);
         //BattleEffectManager.Instance.bgmVoiceSource.Stop();
         BattleStageManager.currentDisplayingBossInfo = 2;
-        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss);
+        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss,1);
         p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
         ActionEnd();
         yield return null;

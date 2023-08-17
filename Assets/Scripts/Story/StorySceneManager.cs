@@ -45,10 +45,18 @@ public class StorySceneManager : MonoBehaviour
             return;
 
         moveNext = false;
+        try
+        {
+            if (_globalController.loadingEnd == false || paused)
+                return;
+        }
+        catch
+        {
+            _globalController = GlobalController.Instance;
+        }
 
-        if(_globalController.loadingEnd == false || paused)
-            return;
-        
+
+
         if (autoMode)
         {
             if (currentCoroutine == null && characterIsSpeaking == false && !taskRunning &&
@@ -71,8 +79,15 @@ public class StorySceneManager : MonoBehaviour
     public void ClickEventInStory()
     {
         print("clicked");
-        if(_globalController.loadingEnd == false || paused)
-            return;
+        try
+        {
+            if (_globalController.loadingEnd == false || paused)
+                return;
+        }
+        catch
+        {
+            _globalController = GlobalController.Instance;
+        }
         
         
         

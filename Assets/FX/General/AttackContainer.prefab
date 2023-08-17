@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5629963774262871470}
   m_Layer: 0
   m_Name: AttackContainer
-  m_TagString: Untagged
+  m_TagString: SoundEffect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45,9 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1107149098f7e848a84eef8df1056b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IfODCounter: 0
   needTotalDisplay: 0
   spGained: 0
   conditionCheckDone: 
+  SubContainers: []
 --- !u!82 &5629963774262871470
 AudioSource:
   m_ObjectHideFlags: 0

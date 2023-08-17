@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CutsceneResourcesLoader : MonoBehaviour
 {
-    
+    public string cutsceneName = "HB02";
     void Awake()
     {
         
@@ -14,7 +14,7 @@ public class CutsceneResourcesLoader : MonoBehaviour
 
     private IEnumerator Start()
     {
-        var rt = Resources.Load<GameObject>("Timeline/HB02_RT");
+        var rt = Resources.Load<GameObject>($"Timeline/{cutsceneName}_RT");
         var rtclone = Instantiate(rt, new Vector3(0,45,0), Quaternion.identity,transform);
         rtclone.name = "RT";
         yield break;

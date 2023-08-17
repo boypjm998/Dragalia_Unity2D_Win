@@ -128,6 +128,8 @@ public class UI_BossHPBar : MonoBehaviour
         }
 
         yellowGauge.value = redGauge.value;
+        if(redGauge.value <= 0)
+            yellowGauge.value = 0;
         HPChangeRoutine = null;
 
     }

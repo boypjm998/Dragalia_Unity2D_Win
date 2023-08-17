@@ -56,10 +56,13 @@ public class BattleEffectManager : MonoBehaviour
 
     private Camera _camera;
     public AudioSource soundEffectSource;
+    private int SEPlaying = 0;
     public AudioSource sharedVoiceSource;
-    public AudioSource bgmVoiceSource;
+    protected AudioSource bgmVoiceSource;
+    public bool BGMHasSet { get => bgmVoiceSource.clip != null; }
+
+
     
-    //private GameObject counterIcon;
 
 
     private void Awake()
@@ -78,7 +81,7 @@ public class BattleEffectManager : MonoBehaviour
         //yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart);
         yield return new WaitUntil(() => GlobalController.Instance.loadingEnd);
         yield return new WaitForSeconds(1.25f);
-        if(SceneManager.GetActiveScene().name=="BattleScenePrologue")
+        if(SceneManager.GetActiveScene().name=="BattleScenePrologue" || SceneManager.GetActiveScene().name=="BattleScenePrologue_EN")
             yield break;
         bgmVoiceSource.Play();
         //var soundbundle = GlobalController.Instance.GetBundle("soundeffect/soundeffect_common");
@@ -277,8 +280,16 @@ public class BattleEffectManager : MonoBehaviour
     {
         if(clip == null)
             return;
+
+
+        if (SEPlaying == 0)
+        {
+            SEPlaying = 1;
+            soundEffectSource.PlayOneShot(clip,volume);
+            Invoke("SoundEffectLimitRoutine",0.05f);
+        }
+
         
-        soundEffectSource.PlayOneShot(clip,volume);
         
     }
 
@@ -366,6 +377,28 @@ public class BattleEffectManager : MonoBehaviour
             3f).SetUpdate(true);
         
     }
+
+    public void SetBGM(AudioClip clip)
+    {
+        bgmVoiceSource.clip = clip;
+    }
+
+    public void PlayBGM(bool flag = true)
+    {
+        if(flag)
+            bgmVoiceSource.Play();
+        else
+        {
+            bgmVoiceSource.Stop();
+        }
+    }
+
+    protected void SoundEffectLimitRoutine()
+    {
+        SEPlaying = 0;
+    }
+
+
 
 
 }

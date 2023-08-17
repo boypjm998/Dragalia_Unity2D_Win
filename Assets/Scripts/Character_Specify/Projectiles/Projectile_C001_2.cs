@@ -28,7 +28,7 @@ namespace CharacterSpecificProjectiles
             if (col.CompareTag("Enemy"))
             {
                 attackSet = GetComponent<AttackFromPlayer>();
-                attackSet.CauseDamage(col.gameObject);
+                attackSet.CauseDamage(col);
                 BurstEffect();
             }
 

@@ -16,7 +16,7 @@ public class CutSceneController_Hb02 : MonoBehaviour
     protected Color worldColor1;
     protected Color worldColor2;
 
-    protected PlayableDirector director;
+    //protected PlayableDirector director;
     protected Animator anim;
 
     private void Awake()
@@ -28,14 +28,14 @@ public class CutSceneController_Hb02 : MonoBehaviour
         worldColor1 = new Color(141f/255f, 1, 134/255f,0.5f);
         worldColor2 = new Color(1, 91f/255f, 180/255f,0.5f);
         skyMat.SetColor("_Tint",originColor);
-        director = GetComponent<PlayableDirector>();
+        _director = GetComponent<PlayableDirector>();
         //anim = transform.Find("Actor/Model").GetComponentInChildren<Animator>();
     }
 
     private void Start()
     {
-        var signal_track = director.playableAsset.outputs.First(c => c.streamName == "Signal Track");
-        director.SetGenericBinding(signal_track.sourceObject,gameObject.GetComponentInChildren<SignalReceiver>());
+        var signal_track = _director.playableAsset.outputs.First(c => c.streamName == "Signal Track");
+        _director.SetGenericBinding(signal_track.sourceObject,gameObject.GetComponentInChildren<SignalReceiver>());
         
         //"Animation Track (1)"
         //var anim_track2 = director.playableAsset.outputs.First(c => c.streamName == "Animation Track (1)");
