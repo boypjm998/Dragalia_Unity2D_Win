@@ -456,12 +456,16 @@ public class MenuUIManager : MonoBehaviour
         {
             _globalController.EnterPrologueStory();
         }
-        else
+        else if(questID < 100000)
         {
             _globalController.TestEnterLevel(questIDStr);
         }
+        else
+        {
+            _globalController.EnterNormalStory(questIDStr);
+        }
 
-        
+
     }
 
     public void ToNextUIState(int toState,bool animation = true)

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 适用于所有普通短剑角色
+/// </summary>
 public class AnimationEventSender_C004 : AnimationEventSender
 {
     ActorControllerDagger _actorControllerDagger;

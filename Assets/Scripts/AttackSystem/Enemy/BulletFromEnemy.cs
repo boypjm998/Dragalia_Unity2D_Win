@@ -46,8 +46,10 @@ public class BulletFromEnemy : AttackFromEnemy
             {
                 if (Avoidable == AvoidableProperty.Red)
                 {
-                    if (hitinfo.collider.GetComponentInParent<IKnockbackable>().GetDodge())
+                    var knockbackable = hitinfo.collider.GetComponentInParent<IKnockbackable>();
+                    if (knockbackable.GetDodge())
                     {
+                        knockbackable.InvokeDodge(this,enemySource);
                         transform.Translate(Vector2.right * speed * lifeTime);
                         return;
                     }

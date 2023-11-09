@@ -4933,11 +4933,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 1
   skill_id: 0
+  destroyAfterHit: 0
   attackInfo:
   - dmgModifier:
     - 0.69
     - 0.69
-    constDmg: []
+    constDmg:
+    - 99
+    - 99
     knockbackPower: 100
     knockbackForce: 0
     knockbackTime: 0.5
@@ -4947,12 +4950,16 @@ MonoBehaviour:
   firedir: 0
   attackType: 1
   hitSoundEffect: {fileID: 0}
+  attackSE: []
+  extraODModifier: 0
+  conditionalAttackEffects: []
   enemySource: {fileID: 0}
   isMeele: 1
   hitFlags: 
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
   selfpos: {fileID: 0}
+  forcedShake: 0
   hitShakeIntensity: 6
   damageAutoReset: 0
   Avoidable: 0
@@ -5000,6 +5007,7 @@ MonoBehaviour:
   - 0.3
   nextAttackTime: []
   nextConditionTime: []
+  changePropertyTime: []
   targetCollider: {fileID: 0}
   destroyTime: 0.8
   sleepAfterAnimStopped: 0

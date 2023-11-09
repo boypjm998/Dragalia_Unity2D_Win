@@ -17,7 +17,7 @@ public class VoiceController_C004 : AudioManagerPlayer
         return;
     }
 
-    public override void PlayAttackVoice(int id)
+    public override void PlayAttackVoice(int id, bool ignoreCD = false)
     {
         if (voice.isPlaying || voiceCDRoutine!=null)
         {

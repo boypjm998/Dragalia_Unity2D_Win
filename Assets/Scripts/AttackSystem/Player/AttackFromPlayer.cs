@@ -5,9 +5,12 @@ using UnityEngine;
 using GameMechanics;
 public class AttackFromPlayer : AttackBase
 {
+    public bool energized = false;
+    public bool inspired = false;
     
     public GameObject self;
 
+    public ActorBase ac;
     
 
     [Header("Damage Basic Attributes")] 
@@ -24,7 +27,7 @@ public class AttackFromPlayer : AttackBase
     // public List<int> withConditionNum; //一次上几个debuff？
     //
     // public List<int> withConditionFlags; //遍历敌人做一个数组，每个敌人代表一个condflag
-    public List<int> hitFlags; //遍历敌人做一个数组，每个敌人代表一个hitflag
+    public List<int> hitFlags = new(); //遍历敌人做一个数组，每个敌人代表一个hitflag
 
 
     public GameObject hitConnectEffect;
@@ -48,20 +51,17 @@ public class AttackFromPlayer : AttackBase
 
     protected virtual void Awake()
     {
-        //_effectManager = GameObject.Find("StageManager").GetComponent<BattleEffectManager>();
         _effectManager = BattleEffectManager.Instance;
-        // nextDmgModifier = new List<float>();
-        // nextKnockbackForce = new List<float>();
-        // nextKnockbackPower = new List<float>();
-        // nextKnockbackTime = new List<float>();
-        //withConditions = new List<BattleCondition>();
-        //withConditionNum = new List<int>();
+        
         hitFlags = SearchEnemyList();
+        BattleStageManager.Instance.OnEnemyAwake += AddFlag;
         //withConditionFlags = SearchEnemyList();
         if(playerpos==null)
             playerpos = GameObject.Find("PlayerHandle").transform;
         defaultGravity = playerpos.GetComponent<Rigidbody2D>().gravityScale;
     }
+    
+    
 
 
     protected virtual void Start()
@@ -73,8 +73,9 @@ public class AttackFromPlayer : AttackBase
         
         CheckSpecialConditionalEffectBeforeAttack(stat);
         
-        
-        
+        if(attackType == BasicCalculation.AttackType.SKILL || attackType == BasicCalculation.AttackType.DSKILL)
+            CheckSkillEnergyOrInspriationLevel(stat);
+
     }
 
     protected virtual void OnDestroy()
@@ -82,14 +83,17 @@ public class AttackFromPlayer : AttackBase
         var container = gameObject.GetComponentInParent<AttackContainer>();
 
         container?.FinishHit();
-        //print(container.hitConnectNum);
+        
+        BattleStageManager.Instance.OnEnemyAwake -= AddFlag;
     }
 
     public void ResetFlags()
     {
         hitFlags.Clear();
+        
+        //hitFlags.AddRange(BattleStageManager.Instance.EnemyList);
 
-        var enemyLayer = GameObject.Find("EnemyLayer");
+        var enemyLayer = BattleStageManager.Instance.EnemyLayer;
         for (var i = 0; i < enemyLayer.transform.childCount; i++)
             hitFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
     }
@@ -206,9 +210,11 @@ public class AttackFromPlayer : AttackBase
 
     public virtual List<int> SearchEnemyList()
     {
-        hitFlags = new List<int>();
+        hitFlags.Clear();
 
-        var enemyLayer = GameObject.Find("EnemyLayer");
+        //hitFlags.AddRange(BattleStageManager.Instance.EnemyList);
+
+        var enemyLayer = BattleStageManager.Instance.EnemyLayer;
         for (var i = 0; i < enemyLayer.transform.childCount; i++)
             if (enemyLayer.transform.GetChild(i).gameObject.activeSelf)
                 hitFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
@@ -294,31 +300,7 @@ public class AttackFromPlayer : AttackBase
             attackInfo.RemoveAt(0);
         }
 
-
-        // if (nextKnockbackForce.Count > 0)
-        // {
-        //     knockbackForce = nextKnockbackForce[0];
-        //     nextKnockbackForce.RemoveAt(0);
-        // }
-        //
-        // if (nextKnockbackPower.Count > 0)
-        // {
-        //     knockbackPower = nextKnockbackPower[0];
-        //     nextKnockbackPower.RemoveAt(0);
-        // }
-        //
-        // if (nextKnockbackTime.Count > 0)
-        // {
-        //     knockbackTime = nextKnockbackTime[0];
-        //     nextKnockbackTime.RemoveAt(0);
-        // }
-        //
-        // if (nextDmgModifier.Count > 0)
-        // {
-        //     dmgModifier = new float[1];
-        //     dmgModifier[0] = nextDmgModifier[0];
-        //     nextDmgModifier.RemoveAt(0);
-        // }
+        
 
         ResetFlags();
         //NextWithCondition();
@@ -349,7 +331,8 @@ public class AttackFromPlayer : AttackBase
             if (enemyController is EnemyControllerHumanoid)
             {
                 var dodge = (enemyController as EnemyControllerHumanoid).dodging;
-                if (dodge && attackType != BasicCalculation.AttackType.SKILL && attackType != BasicCalculation.AttackType.FORCE)
+                if (dodge && attackType != BasicCalculation.AttackType.SKILL && attackType != BasicCalculation.AttackType.FORCE
+                    && attackType != BasicCalculation.AttackType.DSKILL)
                 {
                     DamageNumberManager.GenerateDodgeText(collision.gameObject.transform);
                     enemyController.OnDodgeSuccess?.Invoke(this,playerpos.gameObject);
@@ -359,8 +342,10 @@ public class AttackFromPlayer : AttackBase
         }
         catch
         {
-            Debug.LogWarning("No EnemyControllerHumanoid");
+            //Debug.LogWarning("No EnemyControllerHumanoid");
         }
+        
+        //BeforeAttackHit?.Invoke(this,collision.gameObject.transform.parent.gameObject);
 
 
         var dmg = battleStageManager.CalculateHit(collision.gameObject.transform.parent.gameObject, playerpos.gameObject,this,attackSource);
@@ -401,6 +386,7 @@ public class AttackFromPlayer : AttackBase
 
         var container = gameObject.GetComponentInParent<AttackContainer>();
         container.AttackOneHit();
+        OnAttackHit?.Invoke(this,collision.transform.parent.gameObject);
         
         if (container.NeedTotalDisplay() && dmg > 0)
             container.AddTotalDamage(dmg);
@@ -412,9 +398,19 @@ public class AttackFromPlayer : AttackBase
             Invoke("NextAttack",damageAutoReset);
     }
 
-    public void AddWithCondition(BattleCondition condition)
+    public override void AddWithCondition(int hitNo, BattleCondition condition, int chance, int identifier = 0)
     {
-        //withConditions.Add(condition);
+        var conditionInfo = new AttackInfo.ConditionWithAttackInfo();
+        conditionInfo.condition = condition;
+        conditionInfo.withConditionChance = chance;
+        conditionInfo.identifier = identifier;
+        for(int i = 0; i < attackInfo.Count; i++)
+        {
+            if (i == hitNo)
+            {
+                attackInfo[i].withConditions.Add(conditionInfo);
+            }
+        }
     }
     
     public override void AddWithConditionAll(BattleCondition condition, int chance, int identifier = 0)
@@ -447,4 +443,71 @@ public class AttackFromPlayer : AttackBase
     {
         print("无事发生");
     }
+    
+    protected void AddFlag(int id)
+    {
+        if (!hitFlags.Contains(id))
+            hitFlags.Add(id);
+    }
+
+    public static void CheckEnergyLevel(StatusManager statusManager,bool attackSkill = false)
+    {
+
+        if(!statusManager.Energized && statusManager.
+               GetConditionTotalValue((int)BasicCalculation.BattleCondition.Energy)>=5)
+        {
+            
+            statusManager.Energized = true;
+            
+        }
+        
+    }
+    
+    public static void CheckInspirationLevel(StatusManager statusManager,bool attackSkill = false)
+    {
+
+        if(!statusManager.Inspired && statusManager.
+               GetConditionTotalValue((int)BasicCalculation.BattleCondition.Inspiration)>=5)
+        {
+            
+            statusManager.Inspired = true;
+            
+        }
+        
+    }
+    
+    public void CheckSkillEnergyOrInspriationLevel(StatusManager statusManager)
+    {
+        var attackContainer = GetComponentInParent<AttackContainer>();
+
+        if(statusManager.
+               GetConditionTotalValue((int)BasicCalculation.BattleCondition.Energy)>=5
+           )
+        {
+            statusManager.Energized = true;
+            energized = true;
+            attackContainer.energized = true;
+            
+        }else if (attackContainer.energized)
+        {
+            energized = true;
+        }
+
+        if(statusManager.
+               GetConditionTotalValue((int)BasicCalculation.BattleCondition.Inspiration)>=5)
+        {
+            statusManager.Inspired = true;
+            inspired = true;
+            attackContainer.inspired = true;
+            
+        }else if (attackContainer.inspired)
+        {
+            inspired = true;
+            Debug.Log("CheckedInspirationLevel");
+        }
+    }
+    
+
+
+
 }

@@ -101,6 +101,10 @@ public class UI_StartScreen : MonoBehaviour
         {
             text2.text = $"通关条件: 规定时间内，打倒BOSS!\n\n重生次数: {reviveTime}";
         }
+        else if (_battleStageManager.clearConditionType == 2)
+        {
+            text2.text = $"通关条件: 打倒所有敌人!\n\n重生次数: {reviveTime}";
+        }
         else
         {
             text2.text = $"\n重生次数: {reviveTime}";
@@ -122,6 +126,10 @@ public class UI_StartScreen : MonoBehaviour
         if (_battleStageManager.clearConditionType == 0)
         {
             text2.text = $"Objective: Defeat the boss before time expired\n\n{reviveTime}";
+        }
+        else if (_battleStageManager.clearConditionType == 2)
+        {
+            text2.text = $"Objective: Defeat all enemies!\n\n{reviveTime}";
         }
         else
         {

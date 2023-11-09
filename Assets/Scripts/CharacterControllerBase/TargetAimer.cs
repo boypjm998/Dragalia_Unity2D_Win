@@ -254,8 +254,8 @@ public class TargetAimer : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //if(!enabled)
-            //return;
+        if(!enabled)
+            return;
         
         
         if (collision.CompareTag("Enemy") && collision.GetComponent<Transform>().gameObject != EnemyWatched)
@@ -278,10 +278,14 @@ public class TargetAimer : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if(!enabled)
+            return;
         
         
         if (!collision.CompareTag("Enemy"))
             return;
+        
+        EnemyInRange.RemoveAll(gameObject => gameObject == null);
         
 
         if (EnemyWatched != null )
@@ -300,6 +304,8 @@ public class TargetAimer : MonoBehaviour
             
             EnemyInRange.Sort(SortDistanceDescendent);
         }
+        
+
         if (EnemyInRange.Count > 0)
         {
             EnemyInRange.Sort(SortDistanceDescendent);
@@ -675,9 +681,16 @@ public class TargetAimer : MonoBehaviour
         List<GameObject> result = new List<GameObject>();
         foreach (var obj in list)
         {
-            if (HasMarking(obj.transform))
+            try
             {
-                result.Add(obj);
+                if (HasMarking(obj.transform))
+                {
+                    result.Add(obj);
+                }
+            }
+            catch
+            {
+                Debug.LogWarning("MarkingCheck出错");
             }
         }
 

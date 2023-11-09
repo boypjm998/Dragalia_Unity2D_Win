@@ -47,9 +47,14 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
         {
             if (Avoidable == AvoidableProperty.Red)
             {
-                if(collision.GetComponentInParent<IKnockbackable>().GetDodge())
-                //如果是红圈并且角色在技能中
+                var knockbackable = collision.GetComponentInParent<IKnockbackable>();
+                if (knockbackable.GetDodge())
+                {
+                    knockbackable.InvokeDodge(this,enemySource);
                     return;
+                }
+
+                
                 
                 var npcController = collision.GetComponentInParent<NpcController>();
                 if (npcController != null && npcController.enabled)
@@ -68,8 +73,6 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
                 
             }
             
-            
-
 
             CauseDamage(collision);
             

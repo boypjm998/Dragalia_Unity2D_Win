@@ -25,8 +25,11 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject poisonFXPrefab;
     [SerializeField] private Color stormlashColor;
     [SerializeField] private GameObject stormlashFXPrefab;
+    [SerializeField] private GameObject paralysisFXPrefab;
+    [SerializeField] private GameObject frostbiteFXPrefab;
     
     [SerializeField] private GameObject stunFXPrefab;
+    [SerializeField] private GameObject freezeFXPrefab;
 
     [Header("Basic Effect")]
     [SerializeField] private GameObject healFXPrefab;
@@ -35,6 +38,10 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject debuffFXPrefab;
     [SerializeField] private GameObject reviveFXPrefab;
     [SerializeField] private GameObject breakFXPrefab;
+
+    [Header("ShapeShifting Effect")] 
+    public GameObject shapeShiftPurgeFXPrefab;
+    [SerializeField] private GameObject shapeShiftFXWind;
 
     [Header("Enemy BattleHint Effect")]
     [SerializeField] private GameObject targetLockPrefab;
@@ -156,11 +163,22 @@ public class BattleEffectManager : MonoBehaviour
                     }
                     SpawnAnimation(target, stormlashFXPrefab);
                     break;
+                case BasicCalculation.BattleCondition.Paralysis:
+                    SpawnAnimation(target, paralysisFXPrefab);
+                    break;
+                case BasicCalculation.BattleCondition.Frostbite:
+                    SpawnAnimation(target, frostbiteFXPrefab);
+                    break;
                 
                 
                 case BasicCalculation.BattleCondition.Stun:
                 {
                     SpawnAnimation(target,stunFXPrefab);
+                    break;
+                }
+                case BasicCalculation.BattleCondition.Freeze:
+                {
+                    SpawnAnimation(target,freezeFXPrefab);
                     break;
                 }
             }
@@ -314,7 +332,13 @@ public class BattleEffectManager : MonoBehaviour
         //AudioSource.PlayClipAtPoint(reviveSEClip, camera.transform.position);
 
     }
-    
+
+    public void SpawnTargetLockParticleIndicator(Vector3 position)
+    {
+        var prefab = Resources.Load<GameObject>("UI/InBattle/General/BattleInfo/LockParticle");
+        Instantiate(prefab, position, Quaternion.identity, BattleStageManager.Instance.RangedAttackFXLayer.transform);
+    }
+
     public void SpawnReviveEffect(GameObject target)
     {
         Instantiate(reviveFXPrefab, target.transform.position, target.transform.rotation,
@@ -396,6 +420,17 @@ public class BattleEffectManager : MonoBehaviour
     protected void SoundEffectLimitRoutine()
     {
         SEPlaying = 0;
+    }
+
+    public GameObject GetShapeShiftingFX(int type)
+    {
+        switch (type)
+        {
+            case 3:
+                return shapeShiftFXWind;
+            default:
+                return shapeShiftFXWind;
+        }
     }
 
 

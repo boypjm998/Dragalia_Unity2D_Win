@@ -31,7 +31,8 @@ public class UI_SimpleHPGauge : MonoBehaviour
         
         
         statusManager.OnHPChange += ExcuteHPBar;
-        statusManager.OnHPBelow0 += ExcuteHPBar;
+        statusManager.OnReviveOrDeath += HideBar;
+        
         fullSize = HPValueSpriteRenderer.size.x;
         SetFakeInactive();
     }
@@ -45,15 +46,22 @@ public class UI_SimpleHPGauge : MonoBehaviour
     private void OnDestroy()
     {
         statusManager.OnHPChange -= ExcuteHPBar;
-        statusManager.OnHPBelow0 -= ExcuteHPBar;
+        statusManager.OnReviveOrDeath -= HideBar;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (HPValueSpriteRenderer.size.x > fullSize)
+            HPValueSpriteRenderer.size = new Vector2(fullSize,HPValueSpriteRenderer.size.y);
     }
-    
+
+    void HideBar()
+    {
+        HPValueSpriteRenderer.color = Color.clear;
+        HPValueSpriteRenderer.enabled = false;
+    }
+
     void ExcuteHPBar()
     {
         HPValueSpriteRenderer.size = 
@@ -64,6 +72,7 @@ public class UI_SimpleHPGauge : MonoBehaviour
         {
             HPValueSpriteRenderer.color = new Color(HPValueSpriteRenderer.color.r, HPValueSpriteRenderer.color.g,
                 HPValueSpriteRenderer.color.b, 0);
+            HPValueSpriteRenderer.enabled = false;
         }
         else
         {

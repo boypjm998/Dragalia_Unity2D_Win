@@ -13,12 +13,13 @@ public class StorySceneManager : MonoBehaviour
 {
     GlobalController _globalController;
     [SerializeField] TextAsset storyData;
+    [SerializeField] private TextAsset prologueStoryData;
     [SerializeField] private Queue<StoryCommand> _storyCommands;
     private StoryComponent.DialogMain.Portrait currentSpeakingChara;
     private bool characterIsSpeaking = false;
     private Coroutine currentCoroutine;
     private bool taskRunning = false;
-    private bool skip;
+    private bool skip = true;
     private bool moveNext = false;
     public bool autoMode = false;
     public bool paused = false;
@@ -32,12 +33,17 @@ public class StorySceneManager : MonoBehaviour
 
 
     private string storyJumpInfo;
+    private AssetBundle effectsBundle;
+    public bool isDebug;
+    public string currentStoryID;
     
     // Story Components
     
-    public StoryComponent storyComponent;
+    public StoryComponent storyComponent = new();
     private StoryBackgroundSprites storyBackgroundSprites;
     private AudioBundlesTest audioBundlesTest;
+
+    [SerializeField] private StoryCommand currentCommand;
 
     private void LateUpdate()
     {
@@ -78,7 +84,7 @@ public class StorySceneManager : MonoBehaviour
 
     public void ClickEventInStory()
     {
-        print("clicked");
+        //print("clicked");
         try
         {
             if (_globalController.loadingEnd == false || paused)
@@ -102,14 +108,25 @@ public class StorySceneManager : MonoBehaviour
         
     }
 
+    private void Awake()
+    {
+        if (isDebug)
+        {
+            GlobalController.questID = currentStoryID;
+            if (currentStoryID != "100001")
+                storyStr = "content";
+        }
+    }
 
     // Start is called before the first frame update
     IEnumerator Start()
     {
+
         
+
         
         //storyJsonData = storyData.ToString();
-        storyComponent = new StoryComponent();
+        //storyComponent = new StoryComponent();
         storyComponent.Init();
         audioBundlesTest = GetComponent<AudioBundlesTest>();
         storyBackgroundSprites = 
@@ -123,8 +140,22 @@ public class StorySceneManager : MonoBehaviour
         yield return new WaitUntil(() => started);
         
         _globalController = FindObjectOfType<GlobalController>();
+        
+        var effectsBundleRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath+"/story/eff");
+        effectsBundleRequest.completed += operation =>
+        {
+            var effectsBundle = effectsBundleRequest.assetBundle;
+            _globalController.loadedBundles.Add("story/eff", effectsBundle);
+        };
+        
+        yield return new WaitUntil(()=>effectsBundleRequest.isDone);
+        effectsBundle = effectsBundleRequest.assetBundle;
+        
+        
         StartCoroutine(StartStory());
     }
+
+    
 
     void InitScene()
     {
@@ -140,12 +171,34 @@ public class StorySceneManager : MonoBehaviour
             VARIABLE.rootGameObject.SetActive(false);
         }
         storyComponent.backGround.blackOut.gameObject.SetActive(true);
+        if(GlobalController.Instance.GetBundle("118effbundle") == null)
+        {
+            var bundleRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath+"/118effbundle");
+            bundleRequest.completed += operation =>
+            {
+                var bundle = bundleRequest.assetBundle;
+                GlobalController.Instance.loadedBundles.Add("118effbundle", bundle);
+            };
+        }
+        
+    }
+
+    public void SetStoryDataTextAsset(TextAsset textAsset)
+    {
+        storyData = textAsset;
+        storyStr = "content";
     }
 
     private void ReadCommands()
     {
         _storyCommands = new Queue<StoryCommand>();
         //将stroyData的"main_story_001"读取出来，将其中的"command_list"列表加入到_storyCommands中
+        if (GlobalController.questID == "100001")
+        {
+            storyData = prologueStoryData;
+        }
+
+        print(storyData.text);
         JsonData storyJsonData = JsonMapper.ToObject(storyData.text);
         JsonData commandList = storyJsonData[storyStr]["command_list"];
         for (int i = 0; i < commandList.Count; i++)
@@ -198,6 +251,7 @@ public class StorySceneManager : MonoBehaviour
             yield return new WaitUntil(() => moveNext && !taskRunning);
             moveNext = false;
             currentCommand = _storyCommands.Dequeue();
+            this.currentCommand = currentCommand;
             DoCommand(currentCommand.commandType, currentCommand.args.ToArray(), currentCommand.end);
 
         }
@@ -240,8 +294,31 @@ public class StorySceneManager : MonoBehaviour
     {
         if(currentCoroutine != null)
             return;
+        
+        //print("CurrentCommand: " + commandType + " );
+        
+        
         switch (commandType)
         {
+            case StoryCommand.CommandType.ADD_CHARA:
+            {
+                if(args.Length == 1)
+                    AddCharacter(args[0]);
+                else if(args.Length == 2)
+                    AddCharacter(args[0],float.Parse(args[1]));
+                else if(args.Length == 3)
+                    AddCharacter(args[0],float.Parse(args[1]),float.Parse(args[2]));
+                else if(args.Length == 4)
+                    AddCharacter(args[0],float.Parse(args[1]),float.Parse(args[2]),int.Parse(args[3]));
+                else if(args.Length == 5)
+                    AddCharacter(args[0],float.Parse(args[1]),float.Parse(args[2]),int.Parse(args[3]),int.Parse(args[4]));
+                else
+                {
+                    Debug.LogError("ADD_CHARA命令参数错误");
+                    return;
+                }
+                    break;
+            }
             case StoryCommand.CommandType.BLACKOUT:
                 BlackOut();
                 break;
@@ -268,26 +345,59 @@ public class StorySceneManager : MonoBehaviour
             case StoryCommand.CommandType.CHARA_FADE:
                 CharaFade();
                 break;
-            case StoryCommand.CommandType.CLEAR_DIALOG:
-                ClearDialog();
+            case StoryCommand.CommandType.CHARA_FADE_ANIM:
+                CharacterPortraitBlackInOut(args);
                 break;
+            case StoryCommand.CommandType.CLEAR_DIALOG:
+            {
+                if(args.Length > 0)
+                    ClearDialog(false);
+                else 
+                    ClearDialog();
+                break;
+            }
+                
             case StoryCommand.CommandType.DIALOG_FADEIN:
                 DialogFadeIn();
                 break;
             case StoryCommand.CommandType.DIALOG_FADEOUT:
                 DialogFadeOut();
                 break;
+            case StoryCommand.CommandType.DESTROY_EFFECTS:
+                DestroyEffects(args[0]);
+                break;
+            case StoryCommand.CommandType.DESTROY_PORTRAIT:
+                DestroyPortrait(args[0]);
+                break;
+            case StoryCommand.CommandType.EFFECTS:
+                Effects(args);
+                break;
+            case StoryCommand.CommandType.FADE_BGM:
+                FadeBGM(int.Parse(args[0]),float.Parse(args[1]));
+                break;
             case StoryCommand.CommandType.SET_CHARA:
                 SetCharacter(args);
+                break;
+            case StoryCommand.CommandType.SET_CHARA_FACE:
+                SetCharacterFacialExpression(args);
+                break;
+            case StoryCommand.CommandType.SET_CHARA_SIBLING:
+                SetCharacterSlibingOrder(args[0],int.Parse(args[1]));
                 break;
             case StoryCommand.CommandType.SET_SPEAKER:
                 SetSpeakerName(args[0]);
                 break;
             case StoryCommand.CommandType.SET_BACKGROUND:
-                SetBackground(args[0]);
+                SetBackground(args[0],float.Parse(args[1]));
+                break;
+            case StoryCommand.CommandType.SWITCH_SPEAKER:
+                SetCurrentSpeakingCharacter(args[0]);
                 break;
             case StoryCommand.CommandType.PLAY_BGM:
                 PlayBGM(args);
+                break;
+            case StoryCommand.CommandType.PLAY_SE:
+                PlaySE(args);
                 break;
             case StoryCommand.CommandType.PLAY_VOICE:
                 PlayVoice(args);
@@ -300,6 +410,9 @@ public class StorySceneManager : MonoBehaviour
                 break;
             case StoryCommand.CommandType.SCREEN_SHAKE:
                 ScreenShake(args);
+                break;
+            case StoryCommand.CommandType.TRANSFORM_BLACKSCREEN:
+                BlackScreenAnimation(args);
                 break;
             case StoryCommand.CommandType.WAIT:
                 Wait(float.Parse(args[0]));
@@ -340,22 +453,6 @@ public class StorySceneManager : MonoBehaviour
  
         textMeshProUGUI.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
         
-        
-        
-        
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
     }
     
     # region BlackOut
@@ -581,6 +678,13 @@ public class StorySceneManager : MonoBehaviour
     {
         taskRunning = true;
         skip = false;
+        storyComponent.dialog.voiceSource.Stop();
+        
+        
+        storyComponent.dialog.dialogText.text = "";
+        storyComponent.dialog.speakerName.text = "";
+        
+        
         var canvasGroup = storyComponent.dialog.dialogBody.GetComponent<CanvasGroup>();
         canvasGroup.alpha = 1;
         var tweenerCore = canvasGroup.DOFade(0, 0.3f).OnComplete(
@@ -611,6 +715,29 @@ public class StorySceneManager : MonoBehaviour
 
     #region Set Arts
 
+    private void DestroyPortrait(string id)
+    {
+        StoryComponent.DialogMain.Portrait portrait = null;
+        foreach (var VARIABLE in storyComponent.dialog.Portraits)
+        {
+            if (VARIABLE.portraitParts.speakerID == id)
+            {
+                portrait = VARIABLE;
+                break;
+            }
+        }
+        
+        if(portrait != null)
+        {
+            storyComponent.dialog.Portraits.Remove(portrait);
+            Destroy(portrait.rootGameObject);
+        }
+        
+        
+        
+        moveNext = true;
+    }
+
     private void SetSpeakerName(string name)
     {
         taskRunning = true;
@@ -637,11 +764,13 @@ public class StorySceneManager : MonoBehaviour
             faceID = int.Parse(args[1]);
             mouthID = -1;
         }
-        else
+        else if(args.Length > 2)
         {
             faceID = int.Parse(args[1]);
             mouthID = int.Parse(args[2]);
-        }
+        }else return;
+        print("faceID"+faceID);
+        print("mouthID"+mouthID);
 
         foreach (var VARIABLE in storyComponent.dialog.Portraits)
         {
@@ -661,13 +790,18 @@ public class StorySceneManager : MonoBehaviour
                     Debug.LogWarning("NotFoundError");
                 }
 
-
-
-
-
-
+                
                 currentSpeakingChara = VARIABLE;
                 VARIABLE.rootGameObject.SetActive(true);
+                VARIABLE.rootGameObject.transform.localPosition = new Vector3(0, -108, 0);
+                if (args.Length == 5)
+                {
+                    VARIABLE.rootGameObject.transform.localPosition = 
+                        new Vector3(int.Parse(args[3]), int.Parse(args[4]), 0);
+                }
+
+
+
                 if (faceID != -1)
                 {
                     VARIABLE.faceImage.sprite = VARIABLE.portraitParts.GetFaceSprite(faceID);
@@ -694,7 +828,221 @@ public class StorySceneManager : MonoBehaviour
             SetCharacter(args);
             return;
         }
+
+        if (args.Length == 6)
+        {
+            if (args[5] == "1")
+            {
+                currentSpeakingChara.rootGameObject.transform.DOLocalMoveY
+                    (-138, 0.25f).SetEase(Ease.InOutSine).OnComplete(
+                    () =>
+                    {
+                        currentSpeakingChara.rootGameObject.transform.
+                            DOLocalMoveY(-108, 0.25f).SetEase(Ease.InOutSine);
+                    });
+            }else if (args[5] == "0")
+            {
+                //左右摇摆一次
+                currentSpeakingChara.rootGameObject.transform.DOLocalMoveX
+                    (currentSpeakingChara.rootGameObject.transform.localPosition.x + 20, 0.2f).SetEase(Ease.InOutSine).OnComplete(
+                    () =>
+                    {
+                        currentSpeakingChara.rootGameObject.transform.
+                            DOLocalMoveX(currentSpeakingChara.rootGameObject.transform.localPosition.x - 20, 0.4f).SetEase(Ease.InOutSine).OnComplete(
+                                () =>
+                                {
+                                    //回到原位
+                                    currentSpeakingChara.rootGameObject.transform.
+                                        DOLocalMoveX(currentSpeakingChara.rootGameObject.transform.localPosition.x, 0.2f).SetEase(Ease.InOutSine);
+                                });
+                    });
+            }else if (args[5] == "2")
+            {
+                currentSpeakingChara.rootGameObject.transform.DOLocalMoveY
+                    (-68, 0.15f).SetEase(Ease.InOutSine).OnComplete(
+                    () =>
+                    {
+                        currentSpeakingChara.rootGameObject.transform.
+                            DOLocalMoveY(-108, 0.2f).SetEase(Ease.InOutSine);
+                    });
+            }
+
+
+        }
+
+
+
+
         taskRunning = false;
+        moveNext = true;
+    }
+
+    private void SetCharacterSlibingOrder(string id, int order)
+    {
+        var character = GetCharacter(id);
+        if (order >= 0)
+        {
+            character.rootGameObject.transform.SetSiblingIndex(order);
+        }else if(order == -1)
+            character.rootGameObject.transform.SetAsLastSibling();
+
+        moveNext = true;
+        
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="args[0]">Character id</param>
+    /// <param name="args[1]">faceID</param>
+    /// <param name="args[2]">mouthID</param>
+    /// <param name="args[3]">StopFacialAnimation</param>
+    private void SetCharacterFacialExpression(string[] args)
+    {
+        
+        taskRunning = true;
+        
+        bool found = false;
+        int faceID, mouthID;
+        if (args.Length == 1)
+        {
+            faceID = -1;
+            mouthID = -1;
+        }else if(args.Length == 2)
+        {
+            faceID = int.Parse(args[1]);
+            mouthID = -1;
+        }
+        else
+        {
+            faceID = int.Parse(args[1]);
+            mouthID = int.Parse(args[2]);
+        }
+
+        foreach (var p in storyComponent.dialog.Portraits)
+        {
+            if (p.portraitParts.speakerID == (args[0]))
+            {
+                if (faceID != -1)
+                {
+                    p.faceImage.sprite = p.portraitParts.GetFaceSprite(faceID);
+                    p.portraitParts.currentBaseFaceIndex = faceID;
+                }
+
+                if (mouthID != -1)
+                {
+                    p.mouthImage.sprite = p.portraitParts.GetMouthSprite(mouthID);
+                    p.portraitParts.currentBaseMouthIndex = mouthID;
+                }
+                if (args.Length == 4 && int.Parse(args[3]) == 1)
+                {
+                    if(p.portraitParts.blinkingAnimationRoutine != null)
+                        StopCoroutine(p.portraitParts.blinkingAnimationRoutine);
+                    if (p.portraitParts.speakingAnimationRoutine != null)
+                        StopCoroutine(p.portraitParts.speakingAnimationRoutine);
+                }
+            }
+
+                
+        }
+        
+        taskRunning = false;
+        moveNext = true;
+
+        
+
+    }
+
+    private void AddCharacter(string id, float positionX = 0, float positionY = -108, int faceID = -1, int mouthID = -1)
+    {
+        taskRunning = true;
+        bool found = false;
+        var position = new Vector2(positionX, positionY);
+        
+        
+
+        foreach (var VARIABLE in storyComponent.dialog.Portraits)
+        {
+            if (VARIABLE.portraitParts.speakerID == id)
+            {
+                found = true;
+                try
+                {
+                    if (currentSpeakingChara != null)
+                    {
+                        if (currentSpeakingChara?.portraitParts.blinkingAnimationRoutine != null)
+                            StopCoroutine(currentSpeakingChara.portraitParts.blinkingAnimationRoutine);
+                    }
+                }
+                catch
+                {
+                    Debug.LogWarning("NotFoundError");
+                }
+
+
+                
+                currentSpeakingChara = VARIABLE;
+                VARIABLE.rootGameObject.SetActive(true);
+                VARIABLE.rootGameObject.transform.localPosition = position;
+
+
+
+                if (faceID != -1)
+                {
+                    VARIABLE.faceImage.sprite = VARIABLE.portraitParts.GetFaceSprite(faceID);
+                    VARIABLE.portraitParts.currentBaseFaceIndex = faceID;
+                }
+
+                if (mouthID != -1)
+                {
+                    VARIABLE.mouthImage.sprite = VARIABLE.portraitParts.GetMouthSprite(mouthID);
+                    VARIABLE.portraitParts.currentBaseMouthIndex = mouthID;
+                }
+
+                
+            }
+            else
+            {
+                //VARIABLE.rootGameObject.SetActive(false);
+            }
+        }
+        if (!found)
+        {
+            //处理异常
+            InstantiateCharacter(id);
+            AddCharacter(id, positionX, positionY, faceID, mouthID);
+            return;
+        }
+        taskRunning = false;
+        moveNext = true;
+    }
+    
+    private void SetCurrentSpeakingCharacter(string id)
+    {
+        foreach (var VARIABLE in storyComponent.dialog.Portraits)
+        {
+            if (VARIABLE.portraitParts.speakerID == id)
+            {
+                try
+                {
+                    if (currentSpeakingChara != null)
+                    {
+                        if (currentSpeakingChara?.portraitParts.blinkingAnimationRoutine != null)
+                            StopCoroutine(currentSpeakingChara.portraitParts.blinkingAnimationRoutine);
+                    }
+                }
+                catch
+                {
+                    Debug.LogWarning("NotFoundError");
+                }
+                currentSpeakingChara = VARIABLE;
+                VARIABLE.rootGameObject.SetActive(true);
+                //VARIABLE.rootGameObject.transform.localPosition = new Vector3(0, -108, 0);
+            }
+            else
+            {
+                //VARIABLE.rootGameObject.SetActive(false);
+            }
+        }
         moveNext = true;
     }
 
@@ -709,6 +1057,8 @@ public class StorySceneManager : MonoBehaviour
         //Instantiate PortraitBase
         var dialogBodyMask = transform.Find("Dialog/Mask");
         var portrait = Instantiate(portraitBase, dialogBodyMask);
+
+        portrait.GetComponent<RectTransform>().localPosition = new Vector3(0, -108, 0);
         portrait.name = "PortraitBase";
         //Add portrait to storyComponent.dialog.Portraits
         var portraitParts = portrait.GetComponent<PortraitParts>();
@@ -722,10 +1072,14 @@ public class StorySceneManager : MonoBehaviour
 
 
 
-    private void SetBackground(string name)
+    private void SetBackground(string name,float posY = 0)
     {
         taskRunning = true;
         storyComponent.backGround.image.sprite = storyBackgroundSprites.GetSprite(name);
+        
+        storyComponent.backGround.image.transform.localPosition = new Vector3(0, posY, 0);
+        
+        
         taskRunning = false;
         moveNext = true;
     }
@@ -756,13 +1110,30 @@ public class StorySceneManager : MonoBehaviour
         taskRunning = false;
         moveNext = true;
     }
-    
+
+    private void FadeBGM(int fadeIn, float time)
+    {
+        storyComponent.dialog.bgmSource.DOFade(fadeIn, time);
+        moveNext = true;
+    }
+
+    private void PlaySE(string[] args)
+    {
+        taskRunning = true;
+        storyComponent.dialog.SESource.Stop();
+        storyComponent.dialog.SESource.clip = audioBundlesTest.GetSE(args[0]);
+        if(args.Length > 1)
+            storyComponent.dialog.SESource.volume = float.Parse(args[1]);
+        
+        storyComponent.dialog.SESource.Play();
+        taskRunning = false;
+        moveNext = true;
+    }
+
     private void PlayVoice(string[] args)
     {
         taskRunning = true;
         storyComponent.dialog.voiceSource.Stop();
-        
-        
         
         
         storyComponent.dialog.voiceSource.clip = audioBundlesTest.GetVoice(args[0]);
@@ -773,6 +1144,16 @@ public class StorySceneManager : MonoBehaviour
         {
             if(currentSpeakingChara.portraitParts.speakingAnimationRoutine != null)
                 StopCoroutine(currentSpeakingChara.portraitParts.speakingAnimationRoutine);
+
+            if (currentSpeakingChara.portraitParts.blinkingAnimationRoutine != null)
+            {
+                StopCoroutine(currentSpeakingChara.portraitParts.blinkingAnimationRoutine);
+                currentSpeakingChara.faceImage.sprite = 
+                    currentSpeakingChara.portraitParts.
+                        GetFaceSprite(currentSpeakingChara.portraitParts.currentBaseFaceIndex);
+            }
+
+            
             
             storyComponent.dialog.voiceSource.Play();
             //TestWaveDetect();
@@ -780,13 +1161,30 @@ public class StorySceneManager : MonoBehaviour
             currentSpeakingChara.portraitParts.speakingAnimationRoutine = StartCoroutine
             (CharacterSpeakAnimation(int.Parse(args[2]), int.Parse(args[3]),
                 currentSpeakingChara.portraitParts, args[0]));
+            
+            print("mouthOpen:"+args[2]+" mouthClose"+args[3]);
 
             var currentFaceIndex = currentSpeakingChara.portraitParts.currentBaseFaceIndex;
+            var totalFaceIndex = currentSpeakingChara.portraitParts.GetEyeSpriteTotalCount();
             
+            var blinkFaceIndex = 
+                currentFaceIndex>=totalFaceIndex?totalFaceIndex:currentFaceIndex+1;
+
+            if (args.Length >= 5)
+            {
+                currentFaceIndex = int.Parse(args[4]);
+                blinkFaceIndex = 
+                    currentFaceIndex>=totalFaceIndex?totalFaceIndex:currentFaceIndex+1;
+            }
+            if (args.Length >= 6)
+            {
+                blinkFaceIndex = int.Parse(args[5]);
+            }
+
             currentSpeakingChara.portraitParts.blinkingAnimationRoutine = 
                 StartCoroutine
             (CharacterBlinkAnimation(currentFaceIndex,
-                currentFaceIndex>=9?9:currentFaceIndex+1, currentSpeakingChara.portraitParts));
+                currentFaceIndex>=totalFaceIndex-1?totalFaceIndex-1:blinkFaceIndex, currentSpeakingChara.portraitParts));
             
             taskRunning = false;
             moveNext = true;
@@ -805,7 +1203,7 @@ public class StorySceneManager : MonoBehaviour
 
         audioBundlesTest.GetVoiceInfo(clipName, ref start_times, ref end_times);
         end_times.Add(storyComponent.dialog.voiceSource.clip.length);
-        print(start_times.ToString());
+        //print(start_times.ToString());
 
         foreach (var startTime in start_times)
         {
@@ -852,8 +1250,11 @@ public class StorySceneManager : MonoBehaviour
         while (currentSpeakingChara == tempCharacter &&
                currentSpeakingChara.rootGameObject.activeSelf)
         {
+            print("EyeClose:"+eyeClose+" EyeOpen:"+eyeOpen);
             currentSpeakingChara.faceImage.sprite = currentSpeakingChara.portraitParts.GetFaceSprite(eyeClose);
             yield return new WaitForSeconds(0.2f);
+            if(currentSpeakingChara != tempCharacter)
+                break;
             currentSpeakingChara.faceImage.sprite = currentSpeakingChara.portraitParts.GetFaceSprite(eyeOpen);
             yield return new WaitForSeconds(2.5f+Random.Range(0,0.5f));
             
@@ -866,6 +1267,66 @@ public class StorySceneManager : MonoBehaviour
     #endregion
 
     #region Effects
+
+    private void DestroyEffects(string name)
+    {
+        //将name补0成三位数的形式，如"1"转为"001"，"10"转为"010"
+        if (name.Length == 1)
+        {
+            name = "fx_insty_00" + name;
+        }
+        else if (name.Length == 2)
+        {
+            name = "fx_insty_0" + name;
+        }
+        else
+        {
+            name = "fx_insty_" + name;
+        }
+        moveNext = true;
+
+        for (int i = storyComponent.dialog.effectRoot.childCount - 1; i >= 0; i--)
+        {
+            if (name == storyComponent.dialog.effectRoot.GetChild(i).name)
+            {
+                Destroy(storyComponent.dialog.effectRoot.GetChild(i).gameObject);
+                return;
+            }
+        }
+    }
+
+    private void Effects(string[] args)
+    {
+        //从assetBundle: effectsBundle中加载名为args[0]的特效。
+        //如果args长度只为1，那么加载到(0,0)位置，否则加载到(args[1],args[2])位置
+        
+        //将args[0]凑成三位数的形式，如"1"转为"001"，"10"转为"010"
+        if (args[0].Length == 1)
+        {
+            args[0] = "00" + args[0];
+        }
+        else if (args[0].Length == 2)
+        {
+            args[0] = "0" + args[0];
+        }
+        //args前拼接"fx_insty_"
+        args[0] = "fx_insty_" + args[0];
+        
+
+        var effect = effectsBundle.LoadAsset<GameObject>(args[0]);
+        var effectInstance = Instantiate(effect, storyComponent.dialog.effectRoot);
+        if (args.Length >= 3)
+        {
+            effectInstance.transform.localPosition = new Vector3(float.Parse(args[1]), float.Parse(args[2]), 0);
+        }
+        effectInstance.name = args[0];
+
+        moveNext = true;
+
+    }
+
+
+
 
     void ScreenShake(string[] args)
     {
@@ -905,28 +1366,149 @@ public class StorySceneManager : MonoBehaviour
         currentCoroutine = null;
         moveNext = true;
     }
-    void PortraitMove(string[] args)
+
+    private void BlackScreenAnimation(string[] args)
+    {
+        taskRunning = true;
+        
+        var canvasGroup =
+            storyComponent.dialog.slideBlackScreen.GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 1;
+        
+        
+        var fadeIn = int.Parse(args[0]);//0 for fade in, 1 for fade out
+        var direction = args[1];
+        var duration = float.Parse(args[2]);
+
+        Tweener tweener;
+        
+        if (fadeIn == 0)
+        {
+            switch (direction)
+            {
+                case "UP":
+                    storyComponent.dialog.slideBlackScreen.transform.localPosition = new Vector2(0, -2048);
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveY(0, duration);
+                    break;
+                case "DOWN":
+                    storyComponent.dialog.slideBlackScreen.transform.localPosition = new Vector2(0, 2048);
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveY(0, duration);
+                    break;
+                case "LEFT":
+                    storyComponent.dialog.slideBlackScreen.transform.localPosition = new Vector2(-2048, 0);
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveX(0, duration);
+                    break;
+                case "RIGHT":
+                    storyComponent.dialog.slideBlackScreen.transform.localPosition = new Vector2(2048, 0);
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveX(0, duration);
+                    break;
+                default:
+                    Debug.LogError("BlackScreenAnimation Error");
+                    return;
+            }
+        }else if (fadeIn == 1)
+        {
+            storyComponent.dialog.slideBlackScreen.transform.localPosition = new Vector2(0, 0);
+            switch (direction)
+            {
+                case "UP":
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveY(-2048, duration);
+                    break;
+                case "DOWN":
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveY(2048, duration);
+                    break;
+                case "LEFT":
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveX(2048, duration);
+                    break;
+                case "RIGHT":
+                    tweener = storyComponent.dialog.slideBlackScreen.transform.DOLocalMoveX(-2048, duration);
+                    break;
+                default:
+                    Debug.LogError("BlackScreenAnimation Error");
+                    return;
+            }
+        }
+        else
+        {
+            Debug.LogError("BlackScreenAnimation Error");
+            return;
+        }
+        tweener.OnComplete(() =>
+        {
+            taskRunning = false;
+            moveNext = true;
+            if(fadeIn == 1)
+                canvasGroup.alpha = 0;
+        }).OnKill(() =>
+        {
+            taskRunning = false;
+            moveNext = true;
+            if(fadeIn == 1)
+                canvasGroup.alpha = 0;
+        });
+
+
+    }
+
+
+
+
+
+
+    private void PortraitMove(string[] args)
     {
         switch (args[0])
         {
             case "MOVE":
-                if(args.Length != 4)
+            {
+                if (args.Length < 4)
                     Debug.LogError("Portrait Move Command Error");
-                currentCoroutine = 
-                    StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(float.Parse(args[1]), float.Parse(args[2])), float.Parse(args[3])));
+                if (args.Length == 4)
+                {
+                    currentCoroutine =
+                        StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(float.Parse(args[1]), float.Parse(args[2])),
+                            float.Parse(args[3])));
+                }else if (args.Length == 5)
+                {
+                    //Parse the args[4] to get the easing enum type
+                    var easingType = (DG.Tweening.Ease) Enum.Parse(typeof(DG.Tweening.Ease), args[4]);
+                    currentCoroutine =
+                        StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(float.Parse(args[1]), float.Parse(args[2])),
+                            float.Parse(args[3]), easingType));
+                }
+
                 break;
+            }
             case "SHAKE":
                 if(args.Length != 3)
                     Debug.LogError("Portrait Shake Command Error");
                 currentCoroutine = 
                     StartCoroutine(PortraitShakeRoutine(float.Parse(args[1]), float.Parse(args[2])));
                 break;
+            case "JUMP":
+                if(args.Length != 6)
+                    Debug.LogError("Portrait Jump Command Error");
+                currentCoroutine = 
+                    StartCoroutine(PortraitJumpRoutine(args[1], float.Parse(args[2]), int.Parse(args[3]), float.Parse(args[4]), args[5]));
+                break;
+            case "WALK":
+                if(args.Length != 5)
+                    Debug.LogError("Portrait Walk Command Error");
+                currentCoroutine = 
+                    StartCoroutine(PortraitWalkRoutine(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]), float.Parse(args[4])));
+                break;
+            case "ZOOM":
+                if(args.Length != 5)
+                    Debug.LogError("Portrait Zoom Command Error");
+                currentCoroutine = 
+                    StartCoroutine(PortraitZoomRoutine(float.Parse(args[1]), int.Parse(args[2]), float.Parse(args[3]), args[4]));
+                break;
             default:
                 break;
         }
     }
     
-    IEnumerator PortraitSimpleMoveRoutine(Vector2 moveVector, float duration)
+    IEnumerator PortraitSimpleMoveRoutine(Vector2 moveVector, float duration,Ease ease = Ease.Linear)
     {
         taskRunning = true;
         var tweenerCore = currentSpeakingChara.rootGameObject.transform.DOLocalMove(moveVector, duration).OnComplete(
@@ -939,6 +1521,8 @@ public class StorySceneManager : MonoBehaviour
                 taskRunning = false;
                 skip = false;
             });
+
+        tweenerCore.SetEase(ease);
             
         yield return new WaitUntil(() => taskRunning == false);
         //If tween is not complete
@@ -946,6 +1530,94 @@ public class StorySceneManager : MonoBehaviour
         {
             tweenerCore.Kill();
         }
+        currentCoroutine = null;
+        moveNext = true;
+    }
+
+    IEnumerator PortraitWalkRoutine(float offsetY, float from, float to, float totalTime)
+    {
+        taskRunning = true;
+        
+        var transform = currentSpeakingChara.rootGameObject.transform;
+        
+        transform.localPosition = new Vector3(from, -108, 0);
+        // 创建一个序列
+        Sequence s = DOTween.Sequence();
+        // 添加移动动画
+        s.Append(transform.DOLocalMoveX(to, totalTime).SetEase(Ease.InOutSine));
+        
+        var loops = (int) ((totalTime / 0.5f)) * 2;
+
+        // 添加摇摆效果
+        s.Join(transform.DOLocalMoveY(-108 + offsetY, totalTime / 2).
+            SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutSine));
+        // 动画结束后停止所有动画
+        s.OnComplete(() =>
+        {
+            DOTween.Clear();
+            taskRunning = false;
+        }).OnKill(() =>
+        {
+            taskRunning = false;
+        });
+        
+        yield return new WaitUntil( ()=>taskRunning == false );
+        
+        currentCoroutine = null;
+        moveNext = true;
+    }
+
+    IEnumerator PortraitJumpRoutine(string direction, float distance, int loopTimes, float totalTime, string easeType)
+    {
+        taskRunning = true;
+        Ease ease = (Ease)Enum.Parse(typeof(Ease), easeType);
+        //Ease.InOutSine;
+
+        // 计算每次循环的持续时间
+        float duration = totalTime / loopTimes;
+
+        // 计算移动距离
+        var transform = currentSpeakingChara.rootGameObject.transform;
+
+        Tweener _tweener = null;
+        if (direction == "up")
+        {
+            _tweener = transform.DOLocalMoveY(transform.localPosition.y + distance, duration)
+                .SetEase(ease) // 设置缓动函数
+                .SetLoops(loopTimes * 2, LoopType.Yoyo).OnComplete(() =>
+                {
+                    taskRunning = false;
+                });
+        }else if (direction == "down")
+        {
+            _tweener = transform.DOLocalMoveY(transform.localPosition.y - distance, duration)
+                .SetEase(ease) // 设置缓动函数
+                .SetLoops(loopTimes * 2, LoopType.Yoyo).OnComplete(() => { taskRunning = false; });
+        }else if (direction == "left")
+        {
+            _tweener = transform.DOLocalMoveX(transform.localPosition.x - distance, duration)
+                .SetEase(ease) // 设置缓动函数
+                .SetLoops(loopTimes * 2, LoopType.Yoyo).OnComplete(() => { taskRunning = false; });
+        }else if (direction == "right")
+        {
+            _tweener = transform.DOLocalMoveX(transform.localPosition.x + distance, duration)
+                .SetEase(ease) // 设置缓动函数
+                .SetLoops(loopTimes * 2, LoopType.Yoyo).OnComplete(() => { taskRunning = false; });
+        }
+        else
+        {
+            Debug.LogError("Portrait Jump Command Error");
+        }
+        
+        _tweener.OnKill(() =>
+        {
+            _tweener.Complete();
+            taskRunning = false;
+        });
+
+
+        yield return new WaitUntil(() => taskRunning == false);
+        
         currentCoroutine = null;
         moveNext = true;
     }
@@ -973,17 +1645,113 @@ public class StorySceneManager : MonoBehaviour
         moveNext = true;
     }
 
+    IEnumerator PortraitZoomRoutine(float maxScale, int loopTimes, float totalTime, string easeType)
+    {
+        taskRunning = true;
+        Ease ease = (Ease)Enum.Parse(typeof(Ease), easeType);
+        
+        // 计算每次循环的持续时间
+        float duration = totalTime / loopTimes;
+        
+        var transform = currentSpeakingChara.rootGameObject.transform;
+        
+        Tweener _tweener = transform.DOScale(maxScale, duration)
+            .SetEase(ease) // 设置缓动函数
+            .SetLoops(loopTimes * 2, LoopType.Yoyo).OnComplete(() => { taskRunning = false; });
+        
+        _tweener.OnKill(() =>
+        {
+            _tweener.Complete();
+            taskRunning = false;
+        });
+        
+        yield return new WaitUntil(() => taskRunning == false);
+        
+        currentCoroutine = null;
+        moveNext = true;
+
+    }
+    
+    private void CharacterPortraitBlackInOut(string[] args)
+    {
+        //args1: chara id
+        //args2: in or out
+        //args3: duration
+        //args4: movenext or not
+        
+        taskRunning = true;
+
+        var character = GetCharacter(args[0]);
+        if (character == null)
+        {
+            Debug.LogError("Character Not Found");
+            return;
+        }
+
+        Tweener _tweener = null;
+        //var canvasGroup = character.rootGameObject.GetComponent<CanvasGroup>();
+        character.faceImage.color = Color.clear;
+        character.mouthImage.color = Color.clear;
+        character.baseImage.color = Color.black;
+
+
+        if (args[1] == "IN")
+        {
+            character.baseImage.color = new Color(0, 0, 0, 0);
+            _tweener = character.baseImage.DOFade(1, float.Parse(args[2]));
+            _tweener.OnComplete(() =>
+            {
+                taskRunning = false;
+                if (float.Parse(args[3]) == 0)
+                {
+                    moveNext = true;
+                }
+                character.baseImage.color = Color.black;
+                character.faceImage.color = Color.clear;
+                character.mouthImage.color = Color.clear;
+            });
+        }else if (args[1] == "OUT")
+        {
+            character.baseImage.color = new Color(0, 0, 0, 1);
+            _tweener = character.baseImage.DOColor(Color.white, float.Parse(args[2]));
+            
+            _tweener.OnComplete(() =>
+            {
+                taskRunning = false;
+                if (float.Parse(args[3]) == 0)
+                {
+                    moveNext = true;
+                }
+                character.baseImage.color = Color.white;
+                character.faceImage.color = Color.white;
+                character.mouthImage.color = Color.white;
+            });
+        }
+        else
+        {
+            Debug.LogError("Character Portrait Black In Out Command Error");
+        }
+
+        if (float.Parse(args[3]) != 0)
+        {
+            moveNext = true;
+            taskRunning = false;
+        }
+
+    }
+
 
     #endregion
 
     #region Print
 
-    private void ClearDialog()
+    private void ClearDialog(bool clearSpeakerName = true)
     {
         taskRunning = true;
         storyComponent.dialog.arrowImg.gameObject.SetActive(false);
         storyComponent.dialog.dialogText.text = "";
-        storyComponent.dialog.speakerName.text = "";
+        if(clearSpeakerName)
+            storyComponent.dialog.speakerName.text = "";
         storyComponent.dialog.voiceSource.Stop();
         taskRunning = false;
         moveNext = true;
@@ -1002,9 +1770,17 @@ public class StorySceneManager : MonoBehaviour
         storyComponent.dialog.arrowImg.gameObject.SetActive(false);
         
         string text = storyComponent.dialog.dialogText.text;
+        //获得当前的文本总字数
+        //2023-9-10
+        int textLength = dialog.Length;
+        //print("字符数："+textLength);
+        if(GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN)
+            voiceTime = textLength * 0.08f + 0.02f;
+        else if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+            voiceTime = textLength * 0.03f + 0.02f;
         
         
-        var tween = DOTween.To(()=>text, x=>text = x, dialog, voiceTime).OnUpdate(
+        var tween = DOTween.To(()=>text, x=>text = x, dialog, voiceTime).SetEase(Ease.Linear).OnUpdate(
             () =>
             {
                 storyComponent.dialog.dialogText.text = text;
@@ -1051,42 +1827,9 @@ public class StorySceneManager : MonoBehaviour
         currentCoroutine = null;
         moveNext = true;
     }
+
     
-
-    void TestWaveDetect()
-    {
-        
-        float length = storyComponent.dialog.voiceSource.clip.length;
-        //获取声音的采样率
-        int frequency = storyComponent.dialog.voiceSource.clip.frequency;
-        print(frequency);
-        float[] samples = new float[(int)length * frequency];
-        
-        storyComponent.dialog.voiceSource.clip.GetData(samples, 0);
-        //将声音的音频数据samples的长度压缩到length * 100，存在新数组newData中
-        float[] newData = new float[(int)length * 10];
-        for (int i = 0; i < newData.Length; i++)
-        {
-            newData[i] = samples[i * (frequency/500)];
-        }
-        
-        
-        for (int i = 0; i < newData.Length; i++)
-        {
-            var volume = Mathf.Abs(newData[i]);
-            if (volume <= 0.05f)
-            {
-                print(i / 20f + "s, " + "没声音");
-            }
-            else
-            {
-                print(i / 20f + "s, " + "有声音");
-            }
-
-        }
-        voiceData = newData;
-
-    }
+    
     
     public string GetLevelName()
     {
@@ -1117,6 +1860,19 @@ public class StorySceneManager : MonoBehaviour
             storyComponent.dialog.storyRecordButton.GetComponent<Animation>().Stop();
             storyComponent.dialog.storyRecordButton.GetComponent<CanvasGroup>().alpha = 1;
         }
+    }
+
+    private StoryComponent.DialogMain.Portrait GetCharacter(string id)
+    {
+        foreach (var VARIABLE in storyComponent.dialog.Portraits)
+        {
+            if (VARIABLE.portraitParts.speakerID == id)
+            {
+                return VARIABLE;
+            }
+        }
+
+        return null;
     }
 
     public void SetGaumePaused()
@@ -1150,7 +1906,7 @@ public class StorySceneManager : MonoBehaviour
 
     public void ToStoryBattle(string levelName)
     {
-        _globalController.TestEnterLevel(levelName);
+        _globalController.EnterNormalStoryBattle(levelName);
     }
 
 
@@ -1167,6 +1923,8 @@ public class StoryCommand
 {
     public enum CommandType
     {
+        ADD_CHARA, //添加人物
+        
         BLACKOUT, //黑屏淡出
         BLACKIN, //黑屏
         
@@ -1177,21 +1935,35 @@ public class StoryCommand
         
         CLEAR_DIALOG,//清空对话框
         CHARA_FADE,//人物立绘淡入淡出
+        CHARA_FADE_ANIM,//人物立绘淡出动画
+        
         
         DIALOG_FADEIN,//对话框淡入
         DIALOG_FADEOUT,//对话框淡出
         
-        LOAD_PORTRAIT,//加载人物立绘
+        DESTROY_PORTRAIT,//回收人物立绘
+        DESTROY_EFFECTS,//回收特效
+        
+        EFFECTS,//特效
+        
+        FADE_BGM,
         
         PLAY_BGM,//播放背景音乐
         PLAY_VOICE,//播放语音
+        PLAY_SE,//播放音效
         PORTRAIT_MOVE,//人物立绘运动
         PRINT_DIALOG,//输出对话
         
         SCREEN_SHAKE,//屏幕震动
         SET_BACKGROUND,//设置背景图片
         SET_CHARA,//设置人物图片
+        SET_CHARA_FACE,//设置人物静止图片
+        SET_CHARA_SIBLING,//设置人物层级
         SET_SPEAKER,//设置人物名字
+        SET_CHARA_ANIM,//人物淡入动画
+        SWITCH_SPEAKER,//切换当前人物
+        
+        TRANSFORM_BLACKSCREEN,//幻灯片转场
         
         WAIT//等待
         
@@ -1246,16 +2018,18 @@ public class StoryComponent
         public List<Portrait> Portraits;
         public Image blackScreen;
         public TextMeshProUGUI blackScreenText;
+        public Transform slideBlackScreen;
+        public Transform effectRoot;
         public AudioSource voiceSource;
         public AudioSource bgmSource;
+        public AudioSource SESource;
         public GameObject dialogBody;
         public TextMeshProUGUI dialogText;
         public TextMeshProUGUI speakerName;
         public Image arrowImg;
         public Button skipButton;
         public Button storyRecordButton;
-        public AudioClip voiceClip;
-        public AudioClip bgmClip;
+        
         
         public void Init()
         {
@@ -1271,8 +2045,7 @@ public class StoryComponent
             arrowImg = dialogBody.transform.Find("Arrow").GetComponent<Image>();
             skipButton = GameObject.Find("SkipButton").GetComponent<Button>();
             storyRecordButton = GameObject.Find("RecordButton").GetComponent<Button>();
-            voiceClip = null;
-            bgmClip = null;
+            
 
             var dialogBodyMask = GameObject.Find("Dialog").transform.Find("Mask");
             for(int i = 0; i < dialogBodyMask.childCount; i++)
@@ -1286,14 +2059,14 @@ public class StoryComponent
         
     }
     
-    public BackGround backGround;
-    public DialogMain dialog;
+    public BackGround backGround = new();
+    public DialogMain dialog = new();
 
     public void Init()
     {
-        backGround = new BackGround();
+        //backGround = new BackGround();
         backGround.Init();
-        dialog = new DialogMain();
+        //dialog = new DialogMain();
         dialog.Init();
         
     }

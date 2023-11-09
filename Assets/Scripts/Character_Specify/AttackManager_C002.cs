@@ -33,6 +33,7 @@ public class AttackManager_C002 : AttackManagerDagger
             InstantiateRanged(skill1FX_2, transform.position+new Vector3(ac.facedir,0,0), subcontainer,
                 1);
 
+            
         }
     }
 

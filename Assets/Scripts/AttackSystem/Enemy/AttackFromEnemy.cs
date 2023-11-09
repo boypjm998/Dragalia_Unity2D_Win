@@ -10,14 +10,7 @@ public class AttackFromEnemy : AttackBase
     public GameObject enemySource;
     
     [Header("Damage Basic Attributes")]
-    // public float knockbackPower = 100;
-    // public float knockbackForce;
-    // public float knockbackTime;
-    // public Vector2 knockbackDirection = Vector2.right;
-    // public BasicCalculation.KnockBackType KBType;
     
-    //[SerializeField]protected float[] dmgModifier;
-    //[HideInInspector] public int firedir;
     [SerializeField] public bool isMeele;
     
     //[SerializeField] protected List<float> nextDmgModifier;
@@ -179,8 +172,8 @@ public class AttackFromEnemy : AttackBase
         hitFlags.Remove(collision.transform.parent.GetInstanceID());
         
 
-        //print(collision.name);
-        //print(battleStageManager);
+        
+        
         int dmg = battleStageManager.CalculateHit
             (collision.transform.parent.gameObject,enemySource, this,1);
         
@@ -191,7 +184,8 @@ public class AttackFromEnemy : AttackBase
         {
             //new Vector2(collision.transform.position.x,collision.ClosestPoint(transform.position)
             
-            Instantiate(hitConnectEffect, collision.ClosestPoint(collision.transform.position), Quaternion.identity);
+            Instantiate(hitConnectEffect, collision.ClosestPoint(collision.transform.position), Quaternion.identity,
+                BattleStageManager.Instance.RangedAttackFXLayer.transform);
         }
         
         try
@@ -277,6 +271,10 @@ public class AttackFromEnemy : AttackBase
         container.conditionCheckDone.Clear();
     }
 
+    public AvoidableProperty GetAvoidableProperty()
+    {
+        return Avoidable;
+    }
     public void ChangeAvoidability(AvoidableProperty property)
     {
         Avoidable = property;

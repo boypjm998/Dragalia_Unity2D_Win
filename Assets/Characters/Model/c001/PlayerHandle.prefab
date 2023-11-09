@@ -708,6 +708,7 @@ MonoBehaviour:
   isMove: 0
   velocityDRight: 0
   targetDRight: 0
+  DUp: 0
   jump: 0
   wjump: 0
   lastwJump: 0
@@ -784,8 +785,12 @@ MonoBehaviour:
   movespeed: 7
   rollspeed: 10
   jumpforce: 20
+  canTransform: 0
+  DModeIsOn: 0
+  dc: {fileID: 0}
   dodging: 0
   isAttackSkill: 01000100010101
+  isRecoverSkill: 00000001000000
   ta: {fileID: 0}
   rendererObjects: []
 --- !u!114 &4808759471261329706
@@ -845,6 +850,8 @@ MonoBehaviour:
   abilityList: 1227000089380100
   _conditionBar: {fileID: 0}
   waitForRevive: 0
+  shapeshiftingCD: 10
+  shapeshiftingCDTimer: 0
   maxSkillNum: 4
   requiredSP:
   - 3060

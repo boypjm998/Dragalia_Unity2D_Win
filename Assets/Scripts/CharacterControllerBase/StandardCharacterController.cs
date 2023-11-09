@@ -29,8 +29,8 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
     public bool dodging = false;
     protected bool isAction;
     public int combo = 0;
-    
-    
+
+
     //public Animator anim;
     //public Rigidbody2D rigid;
     public StandardGroundSensor _groundSensor;
@@ -83,6 +83,10 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
 
     protected void Update()
     {
+        
+        
+        
+        
         if (hurt)
         {
             anim.SetBool("hurt", true);
@@ -650,7 +654,7 @@ public class StandardCharacterController : ActorBase , IKnockbackable, IHumanAct
         }
     }
     
-    public void SetFaceDir(int dir)
+    public override void SetFaceDir(int dir)
     {
         facedir = dir;
         CheckFaceDir();

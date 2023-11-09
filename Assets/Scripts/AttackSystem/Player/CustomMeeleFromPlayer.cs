@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomMeeleFromPlayer : AttackFromPlayer
 {
-    protected ActorBase ac;
+    
 
     Coroutine ConnectCoroutine;
     
@@ -33,7 +33,7 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
 
         if (isMeele && ac!=null)
         {
-            print("注册事件");
+            //print("注册事件");
             ac.OnAttackInterrupt += DestroyContainer;
         }
     }

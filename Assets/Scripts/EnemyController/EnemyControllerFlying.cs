@@ -69,6 +69,29 @@ public class EnemyControllerFlying : EnemyController
         }
     }
 
+    public override void SetActionUnable(bool flag)
+    {
+        if (flag)
+        {
+            anim.SetBool("hurt",true);
+            
+            hurt = true;
+            moveEnable = false;
+            //_behavior.isAction = true;
+            isMove = 0;
+        }
+        else
+        {
+            anim.SetBool("hurt",false);
+            hurt = false;
+            moveEnable = true;
+            //_behavior.isAction = false;
+            // if(breakRoutine == null)
+            //anim.Play("idle");
+        }
+        
+    }
+
     /// <summary>
     /// 匀速移动到目标
     /// </summary>
@@ -162,6 +185,8 @@ public class EnemyControllerFlying : EnemyController
             
         }
     }
+    
+    
 
     public override void OnBreakEnter()
     {
@@ -187,14 +212,17 @@ public class EnemyControllerFlying : EnemyController
         
         spStatus.broken = false;
         isAction = false;
-        _behavior.ActionEnd();
+        _behavior.ActionEnd(false);
         _behavior.isAction = false;
+        _behavior.controllAfflictionProtect = false;
         UI_BossODBar.Instance?.ODBarRecharge();
     }
 
     protected override void OnDeath()
     {
         base.OnDeath();
+        if(_statusManager.currentHp > 0)
+            return;
         StartCoroutine(DeathRoutine());
     }
     
@@ -218,7 +246,7 @@ public class EnemyControllerFlying : EnemyController
         }
 
 
-        _behavior.enabled = false;
+        //_behavior.enabled = false;
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
         
@@ -243,28 +271,40 @@ public class EnemyControllerFlying : EnemyController
             StopCoroutine(VerticalMoveRoutine);
             VerticalMoveRoutine = null;
         }
-        if (MoveManager._tweener!=null)
-        {
-            MoveManager._tweener.Kill();
-        }
+        
         rigid.gravityScale = _defaultgravityscale;
         //SetVelocity(rigid.velocity.x,0);
         //moveEnable = false;
         //SetVelocity(rigid.velocity.x,0);
         anim.speed = 1;
-        MoveManager.SetGroundCollider(true);
-        MoveManager.enabled = false;
-        MoveManager.StopAllCoroutines();
-        _behavior.StopAllCoroutines();
+        if (MoveManager)
+        {
+            MoveManager.SetGroundCollider(true);
+            MoveManager.enabled = false;
+            MoveManager.StopAllCoroutines();
+            if (MoveManager._tweener!=null)
+            {
+                MoveManager._tweener.Kill();
+            }
+        }
+
+        
+        if (_behavior)
+        {
+            _behavior.StopAllCoroutines();
+            _behavior.enabled = false;
+        }
+
+        
+        
+        
         var meeles = transform.Find("MeeleAttackFX");
         for (int i = 0; i < meeles.childCount; i++)
         {
-
-            //meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
             meeles.GetChild(i).GetComponent<EnemyAttackHintBar>()?.DestroySelf();
         }
 
-        _behavior.enabled = false;
+        
         _statusManager.enabled = false;
         _statusManager.StopAllCoroutines();
         if (hurtEffectCoroutine != null)
@@ -284,10 +324,10 @@ public class EnemyControllerFlying : EnemyController
         yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
         //anim.speed = 0;
 
-        if (isSummonEnemy)
+        if (disappearTimeAfterDeath > 0)
         {
-            Destroy(gameObject,0.5f);
-            gameObject.SetActive(false);
+            yield return new WaitForSeconds(disappearTimeAfterDeath);
+            Destroy(gameObject);
         }
 
         

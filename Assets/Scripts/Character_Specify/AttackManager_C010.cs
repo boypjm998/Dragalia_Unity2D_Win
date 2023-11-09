@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSpecificProjectiles;
 using DG.Tweening;
+using GameMechanics;
 using UnityEngine;
 
 public class AttackManager_C010 : AttackManager
 {
-    private ActorBase ac;
+    //private ActorBase ac;
     private TargetAimer ta;
-    StatusManager _statusManager;
+    //StatusManager _statusManager;
     
     [Header("Projectiles")]
     public GameObject combo1Projectile;
     public GameObject combo2AProjectile;
     public GameObject combo2BProjectile;
+    public GameObject dashFX;
     
     public GameObject skill1Projectile;
     public GameObject skill2Projectile;
@@ -35,9 +37,9 @@ public class AttackManager_C010 : AttackManager
     {
         //向前方4格内Enemies层的敌人发一道射线
         var hit = Physics2D.OverlapArea(transform.position + new Vector3(0, 0.5f, 0),
-            transform.position + new Vector3(6, -0.5f, 0), LayerMask.GetMask("Enemies"));
+            transform.position + new Vector3(10, -0.5f, 0), LayerMask.GetMask("Enemies"));
         
-        var hitInfo = Physics2D.Raycast(transform.position, Vector2.right * ac.facedir, 6,
+        var hitInfo = Physics2D.Raycast(transform.position, Vector2.right * ac.facedir, 10,
             LayerMask.GetMask("Enemies"));
         
         //如果射线击中的敌人不为空且和自身距离小于1.5,return
@@ -49,9 +51,11 @@ public class AttackManager_C010 : AttackManager
             if(distance < 1.5f)
                 return;
             targetPos = hitInfo.point.x - ac.facedir * 1.5f;
-        }else return;
+        }else targetPos = transform.position.x + ac.facedir * 4f;
         
         //print(hitInfo.collider.gameObject);
+
+        targetPos = BattleStageManager.Instance.OutOfRangeCheck(new Vector2(targetPos,transform.position.y)).x;
 
         StartCoroutine(ac.HorizontalMoveFixedTime
         (targetPos, 0.15f,
@@ -86,13 +90,15 @@ public class AttackManager_C010 : AttackManager
         var container = Instantiate(attackContainer,transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
         
         var boxSensor = Physics2D.OverlapAreaAll(new Vector2(transform.position.x,transform.position.y + 2f),
-            new Vector2(transform.position.x + ac.facedir*6f,transform.position.y - 1f),
+            new Vector2(transform.position.x + ac.facedir*11f,transform.position.y - 1f),
             LayerMask.GetMask("Enemies"));
 
+        Transform target = null;
         Vector2 targetPos;
         if (boxSensor.Length != 0)
         {
             targetPos = new Vector2(boxSensor[0].transform.position.x, transform.position.y);
+            target = boxSensor[0].transform;
         }
         else
         {
@@ -106,18 +112,46 @@ public class AttackManager_C010 : AttackManager
         proj.GetComponent<AttackFromPlayer>().playerpos = transform;
         proj.GetComponent<AttackFromPlayer>().AddWithConditionAll(new TimerBuff(999),100);
         var projController = proj.GetComponentInChildren<Projectile_C010_1>();
+        projController.target = target;
         projController.notteBallPosition = transform.position;
         projController.playerAnim = ac.anim;
         ac.rigid.gravityScale = 0;
+        
+        if (GetComponent<ActorController>() != null)
+        {
+            container.GetComponent<AttackContainer>().InitAttackContainer(1,true);
+            if(_statusManager.comboHitCount >= 20)
+                proj.GetComponent<AttackFromPlayer>().OnAttackHit += SkillRegenDP;
+        }
+    }
+    
+    public virtual void Skill4(int eventID)
+    {
+        _statusManager.HPRegenImmediately(0,10,true);
+        BattleEffectManager.Instance.SpawnHealEffect(gameObject);
+        //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
+        // _statusManager.ObtainTimerBuff
+        // ((int)BasicCalculation.BattleCondition.HealOverTime,
+        //     -10,15);
+        _statusManager.ObtainHealOverTimeBuff(10,15,true);
+    }
+    
+    public override void DashAttack()
+    {
+        var container = Instantiate(attackContainer,transform.position, Quaternion.identity,MeeleAttackFXLayer.transform);
+        InstantiateMeele(dashFX,transform.position,container);
     }
 
     public void Skill1_Wait()
     {
         ac.DisappearRenderer();
-        ac.anim.Play("action02");
+        ac.anim.Play("s1_2");
         ac.anim.speed = 0;
-        
-        
+    }
+    
+    public void Skill1_Replay()
+    {
+        ac.anim.speed = 1;
     }
     
     public void Skill1_Appear()
@@ -142,8 +176,28 @@ public class AttackManager_C010 : AttackManager
         var container = Instantiate(attackContainer,transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
         var proj = Instantiate(skill2Projectile, transform.position + new Vector3(ac.facedir * 2,0,0), Quaternion.identity, container.transform);
         proj.GetComponent<AttackFromPlayer>().playerpos = transform;
+        
         proj.GetComponent<AttackFromPlayer>().AddWithConditionAll(new TimerBuff(999),100);//驱散
+        
         proj.GetComponent<AttackBase>().firedir = ac.facedir;
+        if (GetComponent<ActorController>() != null)
+        {
+            proj.GetComponent<AttackFromPlayer>().OnAttackHit += SkillRegenDP;
+            if(_statusManager.comboHitCount >= 20)
+                container.GetComponent<AttackContainer>().InitAttackContainer(1,true);
+        }
+    }
+
+    private void SkillRegenDP(AttackBase attackBase, GameObject go)
+    {
+        if (attackBase.skill_id == 1)
+        {
+            (_statusManager as PlayerStatusManager).ChargeDP(80f/16f);
+        }else if(attackBase.skill_id == 2)
+        {
+            (_statusManager as PlayerStatusManager).ChargeDP(150f/16f);
+        }
+        attackBase.OnAttackHit -= SkillRegenDP;
     }
 
 

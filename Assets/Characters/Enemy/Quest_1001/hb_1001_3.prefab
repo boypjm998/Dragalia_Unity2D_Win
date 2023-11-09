@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 6133123882682155446}
   - component: {fileID: 8644724110328360199}
   - component: {fileID: 3283258710082035930}
+  - component: {fileID: -5683881824486784684}
   m_Layer: 6
   m_Name: hb_1001_3
   m_TagString: Enemy
@@ -175,12 +176,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayedName: "\u5E2D\u83C8"
   dialogIconID: 1005
-  maxBaseHP: 606400
+  maxBaseHP: 666400
   baseDef: 10
   baseAtk: 1200
   critRate: 12
-  maxHP: 606400
-  currentHp: 606400
+  maxHP: 666400
+  currentHp: 666400
   comboConnectMaxInterval: 4
   comboHitCount: 0
   knockbackRes: 0
@@ -240,7 +241,7 @@ MonoBehaviour:
   projectile9: {fileID: 3460936982066636668, guid: 78a01de260ebe394094678060caeeccc, type: 3}
   projectile10: {fileID: 468327875114114387, guid: 7c57365f9d7887f4bb6a413de9147b3c, type: 3}
   projectilePoolEX:
-  - {fileID: 6335136456527115297, guid: c1901f5483246e0418a1d2fb317b0a5a, type: 3}
+  - {fileID: 2805960451584708958, guid: 0b89391b4dbe8d6448720e1642bb9d5e, type: 3}
   - {fileID: 3403631099166150433, guid: 56bb0ab56a8647b4e8c9635dab5fd402, type: 3}
   - {fileID: 4201768620681739123, guid: 81883c7c62149c54e84e11bd8dbaffba, type: 3}
   - {fileID: 5859482246472526077, guid: fff18f49d7c10614c9e74df9d2cddf3a, type: 3}
@@ -273,6 +274,8 @@ MonoBehaviour:
   rendererObject: {fileID: 0}
   isAction: 0
   canDeath: 1
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 5900866050950154640}
@@ -284,10 +287,13 @@ MonoBehaviour:
   movespeed: 9
   rollspeed: 9
   jumpforce: 22
+  jumpHeight: 5
+  disappearTimeAfterDeath: 0
   dodging: 0
   moveEnable: 1
   tar: {fileID: 0}
   _defaultgravityscale: 4
+  _groundSensor: {fileID: 0}
 --- !u!50 &6133123882682155446
 Rigidbody2D:
   serializedVersion: 4
@@ -527,6 +533,20 @@ MonoBehaviour:
   breakable: 1
   playerAlive: 1
   playerList: []
+--- !u!114 &-5683881824486784684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036179494334382810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 100
+  sensitivity: 30
 --- !u!1 &4490398762309062318
 GameObject:
   m_ObjectHideFlags: 0

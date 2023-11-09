@@ -26,3 +26,19 @@ public class LevelDetailedInfo
 
 
 }
+
+public class StoryLevelDetailedInfo
+{
+    public string name;
+    public string scene_prefab_path;
+    public string bgm_path;
+    public List<string> boss_bundles = new();
+    public List<string> resources = new();
+    public int clear_condition = 0;
+    public int fixed_chara_id = 0;
+    public float crown_time_limit = 0;
+    public int crown_revive_limit = 0;
+    public int revive_limit = 0;
+    public float time_limit = 0;
+    
+}

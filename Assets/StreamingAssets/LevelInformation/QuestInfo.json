@@ -2,11 +2,12 @@
   "QUEST_01013": {
     "name": "席菈的试炼 超级",
     "scene_prefab_path": "scenes/s10011",
+    "bgm_path": "bgm/bgm002",
     "total_boss_num": 1,
     "boss_prefab": [
       {
         "bundle_name":"enemy/hb_1001", 
-        "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice_c005"],
+        "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice_c005","bgm/bgm002"],
         "prefab_name": "hb_1001_3",
         "load_at_start" : 1,
         "boss_abilities": [
@@ -31,11 +32,12 @@
   "QUEST_01012": {
     "name": "席菈的试炼 高级",
     "scene_prefab_path": "scenes/s10011",
+    "bgm_path": "bgm/bgm002",
     "total_boss_num": 1,
     "boss_prefab": [
       {
         "bundle_name":"enemy/hb_1001",
-        "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice_c005"],
+        "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice_c005","bgm/bgm002"],
         "prefab_name": "hb_1001_2",
         "load_at_start" : 1,
         "boss_abilities": [
@@ -57,14 +59,62 @@
     "crown_time_limit": 300,
     "crown_revive_limit": 0
   },
+  "QUEST_01014": {
+  "name": "席菈的试炼 绝级",
+  "scene_prefab_path": "scenes/s10012",
+  "bgm_path": "bgm/bgm005",
+  "total_boss_num": 1,
+  "boss_prefab": [
+    {
+      "bundle_name":"enemy/hb_1001",
+      "resources": ["enemy/hb_1001","model/model_c005","eff/eff_c005","voice/voice_c005","bgm/bgm005","bgm/bgm006","animation/anim_extra"],
+      "prefab_name": "hb_1001_4_p1",
+      "load_at_start" : 1,
+      "boss_abilities": [
+        "BOSS_ABILITY_20011",
+        "BOSS_ABILITY_20021"
+      ],
+      "start_position": [
+        4.5,
+        -16.5
+      ]
+    },
+    {
+      "bundle_name":"enemy/hb_1002",
+      "resources": [],
+      "prefab_name": "hb_1002_4_p2",
+      "load_at_start" : 0,
+      "boss_abilities": [
+        "BOSS_ABILITY_20011",
+        "BOSS_ABILITY_20021",
+        "BOSS_ABILITY_20081",
+        "BOSS_ABILITY_20091",
+        "BOSS_ABILITY_20101"
+      ],
+      "start_position": [
+        4.5,
+        -1
+      ]
+    }
+  ],
+  "player_position": [
+    -4.5,
+    -16.5
+  ],
+  "revive_limit": 8,
+  "time_limit": 720,
+  "crown_time_limit": 360,
+  "crown_revive_limit": 1
+},
   "QUEST_01023": {
     "name": "泽娜的试炼 超级",
     "scene_prefab_path": "scenes/s10021",
+    "bgm_path": "bgm/bgm002",
     "total_boss_num": 1,
     "boss_prefab": [
       {
         "bundle_name":"enemy/hb_1002",
-        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003"],
+        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003","bgm/bgm002"],
         "prefab_name": "hb_1002_3",
         "load_at_start" : 1,
         "boss_abilities": [
@@ -88,11 +138,12 @@
   "QUEST_01022": {
     "name": "泽娜的试炼 高级",
     "scene_prefab_path": "scenes/s10021",
+    "bgm_path": "bgm/bgm002",
     "total_boss_num": 1,
     "boss_prefab": [
       {
         "bundle_name":"enemy/hb_1002",
-        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003"],
+        "resources": ["enemy/hb_1002","model/model_c003","eff/eff_c003","voice/voice_c003","bgm/bgm002"],
         "prefab_name": "hb_1002_2",
         "load_at_start" : 1,
         "boss_abilities": [
@@ -116,6 +167,7 @@
   "QUEST_01024": {
     "name": "泽娜的试炼 绝级",
     "scene_prefab_path": "scenes/s10022",
+    "bgm_path": "bgm/bgm005",
     "total_boss_num": 1,
     "boss_prefab": [
       {
@@ -151,9 +203,288 @@
       -4.5,
       -1
     ],
-    "revive_limit": 5,
+    "revive_limit": 8,
     "time_limit": 720,
     "crown_time_limit": 360,
     "crown_revive_limit": 1
+  },
+  "QUEST_01033": {
+    "name": "伊莉雅的试炼 超级",
+    "scene_prefab_path": "scenes/s10031",
+    "bgm_path": "bgm/bgm002",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1003",
+        "resources": ["enemy/hb_1003","model/model_c001","eff/eff_c001","voice/voice_c001","bgm/bgm002"],
+        "prefab_name": "hb_1003_3",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20041",
+          "BOSS_ABILITY_20051"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      },
+      {
+        "bundle_name":"enemy/hb_1003m1",
+        "resources": ["enemy/hb_1003m1","model/model_c006","eff/eff_c006","voice/voice_c006"],
+        "prefab_name": "hb_1003_minon",
+        "load_at_start" : 0,
+        "boss_abilities": [
+          "BOSS_ABILITY_20061",
+          "BOSS_ABILITY_20071"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -2
+    ],
+    "revive_limit": 5,
+    "time_limit": 600,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_01032": {
+    "name": "伊莉雅的试炼 高级",
+    "scene_prefab_path": "scenes/s10031",
+    "bgm_path": "bgm/bgm002",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1003",
+        "resources": ["enemy/hb_1003","model/model_c001","eff/eff_c001","voice/voice_c001","bgm/bgm002"],
+        "prefab_name": "hb_1003_2",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20041",
+          "BOSS_ABILITY_20051"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      },
+      {
+        "bundle_name":"enemy/hb_1003m1",
+        "resources": ["enemy/hb_1003m1","model/model_c006","eff/eff_c006","voice/voice_c006"],
+        "prefab_name": "hb_1003_minon",
+        "load_at_start" : 0,
+        "boss_abilities": [
+          "BOSS_ABILITY_20061",
+          "BOSS_ABILITY_20071"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -2
+    ],
+    "revive_limit": 3,
+    "time_limit": -1,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_01042": {
+    "name": "塞西娅的试炼 高级",
+    "scene_prefab_path": "scenes/s10041",
+    "bgm_path": "bgm/bgm002",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1004",
+        "resources": ["enemy/hb_1004","model/model_c019","model/model_c003","eff/eff_c003","eff/eff_c019","voice/voice_c019","bgm/bgm002"],
+        "prefab_name": "hb_1004_2",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20121",
+          "BOSS_ABILITY_20111"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -2
+    ],
+    "revive_limit": 3,
+    "time_limit": -1,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_01043": {
+    "name": "塞西娅的试炼 超级",
+    "scene_prefab_path": "scenes/s10041",
+    "bgm_path": "bgm/bgm002",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/hb_1004",
+        "resources": ["enemy/hb_1004","model/model_c019","model/model_c003","eff/eff_c019","eff/eff_c003","voice/voice_c019","bgm/bgm002"],
+        "prefab_name": "hb_1004_3",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_20131",
+          "BOSS_ABILITY_20121",
+          "BOSS_ABILITY_20111"
+        ],
+        "start_position": [
+          4.5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -4.5,
+      -2
+    ],
+    "revive_limit": 5,
+    "time_limit": 600,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_02011": {
+    "name": "传奇耶梦加得的试炼 中级",
+    "scene_prefab_path": "scenes/s20011",
+    "bgm_path": "bgm/bgm004",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/db_2001",
+        "resources": ["enemy/db_2001","model/model_d001","model/model_e001","model/model_c022",
+          "model/model_c023","eff/eff_db001","bgm/bgm004","enemy/en_3001"],
+        "prefab_name": "db_2001_1",
+        "load_at_start" : 1,
+        "boss_abilities": [
+        ],
+        "start_position": [
+          5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -5,
+      -2
+    ],
+    "revive_limit": 5,
+    "time_limit": 600,
+    "crown_time_limit": 300,
+    "crown_revive_limit": 0
+  },
+  "QUEST_02012": {
+    "name": "传奇耶梦加得的试炼 高级",
+    "scene_prefab_path": "scenes/s20011",
+    "bgm_path": "bgm/bgm004",
+    "total_boss_num": 1,
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/db_2001",
+        "resources": ["enemy/db_2001","model/model_d001","model/model_e001","model/model_c022",
+          "model/model_c023","eff/eff_db001","bgm/bgm004","enemy/en_3001"],
+        "prefab_name": "db_2001_2",
+        "load_at_start" : 1,
+        "boss_abilities": [
+        ],
+        "start_position": [
+          5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -5,
+      -2
+    ],
+    "revive_limit": 5,
+    "time_limit": 600,
+    "crown_time_limit": 360,
+    "crown_revive_limit": 0
+  },
+  "QUEST_02013": {
+    "name": "传奇耶梦加得的试炼 超级",
+    "scene_prefab_path": "scenes/s20011",
+    "total_boss_num": 1,
+    "bgm_path": "bgm/bgm004",
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/db_2001",
+        "resources": ["enemy/db_2001","model/model_d001","model/model_e001","model/model_c022",
+          "model/model_c023","eff/eff_db001","bgm/bgm004","enemy/en_3001"],
+        "prefab_name": "db_2001_3",
+        "load_at_start" : 1,
+        "boss_abilities": [
+        ],
+        "start_position": [
+          5,
+          -2
+        ]
+      }
+    ],
+    "player_position": [
+      -5,
+      -2
+    ],
+    "revive_limit": 5,
+    "time_limit": 600,
+    "crown_time_limit": 360,
+    "crown_revive_limit": 0
+  },
+  "QUEST_09001": {
+    "name": "训练场",
+    "scene_prefab_path": "scenes/s90001",
+    "total_boss_num": 1,
+    "bgm_path": "bgm/bgm007",
+    "boss_prefab": [
+      {
+        "bundle_name":"enemy/en_9001",
+        "resources": ["enemy/en_9001","model/model_other_001","bgm/bgm007"],
+        "prefab_name": "e9001",
+        "load_at_start" : 1,
+        "boss_abilities": [
+          "BOSS_ABILITY_80001"
+        ],
+        "start_position": [
+          3,
+          -2.5
+        ]
+      }
+    ],
+    "player_position": [
+      -3,
+      -2.5
+    ],
+    "revive_limit": 0,
+    "time_limit": -1,
+    "crown_time_limit": 0,
+    "crown_revive_limit": 0,
+    "clear_condition": 1
+  },
+  "QUEST_100002": {
+    "name": "恶魔的线索",
+    "scene_prefab_path": "scenes/s100002",
+    "bgm_path": "bgm/bgm008",
+    "boss_bundles": ["enemy/db_2011","enemy/db_2014","enemy/db_2015"],
+    "resources": ["enemy/en_9002","enemy/db_2011","enemy/db_2014","enemy/db_2015","bgm/bgm008","ui/ui_c018","model/model_other_002","model/model_c018","model/model_d011","model/model_d012","model/model_d014","model/model_d015","model/model_c026","model/model_c028","model/model_c031","eff/eff_c018","eff/eff_d011","eff/eff_c026","eff/eff_c028","eff/eff_c031","voice/voice_c031","voice/voice_d011","npc/npc_c026_e","npc/npc_c028","npc/npc_c031","npc/npc_d011","npc/npc_d012"],
+    "clear_condition": 2,
+    "fixed_chara_id": 18,
+    "crown_time_limit": 360,
+    "crown_revive_limit": 0,
+    "revive_limit": 1,
+    "time_limit": -1
   }
 }

@@ -35,7 +35,8 @@ public abstract class BattleCondition
         StackNumber = 1,
         Level = 2,
         None = 3,
-        ExactValue = 4
+        ExactValue = 4,
+        EnergyOrInspiration = 5
     }
 
 

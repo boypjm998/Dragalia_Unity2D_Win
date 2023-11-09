@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8644724110328360199}
   - component: {fileID: 721704174}
   - component: {fileID: 1203340351}
+  - component: {fileID: 5033828115039657634}
   m_Layer: 6
   m_Name: hb_1002_3
   m_TagString: Enemy
@@ -92,12 +93,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayedName: "\u6CFD\u5A1C"
   dialogIconID: 1003
-  maxBaseHP: 590720
+  maxBaseHP: 679328
   baseDef: 8
   baseAtk: 1400
   critRate: 0
-  maxHP: 590720
-  currentHp: 590720
+  maxHP: 679328
+  currentHp: 679328
   comboConnectMaxInterval: 4
   comboHitCount: 0
   knockbackRes: 0
@@ -109,10 +110,10 @@ MonoBehaviour:
   stormlashRes: 0
   flashburnRes: 0
   shadowblightRes: 0
-  stunRes: 0
-  sleepRes: 0
+  stunRes: 60
+  sleepRes: 60
   bogRes: 0
-  freezeRes: 0
+  freezeRes: 60
   blindnessRes: 100
   cursedRes: 100
   abilityList: 3f4e0000925f0100
@@ -139,6 +140,8 @@ MonoBehaviour:
   rendererObject: {fileID: 0}
   isAction: 0
   canDeath: 1
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 1937144555932017329}
@@ -150,10 +153,13 @@ MonoBehaviour:
   movespeed: 7
   rollspeed: 9
   jumpforce: 20
+  jumpHeight: 5
+  disappearTimeAfterDeath: 0
   dodging: 0
   moveEnable: 1
   tar: {fileID: 0}
   _defaultgravityscale: 4
+  _groundSensor: {fileID: 0}
 --- !u!50 &6133123882682155446
 Rigidbody2D:
   serializedVersion: 4
@@ -433,9 +439,24 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
   behaviorTextAsset: {fileID: 4900000, guid: 2caf69c325a44ce39f40a8d86aa7ccae, type: 3}
+--- !u!114 &5033828115039657634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036179494334382810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 60
+  sensitivity: 20
 --- !u!1 &4490398762309062318
 GameObject:
   m_ObjectHideFlags: 0

@@ -359,8 +359,9 @@ public class AttackManager_C003 : AttackManagerRanged
         //TODO: ADD AUSPEX GAUGE
         
         _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.AtkBuff),15,60,1,0);
-        _statusManager.HPRegenImmediately(130,0);
-        _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.HealOverTime),29,15);
+        _statusManager.HPRegenImmediately(130,0,true);
+        _statusManager.ObtainHealOverTimeBuff(29,15);
+        //_statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.HealOverTime),29,15);
 
     }
 

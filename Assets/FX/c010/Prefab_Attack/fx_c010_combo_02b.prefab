@@ -96,6 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chara_id: 0
   skill_id: 0
+  destroyAfterHit: 0
   attackInfo:
   - dmgModifier:
     - 1.07
@@ -111,12 +112,13 @@ MonoBehaviour:
   hitSoundEffect: {fileID: 8300000, guid: f713ebe1482850f4bb5c140e3eac8f7e, type: 3}
   attackSE: []
   self: {fileID: 0}
-  spGain: 0
+  spGain: 150
   isMeele: 0
   hitFlags: 
   hitConnectEffect: {fileID: 0}
   attackCollider: {fileID: 0}
   playerpos: {fileID: 0}
+  forcedShake: 0
   defaultGravity: 0
   hitShakeIntensity: 0
   hitSoundVolume: 0.55

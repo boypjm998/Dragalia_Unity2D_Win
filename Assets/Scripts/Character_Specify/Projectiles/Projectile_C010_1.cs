@@ -18,17 +18,21 @@ namespace CharacterSpecificProjectiles
         public Animator playerAnim;
         public Vector2 notteBallPosition;
         private Sequence sequence;
+        public Transform target;
         IEnumerator Start()
         {
             notteBallAnim = GetComponentInChildren<Animator>();
             notteBall = notteBallAnim.gameObject;
             notteBall.transform.position = notteBallPosition + new Vector2(0,1);
             startPoint = notteBall.transform.position;
+            if(target!=null)
+                transform.GetChild(2).position = new Vector3(target.position.x,transform.position.y);
             //将子物体HitPoints下的8个子物体的坐标存入数组
             for (int i = 0; i < 8; i++)
             {
                 hitPoints[i] = transform.GetChild(2).GetChild(i).position;
                 hitPointsObjects[i] = transform.GetChild(2).GetChild(i).gameObject;
+                print(hitPoints[i]);
             }
     
             yield return new WaitUntil(() => notteBallAnim.GetCurrentAnimatorStateInfo(0).IsName("flying"));
@@ -40,17 +44,30 @@ namespace CharacterSpecificProjectiles
         private void ProjectileAnimation()
         {
             sequence = DOTween.Sequence();
+            notteBall.transform.position = startPoint;
+            
             notteBall.transform.right = hitPoints[0] - (Vector2) notteBall.transform.position;
             //使用DoMove方法，将notteBall依次移动到数组中的8个坐标点,每次移动结束后等待0.05秒，并激活子物体HitPoints下的第i个子物体
             for (int i = 0; i < 8; i++)
             {
                 if (i == 7)
                 {
+                    print("添加移动"+i);
                     sequence.Append(notteBall.transform.DOMove(hitPoints[i], 0.05f));
                 }
                 else
                 {
-                    sequence.Append(notteBall.transform.DOMove(hitPoints[i], 0.12f));
+                    print("添加移动"+i);
+                    if (i == 0)
+                    {
+                        sequence.Append(notteBall.transform.DOMove(hitPoints[i], 0.18f));
+                    }
+                    else
+                    {
+                        sequence.Append(notteBall.transform.DOMove(hitPoints[i], 0.12f));
+                    }
+
+
                 }
     
                 
@@ -59,7 +76,8 @@ namespace CharacterSpecificProjectiles
                 {
                     ActiveNextPoint();
                     //使notteBall的右方向看向下一个坐标点
-                    if(i<8)
+                    int index = i;
+                    if(index<8)
                         notteBall.transform.right = hitPoints[i+1] - (Vector2) notteBall.transform.position;
                     else
                     {

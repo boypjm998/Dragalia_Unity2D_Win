@@ -54,6 +54,10 @@ public class PlayerInput : MonoBehaviour
     public float velocityDRight;
     public float targetDRight;
 
+    protected float targetDUp;
+    protected float velocityDUp;
+    public float DUp;
+
     //once-trigger signal
     public bool jump;
 
@@ -78,6 +82,7 @@ public class PlayerInput : MonoBehaviour
     public bool jumpEnabled = true;
     public bool rollEnabled = true;
     public bool attackEnabled = true;
+    
     public bool directionLock = false;
 
     //允许信号进入
@@ -139,78 +144,69 @@ public class PlayerInput : MonoBehaviour
 
         if (keyLeft != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonLeft.Tick(Input.GetKey(keyLeft));
+            
+            buttonLeft.Tick(Input.GetKey(keyLeft));
         }
 
 
         if (keyRight != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonRight.Tick(Input.GetKey(keyRight));
+            
+            buttonRight.Tick(Input.GetKey(keyRight));
         }
 
 
         if (keyAttack != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonAttack.Tick(Input.GetKey(keyAttack));
+            buttonAttack.Tick(Input.GetKey(keyAttack));
         }
 
 
         if (keyJump != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonJump.Tick(Input.GetKey(keyJump));
+            buttonJump.Tick(Input.GetKey(keyJump));
         }
 
 
 
         if (keyRoll != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonRoll.Tick(Input.GetKey(keyRoll));
+            buttonRoll.Tick(Input.GetKey(keyRoll));
         }
 
 
         if (keyDown != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonDown.Tick(Input.GetKey(keyDown));
+            buttonDown.Tick(Input.GetKey(keyDown));
         }
 
 
         if (keyUp != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonUp.Tick(Input.GetKey(keyUp));
+            buttonUp.Tick(Input.GetKey(keyUp));
         }
 
 
         if (keySkill1 != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonSkill1.Tick(Input.GetKey(keySkill1));
+            buttonSkill1.Tick(Input.GetKey(keySkill1));
         }
 
         if (keySkill2 != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonSkill2.Tick(Input.GetKey(keySkill2));
+            buttonSkill2.Tick(Input.GetKey(keySkill2));
         }
 
 
         if (keySkill3 != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonSkill3.Tick(Input.GetKey(keySkill3));
+            buttonSkill3.Tick(Input.GetKey(keySkill3));
         }
 
 
         if (keySkill4 != KeyCode.None)
         {
-            if(ControlEnable(keyLeft))
-                buttonSkill4.Tick(Input.GetKey(keySkill4));
+            buttonSkill4.Tick(Input.GetKey(keySkill4));
         }
 
         
@@ -247,24 +243,21 @@ public class PlayerInput : MonoBehaviour
 
 
         targetDRight = (buttonRight.IsPressing ? 1.0f : 0) - (buttonLeft.IsPressing ? 1.0f : 0);
+        targetDUp = (buttonJump.IsPressing ? 1.0f : 0) - (buttonDown.IsPressing ? 1.0f : 0);
         //DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, accTime);
         DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, accTime);
+        DUp = Mathf.SmoothDamp(DUp, targetDUp, ref velocityDUp, accTime);
 
         if (inputMoveEnabled == false)
         {
             targetDRight = 0;
             DRight = 0;
+            targetDUp = 0;
+            DUp = 0;
             return false;
         }
         
-        //if (buttonLeft.IsPressing && !buttonRight.IsPressing)
-        //{
-        //    ac.SetFaceDir(-1);
-        //}
-        //if (!buttonLeft.IsPressing && buttonRight.IsPressing)
-        //{
-        //    ac.SetFaceDir(1);
-        //}
+        
 
         if (DRight < 0.25f && DRight > -0.25f){ 
             isMove = 0;
@@ -336,14 +329,16 @@ public class PlayerInput : MonoBehaviour
         {
             stdAtk = buttonAttack.IsPressing;
         }
-        else
+        else if(!allowForceStrike)
         {
             stdAtk = buttonAttack.OnPressed;
         }
 
         if (allowForceStrike)
         {
-            stdAtk = buttonAttack.OnReleased;
+            if (buttonAttack.OnReleased)
+                stdAtk = true;
+            //stdAtk = buttonAttack.OnReleased;
         }
 
 
@@ -359,7 +354,7 @@ public class PlayerInput : MonoBehaviour
     {
         
 
-        if (stat.currentSP[0] >= stat.requiredSP[0] && buttonSkill1.OnPressed)
+        if (stat.CheckSkillSPEnough(0) && buttonSkill1.OnPressed)
         {
             skill[0] = true;
         }
@@ -374,7 +369,7 @@ public class PlayerInput : MonoBehaviour
     {
 
 
-        if (stat.currentSP[1] >= stat.requiredSP[1] && buttonSkill2.OnPressed)
+        if (stat.CheckSkillSPEnough(1) && buttonSkill2.OnPressed)
         {
             skill[1] = true;
         }
@@ -390,7 +385,7 @@ public class PlayerInput : MonoBehaviour
     {
 
 
-        if (stat.currentSP[2] >= stat.requiredSP[2] && buttonSkill3.OnPressed)
+        if (stat.CheckSkillSPEnough(2) && buttonSkill3.OnPressed)
         {
             skill[2] = true;
             
@@ -407,7 +402,7 @@ public class PlayerInput : MonoBehaviour
     {
 
 
-        if (stat.currentSP[3] >= stat.requiredSP[3] && buttonSkill4.OnPressed)
+        if (stat.CheckSkillSPEnough(3) && buttonSkill4.OnPressed)
         {
             skill[3] = true;
             

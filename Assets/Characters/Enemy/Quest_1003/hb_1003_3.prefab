@@ -196,6 +196,7 @@ GameObject:
   - component: {fileID: 7507782418044573409}
   - component: {fileID: 556046945298126680}
   - component: {fileID: 4622936677064283998}
+  - component: {fileID: 8607712660380695985}
   m_Layer: 0
   m_Name: hb_1003_3
   m_TagString: Untagged
@@ -259,10 +260,10 @@ MonoBehaviour:
   stormlashRes: 0
   flashburnRes: 0
   shadowblightRes: 0
-  stunRes: 0
+  stunRes: 60
   sleepRes: 100
   bogRes: 0
-  freezeRes: 0
+  freezeRes: 60
   blindnessRes: 0
   cursedRes: 0
   abilityList: 494e0000534e0000
@@ -288,6 +289,7 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
   behaviorTextAsset: {fileID: 4900000, guid: 9eda9f70c89de2148838736b63d63b5f, type: 3}
@@ -296,6 +298,7 @@ MonoBehaviour:
   skill3CDMax: 15
   skill7CDMax: 20
   counterPunishCD: 10
+  summoned: 1
 --- !u!114 &1933384362848518544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,6 +575,8 @@ MonoBehaviour:
   rendererObject: {fileID: 1726206686459569185}
   isAction: 0
   canDeath: 1
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 5012370551774564886}
@@ -590,6 +595,20 @@ MonoBehaviour:
   tar: {fileID: 0}
   _defaultgravityscale: 4
   _groundSensor: {fileID: 0}
+--- !u!114 &8607712660380695985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770656589789315863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 60
+  sensitivity: 20
 --- !u!1 &1959688439296889286
 GameObject:
   m_ObjectHideFlags: 0

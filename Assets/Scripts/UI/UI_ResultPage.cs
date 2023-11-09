@@ -226,7 +226,10 @@ public class UI_ResultPage : MonoBehaviour
             }
             case GlobalController.Language.EN:
             {
-                condition1.text = $"Use no more than {reviveLimit} revives";
+                var countableStr1 = reviveLimit > 1? "revives":"revive";
+                var countableStr2 = getCrownReviveTime > 1? "revives":"revive";
+                
+                condition1.text = $"Use no more than {reviveLimit} {countableStr1}";
                 condition2.text = $"Clear in {getCrownLimitTime} seconds";
                 if (getCrownReviveTime <= 0)
                 {
@@ -234,7 +237,7 @@ public class UI_ResultPage : MonoBehaviour
                 }
                 else
                 {
-                    condition3.text = $"Use no more than {getCrownReviveTime} revives";
+                    condition3.text = $"Use no more than {getCrownReviveTime} {countableStr2}";
                 }
                 break;
             }

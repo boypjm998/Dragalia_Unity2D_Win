@@ -19,6 +19,7 @@ public abstract class AttackBase : MonoBehaviour
 
     [SerializeField] protected AudioClip hitSoundEffect;
     [SerializeField] protected AudioClip[] attackSE;
+    [SerializeField] public float extraODModifier = 0;
 
     protected BattleEffectManager _effectManager;
     
@@ -26,6 +27,13 @@ public abstract class AttackBase : MonoBehaviour
     
     public delegate void AttackBaseDelegate(AttackBase attackBase, GameObject target);
     public AttackBaseDelegate OnAttackHit;
+    public AttackBaseDelegate BeforeAttackHit;
+    /// <summary>
+    /// 当造成伤害时触发，arg1:自身 arg2:目标 ,arg3:攻击 arg4:造成的伤害
+    /// </summary>
+    public Action<StatusManager, StatusManager, AttackBase, float> OnAttackDealDamage;
+
+    
 
     protected void DestroyContainer()
     {
@@ -37,7 +45,7 @@ public abstract class AttackBase : MonoBehaviour
         }
 
         
-        print("DestroyContainer");
+        //print("DestroyContainer");
     }
 
     public virtual void NextAttack()
@@ -223,26 +231,30 @@ public class AttackInfo
 /// <summary>
 /// 条件判断敌人身上是否有某些buff来改变攻击属性
 /// </summary>
+[Serializable]
 public class ConditionalAttackEffect
 {
     public enum ConditionType
     {
         TargetHasCondition,
         DependOnTargetHP,
-        DependOnSelfHP
+        DependOnSelfHP,
+        Custom
     }
 
     public enum ExtraEffect
     {
         ExtraConditionToTarget,
         ExtraConditionToSelf,
+        ExtraCritRate,
         RemoveConditionFromTarget,
         RemoveConditionFromSelf,
         ChangeDmgModifier,
         CrisisModifier
+        
     }
     
-    public List<ConditionType> conditionType = new();
+    public ConditionType conditionType;
     public ExtraEffect extraEffect;
     /// <summary>
     /// args about condition
@@ -257,14 +269,16 @@ public class ConditionalAttackEffect
     //Init by parsing args
     private List<BasicCalculation.BattleCondition> needCheckTargetConditionsList = new();
     private List<BasicCalculation.BattleCondition> needCheckSelfConditionsList = new();
+    private Func<StatusManager,StatusManager,bool> customConditionFunc;
 
-    private Tuple<BattleCondition,int> needAppendSelfCondition;
-    private Tuple<BattleCondition,int> needAppendTargetCondition;
-
-    private Tuple<BattleCondition,int> needRemoveSelfCondition;
-    private Tuple<BattleCondition,int> needRemoveTargetCondition;
+    // private Tuple<BattleCondition,int> needAppendSelfCondition;
+    // private Tuple<BattleCondition,int> needAppendTargetCondition;
+    //
+    // private Tuple<BattleCondition,int> needRemoveSelfCondition;
+    // private Tuple<BattleCondition,int> needRemoveTargetCondition;
 
     private float extraModifier;
+    private int extraCritRate;
     /// <summary>
     /// <para>(minHP(0,1), maxHP(0,1), crisisModifier)</para>
     /// <para>crisisModifier背水系数，在minHP处，倍率为原倍率*crisisModifier,在maxHP处，倍率为原倍率，背水曲线为抛物线。</para>
@@ -277,8 +291,12 @@ public class ConditionalAttackEffect
     
 
     
+    
+    
 
-    public ConditionalAttackEffect(List<ConditionType> conditionType, ExtraEffect extraEffect, string[] args1, string[] args2)
+    /// <param name="args1">格式1:{检查几个buff,buffID1,buffID2,...}</param>
+    /// <param name="args2">格式1:{附加倍率}</param>
+    public ConditionalAttackEffect(ConditionType conditionType, ExtraEffect extraEffect, string[] args1, string[] args2)
     {
         this.conditionType = conditionType;
         this.extraEffect = extraEffect;
@@ -287,15 +305,14 @@ public class ConditionalAttackEffect
         ParseArguments();
     }
     
-
-    /// <param name="args1">格式1:{检查几个buff,buffID1,buffID2,...}</param>
-    /// <param name="args2">格式1:{附加倍率}</param>
-    public ConditionalAttackEffect(ConditionType conditionType, ExtraEffect extraEffect, string[] args1, string[] args2)
+    public ConditionalAttackEffect(Func<StatusManager,StatusManager,bool> condition,
+        ExtraEffect extraEffect, string[] args1, string[] args2)
     {
-        this.conditionType.Add(conditionType);
+        this.conditionType = ConditionType.Custom;
         this.extraEffect = extraEffect;
         this.args1 = args1;
         this.args2 = args2;
+        customConditionFunc = condition;
         ParseArguments();
     }
 
@@ -316,24 +333,40 @@ public class ConditionalAttackEffect
             return 0;
         }
     }
+    
+    public float GetExtraCritRate(StatusManager targetStat, StatusManager sourceStat)
+    {
+        if (extraEffect != ExtraEffect.ExtraCritRate)
+            return 0;
+        else
+        {
+            if (CheckConditional(targetStat, sourceStat))
+            {
+                Debug.Log("Conditional OK");
+                return extraCritRate;
+            }
+
+            return 0;
+        }
+    }
 
     private bool CheckConditional(StatusManager targetStat, StatusManager sourceStat)
     {
-        foreach (var conditional in conditionType)
+        
+        if (conditionType == ConditionType.TargetHasCondition)
         {
-            if (conditional == ConditionType.TargetHasCondition)
+            foreach (var con in needCheckTargetConditionsList)
             {
-                foreach (var con in needCheckTargetConditionsList)
-                {
-                    if (targetStat.GetConditionStackNumber((int)con) <= 0)
-                        return false;
-                }
+                if (targetStat.GetConditionStackNumber((int)con) <= 0)
+                    return false;
             }
-            else
-            {
-                continue;
-            }
+        }else if (conditionType == ConditionType.Custom)
+        {
+            var result = customConditionFunc(sourceStat, targetStat);
+            return result;
         }
+
+
 
         return true;
     }
@@ -342,7 +375,7 @@ public class ConditionalAttackEffect
     {
         //parse conditional
         int index = 1;
-        if (conditionType.Contains(ConditionType.TargetHasCondition))
+        if (conditionType==(ConditionType.TargetHasCondition))
         {
             int conditionNum = int.Parse(args1[0]);
             for (int i = 0; i < conditionNum; i++)
@@ -359,6 +392,9 @@ public class ConditionalAttackEffect
         if (extraEffect == ExtraEffect.ChangeDmgModifier)
         {
             extraModifier = float.Parse(args2[0]);
+        }else if (extraEffect == ExtraEffect.ExtraCritRate)
+        {
+            extraCritRate = int.Parse(args2[0]);
         }
 
 

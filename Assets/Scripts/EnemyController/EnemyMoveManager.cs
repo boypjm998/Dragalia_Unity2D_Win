@@ -43,6 +43,8 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected Animator anim;
 
     protected List<NPCNavigateAnchorSensor> _navigateAnchorSensors = new();
+    protected IEnumerator _canAction;
+    protected IEnumerator _canActionOnGround;
 
     public virtual void UseMove(int moveID)
     {
@@ -52,6 +54,9 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected virtual void Awake()
     {
         bossBanner = GameObject.Find("BattleInfoCaster")?.GetComponent<UI_BattleInfoCaster>();
+        ac = GetComponent<EnemyController>();
+        _canAction = new WaitUntil(()=>ac.hurt == false);
+        _canActionOnGround = new WaitUntil(()=>ac.hurt == false && ac.grounded);
     }
 
     // Start is called before the first frame update
@@ -152,9 +157,10 @@ public abstract class EnemyMoveManager : MonoBehaviour
     /// <param name="rot"></param>
     /// <param name="_parent"></param>
     /// <returns></returns>
-    public GameObject GenerateWarningPrefab(string prefabName, Vector3 where,Quaternion rot, Transform _parent)
+    public GameObject GenerateWarningPrefab(string prefabName, Vector3 where,Quaternion rot, Transform _parent,int dir = 1)
     {
         GameObject prefab;
+        
         try
         {
             prefab = WarningPrefabs.ToList().Find(
@@ -168,6 +174,14 @@ public abstract class EnemyMoveManager : MonoBehaviour
 
         var clone = Instantiate(prefab, where, rot, _parent);
         clone.GetComponent<EnemyAttackHintBar>()?.SetSource(ac);
+
+        if (dir != 1)
+        {
+            clone.transform.localScale =
+                new Vector3(dir*transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+
+
         return clone;
     }
 
@@ -193,13 +207,59 @@ public abstract class EnemyMoveManager : MonoBehaviour
         return prefabInstance;
     }
     
+    protected GameObject InstantiateDirectionalRanged(GameObject prefab, Vector3 position, GameObject container,
+        int facedir, float angleZ)
+    {
+        var prefabInstance = InstantiateDirectional(prefab, position, container.transform, facedir, 0, 1);
+        prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
+        prefabInstance.GetComponent<AttackFromEnemy>().firedir = facedir;
+
+        prefabInstance.transform.eulerAngles = new Vector3(0, 0, angleZ);
+        //用TryGetComponent来尝试获取DoTweenSimpleController组件，如果有就设置朝向
+        if (prefabInstance.TryGetComponent(out DOTweenSimpleController controller))
+        {
+            var magnitude = controller.moveDirection.magnitude;
+            controller.moveDirection = 
+                new Vector2(magnitude * facedir * Mathf.Cos(angleZ*Mathf.Deg2Rad),
+                    magnitude * Mathf.Sin(angleZ*Mathf.Deg2Rad) * facedir);
+        }
+        
+        
+        return prefabInstance;
+    }
+    
     protected GameObject InstantiateMeele(GameObject prefab, Vector3 position, GameObject container)
     {
         var prefabInstance = Instantiate(prefab, position, Quaternion.identity, container.transform);
         prefabInstance.GetComponent<AttackFromEnemy>().enemySource = gameObject;
         return prefabInstance;
     }
-    
+
+    protected GameObject InstantiateSealedContainer(GameObject prefab, Vector3 position, bool isMeele, int facedir = 1)
+    {
+        Transform layer = isMeele ? MeeleAttackFXLayer.transform : RangedAttackFXLayer.transform;
+
+        var containerInstance = 
+            Instantiate
+                (prefab, position, Quaternion.identity, layer.transform);
+
+        var atkFromEnemies = containerInstance.GetComponentsInChildren<AttackFromEnemy>();
+
+        foreach (var atkFromEnemy in atkFromEnemies)
+        {
+            atkFromEnemy.enemySource = gameObject;
+        }
+
+        if (!isMeele && facedir == -1)
+        {
+            containerInstance.transform.localScale = new Vector3(-containerInstance.transform.localScale.x,
+                containerInstance.transform.localScale.y, containerInstance.transform.localScale.z);
+        }
+
+        return containerInstance;
+
+    }
+
     protected void QuitMove()
     {
         ac.currentKBRes = 999;
@@ -284,5 +344,175 @@ public abstract class EnemyMoveManager : MonoBehaviour
         (x =>
             x.name.Equals(name))?.gameObject;
     }
-   
+    
+    public GameObject GetProjectileStartWithName(string prefix)
+    {
+        //遍历projectilePool，找到名字相同的projectile
+        foreach (var projectile in projectilePool)
+        {
+            if(projectile == null)
+                continue;
+            if (projectile.name.StartsWith(prefix))
+            {
+                return projectile;
+            }
+        }
+
+        return projectilePoolEX.ToList().Find
+        (x =>
+            x.name.StartsWith(prefix))?.gameObject;
+    }
+
+    protected void PurgedShapeShiftingOfViewer()
+    {
+        var actor = _behavior.viewerPlayer.GetComponent<ActorController>();
+        if (actor.DModeIsOn && actor.dc)
+        {
+            actor.dc.DModeForcePurge();
+            actor._statusManager.InvokeShapeshiftingPurged();
+        }
+
+    }
+    
+    public static void PurgedShapeShiftingOfTarget(AttackBase atkBase, GameObject target)
+    {
+        var actor = target.GetComponent<ActorController>();
+        if(actor == null)
+            return;
+        
+        if (actor.DModeIsOn && actor.dc)
+        {
+            actor.dc.DModeForcePurge();
+            actor._statusManager.InvokeShapeshiftingPurged();
+        }
+
+    }
+    
+    protected GameObject InitContainer(bool isMeele, int totalNum = 1, bool displayDmg = false)
+    {
+        var container = Instantiate(attackContainer, transform.position,
+            Quaternion.identity, isMeele ? MeeleAttackFXLayer.transform : RangedAttackFXLayer.transform);
+
+        if (totalNum != 1 || displayDmg)
+        {
+            container.GetComponent<AttackContainer>().InitAttackContainer(totalNum, displayDmg);
+        }
+
+        return container;
+    }
+
+    /// <summary>
+    /// 未完成的方法
+    /// </summary>
+    /// <param name="attackPrefabInfo"></param>
+    /// <param name="position"></param>
+    /// <param name="parent"></param>
+    /// <returns></returns>
+    protected GameObject SpawnEmptyAttack(AttackPrefabInfo attackPrefabInfo, Vector3 position, Transform parent)
+    {
+        //Instantiate a new GameObject
+        //Instantiate a new empty GameObject
+        
+        //实例化一个什么都没有的GameObject，不包含任何组件
+        var go = new GameObject();
+        AttackFromEnemy atk = null;
+        if (attackPrefabInfo.attackType == AttackPrefabInfo.AttackType.Meele)
+        {
+            //设置父物体为MeeleAttackFXLayer
+            go.transform.SetParent(MeeleAttackFXLayer.transform);
+            atk = go.AddComponent<CustomMeeleFromEnemy>();
+        }
+        else if(attackPrefabInfo.attackType == AttackPrefabInfo.AttackType.Ranged)
+        {
+            //go.transform.SetParent(RangedAttackFXLayer.transform);
+            atk = go.AddComponent<CustomRangedFromEnemy>();
+        }else if (attackPrefabInfo.attackType == AttackPrefabInfo.AttackType.Bullet)
+        {
+            //go.transform.SetParent(RangedAttackFXLayer.transform);
+            atk = go.AddComponent<BulletFromEnemy>();
+        }
+        else
+        {
+            //go.transform.SetParent(RangedAttackFXLayer.transform);
+            atk = go.AddComponent<ForcedAttackFromEnemy>();
+            var fatk = atk as ForcedAttackFromEnemy;
+            fatk.triggerTime = attackPrefabInfo.awakeTimes[0];
+        }
+        
+        go.transform.SetParent(parent);
+        go.transform.position = position;
+
+        if (attackPrefabInfo.colliderType == AttackPrefabInfo.ColliderType.Box)
+        {
+            var boxCollider = go.AddComponent<BoxCollider2D>();
+            boxCollider.offset = new Vector2(attackPrefabInfo.colliderInfo[0],
+                attackPrefabInfo.colliderInfo[1]);
+            boxCollider.size = new Vector2(attackPrefabInfo.colliderInfo[2],
+                attackPrefabInfo.colliderInfo[3]);
+            boxCollider.isTrigger = true;
+        }else if (attackPrefabInfo.colliderType == AttackPrefabInfo.ColliderType.Circle)
+        {
+            var circleCollider = go.AddComponent<CircleCollider2D>();
+            circleCollider.radius = attackPrefabInfo.colliderInfo[0];
+            circleCollider.offset = new Vector2(attackPrefabInfo.colliderInfo[1],
+                attackPrefabInfo.colliderInfo[2]);
+        }else if (attackPrefabInfo.colliderType == AttackPrefabInfo.ColliderType.Polygon)
+        {
+            var polygonCollider = go.AddComponent<PolygonCollider2D>();
+            List<Vector2> points = new List<Vector2>();
+            var pointNum = attackPrefabInfo.colliderInfo[0];
+            for (int i = 1; i < attackPrefabInfo.colliderInfo.Count; i+=2)
+            {
+                points.Add(new Vector2(attackPrefabInfo.colliderInfo[i],
+                    attackPrefabInfo.colliderInfo[i + 1]));
+            }
+            polygonCollider.points = points.ToArray();
+        }
+
+
+        atk.hitShakeIntensity = attackPrefabInfo.shakeIntensity;
+        atk.attackInfo = attackPrefabInfo.attackInfos;
+        
+
+        if (attackPrefabInfo.awakeTimes.Count > 0 && !(atk is ForcedAttackFromEnemy))
+        {
+            var triggerController = go.AddComponent<EnemyAttackTriggerController>();
+            triggerController.SetAwakeTimes(attackPrefabInfo.awakeTimes);
+            if(attackPrefabInfo.sleepTimes.Count > 0)
+                triggerController.SetSleepTimes(attackPrefabInfo.sleepTimes);
+
+            triggerController.DestroyTime = attackPrefabInfo.invokeDestroyTime;
+        }
+        else
+        {
+            var invokeDestroy = go.AddComponent<ObjectInvokeDestroy>();
+            invokeDestroy.destroyTime = attackPrefabInfo.invokeDestroyTime;
+        }
+        
+        return go;
+        
+
+    }
+
+    protected GameObject SpawnEnemyMinon(GameObject prefab, Vector3 position, int maxHP, int attack,int facedir = 1, bool isSummon = true)
+    {
+        var go = Instantiate(prefab, position, Quaternion.identity, BattleStageManager.Instance.EnemyLayer.transform);
+        var enemy = go.GetComponent<EnemyController>();
+        var statusManager = go.GetComponent<StatusManager>();
+        statusManager.maxBaseHP = maxHP;
+        statusManager.maxHP = maxHP;
+        statusManager.baseAtk = attack;
+        enemy.SetSummoned(isSummon);
+        enemy.SetFaceDir(facedir);
+        var behavior = go.GetComponent<DragaliaEnemyBehavior>();
+        if (behavior != null)
+        {
+            behavior.enabled = true;
+        }
+
+        
+        return go;
+    }
+    
+    
 }

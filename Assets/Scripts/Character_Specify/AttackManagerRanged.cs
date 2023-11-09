@@ -1,4 +1,5 @@
-﻿using GameMechanics;
+﻿using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 
 
@@ -17,12 +18,17 @@ public class AttackManagerRanged : AttackManager
     public GameObject[] ForceFX;
     protected TargetAimer ta;
     
+    protected GameObject Shotpoints;
+    
+    
+    
     
 
     protected override void Start()
     {
         base.Start();
         ta = GetComponentInChildren<TargetAimer>();
+        Shotpoints = transform.Find("Shotpoints").gameObject;
     }
 
     public virtual void ComboAttack1()
@@ -65,12 +71,27 @@ public class AttackManagerRanged : AttackManager
     
     public virtual void Skill4(int eventID)
     {
-        _statusManager.HPRegenImmediately(0,10);
+        _statusManager.HPRegenImmediately(0,10,true);
         BattleEffectManager.Instance.SpawnHealEffect(gameObject);
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
-        _statusManager.ObtainTimerBuff
-        ((int)BasicCalculation.BattleCondition.HealOverTime,
-            -10,15);
+        _statusManager.ObtainHealOverTimeBuff(10,15,true);
     }
+    
+    protected Transform FindShotpointInChildren(string childName)
+    {
+        var child = Shotpoints.transform.Find(childName);
+
+        if (child != null)
+            return child;
+
+        return null;
+    }
+    
+    public virtual void ForceStrikeRelease(int forcelevel = 0)
+    {
+        
+
+    }
+    
 
 }

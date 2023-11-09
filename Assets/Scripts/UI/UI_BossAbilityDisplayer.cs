@@ -82,7 +82,7 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
         Vector2 anchoredPosition = screenPoint;
 
         Vector2 minPosition = new Vector2(75, 50);
-        print(_rectTransform.sizeDelta);
+        //print(_rectTransform.sizeDelta);
         Vector2 maxPosition = new Vector2(Screen.width, Screen.height) / 2;
         anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, minPosition.x, maxPosition.x);
         

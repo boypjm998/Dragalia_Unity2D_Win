@@ -739,6 +739,10 @@ public class TutorialLevelManager : MonoBehaviour
         PlayStoryVoiceWithDialog(29,1008,sharedVoice);
         
         yield return new WaitForSeconds(4.5f);
+        if(bossStatusManager.broken)
+        {
+        PlayStoryVoiceWithDialog(30,8003,null);
+        }
         yield return new WaitUntil(() => !bossBehavior.isAction);
         
         bossBehavior.SetState(3);

@@ -7,6 +7,7 @@ using Cinemachine;
 using LitJson;
 using TMPro;
 using GameMechanics;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -73,6 +74,12 @@ public class GlobalController : MonoBehaviour
     public static string questSaveDataString;
 
     #endregion
+
+    #region GameData
+
+    [SerializeField] protected CharacterAssetInfo CharaAssetData;
+
+    #endregion
     
     
 
@@ -103,9 +110,6 @@ public class GlobalController : MonoBehaviour
             Debug.LogError("Language not supported");
         }
 
-        //QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
-        
-        
         
         SettingsInfo = BasicCalculation.ReadJsonData("savedata/PlayerSettings.json");
         
@@ -121,6 +125,7 @@ public class GlobalController : MonoBehaviour
         LoadPlayerSettings();
         LoadGameOptionsFromFile();
         ReadStatusInformation();
+        CharaAssetData?.Init();
         UIFXContainer = GameObject.Find("UIFXContainer");
         
         
@@ -237,7 +242,22 @@ public class GlobalController : MonoBehaviour
         loadingRoutine = StartCoroutine(LoadStorySceneOfPrologue());
     }
 
-    protected IEnumerator LoadBattleScene(string questID){
+    public void EnterNormalStory(string questID)
+    {
+        if(loadingRoutine!=null)
+            return;
+        loadingRoutine = StartCoroutine(LoadStorySceneOfNormalStory(questID));
+    }
+
+    public void EnterNormalStoryBattle(string questID)
+    {
+        if(loadingRoutine!=null)
+            return;
+        loadingRoutine = StartCoroutine(LoadBattleSceneOfNormalStory(questID));
+    }
+
+    protected IEnumerator LoadBattleScene(string questID)
+    {
         //异步加载场景
 
         GlobalController.questID = questID;
@@ -245,7 +265,7 @@ public class GlobalController : MonoBehaviour
         var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
         var anim = loadingScreen.GetComponent<Animator>();
         //yield return new WaitForSecondsRealtime(2f);
-        
+
         var clonedStack = new Stack<int>(new Stack<int>(MenuUIManager.Instance.menuLevelStack));
         //将栈顶元素一一加入到questEnterRecordList中，直到取出的栈顶元素为1010或者栈空
         questEnterRecordList.Clear();
@@ -262,20 +282,20 @@ public class GlobalController : MonoBehaviour
 
         //load level
         bool levelAssetLoaded = false;
-        
+
         AssetBundleCreateRequest ar = null;
 
         JsonData currentQuestInfo = QuestInfo[$"QUEST_{questID}"];
         var currentLevelDetailedInfo = JsonMapper.ToObject<LevelDetailedInfo>(currentQuestInfo.ToJson());
 
-        
+
         List<String> requiredBundleList = new List<string>();
-        
+
         var needLoad = SearchPlayerRelatedAssets(currentCharacterID);
-        
+
         List<AssetBundle> assetBundles = new List<AssetBundle>();
         int index = 0;
-        
+
         requiredBundleList.Add(needLoad[0]);
         requiredBundleList.Add(needLoad[1]);
         requiredBundleList.Add(needLoad[2]);
@@ -287,10 +307,24 @@ public class GlobalController : MonoBehaviour
         requiredBundleList.Add("soundeffect/soundeffect_common");
         requiredBundleList.Add("118effbundle");
         requiredBundleList.Add("boss_ability_icon");
-        //requiredBundleList.Add("voice_c005");
+
+        //TODO: 加载龙的ab包
+
+        var extraCharaAssets = GetExtraCharacterAssets(currentCharacterID);
+        if (extraCharaAssets != null)
+        {
+            requiredBundleList.AddRange(extraCharaAssets);
+        }
+        // if (currentCharacterID == 10)
+        // {
+        //     requiredBundleList.Add("eff/eff_d010");
+        //     requiredBundleList.Add("model/model_d010");
+        // }
         
-        //print(requiredBundleList.ToArray());
         
+        
+        
+
 
         foreach (var abpath in requiredBundleList)
         {
@@ -399,6 +433,7 @@ public class GlobalController : MonoBehaviour
         var othercamera = GameObject.Find("OtherCamera/TrigMap").GetComponent<Camera>();
         GameObject.Find("Main Camera").GetComponentInChildren<CinemachineConfiner2D>().m_BoundingShape2D
             = GameObject.Find("CameraRange").GetComponent<PolygonCollider2D>();
+        
 
         var UIElements = GameObject.Find("UI");
         // othercamera.targetTexture = null;
@@ -410,9 +445,7 @@ public class GlobalController : MonoBehaviour
         //实例化UI
         
         var UICharaInfoClone = Instantiate(UICharaInfoAsset, UIElements.transform);
-        
         UICharaInfoClone.name = "CharacterInfo";
-        
         GameObject.Find("UI").transform.Find("Minimap").gameObject.SetActive(true);
         
         
@@ -501,6 +534,239 @@ public class GlobalController : MonoBehaviour
 
     }
 
+    protected IEnumerator LoadBattleSceneOfNormalStory(string questID)
+    {
+        GlobalController.questID = questID;
+        FinishLoad(false);
+        var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
+        var anim = loadingScreen.GetComponent<Animator>();
+        //yield return new WaitForSecondsRealtime(2f);
+        
+        // var clonedStack = new Stack<int>(new Stack<int>(MenuUIManager.Instance.menuLevelStack));
+        // //将栈顶元素一一加入到questEnterRecordList中，直到取出的栈顶元素为1010或者栈空
+        // questEnterRecordList.Clear();
+        // while (clonedStack.Count > 0)
+        // {
+        //     var top = clonedStack.Pop();
+        //     if (top == 1010)
+        //         break;
+        //     questEnterRecordList.Add(top);
+        // }
+        
+
+        //load level
+        bool levelAssetLoaded = false;
+        print(questID);
+        List<AssetBundle> assetBundles = new List<AssetBundle>();
+        AssetBundleCreateRequest ar = null;
+
+        //读取关卡信息
+        string currentQuestInfo = QuestInfo[$"QUEST_{questID}"].ToString();
+
+        currentQuestInfo = JsonMapper.ToJson(QuestInfo[$"QUEST_{questID}"]);
+        print(currentQuestInfo);
+        
+        var currentLevelDetailedInfo = 
+            JsonMapper.ToObject<StoryLevelDetailedInfo>(currentQuestInfo);
+        
+        
+        
+        
+        
+        //加载场景ab包
+        var scenePath = currentLevelDetailedInfo.scene_prefab_path;
+        AssetBundle sceneBundle;
+        if (!loadedBundles.ContainsKey(scenePath))
+        {
+            ar =
+                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, scenePath));
+            yield return ar;
+            loadedBundles.Add(scenePath,ar.assetBundle);
+            assetBundles.Add(ar.assetBundle);
+            sceneBundle = ar.assetBundle;
+        }
+        else
+        {
+            assetBundles.Add(loadedBundles[scenePath]);
+            sceneBundle = loadedBundles[scenePath];
+        }
+        
+        //加载恒常资源
+        
+        List<String> requiredBundleList = new List<string>();
+        requiredBundleList.Add("ui_general");
+        //requiredBundleList.Add("eff/eff_general");
+        requiredBundleList.Add("soundeffect/soundeffect_common");
+        requiredBundleList.Add("118effbundle");
+        requiredBundleList.Add("boss_ability_icon");
+        
+        //加载关卡资源
+        var resourcesPathList = currentLevelDetailedInfo.resources;
+
+        foreach (var path in resourcesPathList)
+        {
+            requiredBundleList.Add(path);
+        }
+        
+        
+        //加载玩家资源
+        var playerID = currentLevelDetailedInfo.fixed_chara_id;
+        if (playerID > 0)
+        {
+            var requiredPlayerAssets = SearchPlayerRelatedAssets(playerID);
+            requiredBundleList.AddRange(requiredPlayerAssets);
+        }
+        else
+        {
+            playerID = currentCharacterID;
+            var requiredPlayerAssets = SearchPlayerRelatedAssets(currentCharacterID);
+            requiredBundleList.AddRange(requiredPlayerAssets);
+            
+            
+            
+            //TODO: 加载龙的ab包
+            
+            
+            var extraCharaAssets = GetExtraCharacterAssets(currentCharacterID);
+            if (extraCharaAssets != null)
+            {
+                requiredBundleList.AddRange(extraCharaAssets);
+            }
+        }
+        
+        
+        
+        
+        //提取AB包
+        
+        foreach (var abpath in requiredBundleList)
+        {
+            if (!loadedBundles.ContainsKey(abpath))
+            {
+                ar =
+                    AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, abpath));
+                yield return ar;
+                loadedBundles.Add(abpath,ar.assetBundle);
+                assetBundles.Add(ar.assetBundle);
+            }
+            else
+            {
+                assetBundles.Add(loadedBundles[abpath]);
+            }
+
+            //index++;
+        }
+        
+        //找到AB包中的BGM_BUNDLE
+        var bgmBundle = assetBundles.Find(bundle => bundle.name == currentLevelDetailedInfo.bgm_path);
+        var bgm_name = currentLevelDetailedInfo.bgm_path.Split('/')[1];
+        //print(bgm_name);
+        var bgm = bgmBundle.LoadAsset<AudioClip>(bgm_name);
+
+
+
+        //加载新场景
+        
+        string sceneName;
+        switch (GameLanguage)
+        {
+            case Language.ZHCN:
+                sceneName = "BattleScene";
+                break;
+            case Language.EN:
+                sceneName = "BattleScene_EN";
+                break;
+            default:
+                Debug.LogError("GameLanguage is not set");
+                yield break;
+        }
+
+        currentGameState = GameState.WaitForStart;
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
+        DontDestroyOnLoad(this.gameObject);
+        yield return ao;
+        
+        BattleStageManager.Instance.LoadStoryLevelDetailedInfo(playerID, currentLevelDetailedInfo);
+        
+        //摄像机跟随屏幕
+        cameraTransform = GameObject.Find("Main Camera").transform;
+        loadingScreen.transform.position = cameraTransform.transform.position;
+        UIFXContainer = GameObject.Find("UIFXContainer");
+        
+        
+        
+        
+        
+        
+
+        var scenePrefab = sceneBundle.LoadAsset<GameObject>("Scene");
+        //将其子物体的父节点全部设置到场景最高级节点
+        var sceneClone = Instantiate(scenePrefab, Vector3.zero, Quaternion.identity);
+        var sceneCloneChildren1 = sceneClone.transform.GetChild(0);
+        var sceneCloneChildren2 = sceneClone.transform.GetChild(1);
+        
+        
+        sceneCloneChildren1.parent = sceneClone.transform.parent;
+        sceneCloneChildren2.parent = sceneClone.transform.parent;
+        
+        Destroy(sceneClone.gameObject);
+
+        var storyTimelineManager = FindObjectOfType<StoryBattleTimelineManager>();
+        //把加载玩家的工作交给StoryTimelineManager
+        storyTimelineManager.InitStoryQuestInfo(currentLevelDetailedInfo,this);
+        print(BattleStageManager.Instance.clearConditionType);
+
+        yield return null;
+        
+        storyTimelineManager.LoadPlayer(playerID);
+
+        yield return null;
+
+
+
+        //初始化场景参数
+
+        
+        BattleEffectManager.Instance.SetBGM(bgm);
+        BattleStageManager.Instance.GetMapBorderInfo();
+        var othercamera = GameObject.Find("OtherCamera/TrigMap").GetComponent<Camera>();
+        GameObject.Find("Main Camera").GetComponentInChildren<CinemachineConfiner2D>().m_BoundingShape2D
+            = GameObject.Find("CameraRange").GetComponent<PolygonCollider2D>();
+        
+
+        var UIElements = GameObject.Find("UI");
+        // othercamera.targetTexture = null;
+        // yield return null;
+        othercamera.targetTexture = UIElements.transform.Find("Minimap/MiniMap").GetComponent<RawImage>().texture as RenderTexture;
+        anim.SetBool("loaded",true);
+        storyTimelineManager.ActiveStartScreen();
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
+        Destroy(loadingScreen);
+        FinishLoad(true);
+        
+
+        yield return new WaitForSeconds(2.5f);
+        GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
+        
+        yield return new WaitForSeconds(1.5f);
+        storyTimelineManager.StartQuest();
+        
+
+        loadingRoutine = null;
+        
+        
+        
+
+
+
+
+
+
+
+
+
+    }
+
     protected IEnumerator LoadMainMenu()
     {
         currentGameState = GameState.End;
@@ -537,8 +803,17 @@ public class GlobalController : MonoBehaviour
             }
 
             loadedBundles.Remove(ab.name);
+            Debug.Log("Unloaded:"+ab);
             var async = ab.UnloadAsync(true);
             yield return async;
+            
+            
+        }
+
+
+        foreach (var bundle in loadedBundles)
+        {
+            Debug.Log(bundle.Key + "," + bundle.Value);
             
         }
 
@@ -606,6 +881,7 @@ public class GlobalController : MonoBehaviour
 
         //load level
         //bool levelAssetLoaded = false;
+        questEnterRecordList.Clear();
 
         string sceneName;
         switch (GameLanguage)
@@ -636,7 +912,7 @@ public class GlobalController : MonoBehaviour
         
         
         var voiceBundleManager = FindObjectOfType<AudioBundlesTest>();
-        yield return new WaitUntil(()=>voiceBundleManager.loadingEnd);
+        yield return new WaitUntil( () => voiceBundleManager.loadingEnd);
 
         FindObjectOfType<StorySceneManager>().started = true;
         
@@ -645,6 +921,109 @@ public class GlobalController : MonoBehaviour
         Destroy(loadingScreen);
         
         yield return new WaitForSeconds(2.5f);
+        //BattleStageManager.Instance.GetMapBorderInfo();
+        //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
+        FinishLoad(true);
+        loadingRoutine = null;
+    }
+    
+    protected IEnumerator LoadStorySceneOfNormalStory(string questID)
+    {
+        print("加载开始");
+        GlobalController.questID = questID;
+        //GlobalController.questID = "100001";
+        FinishLoad(false);
+        //loadingEnd = false;
+        var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
+        var anim = loadingScreen.GetComponent<Animator>();
+
+        
+        
+        var clonedStack = new Stack<int>(new Stack<int>(MenuUIManager.Instance.menuLevelStack));
+        //将栈顶元素一一加入到questEnterRecordList中，直到取出的栈顶元素为1010或者栈空
+        questEnterRecordList.Clear();
+        while (clonedStack.Count > 0)
+        {
+            var top = clonedStack.Pop();
+            if (top == 1010)
+                break;
+            questEnterRecordList.Add(top);
+        }
+        //load level
+        //bool levelAssetLoaded = false;
+
+        string sceneName;
+        switch (GameLanguage)
+        {
+            case Language.ZHCN:
+                sceneName = "StoryScene";
+                break;
+            case Language.EN:
+                sceneName = "StoryScene_EN";
+                break;
+            default:
+                Debug.LogError("GameLanguage is not set");
+                yield break;
+        }
+        
+        //todo: load quest data
+        //用LoadFromFileAsync读取位于story/storyTextData/{questID}路径的assetbundle
+
+        var questDataBundlePath = "story/storytextdata/" + questID;
+        TextAsset questData;
+        AssetBundle questDataBundle;
+        if (!loadedBundles.ContainsKey(questDataBundlePath))
+        {
+            var questDataBundleRequest = 
+                AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath,questDataBundlePath));
+
+            yield return questDataBundleRequest;
+            loadedBundles.Add(questDataBundlePath, questDataBundleRequest.assetBundle);
+            questDataBundle = questDataBundleRequest.assetBundle;
+            questData = 
+                questDataBundle.
+                    LoadAsset<TextAsset>("Story_"+GameLanguage.ToString());
+        }
+        else
+        {
+            questData = loadedBundles[questDataBundlePath].
+                LoadAsset<TextAsset>("Story_" + GameLanguage.ToString());
+        }
+
+        print("加载QuestData:"+GameLanguage.ToString());
+
+
+
+
+
+
+        print("正在加载场景。");
+        
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
+        DontDestroyOnLoad(this.gameObject);
+        yield return ao;
+
+        var storySceneManager = FindObjectOfType<StorySceneManager>();
+        storySceneManager.SetStoryDataTextAsset(questData);
+        
+        
+        
+        
+        cameraTransform = GameObject.Find("Main Camera").transform;
+        loadingScreen.transform.position = cameraTransform.transform.position;
+        UIFXContainer = GameObject.Find("UIFXContainer");
+        
+        
+        var voiceBundleManager = FindObjectOfType<AudioBundlesTest>();
+        yield return new WaitUntil( () => voiceBundleManager.loadingEnd);
+
+        storySceneManager.started = true;
+        
+        anim.SetBool("loaded",true);
+        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
+        Destroy(loadingScreen);
+        
+        yield return new WaitForSeconds(1.5f);
         //BattleStageManager.Instance.GetMapBorderInfo();
         //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
         FinishLoad(true);
@@ -794,7 +1173,7 @@ public class GlobalController : MonoBehaviour
     /// </summary>
     /// <param name="battleStageManager"></param>
     /// <param name="questID"></param>
-    void LoadLocalizedUITest(BattleStageManager battleStageManager,string questID)
+    public void LoadLocalizedUITest(BattleStageManager battleStageManager,string questID)
     {
         battleStageManager.quest_id = questID;
         if (GameLanguage == Language.ZHCN)
@@ -824,7 +1203,7 @@ public class GlobalController : MonoBehaviour
         var battleStageManager = FindObjectOfType<BattleStageManager>();
         if(win)
         {
-            battleStageManager.SetGameCleared();
+            battleStageManager.SetGameCleared(BattleStageManager.Instance.loseControllTime);
         }
         else
         {
@@ -984,7 +1363,7 @@ public class GlobalController : MonoBehaviour
         return questSaveDataList.quest_info;
     }
 
-    void LoadGameOptionsFromFile()
+    private void LoadGameOptionsFromFile()
     {
         //Load GameOptions from file, Use JsonUtility.FromJson<GameOptions>
         var path = Application.streamingAssetsPath + "/savedata/GameOptions.json";
@@ -1004,6 +1383,14 @@ public class GlobalController : MonoBehaviour
         currentCharacterID = gameOptions.last_adventurer_id;
 
     }
+
+    private List<String> GetExtraCharacterAssets(int charaID)
+    {
+        print(CharaAssetData.Infos[0].resources_name);
+        return CharaAssetData.GetResources(charaID);
+    }
+
+
 
     public void ChangeFontSizeOfDamageNum(int size)
     {

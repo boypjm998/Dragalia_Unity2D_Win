@@ -1,0 +1,252 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6817452343793448944
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7606299770074649279}
+  - component: {fileID: 2111837037262045988}
+  - component: {fileID: 1743302034454433944}
+  - component: {fileID: 2917772338594986483}
+  - component: {fileID: 3663468202294615481}
+  m_Layer: 10
+  m_Name: fx_c006_combo5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7606299770074649279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6817452343793448944}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13, y: -2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1067185017031564991}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2111837037262045988
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6817452343793448944}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!111 &1743302034454433944
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6817452343793448944}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 699d75b4eb5581041950df1115a750d5, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 699d75b4eb5581041950df1115a750d5, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
+--- !u!114 &2917772338594986483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6817452343793448944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cb338ddc7a6464f8bac5ea743cc7894, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackAwakeTime:
+  - 0.2
+  attackSleepTime:
+  - 0.55
+  nextAttackTime:
+  - 0.4
+  nextConditionTime: []
+  targetCollider: {fileID: 0}
+  destroyTime: 1.5
+  sleepAfterAnimStopped: 0
+--- !u!114 &3663468202294615481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6817452343793448944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c0b3c06388c14d4ebf37c86e0f33654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chara_id: 0
+  skill_id: 0
+  destroyAfterHit: 0
+  attackInfo:
+  - dmgModifier:
+    - 1.04
+    - 1.04
+    constDmg: []
+    knockbackPower: 100
+    knockbackForce: 8
+    knockbackTime: 0.3
+    knockbackDirection: {x: 3, y: 1}
+    KBType: 1
+    firedir: 0
+  - dmgModifier:
+    - 1.04
+    constDmg: []
+    knockbackPower: 100
+    knockbackForce: 8
+    knockbackTime: 0.6
+    knockbackDirection: {x: -2, y: 1}
+    KBType: 3
+    firedir: 0
+  firedir: 0
+  attackType: 1
+  hitSoundEffect: {fileID: 8300000, guid: a484075c187436a40ac21504cecddfac, type: 3}
+  attackSE: []
+  extraODModifier: 0
+  conditionalAttackEffects: []
+  energized: 0
+  inspired: 0
+  self: {fileID: 0}
+  ac: {fileID: 0}
+  spGain: 660
+  isMeele: 1
+  hitFlags: 
+  hitConnectEffect: {fileID: 4648430835908993951, guid: e703997aa40ae7d42a1ebd4beebfeaf3, type: 3}
+  attackCollider: {fileID: 0}
+  playerpos: {fileID: 0}
+  forcedShake: 0
+  defaultGravity: 0
+  hitShakeIntensity: 8
+  hitSoundVolume: 0.5
+  damageAutoReset: 0
+--- !u!1001 &568816528408558916
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7606299770074649279}
+    m_Modifications:
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531151845748652113, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: lengthInSec
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531151845748652113, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: simulationSpeed
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319716987036894252, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6670341293844958329, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6863703559720233970, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: m_Name
+      value: fx_c006_combo5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7970220112783418129, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: lengthInSec
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 7970220112783418129, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: simulationSpeed
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7970220112783418129, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 7970220112783418129, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 0.6
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+--- !u!4 &1067185017031564991 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 660815834274374651, guid: d7b761ea9c1062143930932b29b5ffe4, type: 3}
+  m_PrefabInstance: {fileID: 568816528408558916}
+  m_PrefabAsset: {fileID: 0}

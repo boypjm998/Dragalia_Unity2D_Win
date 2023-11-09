@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8644724110328360199}
   - component: {fileID: 1629317634676140341}
   - component: {fileID: 7395465912830229175}
+  - component: {fileID: 5673612187963469574}
   m_Layer: 6
   m_Name: hb_1001_4_p1
   m_TagString: Enemy
@@ -112,7 +113,7 @@ MonoBehaviour:
   stunRes: 200
   sleepRes: 100
   bogRes: 0
-  freezeRes: 0
+  freezeRes: 100
   blindnessRes: 0
   cursedRes: 0
   abilityList: 2b4e0000354e0000
@@ -396,12 +397,14 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
   type: 0
   p2_prefab: {fileID: 1036179494334382810, guid: f590b185139a8f345a93202d0b4388ca, type: 3}
   p2_bgm: {fileID: 8300000, guid: 61341747e894dd2468862e7cec7d5273, type: 3}
   transforming: 0
+  debug: 0
 --- !u!114 &7395465912830229175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,7 +449,7 @@ MonoBehaviour:
   projectile9: {fileID: 3460936982066636668, guid: 78a01de260ebe394094678060caeeccc, type: 3}
   projectile10: {fileID: 468327875114114387, guid: 7c57365f9d7887f4bb6a413de9147b3c, type: 3}
   projectilePoolEX:
-  - {fileID: 6335136456527115297, guid: c1901f5483246e0418a1d2fb317b0a5a, type: 3}
+  - {fileID: 2805960451584708958, guid: 0b89391b4dbe8d6448720e1642bb9d5e, type: 3}
   - {fileID: 3403631099166150433, guid: 56bb0ab56a8647b4e8c9635dab5fd402, type: 3}
   - {fileID: 4201768620681739123, guid: 81883c7c62149c54e84e11bd8dbaffba, type: 3}
   - {fileID: 5859482246472526077, guid: fff18f49d7c10614c9e74df9d2cddf3a, type: 3}
@@ -467,6 +470,20 @@ MonoBehaviour:
   - {fileID: 4582992001087352955, guid: 33a76e4372545f04091e6d5d9b49976f, type: 3}
   - {fileID: 792241440240579441, guid: 266e912083e356d4099296a61e0085ce, type: 3}
   - {fileID: 7991953786854357395, guid: a09a690c3f0810f499cbe338a0377e48, type: 3}
+--- !u!114 &5673612187963469574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036179494334382810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 30
+  sensitivity: 8
 --- !u!1 &4490398762309062318
 GameObject:
   m_ObjectHideFlags: 0

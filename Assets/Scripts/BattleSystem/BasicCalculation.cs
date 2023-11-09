@@ -14,6 +14,41 @@ namespace GameMechanics
 {
     public static class BasicCalculation
     {
+        
+        public static int RandInt(int minInclusive, int maxInclusive)
+        {
+            float randFloat = Random.Range(0f,1f);
+            
+            //防止伪随机带来连续的重复值
+
+            float randModifier = (Time.time * randFloat) % 1;
+            
+            int randInt = Mathf.RoundToInt(randModifier * (maxInclusive - minInclusive) + minInclusive);
+            
+            return randInt;
+
+        }
+
+        /// <summary>
+        /// 将治疗量折算为百分比
+        /// </summary>
+        /// <param name="potency"></param>
+        /// <param name="self"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static float NormalizedHealPotencyToPercentage(this float potency, StatusManager self, StatusManager target)
+        {
+            var basicPotency = CalculateHPRegenGeneral(self, potency, 0);
+            
+            Debug.Log("Potecy:"+basicPotency);
+
+            var rate = ((float)basicPotency / (float)target.maxHP);
+
+            return 100*rate;
+        }
+
+
+
 
         public static string ToButtonString(KeyCode obj)
         {
@@ -34,30 +69,37 @@ namespace GameMechanics
             SKILL = 4,
             ABILITY = 5,
             OTHER = 6,
-            NONE = 7
+            DSKILL = 7,
+            DSTANDARD = 8
         }
 
         public static int[] conditionsDisplayedByStacknum = new int[]
         {
-            5, 13, 14, 15, 19, 57,
-            101, 102, 103, 104, 105, 106, 108, 109, 111,
+            5, 13, 14, 15, 40, 57,
+            101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 114,
             213, 214, 299, 300,
-            301, 302,
+            301, 302, 303,
             401, 402, 403, 404, 405, 406, 407, 408, 411, 412, 413, 414, 415, 416
         };
         public static int[] conditionsDisplayedByLevel = new int[]
         {
-            112,113
+            112, 113
         };
 
         public static int[] conditionDisplayedByExactValue = new int[]
         {
-            11
+            11,
+            298
         };
 
         public static int[] conditionsImmuneToNihility = new int[]
         {
             5, 6, 7, 12, 15, 57
+        };
+        
+        public static int[] specialConditionsNotImmuneToNihility = new int[]
+        {
+            107
         };
     
         public enum BattleCondition
@@ -99,6 +141,8 @@ namespace GameMechanics
             BlindnessRes = 35,
             
             OverdriveAccerlerator = 38,
+            
+            SkillUpgrade = 40,
             
             BurnPunisher = 41,
             PoisonPunisher = 42,
@@ -146,11 +190,11 @@ namespace GameMechanics
             GabrielsBlessing = 107,
             TwilightMoon = 108,
             Invincible = 109,
-            
+            SigilReleased = 110,
             StandardAttackBurner = 111,
             HeartAflame = 112,
             ScorchingEnergy = 113,
-            
+            AlmightyRage = 114,
             
             
     
@@ -179,12 +223,13 @@ namespace GameMechanics
             ShadowBlightResDown = 228,
             
             
-            
+            Corrosion = 298,
             Taunt = 299,
             Nihility = 300,
             //Special Debuff
             EvilsBane = 301,
             ManaOverloaded = 302,
+            LockedSigil = 303,
     
             //Dot Affliction
             Burn = 401,
@@ -198,8 +243,9 @@ namespace GameMechanics
             ShadowBlight = 408,
     
             //Control Affliction
-            Stun = 412,
+            
             Sleep = 411,
+            Stun = 412,
             Bog = 413,
             Freeze = 414,
             Blindness = 415,
@@ -222,6 +268,12 @@ namespace GameMechanics
             string specialText_c003 = String.Empty;
             string specialText_c003_cond = String.Empty;
             
+            string specialText_c006 = String.Empty;
+            
+            string specialText_c010 = String.Empty;
+            
+            
+            
             
 
             if (language == GlobalController.Language.ZHCN)
@@ -231,6 +283,8 @@ namespace GameMechanics
                 rollText = "回避键";
                 specialText_c001 = "特殊行动(传送)";
                 specialText_c003 = "蓄力攻击:持续按下";
+                specialText_c006 = "特殊行动(召唤巴哈姆特)";
+                specialText_c010 = "特殊行动(羽化)";
                 specialText_c001_cond = "(当传送门存在时)";
                 specialText_c003_cond = "(当【暮光之月】增益存在时)";
             }else if (language == GlobalController.Language.EN)
@@ -240,8 +294,10 @@ namespace GameMechanics
                 rollText = "Dodge Key";
                 specialText_c001 = "Special Action(Teleport)";
                 specialText_c003 = "Force Strike:Hold ";
+                specialText_c006 = "Special Action(Summon Bahamut)";
                 specialText_c001_cond = "(When the portal is on the field)";
                 specialText_c003_cond = "(When the user has 'Twilight Moon')";
+                specialText_c010 = "Special Action (Metamorphosis)";
                 
             }
 
@@ -264,6 +320,16 @@ namespace GameMechanics
             {
 
                 sb.Append($"{specialText_c003}{ToButtonString(playerInput.keyAttack)}\n{specialText_c003_cond}");
+            }
+            
+            if (GlobalController.currentCharacterID == 6)
+            {
+                sb.Append($"{specialText_c006}:{ToButtonString(playerInput.keyUp)}");
+            }
+
+            if (GlobalController.currentCharacterID == 10)
+            {
+                sb.Append($"{specialText_c010}:{ToButtonString(playerInput.keyUp)}");
             }
 
             return sb.ToString();
@@ -454,6 +520,10 @@ namespace GameMechanics
                     return ("Damage Taken -{0}");
                 case BattleCondition.DamageUp:
                     return ("Damage Dealt +{0}%");
+                case BattleCondition.DamageDown:
+                    return ("Damage Dealt -{0}%");
+                case BattleCondition.AttackRateUp:
+                    return ("Attack Rate +{0}%");
                 
                 
                 case BattleCondition.SkillHasteBuff:
@@ -520,6 +590,8 @@ namespace GameMechanics
                     return ("Energy Level +{0}");
                 case BattleCondition.Inspiration:
                     return ("Inspiration Level +{0}");
+                case BattleCondition.SkillUpgrade:
+                    return ("Skill Shift");
                 
                 case BattleCondition.OverdriveAccerlerator:
                     return ("OD Gauge Decrease Rate +{0}%");
@@ -577,14 +649,17 @@ namespace GameMechanics
                     return ("Twilight Moon");
                 case BattleCondition.Invincible:
                     return ("Invulnerability");
-                
+                case BattleCondition.SigilReleased:
+                    return ("Sigil Released");
                 case BattleCondition.StandardAttackBurner:
                     return ("Standard Attacks Inflicts Burn");
                 case BattleCondition.HeartAflame:
                     return ("Heart Aflame {0}");
                 case BattleCondition.ScorchingEnergy:
                     return ("Scorching Energy {0}");
-                ;
+                case BattleCondition.AlmightyRage:
+                    return ("Almighty Rage");
+                
                     
     
                 //Special debuffs:
@@ -592,7 +667,11 @@ namespace GameMechanics
                     return ("Evil's Bane");
                 case BattleCondition.ManaOverloaded:
                     return ("Energy Overloaded");
+                case BattleCondition.LockedSigil:
+                    return ("Locked Sigil");
                 
+                case BattleCondition.Corrosion:
+                    return ("Corrosion");
                 case BattleCondition.Taunt:
                     return ("Marked");
                 case BattleCondition.Nihility:
@@ -679,6 +758,10 @@ namespace GameMechanics
                     return ("所受伤害减少{0}");
                 case BattleCondition.DamageUp:
                     return ("攻击威力提升{0}%");
+                case BattleCondition.DamageDown:
+                    return ("攻击威力下降{0}%");
+                case BattleCondition.AttackRateUp:
+                    return ("攻击速度提升{0}%");
                 
                 
                 case BattleCondition.SkillHasteBuff:
@@ -750,6 +833,8 @@ namespace GameMechanics
                     return ("斗志提升×{0}");
                 case BattleCondition.Inspiration:
                     return ("灵感提升×{0}");
+                case BattleCondition.SkillUpgrade:
+                    return ("技能升级");
                 
                 
                 case BattleCondition.OverdriveAccerlerator:
@@ -807,21 +892,27 @@ namespace GameMechanics
                     return ("暮光之月");
                 case BattleCondition.Invincible:
                     return ("铁壁");
-                
+                case BattleCondition.SigilReleased:
+                    return ("圣痕枷锁解除");
                 case BattleCondition.StandardAttackBurner:
                     return ("普通攻击赋予烧伤");
                 case BattleCondition.HeartAflame:
                     return ("炽热之恋{0}");
                 case BattleCondition.ScorchingEnergy:
                     return ("灼热炽焰{0}");
+                case BattleCondition.AlmightyRage:
+                    return ("神击之咆哮");
     
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
                     return ("破邪巫咒");
                 case BattleCondition.ManaOverloaded:
                     return ("魔力过载");
+                case BattleCondition.LockedSigil:
+                    return ("圣痕枷锁");
                 
-                
+                case BattleCondition.Corrosion:
+                    return ("侵蚀");
                 case BattleCondition.Taunt:
                     return ("敌方目标");
                 case BattleCondition.Nihility:
@@ -905,6 +996,9 @@ namespace GameMechanics
                 case (int)(BattleCondition.DamageUp):
                     return 500;
                 
+                case (int)BattleCondition.AttackRateUp:
+                    return 50;
+                
                 case 201:
                     return 50;
                 case 202:
@@ -922,6 +1016,8 @@ namespace GameMechanics
                 case 210:
                     return 100;
                 case 214:
+                    return 99999;
+                case 298:
                     return 99999;
                 
                 case (int)(BattleCondition.DamageDown):
@@ -954,13 +1050,16 @@ namespace GameMechanics
             //Source
 
             float newModifier = modifier;
+            float extraCritRate = 0;
 
             if (atkStat.conditionalAttackEffects.Count > 0)
             {
                 var extraModifier = 0f;
+                
                 foreach (var caf in atkStat.conditionalAttackEffects)
                 {
                     extraModifier += caf.GetExtraModifiers(targetStat,sourceStat);
+                    extraCritRate += caf.GetExtraCritRate(targetStat,sourceStat);
                 }
                 newModifier *= (1 + extraModifier);
                 Debug.Log("Extra modifier: " + extraModifier);
@@ -986,8 +1085,15 @@ namespace GameMechanics
             //暴击 爆伤 crit
     
     
-            var critRateBuff = sourceStat.critRateBuff;
-            var critAbility= (float)CheckSpecialCritEffect(sourceStat,targetStat,atkStat).Item1;
+            var critRateBuff = sourceStat.critRateBuff + extraCritRate;
+            if (atkStat is AttackFromPlayer && (atkStat as AttackFromPlayer).inspired)
+            {
+                critRateBuff = 999;
+            }
+            //var critAbility= (float)CheckSpecialCritEffect(sourceStat,targetStat,atkStat).Item1;
+            var critAbility = AbilityCalculation
+                .GetAbilityAmountInfo
+                    (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.CRITRATE).Item1;
             RulesInBattleField.GetFieldEffect_CritRate(atkStat,sourceStat,targetStat,ref critAbility,ref critRateBuff);
             var critRate = sourceStat.critRate + critAbility + critRateBuff;
             
@@ -998,7 +1104,152 @@ namespace GameMechanics
                 isCrit = true;
                 critDmgModifier += 0.7f;
                 var critDmgBuff = sourceStat.critDmgBuff;
-                var critDmgAbility = CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat).Item1;
+                var critDmgAbility = AbilityCalculation
+                    .GetAbilityAmountInfo
+                        (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.CRITDMG).Item1;
+                //var critDmgAbility = CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat).Item1;
+                RulesInBattleField.GetFieldEffect_CritDamage(atkStat,sourceStat,targetStat,ref critDmgAbility,ref critDmgBuff);
+                critDmgModifier += (critDmgBuff + critDmgAbility);
+            }
+            
+            
+    
+            float skillDmgModifier = 1;
+            if (atkStat.attackType == AttackType.SKILL || atkStat.attackType == AttackType.DSKILL)
+            {
+                skillDmgModifier += sourceStat.skillDmgBuff;
+                var skillDmgAbility = AbilityCalculation
+                    .GetAbilityAmountInfo
+                        (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.SKLDMG).Item1;
+                //float skillDmgAbility = CheckSpecialSkillDamageEffect(sourceStat,targetStat,atkStat).Item1;
+                if (atkStat is AttackFromPlayer && (atkStat as AttackFromPlayer).energized)
+                {
+                    skillDmgModifier += 0.5f;
+                }
+
+                skillDmgModifier += skillDmgAbility;
+                
+               
+                //TODO:检查技能伤害的场地效果。
+            }
+
+            float fsDmgModifier = 1;
+            if (atkStat.attackType == AttackType.FORCE)
+            {
+                fsDmgModifier += sourceStat.fsDmgBuff;
+                //TODO:检查FS伤害的被动。
+                //TODO:检查FS伤害的场地效果。
+            }
+
+            //特攻
+            var punisherBuff = CheckTotalPunisher(targetStat, sourceStat);
+            var punisherAbility = AbilityCalculation
+                .GetAbilityAmountInfo
+                    (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.PUNISHER).Item1;
+            //var punisherAbility = CheckSpecialPunisherEffect(sourceStat, targetStat, atkStat).Item1;
+            //TODO:检查特攻的场地效果。
+            var punisherModifier = 1 + punisherBuff + punisherAbility;
+            
+            
+    
+            //Target
+            //TODO: 检测目标的防御！
+
+            var tarDefBuff = (targetStat.defenseBuff);
+            var defAbility = AbilityCalculation
+                .GetAbilityAmountInfo
+                    (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.DEF).Item1;
+            //var defAbility = CheckSpecialDefenseEffect(sourceStat, targetStat, atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_Defense(atkStat,sourceStat,targetStat,ref defAbility,ref tarDefBuff);
+            var tarDef = targetStat.baseDef * (1 + tarDefBuff + defAbility);
+            
+            //TODO:检查目标的减伤
+            var dmgCutBuff = targetStat.dmgCutBuff;
+            var dmgCutAbility = AbilityCalculation
+                .GetAbilityAmountInfo
+                    (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.DMGCUT).Item1;
+            //var dmgCutAbility = CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_DamageCut(atkStat,sourceStat,targetStat,ref dmgCutAbility,ref dmgCutBuff);
+            var dmgCutModifier = dmgCutBuff + dmgCutAbility;
+            //Debug.Log(dmgCutModifier);
+
+
+
+            //Calculate
+            
+            //攻击者数值 : 总攻击(基础值*buff*被动) * 技能?伤害(目前只有buff) * 暴击?伤害(buff+被动) * 特攻修正 * 倍率
+            var attackSource = atk * skillDmgModifier * fsDmgModifier * critDmgModifier * punisherModifier * newModifier;
+            var defendTarget = tarDef;
+
+            attackSource *= (1 - dmgCutModifier + dmgBuffModifier); //计算 减伤 + 增伤
+
+            if (targetStat is SpecialStatusManager)
+            {
+                var specialTarget = targetStat as SpecialStatusManager;
+                if (specialTarget.broken)
+                {
+                    //破防特效
+                    defendTarget *= specialTarget.breakDefRate;
+                    attackSource *= (1 + sourceStat.breakPunisher);
+                }
+            }
+
+
+            var damage = 5f / 3f * (attackSource / defendTarget);
+    
+            if (damage < 0) damage = 0;
+            
+            if(damage > 9999999) damage = 9999999;
+    
+            //Debug.Log(damage);
+            return (int)damage;
+        }
+    
+        /*public static int CalculateDamageGeneralNew(StatusManager sourceStat, StatusManager targetStat, float modifier,
+            AttackBase atkStat, ref bool isCrit)
+        {
+            //Source
+
+            float newModifier = modifier;
+
+            if (atkStat.conditionalAttackEffects.Count > 0)
+            {
+                var extraModifier = 0f;
+                foreach (var caf in atkStat.conditionalAttackEffects)
+                {
+                    extraModifier += caf.GetExtraModifiers(targetStat,sourceStat);
+                }
+                newModifier *= (1 + extraModifier);
+                Debug.Log("Extra modifier: " + extraModifier);
+            }
+
+
+            // 基础攻击
+            float atk = CalculateAttackInfo(atkStat, sourceStat, targetStat);
+            
+            //攻击威力BUFF
+            var dmgBuffModifier = CalculateDamageUpInfo(atkStat, sourceStat, targetStat);
+    
+            //暴击 爆伤 crit
+    
+    
+            var critRateBuff = sourceStat.critRateBuff;
+            if (atkStat is AttackFromPlayer && (atkStat as AttackFromPlayer).inspired)
+            {
+                critRateBuff = 999;
+            }
+            //var critAbility= (float)CheckSpecialCritEffect(sourceStat,targetStat,atkStat).Item1;
+            RulesInBattleField.GetFieldEffect_CritRate(atkStat,sourceStat,targetStat,ref critAbility,ref critRateBuff);
+            var critRate = sourceStat.critRate + critAbility + critRateBuff;
+            
+            
+            float critDmgModifier = 1;
+            if (Random.Range(0, 100) < critRate)
+            {
+                isCrit = true;
+                critDmgModifier += 0.7f;
+                var critDmgBuff = sourceStat.critDmgBuff;
+                //var critDmgAbility = CheckSpecialCritDmgEffect(sourceStat, targetStat, atkStat).Item1;
                 RulesInBattleField.GetFieldEffect_CritDamage(atkStat,sourceStat,targetStat,ref critDmgAbility,ref critDmgBuff);
                 critDmgModifier += (critDmgBuff + critDmgAbility);
             }
@@ -1009,6 +1260,15 @@ namespace GameMechanics
             if (atkStat.attackType == AttackType.SKILL)
             {
                 skillDmgModifier += sourceStat.skillDmgBuff;
+                
+                //float skillDmgAbility = CheckSpecialSkillDamageEffect(sourceStat,targetStat,atkStat).Item1;
+                if (atkStat is AttackFromPlayer && (atkStat as AttackFromPlayer).energized)
+                {
+                    skillDmgModifier += 0.5f;
+                }
+
+                skillDmgModifier += skillDmgAbility;
+                
                 //TODO:检查技能伤害的被动。
                 //TODO:检查技能伤害的场地效果。
             }
@@ -1023,7 +1283,7 @@ namespace GameMechanics
 
             //特攻
             var punisherBuff = CheckTotalPunisher(targetStat, sourceStat);
-            var punisherAbility = CheckSpecialPunisherEffect(sourceStat, targetStat, atkStat).Item1;
+            //var punisherAbility = CheckSpecialPunisherEffect(sourceStat, targetStat, atkStat).Item1;
             //TODO:检查特攻的场地效果。
             var punisherModifier = 1 + punisherBuff + punisherAbility;
             
@@ -1033,13 +1293,13 @@ namespace GameMechanics
             //TODO: 检测目标的防御！
 
             var tarDefBuff = (targetStat.defenseBuff);
-            var defAbility = CheckSpecialDefenseEffect(sourceStat, targetStat, atkStat).Item1;
+            //var defAbility = CheckSpecialDefenseEffect(sourceStat, targetStat, atkStat).Item1;
             RulesInBattleField.GetFieldEffect_Defense(atkStat,sourceStat,targetStat,ref defAbility,ref tarDefBuff);
             var tarDef = targetStat.baseDef * (1 + tarDefBuff + defAbility);
             
             //TODO:检查目标的减伤
             var dmgCutBuff = targetStat.dmgCutBuff;
-            var dmgCutAbility = CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item1;
+            //var dmgCutAbility = CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item1;
             RulesInBattleField.GetFieldEffect_DamageCut(atkStat,sourceStat,targetStat,ref dmgCutAbility,ref dmgCutBuff);
             var dmgCutModifier = dmgCutBuff + dmgCutAbility;
             //Debug.Log(dmgCutModifier);
@@ -1072,9 +1332,7 @@ namespace GameMechanics
     
             //Debug.Log(damage);
             return (int)damage;
-        }
-    
-        
+        }*/
         
         
     
@@ -1224,6 +1482,13 @@ namespace GameMechanics
                 }
             }
             
+            //疾风怒涛 会心
+            if(sourceStat.GetAbility(10006) && sourceStat.comboHitCount >= 15)
+            {
+                buffModifier += 8;
+            }
+            
+            
             if (sourceStat.GetAbility(10008) && sourceStat.comboHitCount>= 15)
             {
                 buffModifier += 15;
@@ -1245,12 +1510,12 @@ namespace GameMechanics
             {
                 if (targetStat.GetConditionStackNumber((int)BattleCondition.Flashburn) > 0)
                 {
-                    buffModifier += 0.3f;
+                    buffModifier += 0.5f;
                 }
             }
 
 
-            if (sourceStat.GetAbility(20011) || sourceStat.GetAbility(10009))//闪狼战技
+            if (sourceStat.GetAbility(20011))//闪狼战技(enemy)
             { 
                 if (attackStat.attackType == AttackType.STANDARD &&
                   targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
@@ -1259,8 +1524,37 @@ namespace GameMechanics
                 }
             }
             
+            if (sourceStat.GetAbility(10009))//闪狼战技
+            { 
+                if (targetStat.GetConditionStackNumber((int)BattleCondition.EvilsBane) > 0)
+                {
+                    buffModifier += 0.2f;
+                }
+            }
             
     
+            return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
+        }
+
+        public static Tuple<float, float, float> CheckSpecialSkillDamageEffect
+            (StatusManager sourceStat, StatusManager targetStat, AttackBase attackStat)
+        {
+            
+            float buffModifier = 0;
+            float debuffModifier = 0;
+            
+            if (sourceStat.GetAbility(20121))//塞西娅的试炼（敌方塞西娅：巫女的奇迹）
+            {
+                buffModifier += 0.2f;
+                if (targetStat.GetConditionStackNumber((int)BattleCondition.PowerOfBonds) > 0)
+                {
+                    buffModifier += 0.4f;
+                }
+            }
+            
+            
+            
+            
             return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
         }
 
@@ -1299,13 +1593,18 @@ namespace GameMechanics
                     buffModifier += 0.3f;
                     Debug.Log("Damage Cut Effect");
                 }
-
-                
             }
 
-            
-
-
+            //羽化秘术
+            if (targetStat.GetAbility(10012))
+            {
+                if (targetStat is PlayerStatusManager)
+                {
+                    var playerStat = targetStat as PlayerStatusManager;
+                    if(playerStat.isShapeshifting)
+                        buffModifier += 0.5f;
+                }
+            }
 
 
             if (targetStat.GetAbility(20032))
@@ -1313,7 +1612,13 @@ namespace GameMechanics
                 buffModifier += Mathf.Pow(((float)targetStat.currentHp / (float)targetStat.maxHP),2) * 0.7f;
             }
             
-            
+            if (targetStat.GetAbility(20131))//塞西娅的试炼（敌方塞西娅：起源的庇佑）
+            {
+                if (attackStat.attackType == AttackType.DSKILL || attackStat.attackType == AttackType.DSTANDARD)
+                {
+                    buffModifier += 0.8f;
+                }
+            }
             
             
 
@@ -1353,7 +1658,60 @@ namespace GameMechanics
                 }
             }
 
-            return  new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
+            //羽化秘术
+            if (sourceStat.GetAbility(10012))
+            {
+                if(sourceStat is PlayerStatusManager)
+                {
+                    var playerStat = sourceStat as PlayerStatusManager;
+                    if (playerStat.isShapeshifting && 
+                        targetStat.GetConditionStackNumber(
+                            (int)BasicCalculation.BattleCondition.Stormlash) > 0)
+                    {
+                        buffModifier += 0.1f;
+                    }
+                }
+            }
+
+            // 恶魔特攻
+            if (sourceStat.GetAbility(10016) && targetStat.GetAbility(90004))
+            {
+                buffModifier += 0.3f;
+            }
+
+            //芙露露 减益特效
+            if (sourceStat.GetAbility(10057))
+            {
+                if (targetStat.GetConditionStackNumber((int)BattleCondition.Paralysis) > 0)
+                {
+                    buffModifier += 0.2f;
+                }
+
+                int debuffCount = 0;
+                List<int> debuffDict = new List<int>();
+                foreach (var cond in targetStat.conditionList)
+                {
+                    if (StatusManager.IsDebuff(cond.buffID) && debuffDict.Contains(cond.buffID) == false)
+                    {
+                        debuffCount++;
+                        debuffDict.Add(cond.buffID);
+                    }
+
+                    if (debuffCount >= 4)
+                    {
+                        debuffCount = 4;
+                        break;
+                    }
+                }
+
+                if(debuffCount > 0)
+                    buffModifier += debuffCount * 0.05f + 0.05f;
+                
+                //Debug.Log("收到了" + debuffCount + "个debuff");
+            }
+
+
+            return new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
             
             
         }
@@ -1378,6 +1736,23 @@ namespace GameMechanics
             return totalODAccerlerator;
         }
 
+        public static Tuple<float, float, float> CheckSpecialSkillRateEffect(StatusManager sourceStat,
+            AttackBase attackStat)
+        {
+            float buffModifier = 0;
+            float debuffModifier = 0;
+
+            if (sourceStat.GetAbility(10058) && sourceStat.currentHp > sourceStat.maxHP * 0.7f)
+            {
+                buffModifier += 0.1f;
+            }
+
+
+
+
+            return new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
+        }
+
 
         #endregion
 
@@ -1388,7 +1763,9 @@ namespace GameMechanics
         public static float CalculateAttackInfo(AttackBase atkStat, StatusManager sourceStat,StatusManager targetStat)
         {
             var atkBuff = sourceStat.attackBuff;
-            var atkAbility = CheckSpecialAttackEffect(sourceStat,targetStat,atkStat).Item1;
+            //var atkAbility = CheckSpecialAttackEffect(sourceStat,targetStat,atkStat).Item1;
+            var atkAbility = AbilityCalculation.GetAbilityAmountInfo(sourceStat, targetStat, atkStat,
+                AbilityCalculation.ProductArea.ATK).Item1;
             RulesInBattleField.GetFieldEffect_Attack(atkStat,sourceStat,targetStat,ref atkAbility,ref atkBuff);
             var atk = sourceStat.baseAtk * (1 + atkBuff) * (1 + atkAbility);
             
@@ -1399,7 +1776,9 @@ namespace GameMechanics
             StatusManager targetStat)
         {
             var dmgBuff = sourceStat.dmgUpBuff;
-            var dmgAbility = CheckSpecialDamageUpEffect(sourceStat, targetStat, atkStat).Item1;
+            //var dmgAbility = CheckSpecialDamageUpEffect(sourceStat, targetStat, atkStat).Item1;
+            var dmgAbility = AbilityCalculation.GetAbilityAmountInfo(sourceStat, targetStat, atkStat,
+                AbilityCalculation.ProductArea.DMG).Item1;
             RulesInBattleField.GetFieldEffect_Damage(atkStat,sourceStat,targetStat,ref dmgAbility,ref dmgBuff);
             var dmgBuffModifier = dmgAbility + dmgBuff;
             return dmgBuffModifier;
@@ -1420,6 +1799,8 @@ namespace GameMechanics
             return totalDef;
             
         }
+        
+        
 
 
         private static float CheckTotalPunisher(StatusManager targetStat, StatusManager sourceStat)
@@ -1513,6 +1894,18 @@ namespace GameMechanics
 
         }
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         public enum KnockBackType
         {
            None = 0, //No Knockback Distance
@@ -1561,7 +1954,7 @@ namespace GameMechanics
         /// </summary>
         /// <param name="questID"></param>
         /// <returns></returns>
-        public static string GetQuestNameZH(string questID)
+        /*public static string GetQuestNameZH(string questID)
         {
             //01 001 3:席菈的试炼 超级
             var idStr = questID;
@@ -1594,8 +1987,8 @@ namespace GameMechanics
             }
     
             return sb.ToString();
-        }
-        public static string GetQuestNameJP(string questID)
+        }*/
+        /*public static string GetQuestNameJP(string questID)
         {
             //01 001 3:シーラの試練 超級
             var idStr = questID;
@@ -1627,7 +2020,7 @@ namespace GameMechanics
             }
     
             return sb.ToString();
-        }
+        }*/
     
         /// <summary>
         /// Read File From StreamingAssets
@@ -1989,7 +2382,9 @@ namespace GameMechanics
             //无视防御
             if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
             {
-                totalAbilityDown += BasicCalculation.CheckSpecialDefenseEffect(sourceStat,targetStat,atkStat).Item3;
+                totalAbilityDown +=AbilityCalculation.GetAbilityAmountInfo
+                    (sourceStat,targetStat,atkStat,AbilityCalculation.ProductArea.DEF).Item3;
+                //totalAbilityDown += BasicCalculation.CheckSpecialDefenseEffect(sourceStat,targetStat,atkStat).Item3;
                 ability = 0;
                 buff = 0;
                 totalBuffDown = 0.01f*targetStat.GetDefenseBuff(2);
@@ -2023,11 +2418,13 @@ namespace GameMechanics
             
             float totalAbilityUp = 0,totalAbilityDown = 0;
             float totalBuffUp = 0, totalBuffDown = 0;
-            
+
             //无视减伤
             if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
             {
-                totalAbilityDown = BasicCalculation.CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item3;
+                totalAbilityDown = AbilityCalculation
+                    .GetAbilityAmountInfo(sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.DMGCUT).Item3;
+                //totalAbilityDown = BasicCalculation.CheckSpecialDamageCutEffect(sourceStat,targetStat,atkStat).Item3;
                 //totalBuffDown = 0.01f*targetStat.GetConditionTotalValue((int)(BasicCalculation.BattleCondition.Vulnerable));
                 totalBuffDown = 0.01f*targetStat.GetDamageCut(2);
                 ability = 0;
@@ -2043,4 +2440,112 @@ namespace GameMechanics
 
 
     }
+
+    public static class ActorExtensions
+    {
+        public static void GiveTimerBuff(this ActorBase actor, TimerBuff buff, bool eff = true)
+        {
+            var statusManager = actor.GetComponent<StatusManager>();
+            statusManager.ObtainTimerBuff(buff,eff);
+        }
+        public static void RemoveTimerBuff(this ActorBase actor, TimerBuff buff)
+        {
+            var statusManager = actor.GetComponent<StatusManager>();
+            statusManager.RemoveTimerBuff(buff.buffID, false, buff.specialID);
+        }
+        public static Collider2D RaycastedPlatform(this GameObject go)
+        {
+            var raycastedPlatform = BasicCalculation.CheckRaycastedPlatform(go);
+            if (raycastedPlatform != null)
+            {
+                return raycastedPlatform;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static Vector2 RaycastedPosition(this GameObject go)
+        {
+            var raycastedPlatform = BasicCalculation.CheckRaycastedPlatform(go);
+            if (raycastedPlatform != null)
+            {
+                return new Vector2(go.transform.position.x,raycastedPlatform.bounds.max.y);
+            }
+            else
+            {
+                return go.transform.position;
+            }
+        }
+
+        public static Collider2D RaycastedPlatform(this Vector2 vec)
+        {
+            GameObject myGround = null;
+            RaycastHit2D myRayL = 
+                Physics2D.Raycast(vec + new Vector2(-1,0), Vector2.down,
+                    999f,LayerMask.GetMask("Ground","Platforms"));
+            RaycastHit2D myRayR = 
+                Physics2D.Raycast(vec + new Vector2(1,0), Vector2.down,
+                    999f,LayerMask.GetMask("Ground","Platforms"));
+        
+            var myGround1 = myRayL.collider.gameObject;
+            var myGround2 = myRayR.collider.gameObject;
+            if(myGround1 == myGround2)
+                myGround = myGround1;
+            else
+                myGround = myGround1.transform.position.y > myGround2.transform.position.y ? myGround1 : myGround2;
+            
+            
+            var col = myGround.GetComponentInChildren<Collider2D>();
+
+            return col;
+            
+        }
+
+    }
+    
+    public static class ObjectExtensions
+    {
+        public static float AngleDegree(this Vector2 vector, Vector2 other)
+        {
+            var diff = (Vector2)other - vector;
+            return Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+        }
+
+        public static float AngleDegree(this Transform transform, Transform other)
+        {
+            var diff = other.position - transform.position;
+            return Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+        }
+        public static float DistanceX(this Component component, GameObject other)
+        {
+            return Mathf.Abs(component.transform.position.x - other.transform.position.x);
+        }
+        
+        public static float DistanceY(this Component component, GameObject other)
+        {
+            return Mathf.Abs(component.transform.position.y - other.transform.position.y);
+        }
+
+        public static Vector2 SafePosition(this Transform transform)
+        {
+            return BattleStageManager.Instance.OutOfRangeCheck(transform.position);
+        }
+        public static Vector2 SafePosition(this Vector2 position)
+        {
+            return BattleStageManager.Instance.OutOfRangeCheck(position);
+        }
+        
+        public static Vector2 SafePosition(this Vector2 position, Vector2 offset)
+        {
+            return BattleStageManager.Instance.OutOfRangeCheck(position + offset);
+        }
+        
+        public static Vector3 SafePosition(this Vector3 position, Vector2 offset)
+        {
+            return BattleStageManager.Instance.OutOfRangeCheck(position + (Vector3)offset);
+        }
+    }
+
+
 }

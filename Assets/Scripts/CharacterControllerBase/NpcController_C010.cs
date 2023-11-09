@@ -114,7 +114,7 @@ public class NpcController_C010 : NpcController
         voiceController.PlaySkillVoice(1);
         ac.anim.Play("action01");
         yield return null;
-        yield return new WaitUntil(() => ac.anim.GetCurrentAnimatorStateInfo(0).IsName("action02"));
+        yield return new WaitUntil(() => ac.anim.GetCurrentAnimatorStateInfo(0).IsName("s1_2"));
         //ac.anim.speed = 1;
         yield return null;
         yield return new WaitUntil(() => ac.anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);

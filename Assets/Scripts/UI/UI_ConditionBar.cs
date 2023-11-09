@@ -36,8 +36,9 @@ public class UI_ConditionBar : MonoBehaviour
     private void Start()
     {
         //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
-        targetStat = GameObject.Find("PlayerHandle").GetComponentInChildren<StatusManager>();
+        targetStat = GameObject.Find("PlayerHandle").GetComponentInChildren<PlayerStatusManager>();
         conditionCount = targetStat.conditionList.Count;
+        targetStat.SetConditionBar(this);
 
 
 

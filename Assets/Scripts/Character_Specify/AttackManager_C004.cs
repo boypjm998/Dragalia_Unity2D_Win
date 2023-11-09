@@ -57,7 +57,7 @@ public class AttackManager_C004 : AttackManagerDagger
             (ConditionalAttackEffect.ConditionType.TargetHasCondition,
                 ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
                 new string[] {"1", checkConditionString},
-                new string[] {"1"});
+                new string[] {"0.8"});
         
             atk.AddConditionalAttackEffect(conditional_eff);
             
@@ -118,12 +118,13 @@ public class AttackManager_C004 : AttackManagerDagger
     public override void Skill4(int eventID)
     {
         
-        _statusManager.HPRegenImmediately(0,10);
+        _statusManager.HPRegenImmediately(0,10,true);
         BattleEffectManager.Instance.SpawnHealEffect(gameObject);
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
-        _statusManager.ObtainTimerBuff
-        ((int)BasicCalculation.BattleCondition.HealOverTime,
-            -10,15);
+        // _statusManager.ObtainTimerBuff
+        // ((int)BasicCalculation.BattleCondition.HealOverTime,
+        //     -10,15);
+        _statusManager.ObtainHealOverTimeBuff(10,15,true);
         
     }
 
@@ -142,9 +143,10 @@ public class AttackManager_C004 : AttackManagerDagger
 
             var sp_s3 = playerStat.requiredSP[2] * 0.5f;
             
-            playerStat.SpGainInStatus(2,sp_s3);
+            playerStat.ChargeSP(2,sp_s3);
             
-            playerStat.OnSpecialBuffDelegate?.Invoke("SPCharge");
+            playerStat.OnSpecialBuffDelegate?.Invoke
+                (UI_BuffLogPopManager.SpecialConditionType.SPCharge.ToString());
         }
     }
 

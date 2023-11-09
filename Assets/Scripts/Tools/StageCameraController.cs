@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using DG.Tweening;
 using UnityEngine;
 
 public class StageCameraController : MonoBehaviour
@@ -10,13 +11,19 @@ public class StageCameraController : MonoBehaviour
 
     public Vector2 startPosition = Vector2.zero;
     
+    protected Tweener cameraTweener;
 
+    protected CinemachineVirtualCamera cmMain;
     public static GameObject MainCameraGameObject
     {
         get => mainCameraGameObject;
         //set => mainCameraGameObject = value;
     }
 
+    public float MainCameraSize
+    {
+        get => mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+    }
     public Transform MainCameraFollowObject
     {
         get => mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>().Follow;
@@ -44,6 +51,7 @@ public class StageCameraController : MonoBehaviour
         mainCameraGameObject = gameObject;
         yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         overallCameraGameObject = GameObject.Find("OverallCamera");
+        cmMain = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
     }
 
     private void Update()
@@ -118,7 +126,28 @@ public class StageCameraController : MonoBehaviour
     {
         var camera = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
         camera.m_Lens.OrthographicSize = size;
+    }
 
+    public void ToShapeshiftingView()
+    {
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
+        var camera = cmMain;
+        //0.5s内将摄像机的m_Lens.OrthographicSize变为9
+        cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
+            x => camera.m_Lens.OrthographicSize = x, 9,
+            0.5f);
+    }
+    
+    public void ToNormalView()
+    {
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
+        var camera = cmMain;
+        //0.5s内将摄像机的m_Lens.OrthographicSize变为9
+        cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
+            x => camera.m_Lens.OrthographicSize = x, 8,
+            0.5f);
     }
 
 }

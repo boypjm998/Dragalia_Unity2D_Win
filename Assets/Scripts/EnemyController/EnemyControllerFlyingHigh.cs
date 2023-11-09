@@ -63,12 +63,14 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
             { 
                   OnMoveFinished?.Invoke(true);
                   SetGroundCollision(true);
-                  anim.Play("idle");
+                  //anim.Play("idle");
+                  anim.SetFloat("forward", 0);
                   ResetGravityScale();
                   yield break;
             }
             
-            anim.Play("fly");
+            //anim.Play("fly");
+            anim.SetFloat("forward", 1);
 
             while (time < maxFollowTime)
             {
@@ -78,18 +80,18 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   if (((transform.position.y - GetActorHeight()) -
                        target.transform.position.y - targetHeight) > allowDistanceY)
                   {
-                        endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.5f;
+                        endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.1f;
                         //endPoint.y = transform.position.y + 0.5f;
                   }
                   else if (((target.transform.position.y) - targetHeight) - (transform.position.y - GetActorHeight()) >
                              allowDistanceY)
                    {
-                         endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.5f;
+                         endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.1f;
                    }
                   else
                   {
                         //endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.5f;
-                        endPoint.y = transform.position.y + 0.5f;
+                        endPoint.y = transform.position.y;
                         print("set y with target collider");
                   }
 
@@ -130,7 +132,8 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   { 
                         OnMoveFinished?.Invoke(true);
                         SetGroundCollision(true);
-                        anim.Play("idle");
+                        anim.SetFloat("forward", 0);
+                        //anim.Play("idle");
                         ResetGravityScale();
                         yield break;
                   }
@@ -138,11 +141,12 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   yield return null;
                   
                   time += Time.deltaTime;
-                  print(endPoint);
+                  //print(endPoint);
             }
 
             SetGroundCollision(true);
             anim.Play("idle");
+            anim.SetFloat("forward",0);
             ResetGravityScale();
             OnMoveFinished?.Invoke(false);
             
@@ -161,13 +165,16 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   SetFaceDir(-1);
 
             position = BattleStageManager.Instance.OutOfRangeCheck(position);
-            anim.Play("fly");
+            
+            anim.SetFloat("forward", 1);
+            //anim.Play("fly");
 
             var tweenerCore = transform.DOMove(position, timeToReach).SetEase(ease).OnComplete(() =>
             {
                   SetGroundCollision(true);
                   OnMoveFinished?.Invoke(true);
-                  anim.Play("idle");
+                  anim.SetFloat("forward", 0);
+                  //anim.Play("idle");
             }).OnKill(() =>
             {
                   SetGroundCollision(true);
@@ -176,6 +183,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
             });
             
             yield return new WaitUntil(() => !tweenerCore.IsPlaying());
+            
 
       }
 
@@ -203,6 +211,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
             yield return new WaitForSeconds(time - recoverTime);
             anim.Play("break_exit");
             yield return new WaitForSeconds(recoverTime);
+            anim.SetBool("break",false);
       }
 
       public override void OnBreakEnter()

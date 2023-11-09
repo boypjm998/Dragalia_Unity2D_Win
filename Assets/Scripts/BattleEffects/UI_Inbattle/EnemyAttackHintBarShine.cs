@@ -10,6 +10,17 @@ public class EnemyAttackHintBarShine : EnemyAttackHintBar
     [SerializeField] private float shineTime = 0.2f;
     void Start()
     {
+        if (ac == null)
+        {
+            interruptable = false;
+            Debug.LogWarning("HintBar cannot find enemy source.");
+            
+        }
+
+        if(interruptable)
+            ac.OnAttackInterrupt += DestroySelf;
+        
+        
         Fill = transform.Find("Fill").gameObject;
         fillRenderer = Fill.GetComponent<SpriteRenderer>();
         Invoke(nameof(BarShine),warningTime + awakeTime);

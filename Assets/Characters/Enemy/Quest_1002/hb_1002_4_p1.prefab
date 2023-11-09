@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8644724110328360199}
   - component: {fileID: 721704174}
   - component: {fileID: 8178545796339849176}
+  - component: {fileID: 8696368476294636026}
   m_Layer: 6
   m_Name: hb_1002_4_p1
   m_TagString: Enemy
@@ -96,7 +97,7 @@ MonoBehaviour:
   baseDef: 8
   baseAtk: 1400
   critRate: 0
-  maxHP: 5613
+  maxHP: 175613
   currentHp: 175613
   comboConnectMaxInterval: 4
   comboHitCount: 0
@@ -109,10 +110,10 @@ MonoBehaviour:
   stormlashRes: 0
   flashburnRes: 0
   shadowblightRes: 0
-  stunRes: 0
-  sleepRes: 0
+  stunRes: 80
+  sleepRes: 80
   bogRes: 0
-  freezeRes: 0
+  freezeRes: 80
   blindnessRes: 100
   cursedRes: 100
   abilityList: 3f4e0000925f0100
@@ -139,6 +140,9 @@ MonoBehaviour:
   rendererObject: {fileID: 0}
   isAction: 0
   canDeath: 0
+  disappearTimeAfterDeath: 0
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 1937144555932017329}
@@ -150,10 +154,12 @@ MonoBehaviour:
   movespeed: 7
   rollspeed: 9
   jumpforce: 20
+  jumpHeight: 5
   dodging: 0
   moveEnable: 1
   tar: {fileID: 0}
   _defaultgravityscale: 4
+  _groundSensor: {fileID: 0}
 --- !u!50 &6133123882682155446
 Rigidbody2D:
   serializedVersion: 4
@@ -437,6 +443,7 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
   behaviorTextAsset: {fileID: 4900000, guid: a6fd6def0965dd147946373645ed4758, type: 3}
@@ -444,6 +451,21 @@ MonoBehaviour:
   p2_prefab: {fileID: 1036179494334382810, guid: b5d03a9e1e55bdb4299c8534730948b8, type: 3}
   bgm1: {fileID: 8300000, guid: 7f5c56cfad1b3ae4b902706f93e4307a, type: 3}
   bgm2: {fileID: 0}
+  buffUIFXPrefab: {fileID: 0}
+--- !u!114 &8696368476294636026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036179494334382810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 10
+  sensitivity: 4
 --- !u!1 &4490398762309062318
 GameObject:
   m_ObjectHideFlags: 0

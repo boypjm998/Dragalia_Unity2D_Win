@@ -66,6 +66,11 @@ public class TimerBuff : BattleCondition
             
         }
 
+        public TimerBuff()
+        {
+            this.buffID = 999;
+        }
+
 
 
 
@@ -84,6 +89,10 @@ public class TimerBuff : BattleCondition
             else if(BasicCalculation.conditionDisplayedByExactValue.Contains(buffID))
             {
                 return buffEffectDisplayType.ExactValue;
+            }else if (buffID == (int)(BasicCalculation.BattleCondition.Energy) ||
+                      buffID == (int)(BasicCalculation.BattleCondition.Inspiration))
+            {
+                return buffEffectDisplayType.EnergyOrInspiration;
             }
             else
                 return buffEffectDisplayType.Value;
@@ -127,3 +136,40 @@ public class TimerBuff : BattleCondition
 
         }
     }
+
+[Serializable]
+public class AdvancedTimerBuff : TimerBuff
+{
+    public float effect2 { get; private set; }
+    public float effect3 { get; private set; }
+
+    public float effectArg { get; private set; }
+
+    public void SetEffect(int id, float val)
+    {
+        if(id == 1)
+            effect = val;
+        else if(id == 2)
+            effect2 = val;
+        else if(id == 3)
+            effect3 = val;
+    }
+
+    public AdvancedTimerBuff(int buffID, float effect, float effect2, float effect3, float duration,
+        int maxStack = 100, int spID = -1, float effectArg = 1)
+    {
+        this.buffID = buffID;
+        this.duration = duration;
+        this.effect = effect;
+        this.effect2 = effect2;
+        this.effectArg = effectArg;
+        //this.DisplayType = type;
+        this.maxStackNum = maxStack > 100 ? 100 : maxStack;
+        this.lastTime = duration;
+        this.specialID = spID;
+        this.DisplayType = GetDisplayType(buffID);
+            
+        if (buffID > 100 && buffID <= 200)
+            dispellable = false;
+    }
+}

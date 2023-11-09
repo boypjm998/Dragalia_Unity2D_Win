@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 5391295245213752520}
   - component: {fileID: 5826598807621290727}
   - component: {fileID: 8902424018116043532}
+  - component: {fileID: 8220749049689042537}
   m_Layer: 0
   m_Name: e3001_1
   m_TagString: Untagged
@@ -177,6 +178,9 @@ MonoBehaviour:
   rendererObject: {fileID: 0}
   isAction: 0
   canDeath: 1
+  disappearTimeAfterDeath: 0.15
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 695052932692068036}
@@ -244,6 +248,7 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
 --- !u!114 &5391295245213752520
@@ -480,6 +485,20 @@ MonoBehaviour:
   - {x: 2.354629, y: -1.2703843, z: 0}
   - {x: 1.0135895, y: 1.4415809, z: 0}
   - {x: -1.2703846, y: 1.4415809, z: 0}
+--- !u!114 &8220749049689042537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442332614946298476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 25
+  sensitivity: 1
 --- !u!1 &1489594235162688840
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,7 +783,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 375582997
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: -2
   m_Sprite: {fileID: 21300000, guid: cbb8814c88e89fc4e8c946c7e1896ea8, type: 3}
   m_Color: {r: 0.8773585, g: 0.20195799, b: 0.20195799, a: 1}
@@ -1257,7 +1276,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 375582997
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: e26d357a7c1dcf640856f7448d2ebfef, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1359,7 +1378,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 375582997
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: -1
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2631940405867024901

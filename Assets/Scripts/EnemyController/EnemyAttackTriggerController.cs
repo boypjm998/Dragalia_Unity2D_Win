@@ -16,6 +16,11 @@ public class EnemyAttackTriggerController : MonoBehaviour
     
     [SerializeField] private Collider2D targetCollider;
     [SerializeField] private float destroyTime = 1;
+    public float DestroyTime
+    {
+        get => destroyTime;
+        set => destroyTime = value;
+    }
 
     [SerializeField] private bool sleepAfterAnimStopped;
     private Animation anim;
@@ -27,22 +32,36 @@ public class EnemyAttackTriggerController : MonoBehaviour
     {
         public float time;
         public AttackFromEnemy.AvoidableProperty AvoidablePropertyType;
-        public BasicCalculation.AttackType AttackType = BasicCalculation.AttackType.NONE;
+        public BasicCalculation.AttackType AttackType = BasicCalculation.AttackType.STANDARD;
     }
 
 
     private void Awake()
     {
-        
-        
         if (targetCollider == null)
         {
             targetCollider = GetComponent<Collider2D>();
         }
 
         _attackFromEnemy = GetComponent<AttackFromEnemy>();
-        
-        
+    }
+
+
+
+    public void Restart()
+    {
+        NextAttack();
+        InitInvokes();
+    }
+
+
+    private void Start()
+    {
+        InitInvokes();
+    }
+
+    private void InitInvokes()
+    {
         if (nextAttackTime.Length > 0)
         {
             foreach (var time in nextAttackTime)
@@ -85,7 +104,6 @@ public class EnemyAttackTriggerController : MonoBehaviour
         
         if(destroyTime > 0)
             Destroy(gameObject,destroyTime);
-
     }
 
     private void OnDestroy()
@@ -122,8 +140,8 @@ public class EnemyAttackTriggerController : MonoBehaviour
         {
             _attackFromEnemy.ChangeAvoidability(changePropertyTime[0].AvoidablePropertyType);
             
-            if(changePropertyTime[0].AttackType != BasicCalculation.AttackType.NONE)
-                _attackFromEnemy.attackType = changePropertyTime[0].AttackType;
+            
+            _attackFromEnemy.attackType = changePropertyTime[0].AttackType;
             
             changePropertyTime.RemoveAt(0);
         }
@@ -133,6 +151,21 @@ public class EnemyAttackTriggerController : MonoBehaviour
     public void SetNextWithConditionTime(float[] times)
     {
         nextConditionTime = times;
+    }
+    
+    public void SetAwakeTimes(List<float> times)
+    {
+        attackAwakeTime = times.ToArray();
+    }
+
+    public void SetAwakeTime(int index, float time)
+    {
+        attackAwakeTime[index] = time;
+    }
+
+    public void SetSleepTimes(List<float> times)
+    {
+        attackSleepTime = times.ToArray();
     }
 
 }

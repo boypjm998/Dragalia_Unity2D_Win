@@ -11,6 +11,8 @@ public class SkillUIBase : MonoBehaviour
 
     protected GameObject skillIcon;
 
+    protected CanvasGroup _canvasGroup;
+
     protected GameObject unableIcon;
     
     protected PlayerStatusManager sm;
@@ -33,6 +35,7 @@ public class SkillUIBase : MonoBehaviour
         unableIcon = transform.Find("IconBody").Find("UnableIcon").gameObject;
         keyHint = transform.Find("SkillText").gameObject;
         maskTransform = transform.Find("IconBody").Find("Mask");
+        _canvasGroup = GetComponent<CanvasGroup>();
 
         string skillButton;
         switch (this.sid)
@@ -55,6 +58,20 @@ public class SkillUIBase : MonoBehaviour
         }
 
         keyHint.GetComponentInChildren<TextMeshProUGUI>().text = skillButton;
+
+        if (this is DragonSkillUIBase)
+        {
+            print(gameObject.name + " is DragonSkillUIBase");
+            sm.OnShapeshiftingEnter += ShowCanvas;
+            sm.OnShapeshiftingExit += HideCanvas;
+        }
+        else
+        {
+            sm.OnShapeshiftingEnter += HideCanvas;
+            sm.OnShapeshiftingExit += ShowCanvas;
+        }
+
+        
     }
 
     // Update is called once per frame
@@ -74,6 +91,16 @@ public class SkillUIBase : MonoBehaviour
     protected void EnableSkill()
     {
         unableIcon.SetActive(false);
+    }
+
+    protected virtual void HideCanvas()
+    {
+        _canvasGroup.alpha = 0;
+    }
+
+    protected virtual void ShowCanvas()
+    {
+        _canvasGroup.alpha = 1;
     }
 
 

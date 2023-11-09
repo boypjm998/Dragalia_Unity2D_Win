@@ -33,7 +33,7 @@ public class CameraFollower : MonoBehaviour
 
         if (doScaleWithCamera)
         {
-            var scaleFactor = currentCamera.orthographicSize / normalCameraSize;
+            var scaleFactor = currentCamera.orthographicSize / StageCameraController.Instance.MainCameraSize;
             if(scaleFactor < 1)
                 scaleFactor = 1;
             transform.localScale = Vector3.one * scaleFactor;

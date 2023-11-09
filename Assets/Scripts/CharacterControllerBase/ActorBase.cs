@@ -11,6 +11,9 @@ public abstract class ActorBase : MonoBehaviour
     public bool isAlive = true;
     protected GameObject hitSensor;
     protected Collider2D groundSensor;
+    
+    
+
     public Collider2D HitSensor
     {
         get => hitSensor?.GetComponent<Collider2D>();
@@ -26,8 +29,10 @@ public abstract class ActorBase : MonoBehaviour
     public OnHurt OnAttackInterrupt;   
     public int facedir = 1;
     public float speedModifier = 1;
+    
     public static float DefaultGravity = 4;
     protected Tweener _tweener;
+    public float ModelDepth => anim.transform.position.z;
 
     protected virtual void Awake()
     {
@@ -77,6 +82,25 @@ public abstract class ActorBase : MonoBehaviour
     {
         
     }
+    
+    public void TurnMove(GameObject target)
+    {
+        if (target.transform.position.x > transform.position.x)
+        {
+            SetFaceDir(1);
+        }
+        if (target.transform.position.x < transform.position.x)
+        {
+            SetFaceDir(-1);
+        }
+        
+    }
+    
+    public virtual void SetFaceDir(int dir)
+    {
+        facedir = dir;
+        //transform.localScale = new Vector3(facedir, 1, 1);
+    }
 
 
     #region 攻击返回指令
@@ -116,7 +140,7 @@ public abstract class ActorBase : MonoBehaviour
     
     public virtual IEnumerator HorizontalMoveFixedTime(float targetPosition, float time, string move, Ease ease = Ease.Linear)
     {
-        var tweener = transform.DOMoveX(targetPosition, time);
+        var tweener = rigid.DOMoveX(targetPosition, time);
         tweener.SetEase(ease);
         while (time > 0)
         {

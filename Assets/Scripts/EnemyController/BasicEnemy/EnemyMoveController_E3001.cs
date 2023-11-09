@@ -13,6 +13,7 @@ public class EnemyMoveController_E3001 : EnemyMoveManager
 
     public IEnumerator E3001_Action01()
     {
+        yield return new WaitUntil(() => !ac.hurt);
         ac.OnAttackEnter(999);
         BattleEffectManager.Instance.SpawnExclamation(gameObject,transform.position + new Vector3(0,3,0));
 
@@ -26,7 +27,20 @@ public class EnemyMoveController_E3001 : EnemyMoveManager
             transform.position - new Vector3(0,2,0),Quaternion.identity,
             MeeleAttackFXLayer.transform);
 
+        
         var forcetime = attackHint.GetComponent<Projectile_E3001_1>().forcingTime;
+
+        StatusManager.StatusManagerVoidDelegate onReceiveControlAffliction = null;
+        
+        onReceiveControlAffliction = () =>
+        {
+            Destroy(attackHint);
+            StopCoroutine(_behavior.currentAttackAction);
+            _behavior.currentAttackAction = null;
+            _statusManager.OnReceiveControlAffliction -= onReceiveControlAffliction;
+        };
+        
+        _statusManager.OnReceiveControlAffliction += onReceiveControlAffliction;
 
         yield return new WaitForSeconds(forcetime);
         

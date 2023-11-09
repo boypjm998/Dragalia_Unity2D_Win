@@ -53,11 +53,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1036179494334382791, guid: 3d0499fa1a002f0488bac13d731a5875, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.44
+      value: 5.3
       objectReference: {fileID: 0}
     - target: {fileID: 1036179494334382791, guid: 3d0499fa1a002f0488bac13d731a5875, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.32
+      value: -2.6
       objectReference: {fileID: 0}
     - target: {fileID: 1036179494334382791, guid: 3d0499fa1a002f0488bac13d731a5875, type: 3}
       propertyPath: m_LocalPosition.z
@@ -155,6 +155,10 @@ PrefabInstance:
       propertyPath: WarningPrefabs.Array.data[9]
       value: 
       objectReference: {fileID: 159115357163696211, guid: cf0e488c34b99754bac0d17d8bc2f8b6, type: 3}
+    - target: {fileID: 8549127021424664496, guid: 3d0499fa1a002f0488bac13d731a5875, type: 3}
+      propertyPath: projectilePoolEX.Array.data[0]
+      value: 
+      objectReference: {fileID: 2805960451584708958, guid: 0b89391b4dbe8d6448720e1642bb9d5e, type: 3}
     m_RemovedComponents:
     - {fileID: 3283258710082035930, guid: 3d0499fa1a002f0488bac13d731a5875, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3d0499fa1a002f0488bac13d731a5875, type: 3}
@@ -175,10 +179,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f28293351ff19c14eaaa4f89f9e2e815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficulty: 3
   awakeTime: 2
   state: 0
   substate: 0
   targetPlayer: {fileID: 0}
+  viewerPlayer: {fileID: 0}
   isAction: 0
+  breakable: 1
   playerAlive: 1
   playerList: []

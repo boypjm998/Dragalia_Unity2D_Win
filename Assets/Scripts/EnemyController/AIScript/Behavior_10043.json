@@ -1,0 +1,1117 @@
+﻿{
+  "phasePattern": [
+      {
+        "action_list": [
+            {
+                "action_name": "blazingFount",
+                "state": 0,
+                "args": [
+                    "1"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "warp",
+                "state": 1,
+                "args": [
+                    "0",
+                    "4.5",
+                    "1"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "ball",
+                "state": 2,
+                "args": [
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "glare",
+                "state": 3,
+                "args": [
+                    "1",
+                    "1",
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "comboA",
+                "state": 4,
+                "args": [
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "comboB",
+                "state": 5,
+                "args": [
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "random",
+                "jump_args": [ "6", "9" ]
+            },
+            {
+                "action_name": "warp",
+                "state": 6,
+                "args": [
+                    "-20",
+                    "11.5",
+                    "0.5"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "celestial",
+                "state": 7,
+                "args": [
+                    "0",
+                    "4"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "wall",
+                "state": 8,
+                "args": [
+                    "1",
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "to",
+                "jump_args": [ "12" ]
+            },
+            {
+                "action_name": "warp",
+                "state": 9,
+                "args": [
+                    "22",
+                    "11.5",
+                    "0.5"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "celestial",
+                "state": 10,
+                "args": [
+                    "1",
+                    "4"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "wall",
+                "state": 11,
+                "args": [
+                    "-1",
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "to",
+                "jump_args": [ "12" ]
+            },
+            {
+                "action_name": "glare",
+                "state": 12,
+                "args": [
+                    "1",
+                    "1",
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "blazingFount",
+                "state": 13,
+                "args": [
+                    "2"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "next",
+                "jump_args": []
+            },
+            {
+                "action_name": "ball",
+                "state": 14,
+                "args": [
+                    "3"
+                ],
+                "lock_phase": false,
+                "unbreakable": false,
+                "jump_action": "loop",
+                "jump_args": []
+            }
+        ],
+      "jumpOutCondition": 1,
+      "jump_condition": "",
+      "loopStartPoint": 4,
+      "loopCount": 0,
+      "args": [
+        "40"
+      ]
+    },
+      {
+          "action_list": [
+              {
+                  "action_name": "wall",
+                  "state": 0,
+                  "args": [
+                      "0",
+                      "1",
+                      "5"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "affectionRing",
+                  "state": 1,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "wall_stucked", "2", "3" ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 2,
+                  "args": [
+                      "3",
+                      "1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "wall_stucked", "4", "5" ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 3,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "wall_stucked", "4", "5" ]
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 4,
+                  "args": [
+                      "1",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": [ "7" ]
+              },
+              {
+                  "action_name": "glare",
+                  "state": 5,
+                  "args": [
+                      "0",
+                      "0",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 6,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 7,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "warp",
+                  "state": 8,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ball",
+                  "state": 9,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 10,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 11,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "glare",
+                  "state": 12,
+                  "args": [
+                      "1",
+                      "1",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 13,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "buff",
+                  "state": 14,
+                  "args": [
+                      "10",
+                      "150",
+                      "1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 15,
+                  "args": [
+                      "2",
+                      "3"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 16,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 17,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 3,
+          "jump_condition": "",
+          "loopStartPoint": 8,
+          "loopCount": 0,
+          "args": [
+              "revive","1"
+          ]
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "warp",
+                  "state": 0,
+                  "args": [
+                      "0",
+                      "4.5",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "affectionRing",
+                  "state": 1,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["3"]
+              },
+              {
+                  "action_name": "affectionRing",
+                  "state": 2,
+                  "args": [
+                      "1",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": ["to_break_point","3"]
+              },
+              {
+                  "action_name": "buff",
+                  "state": 3,
+                  "args": [
+                      "20",
+                      "150",
+                      "1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "4", "7" ]
+              },
+              {
+                  "action_name": "warp",
+                  "state": 4,
+                  "args": [
+                      "-20",
+                      "11.5",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 5,
+                  "args": [
+                      "1",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "6" ]
+              },
+              {
+                  "action_name": "wall",
+                  "state": 6,
+                  "args": [
+                      "1",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "10" ]
+              },
+              {
+                  "action_name": "warp",
+                  "state": 7,
+                  "args": [
+                      "20",
+                      "11.5",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "8" ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 8,
+                  "args": [
+                      "1",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "9" ]
+              },
+              {
+                  "action_name": "wall",
+                  "state": 9,
+                  "args": [
+                      "-1",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "10" ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 10,
+                  "args": [
+                      "2",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 11,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 12,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 13,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "warp",
+                  "state": 14,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "ball",
+                  "state": 15,
+                  "args": [
+                      "1.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 16,
+                  "args": [
+                      "1",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 17,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 18,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "glare",
+                  "state": 19,
+                  "args": [
+                      "0",
+                      "0",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 20,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "ball",
+                  "state": 21,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 22,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 23,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 24,
+                  "args": [
+                      "0",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2" ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 25,
+                  "args": [
+                      "3",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional",
+                  "jump_args": [ "no_bond", "2", "3" ]
+              }
+          ],
+          "jumpOutCondition": 3,
+          "jump_condition": "",
+          "loopStartPoint": 3,
+          "loopCount": 0,
+          "args": ["revive", "4"]
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "buff",
+                  "state": 0,
+                  "args": [
+                      "20",
+                      "150",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "wall",
+                  "state": 1,
+                  "args": [
+                      "0",
+                      "1",
+                      "10"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 2,
+                  "args": [
+                      "2",
+                      "1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "glare",
+                  "state": 3,
+                  "args": [
+                      "1",
+                      "1",
+                      "1"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "random",
+                  "jump_args": ["4", "5"]
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 4,
+                  "args": [
+                      "0",
+                      "3"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": [ "6" ]
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 5,
+                  "args": [
+                      "1",
+                      "3"
+                  ],
+                  "lock_phase": true,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": [ "6" ]
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 6,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 7,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "warp",
+                  "state": 8,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ball",
+                  "state": 9,
+                  "args": [
+                      "1.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 10,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 11,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random",
+                  "jump_args": ["12", "13"]
+              },
+              {
+                  "action_name": "wall",
+                  "state": 12,
+                  "args": [
+                      "1",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["14"]
+              },
+              {
+                  "action_name": "wall",
+                  "state": 13,
+                  "args": [
+                      "-1",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["15"]
+              },
+              {
+                  "action_name": "glare",
+                  "state": 14,
+                  "args": [
+                      "1",
+                      "0",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["16"]
+              },
+              {
+                  "action_name": "glare",
+                  "state": 15,
+                  "args": [
+                      "1",
+                      "0",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["17"]
+              },
+              {
+                  "action_name": "wall",
+                  "state": 16,
+                  "args": [
+                      "-1",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["18"]
+              },
+              {
+                  "action_name": "wall",
+                  "state": 17,
+                  "args": [
+                      "1",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["18"]
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 18,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random",
+                  "jump_args": ["19", "20"]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 19,
+                  "args": [
+                      "1",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["21"]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 20,
+                  "args": [
+                      "3",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["21"]
+              },
+              {
+                  "action_name": "warp",
+                  "state": 21,
+                  "args": [
+                      "0",
+                      "4.5",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 22,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 23,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 23,
+                  "args": [
+                      "1",
+                      "0"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 24,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 25,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ball",
+                  "state": 26,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "warp",
+                  "state": 26,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 27,
+                  "args": [
+                      "2",
+                      "4"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to",
+                  "jump_args": ["21"]
+              },
+              {
+                  "action_name": "warp",
+                  "state": 28,
+                  "args": [
+                      "0",
+                      "4.5",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 29,
+                  "args": [
+                      "0",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "jump_condition": "",
+          "loopStartPoint": 6,
+          "loopCount": 0,
+          "args": []
+      }
+  ]
+}

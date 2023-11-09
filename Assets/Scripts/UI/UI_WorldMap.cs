@@ -15,10 +15,14 @@ public class UI_WorldMap : MonoBehaviour
     private ScrollRect _scrollRect;
     private Vector3 startPosition;
     protected UI_LevelSelection _levelSelection;
+    private Coroutine zoomRoutine;
+    
+    public static UI_WorldMap Instance { get; private set; }
 
     // Start is called before the first frame update
     private void Awake()
     {
+        Instance = this;
         content = transform.Find("Viewport/Content").gameObject;
         startPosition = content.transform.localPosition;
         _scrollRect = GetComponent<ScrollRect>();
@@ -34,10 +38,15 @@ public class UI_WorldMap : MonoBehaviour
         lastQuestID = GlobalController.lastQuestSpot;
         if (lastQuestID == -1 && !GetTutorialCleared())
         {
-            print(_mapInformation.tutorialCleared);
+            //print(_mapInformation.tutorialCleared);
             mapSpotInfo = _mapInformation?.GetSpot(100);
+            
+            if(zoomRoutine != null)
+                return;
+            
+            
             SetScrollRectDisable();
-            StartCoroutine(ZoomToQuestSpot(mapSpotInfo));
+            zoomRoutine = StartCoroutine(ZoomToQuestSpot(mapSpotInfo));
         }
         else
         {
@@ -78,8 +87,24 @@ public class UI_WorldMap : MonoBehaviour
             if(time != 0)
                 SetScrollRectEnable();
             GlobalController.lastQuestSpot = spot.mapSpotID;
+            zoomRoutine = null;
         });
 
+    }
+
+    public void FocusMapSpotTo(int questID)
+    {
+        var mapSpotInfo = _mapInformation?.GetSpot(questID);
+        if (mapSpotInfo == null)
+        {
+            return;
+        }
+        if (zoomRoutine == null)
+        {
+            SetScrollRectDisable();
+            zoomRoutine = StartCoroutine(ZoomToQuestSpot(mapSpotInfo));
+        }
+        
     }
 
     private void SetScrollRectDisable()

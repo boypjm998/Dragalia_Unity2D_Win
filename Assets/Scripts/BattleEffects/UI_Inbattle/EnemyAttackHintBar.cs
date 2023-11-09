@@ -27,7 +27,21 @@ public class EnemyAttackHintBar : MonoBehaviour
 
     public void DestroySelf()
     {
-        Destroy(gameObject);
+        try
+        {
+            Destroy(gameObject);
+        }
+        catch
+        {
+            Debug.LogWarning("You are trying to access a destroyed object.");
+        }
+
+
+    }
+
+    public void SetAc(EnemyController ac)
+    {
+        this.ac = ac;
     }
 
     protected virtual void OnDestroy()

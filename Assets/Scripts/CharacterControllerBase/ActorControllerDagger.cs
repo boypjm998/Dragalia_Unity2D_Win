@@ -131,7 +131,15 @@ public class ActorControllerDagger : ActorController
           
           
           Combo++;
+          
+          PlayComboVoice();
+          
+          ResetCombo();
+          
+     }
 
+     protected override void PlayComboVoice()
+     {
           if (Combo <= 1)
           {
                voiceController?.PlayAttackVoice(1);
@@ -142,8 +150,10 @@ public class ActorControllerDagger : ActorController
           {
                voiceController?.PlayAttackVoice(3);
           }
+     }
 
-
+     public override void ResetCombo()
+     {
           if (Combo >= 5)
                Combo = 0;
      }
@@ -248,6 +258,51 @@ public class ActorControllerDagger : ActorController
                         &&
                         ta.GetNearestTargetInRangeDirection
                         (-facedir, 5f, 1.5f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
+
+                    break;
+               }
+               case 5:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 16f, 3.5f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 16f, 3.5f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
+
+                    break;
+               }
+               case 6:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 22f, 4f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 22f, 4f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
+
+                    break;
+               }
+               case 7:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 9f, 2.5f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 9f, 2.5f,
                              LayerMask.GetMask("Enemies")) != null)
                     {
                          SetFaceDir(-facedir);

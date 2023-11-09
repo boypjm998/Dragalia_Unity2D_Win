@@ -22,6 +22,20 @@ public class DamageNumberManager : MonoBehaviour
     [SerializeField]
     private GameObject totalDamagePrefab;
 
+    private Transform totalDamageLayer;
+
+    public static DamageNumberManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if(Instance == this)
+            Instance = null;
+    }
 
     private void Start()
     {
@@ -288,9 +302,15 @@ public class DamageNumberManager : MonoBehaviour
     {
         
 
-        Transform displaypos = GameObject.Find("PlayerHandle")?.transform;
+        //Transform displaypos = GameObject.Find("PlayerHandle")?.transform;
+        Transform displaypos = BattleStageManager.Instance.GetPlayer()?.transform;
+        
+        if(totalDamageLayer == null)
+        {
+            totalDamageLayer = GameObject.Find("TotalDamageDisplayer")?.transform;
+        }
 
-        Transform postrans = GameObject.Find("TotalDamageDisplayer")?.transform;
+        Transform postrans = totalDamageLayer;
 
         if (postrans.childCount != 0)
         {
@@ -300,23 +320,54 @@ public class DamageNumberManager : MonoBehaviour
             }
         }
 
-        GameObject camera = GameObject.Find("Main Camera");
+        //GameObject camera = GameObject.Find("Main Camera");
+        var camera = Camera.main.gameObject;
+        
+
+        int dmodeModifier = 0;
+        try
+        {
+            if (displaypos.GetComponent<ActorController>().DModeIsOn)
+            {
+                dmodeModifier = 1;
+            }
+        }
+        catch
+        {
+        }
+
+        
 
         GameObject num =
             Instantiate(totalDamagePrefab,
-            new Vector3(displaypos.position.x + Random.Range(-1f, 1f), displaypos.position.y + Random.Range(-0.5f, 0.5f) + 4f, -10),
+            new Vector3(displaypos.position.x + Random.Range(-2f-dmodeModifier, 2f+dmodeModifier), displaypos.position.y + dmodeModifier + Random.Range(-0.1f, 0.1f) + 3f, -10),
             Quaternion.identity,
             postrans);
+        
+        Vector3 viewportPosition = Camera.main.WorldToViewportPoint(num.transform.position);
 
         TextMeshPro tmp = num.GetComponentInChildren<TextMeshPro>();
         tmp.text = Text2SpriteAssetNumber(damage, 1);
 
-        if (Mathf.Abs(num.transform.position.y - camera.transform.position.y) > 4)
+        //if (Mathf.Abs(num.transform.position.y - camera.transform.position.y) > 10)
+        if (viewportPosition.y < 0.2f || viewportPosition.y > 0.8f)
         {
-            num.transform.position = new Vector2(num.transform.position.x, camera.transform.position.y);
+            print("伤害数字超出范围Y");
+            Vector3 playerViewPortPosition = Camera.main.WorldToViewportPoint(postrans.position);
+            if (playerViewPortPosition.y > 0.5f)
+            {
+                num.transform.position = new Vector2(num.transform.position.x, camera.transform.position.y + 3f);
+            }else
+            {
+                num.transform.position = new Vector2(num.transform.position.x, camera.transform.position.y - 4f);
+            }
+
+            //num.transform.position = new Vector2(num.transform.position.x , camera.transform.position.y + 3f);
         }
-        if (Mathf.Abs(num.transform.position.x - camera.transform.position.x) > 8)
+        if (viewportPosition.x < 0.2f || viewportPosition.y > 0.8f)
+        //if (Mathf.Abs(num.transform.position.x - camera.transform.position.x) > 15)
         {
+            print("伤害数字超出范围X");
             num.transform.position = new Vector2(camera.transform.position.x, num.transform.position.y);
         }
 

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-public class ActorController_c003 : ActorControllerStaff
+public class ActorController_c003 : ActorControllerRangedWithFS
 {
     public int auspexGauge = 0;
     [SerializeField] private float forcingCheckTime = 0.3f;
@@ -149,6 +149,7 @@ public class ActorController_c003 : ActorControllerStaff
 
         if (twilightCrownHitCount >= 10)
         {
+            //_statusManager.ObtainHealOverTimeBuff(10,9,false,100301,3);
             _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.HealOverTime,
                 10,9,3,100301);
             twilightCrownHitCount = 0;

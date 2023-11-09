@@ -23,17 +23,21 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
         {
             ac.OnAttackInterrupt += DestroyContainer;
         }
+    }
 
+    protected override void Start()
+    {
+        base.Start();
         if (isAoE)
         {
             extraTargets.AddRange(DragaliaEnemyBehavior.GetPlayerList());
         }
 
 
-        Invoke("CauseDamageInstantly", triggerTime);
+        if(triggerTime >= 0)
+            Invoke("CauseDamageInstantly", triggerTime);
     }
-    
-    
+
 
     private void CauseDamageInstantly()
     {
@@ -76,6 +80,11 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
     public override void NextAttack()
     {
         base.NextAttack();
+        CauseDamageInstantly();
+    }
+
+    public void DealDamageImmediately()
+    {
         CauseDamageInstantly();
     }
 }

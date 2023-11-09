@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,12 @@ using UnityEngine;
 public class ActorController_c001 : ActorController
 {
     AlchemicGauge alchemicGauge;
-    
+
+    private void Start()
+    {
+        
+    }
+
     public override void UseSkill(int id)
     {
         if(voiceController.voiceLoaded)
@@ -14,6 +20,11 @@ public class ActorController_c001 : ActorController
         if (isAttackSkill[id - 1])
         {
             pi.InvokeAttackSignal();
+            AttackFromPlayer.CheckEnergyLevel(_statusManager);
+            AttackFromPlayer.CheckInspirationLevel(_statusManager);
+        }else if (isRecoverSkill[id - 1])
+        {
+            AttackFromPlayer.CheckEnergyLevel(_statusManager);
         }
         
         

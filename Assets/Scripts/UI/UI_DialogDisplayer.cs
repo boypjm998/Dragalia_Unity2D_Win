@@ -16,7 +16,9 @@ public class UI_DialogDisplayer : MonoBehaviour
     protected Queue<DialogFormat> dialogQueue;
     protected Coroutine displayRoutine;
     protected JsonData questDialogInfoData;
+    protected JsonData questDialogInfoDataBasic;
     protected int currentPrority = 0;
+    protected string currentStoryID;
 
     public static UI_DialogDisplayer Instance { get; private set; }
 
@@ -70,6 +72,25 @@ public class UI_DialogDisplayer : MonoBehaviour
             }
         }
     }
+    
+    
+    public void LoadBasicStoryInfo(string storyID)
+    {
+        currentStoryID = storyID;
+        if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+        {
+            questDialogInfoDataBasic = 
+                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoBasic_EN.json");
+        }
+        else
+        {
+            questDialogInfoDataBasic = 
+                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoBasic.json");
+        }
+    }
+    
+    
+    
 
     /// <summary>
     /// 
@@ -99,6 +120,22 @@ public class UI_DialogDisplayer : MonoBehaviour
         if(clipID < 0)
             return;
         var dialogInfo = questDialogInfoData[$"SPEAKER_{speakerID}"][$"DIALOG_CLIP_{clipID}"];
+        DialogFormat dialogFormat = new DialogFormat();
+        dialogFormat.text = dialogInfo["TEXT"].ToString();
+        dialogFormat.ballonType = Convert.ToInt32(dialogInfo["BALLOON"].ToString());
+        dialogFormat.faceExpression = Convert.ToInt32(dialogInfo["FACE"].ToString());
+        dialogFormat.lastTime_10 = Convert.ToInt32(dialogInfo["TIME"].ToString());
+        dialogFormat.speakerID = speakerID;
+        dialogFormat.audioSource = BattleEffectManager.Instance.sharedVoiceSource;
+        dialogFormat.clip = clip;
+        dialogQueue.Enqueue(dialogFormat);
+    }
+
+    public void EnqueueDialogSharedInBasicStory(int speakerID, int clipID, AudioClip clip)
+    {
+        if(clipID < 0)
+            return;
+        var dialogInfo = questDialogInfoDataBasic[$"QUEST_{currentStoryID}"]["dialog_list"][clipID];
         DialogFormat dialogFormat = new DialogFormat();
         dialogFormat.text = dialogInfo["TEXT"].ToString();
         dialogFormat.ballonType = Convert.ToInt32(dialogInfo["BALLOON"].ToString());

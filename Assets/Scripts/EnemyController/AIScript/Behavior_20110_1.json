@@ -1,0 +1,84 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "summon_soldier",
+          "args": [ "e_9002_02", 30000, 600, 10, 5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_soldier",
+          "args": [ "e_9002_01", 40000, 600, 10, 5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 0,
+      "args": [70]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "charge",
+          "args": [ 95000, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 11500, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_soldier",
+          "args": [ "e_9002_01", 60000, 600, 10, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_soldier",
+          "args": [ "e_9002_02", 70000, 600, 10, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_soldier",
+          "args": [ "e_9002_01", 100000, 650, 10, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_soldier",
+          "args": [ "e_9002_02", 90000, 650, 10, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "charge",
+          "args": [ 150000, 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 1,
+      "args": []
+    }
+  ]
+}

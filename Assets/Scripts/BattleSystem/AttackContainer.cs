@@ -6,6 +6,8 @@ using UnityEngine;
 public class AttackContainer : MonoBehaviour
 {
     protected bool destroyInvoked;
+    public bool energized = false;
+    public bool inspired = false;
     public int attackTotalNum { get; protected set; }
     public bool IfODCounter;
     protected int currentFinishedNum;

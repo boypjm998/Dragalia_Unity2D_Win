@@ -53,7 +53,7 @@ namespace CharacterSpecificProjectiles
 
             while(hint.warningTimeLeft > 0)
             {
-                print(hint.warningTimeLeft);
+                //print(hint.warningTimeLeft);
                 yield return null;
             }
             //yield return new WaitUntil(()=>hint.warningTimeLeft <= 0);

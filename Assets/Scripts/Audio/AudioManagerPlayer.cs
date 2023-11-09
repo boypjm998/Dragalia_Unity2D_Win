@@ -183,7 +183,7 @@ public abstract class AudioManagerPlayer : MonoBehaviour, IVoice
     /// <param name="id = 2">Combo3</param>
     /// <param name="id = 3">Combo5</param>
     /// <exception cref="NotImplementedException"></exception>
-    public virtual void PlayAttackVoice(int id)
+    public virtual void PlayAttackVoice(int id, bool ignoreCD = false)
     {
     }
 

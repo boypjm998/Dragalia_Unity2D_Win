@@ -77,6 +77,11 @@ public class PlayerAttackTriggerController : MonoBehaviour
         _attackFromPlayer.NextAttack();
     }
     
+    public void InvokeNextAttack(float time)
+    {
+        Invoke("NextAttack",time);
+    }
+    
     void AttackAwake()
     {
         targetCollider.enabled = true;

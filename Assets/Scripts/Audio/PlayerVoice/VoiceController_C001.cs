@@ -163,7 +163,7 @@ public class VoiceController_C001 : AudioManagerPlayer
     /// <param name="id = 0">Dash attack</param>
     /// <param name="id = 1">Combo1</param>
     /// <exception cref="NotImplementedException"></exception>
-    public override void PlayAttackVoice(int id)
+    public override void PlayAttackVoice(int id,bool ignoreCD = false)
     {
         if (voice.isPlaying || voiceCDRoutine!=null)
         {

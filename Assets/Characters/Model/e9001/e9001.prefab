@@ -722,6 +722,7 @@ MonoBehaviour:
   rendererObject: {fileID: 7774180018057235689}
   isAction: 0
   canDeath: 0
+  disappearTimeAfterDeath: 0
   displayHPBar: 0
   HPBarOffset: {x: 0, y: 0}
   hurt: 0
@@ -736,7 +737,6 @@ MonoBehaviour:
   rollspeed: 9
   jumpforce: 20
   jumpHeight: 5
-  disappearTimeAfterDeath: 0
   dodging: 0
   moveEnable: 0
   tar: {fileID: 0}
@@ -793,6 +793,10 @@ MonoBehaviour:
   projectile10: {fileID: 0}
   projectilePoolEX: []
   damageTotal: 0
+  resetDamage: 0
+  dps: 0
+  DPS_PauseMenu: {fileID: 4291164985878124905, guid: 36003ae610980c641a5fe229ae02f183, type: 3}
+  printDamagePercentage: 0
 --- !u!114 &6612964628922197937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -813,6 +817,7 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
 --- !u!1 &6118144009109082216
@@ -5719,6 +5724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &7249814877258022927
 GameObject:
   m_ObjectHideFlags: 0

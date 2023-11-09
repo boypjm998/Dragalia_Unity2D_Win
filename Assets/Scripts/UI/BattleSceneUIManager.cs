@@ -81,5 +81,13 @@ public class BattleSceneUIManager : MonoBehaviour
         Debug.LogWarning("GameIsPlaying");
     }
     
+    public void ReplacePauseMenu(GameObject newPauseMenu,bool active = false)
+    {
+        PauseMenu.SetActive(false);
+        Destroy(PauseMenu);
+        PauseMenu = newPauseMenu;
+        PauseMenu.SetActive(active);
+    }
+    
 
 }

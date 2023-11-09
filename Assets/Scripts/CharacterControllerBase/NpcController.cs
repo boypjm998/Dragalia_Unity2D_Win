@@ -5,6 +5,9 @@ using GameMechanics;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
+/// <summary>
+/// NPC Controller Humanoid
+/// </summary>
 public class NpcController : MonoBehaviour
 {
     protected static float SightHeight = 0.95f;

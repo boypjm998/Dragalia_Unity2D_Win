@@ -23,8 +23,8 @@ public class AnimationEventSender : MonoBehaviour
         _attackManager = transform.parent.parent.GetComponent<AttackManager>();
     }
 
-    
-    
+
+
     #region Messages Process Moudles
     
     protected void TurnToMiddle()
@@ -73,12 +73,12 @@ public class AnimationEventSender : MonoBehaviour
 
     public virtual void onRollEnter()
     {
-        ActorController.onRollEnter();
+        //ActorController.onRollEnter();
     }
 
     public virtual void onRollExit()
     {
-        ActorController.onRollExit();
+        //ActorController.onRollExit();
         //Debug.Log("ExitRoll");
     }
     public void OnFall()
@@ -101,12 +101,12 @@ public class AnimationEventSender : MonoBehaviour
 
     public virtual void OnStandardAttackEnter()
     {
-        ActorController.OnStandardAttackEnter();
+        //ActorController.OnStandardAttackEnter();
 
     }
     public virtual void OnStandardAttackExit()
     {
-        ActorController.OnStandardAttackExit();
+        //ActorController.OnStandardAttackExit();
     }
 
     
@@ -135,13 +135,13 @@ public class AnimationEventSender : MonoBehaviour
 
     protected void OnHurtEnter()
     {
-        ActorController.OnHurtEnter();
+        ActorController?.OnHurtEnter();
 
     }
     
     protected void OnHurtExit()
     {
-        ActorController.OnHurtExit();
+        ActorController?.OnHurtExit();
     }
     
     #endregion
@@ -151,46 +151,46 @@ public class AnimationEventSender : MonoBehaviour
     
     protected void SetInputDisabled(string command)
     {
-        _playerInput.SetInputDisabled(command);
+        _playerInput?.SetInputDisabled(command);
     }
     
     protected void SetInputEnabled(string command)
     {
-        _playerInput.SetInputEnabled(command);
+        _playerInput?.SetInputEnabled(command);
     }
     
     protected void SetInputMove(int flag)
     {
-        _playerInput.SetInputMove(flag);
+        _playerInput?.SetInputMove(flag);
     }
 
     protected void SetMoveEnabled()
     {
-        _playerInput.SetMoveEnabled();
+        _playerInput?.SetMoveEnabled();
     }
     
     protected void SetMoveDisabled()
     {
-        _playerInput.SetMoveDisabled();
+        _playerInput?.SetMoveDisabled();
     }
 
     protected void SetRollEnabled()
     {
-        _playerInput.SetRollEnabled();
+        _playerInput?.SetRollEnabled();
     }
     
     protected void SetRollDisabled()
     {
-        _playerInput.SetRollDisabled();
+        _playerInput?.SetRollDisabled();
     }
 
     protected void SetAttackEnabled()
     {
-        _playerInput.SetAttackEnabled();
+        _playerInput?.SetAttackEnabled();
     }
     protected void SetAttackDisabled()
     {
-        _playerInput.SetAttackDisabled();
+        _playerInput?.SetAttackDisabled();
     }
 
     protected void LockDirection(int flag)
@@ -249,6 +249,14 @@ public class AnimationEventSender : MonoBehaviour
         ActorController.EventRoll();
     }
 
+    protected virtual void ForceStrikeEnter()
+    {
+    }
+
+    protected virtual void ForceStrikeRelease()
+    {
+    }
+
     protected void FaceDirectionAutoFix(int moveID)
     {
         ActorController.FaceDirectionAutoFix(moveID);
@@ -257,6 +265,12 @@ public class AnimationEventSender : MonoBehaviour
     protected void CancelSkill()
     {
         (ActorController as ActorController)?.SkillCancelFrame();
+    }
+
+    protected void DoShapeShifting(int type)
+    {
+        _attackManager.ShapeShiftingAttackWave(type);
+        (ActorController as ActorController).InvokeShapeShifting();
     }
 
     #endregion

@@ -248,8 +248,21 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             //print(skillIcons[i]);
             foreach (var vSprite in iconSprites1)
             {
-                if (vSprite.name == CharacterSkillInfo[skillPath[i]]["ICON_PATH"].ToString())
+                var path = CharacterSkillInfo[skillPath[i]]["ICON_PATH"].ToString();
+                if (path == "")
+                {
+                    skillIcons[i].sprite = null;
+                    skillIcons[i].color = Color.clear;
+                    continue;
+                }
+
+                if (vSprite.name == path)
+                {
+                    skillIcons[i].color = Color.white;
                     skillIcons[i].sprite = vSprite;
+                }
+
+                
             }
             
             

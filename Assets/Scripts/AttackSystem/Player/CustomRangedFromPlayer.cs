@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomRangedFromPlayer : AttackFromPlayer
 {
-    protected ActorBase ac;
+    //protected ActorBase ac;
     // Start is called before the first frame update
     protected override void Awake()
     {
@@ -33,17 +33,10 @@ public class CustomRangedFromPlayer : AttackFromPlayer
     
     protected override void OnTriggerStay2D(Collider2D collision)
     {
-        //Transform enemyTrans;
-        //Debug.Log(collision.gameObject.GetInstanceID());
-        //print(collision.gameObject);
-        
+
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
             CauseDamage(collision);
-            
-            
-            
-
         }
         
         

@@ -9,6 +9,7 @@ public class ActorController_c005 : ActorControllerDagger
     public bool dodgeAttackUsed = false;
     public IGroundSensable platformSensor;
 
+    protected Collider2D lastPlatformBeforeCombo4;
     public Vector2 lastPositionAfterCombo6 = Vector2.zero;
 
     public GameObject warpFX;
@@ -88,6 +89,11 @@ public class ActorController_c005 : ActorControllerDagger
         if (isAttackSkill[id - 1])
         {
             pi.InvokeAttackSignal();
+            AttackFromPlayer.CheckEnergyLevel(_statusManager);
+            AttackFromPlayer.CheckInspirationLevel(_statusManager);
+        }else if (isRecoverSkill[id - 1])
+        {
+            AttackFromPlayer.CheckEnergyLevel(_statusManager);
         }
 
 
@@ -169,6 +175,10 @@ public class ActorController_c005 : ActorControllerDagger
 
     protected override void Update()
     {
+        if(DModeIsOn)
+            return;
+        
+        
         if (rigid.transform.localScale.x == 1)
         {
             facedir = 1;
@@ -265,7 +275,7 @@ public class ActorController_c005 : ActorControllerDagger
             
             
             
-            if ((IsComboState(stateInfo) || Combo > 0) && dodgeAttackUsed == false)
+            if ((IsComboState(stateInfo) || Combo > 0) && dodgeAttackUsed == false && pi.inputAttackEnabled)
             {
                 
                 pi.inputRollEnabled = false;
@@ -289,7 +299,7 @@ public class ActorController_c005 : ActorControllerDagger
         else
         {
             if ((IsComboState(anim.GetCurrentAnimatorStateInfo(0)) 
-                 || Combo > 0) && dodgeAttackUsed == false)
+                 || Combo > 0) && dodgeAttackUsed == false && pi.inputAttackEnabled)
             {
                 
                 pi.inputRollEnabled = false;
@@ -361,12 +371,12 @@ public class ActorController_c005 : ActorControllerDagger
             transform.position.y);
         var currentPosition = transform.position;
         goal = BattleStageManager.Instance.OutOfRangeCheck(goal);
-        _tweener = transform.DOMoveX(goal.x,0.15f).SetEase(Ease.OutSine).OnComplete(() =>
+        _tweener = rigid.DOMoveX(goal.x,0.15f).SetEase(Ease.OutSine).OnComplete(() =>
         {
             DisappearRenderer();
             SetFaceDir(-facedir);
             Invoke("AppearRenderer",0.1f);
-            _tweener = transform.DOMoveX(currentPosition.x,0.1f).SetEase(Ease.OutSine).OnComplete(() =>
+            _tweener = rigid.DOMoveX(currentPosition.x,0.1f).SetEase(Ease.OutSine).OnComplete(() =>
             {
                 ResetGravityScale();
                 SetGroundCollision(true);
@@ -418,7 +428,7 @@ public class ActorController_c005 : ActorControllerDagger
         var targetPos = transform.position + new Vector3(facedir * 2f, -1.5f);
         targetPos = BattleStageManager.Instance.OutOfRangeCheck(targetPos);
         
-        _tweener = transform.DOMove(targetPos,
+        _tweener = rigid.DOMove(targetPos,
             0.15f).SetEase(Ease.OutCirc).
             OnKill(ResetGravityScale).
             OnComplete(ResetGravityScale);
@@ -445,6 +455,8 @@ public class ActorController_c005 : ActorControllerDagger
         
         //controllPoint = BattleStageManager.Instance.OutOfRangeCheck(controllPoint);
 
+        lastPlatformBeforeCombo4 = gameObject.RaycastedPlatform();
+
         var endPoint = new Vector2(transform.position.x - facedir * 2f,
             transform.position.y + 2.5f);
         endPoint = BattleStageManager.Instance.OutOfRangeCheck(endPoint);
@@ -468,6 +480,8 @@ public class ActorController_c005 : ActorControllerDagger
         //TODO:有目标的话，砸到目标前方一定距离。
 
         var warpCheckGO = Combo4_WarpCheck();
+        
+        
 
         if (warpCheckGO != null)
         {
@@ -499,10 +513,28 @@ public class ActorController_c005 : ActorControllerDagger
         
         controllPoint = BattleStageManager.Instance.OutOfRangeCheck(controllPoint);
 
+
+        Vector2 safeEndPoint = new Vector2(transform.position.x + facedir * 3, transform.position.y);
+
+
+        var col = lastPlatformBeforeCombo4;
+        
+        if(col == null)
+            col = safeEndPoint.RaycastedPlatform();
+        
+        
+        
+        
+        
+
+        // var endPoint = new Vector2(transform.position.x + facedir * 3f,
+        //     BasicCalculation.CheckRaycastedPlatform(gameObject).bounds.max.y + GetActorHeight() + 0.1f);
         var endPoint = new Vector2(transform.position.x + facedir * 3f,
-            BasicCalculation.CheckRaycastedPlatform(gameObject).bounds.max.y + GetActorHeight() + 0.1f);
+            col.bounds.max.y + GetActorHeight() + 0.1f);
         endPoint = BattleStageManager.Instance.OutOfRangeCheck(endPoint);
         endPoint.x = BattleStageManager.Instance.OutOfPlatformBoundsCheck(gameObject, endPoint.x);
+
+        
         
         var path = new Vector3[] { transform.position, endPoint };
         
@@ -582,7 +614,7 @@ public class ActorController_c005 : ActorControllerDagger
         var path = new Vector3[] { transform.position, endPoint };
         
 
-        _tweener = transform.DOMove(endPoint, 0.15f).SetEase(Ease.OutSine).OnComplete(
+        _tweener = rigid.DOMove(endPoint, 0.15f).SetEase(Ease.OutSine).OnComplete(
             () =>
             {
                 ResetGravityScale();
@@ -620,10 +652,6 @@ public class ActorController_c005 : ActorControllerDagger
         OnRollEnterBase();
         
         OnAttackInterrupt?.Invoke();
-
-        // if (Combo > 0)
-        //     Combo--;
-        
         pi.directionLock = false;
         dodgeAttackUsed = true;
     }
@@ -640,6 +668,8 @@ public class ActorController_c005 : ActorControllerDagger
         OnRollExitBase();
         //dodgeAttackUsed = false;
     }
+    
+    
 
 
     public override void OnStandardAttackEnter()
@@ -661,7 +691,38 @@ public class ActorController_c005 : ActorControllerDagger
           
           
         Combo++;
+        
+        PlayComboVoice();
 
+        // if (Combo <= 1)
+        // {
+        //     voiceController?.PlayAttackVoice(1);
+        // }else if (Combo <= 3)
+        // {
+        //     voiceController?.PlayAttackVoice(2);
+        // }else if (Combo <= 5)
+        // {
+        //     voiceController?.PlayAttackVoice(3);
+        // }
+        // else
+        // {
+        //     voiceController?.PlayAttackVoice(2);
+        // }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo6"))
+        {
+            _statusManager.knockbackRes = 999;
+        }
+
+
+        if (Combo >= 7)
+            Combo = 0;
+        
+        dodgeAttackUsed = false;
+    }
+    
+    protected override void PlayComboVoice()
+    {
         if (Combo <= 1)
         {
             voiceController?.PlayAttackVoice(1);
@@ -676,17 +737,6 @@ public class ActorController_c005 : ActorControllerDagger
         {
             voiceController?.PlayAttackVoice(2);
         }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo6"))
-        {
-            _statusManager.knockbackRes = 999;
-        }
-
-
-        if (Combo >= 7)
-            Combo = 0;
-        
-        dodgeAttackUsed = false;
     }
 
     public override void OnStandardAttackExit()
@@ -843,8 +893,9 @@ public class ActorController_c005 : ActorControllerDagger
         if (_statusManager.GetConditionStackNumber((int)BasicCalculation.BattleCondition.BlazewolfsRush) > 0)
         {
             _statusManager.RemoveTimerBuff((int)BasicCalculation.BattleCondition.BlazewolfsRush,true,0);
-            _statusManager.ChargeSP(skillID, _statusManager.requiredSP[skillID]);
-            _statusManager.OnSpecialBuffDelegate?.Invoke("SPCharge");
+            _statusManager.FillSP(skillID, 100);
+            _statusManager.OnSpecialBuffDelegate?.Invoke
+                (UI_BuffLogPopManager.SpecialConditionType.SPCharge.ToString());
         }
 
     }

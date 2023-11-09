@@ -156,6 +156,7 @@ GameObject:
   - component: {fileID: 8055776997895683720}
   - component: {fileID: 2716437551703523397}
   - component: {fileID: 7743736525769546335}
+  - component: {fileID: 6343270946376115602}
   m_Layer: 6
   m_Name: hb_1001_4_p2
   m_TagString: Enemy
@@ -210,6 +211,9 @@ MonoBehaviour:
   rendererObject: {fileID: 8251580556043810409}
   isAction: 0
   canDeath: 1
+  disappearTimeAfterDeath: 0
+  displayHPBar: 0
+  HPBarOffset: {x: 0, y: 0}
   hurt: 0
   counterOn: 0
   flashBody: {fileID: 5900866050950154640}
@@ -222,7 +226,6 @@ MonoBehaviour:
   rollspeed: 9
   jumpforce: 20
   jumpHeight: 5
-  disappearTimeAfterDeath: 0
   dodging: 0
   moveEnable: 1
   tar: {fileID: 0}
@@ -465,6 +468,7 @@ MonoBehaviour:
   viewerPlayer: {fileID: 0}
   isAction: 0
   breakable: 1
+  controllAfflictionProtect: 0
   playerAlive: 1
   playerList: []
   behaviorTextAsset: {fileID: 4900000, guid: e00d00d03be340d48801ff26084478ac, type: 3}
@@ -487,12 +491,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayedName: "\u5E2D\u83C8"
   dialogIconID: 1005
-  maxBaseHP: 1785538
+  maxBaseHP: 1964091
   baseDef: 10
-  baseAtk: 2000
+  baseAtk: 2400
   critRate: 0
-  maxHP: 1785538
-  currentHp: 1785538
+  maxHP: 1964091
+  currentHp: 1964091
   comboConnectMaxInterval: 4
   comboHitCount: 0
   knockbackRes: 50
@@ -505,9 +509,9 @@ MonoBehaviour:
   flashburnRes: 99
   shadowblightRes: 99
   stunRes: 200
-  sleepRes: 99
+  sleepRes: 199
   bogRes: 99
-  freezeRes: 99
+  freezeRes: 199
   blindnessRes: 99
   cursedRes: 100
   abilityList: 2b4e0000354e0000714e00007b4e0000
@@ -592,6 +596,20 @@ MonoBehaviour:
   - {fileID: 7476314805130964661, guid: fe936904efc83f64a858b9ccaec9a135, type: 3}
   weaponLeft: {fileID: 2651885301928298086}
   weaponRight: {fileID: 3212590773211203401}
+--- !u!114 &6343270946376115602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036179494334382810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 70
+  sensitivity: 35
 --- !u!1 &2121417326720497027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,6 +1266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &5072748283469620636
 GameObject:
   m_ObjectHideFlags: 0

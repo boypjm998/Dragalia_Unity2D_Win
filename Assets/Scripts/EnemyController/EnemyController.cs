@@ -35,6 +35,7 @@ public class EnemyController : ActorBase
     private int enemyid;
     private bool isBoss;
     public bool canDeath = true;
+    public float disappearTimeAfterDeath = 0;
 
     public bool displayHPBar = false;
     public Vector2 HPBarOffset = new Vector2(0, 0);
@@ -95,6 +96,9 @@ public class EnemyController : ActorBase
         {
             InitSimpleHealthBar();
         }
+        BattleStageManager.Instance.InvokeEnemyOnAwake(gameObject);
+        _statusManager.OnReceiveControlAffliction += OnReceiveControlAffliction;
+
 
     }
     protected override void Awake()
@@ -127,7 +131,7 @@ public class EnemyController : ActorBase
         }
     }
     
-    public void SetFaceDir(int dir)
+    public override void SetFaceDir(int dir)
     {
         facedir = dir;
         CheckFaceDir();
@@ -236,20 +240,6 @@ public class EnemyController : ActorBase
         {
             currentKBRes += (int)(kbtime*5)+1;
         }
-        // if (counterOn)
-        // {
-        //     //_effectManager.DisplayCounterIcon(gameObject,false);
-        //     DamageNumberManager.GenerateCounterText(transform);
-        //     
-        //     _statusManager.ObtainUnstackableTimerBuff
-        //     ((int)BasicCalculation.BattleCondition.Vulnerable,
-        //         10,10,9999);
-        //     _statusManager.ObtainUnstackableTimerBuff
-        //     ((int)BasicCalculation.BattleCondition.AtkDebuff,
-        //         30,7,9999);
-        //     atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
-        //     //counterOn = false;
-        // }
     }
     
     public void EnemyActionStart(int actionID)
@@ -348,8 +338,11 @@ public class EnemyController : ActorBase
     {
         var box = target.GetComponent<Collider2D>();
         
+        //2023.10
+        //print("targetPosY:"+target.transform.position.y);
         
-        return box.bounds.max.y - (transform.position.y + GetActorHeight());
+        //return target.RaycastedPosition().y + GetActorHeight() - transform.position.y;
+        return box.bounds.max.y - (transform.position.y - 1.5f);
     }
 
     public virtual void OnAttackEnter()
@@ -391,7 +384,7 @@ public class EnemyController : ActorBase
         {
             
 
-            if (currentKBRes >= 100)
+            if (currentKBRes >= 100 && currentKBRes < 200)
             {
                 if (_statusManager is SpecialStatusManager)
                 {
@@ -456,9 +449,31 @@ public class EnemyController : ActorBase
         }
         TurnMove(_behavior.targetPlayer);
     }
-    
-    
-    
+
+    protected virtual void OnReceiveControlAffliction()
+    {
+        print("敌人受到控制异常");
+        hurt = true;
+        anim.SetBool("hurt",true);
+        rigid.velocity = Vector2.zero;
+    }
+
+    protected virtual void OnControlAfflictionRemoved()
+    {
+        if (_statusManager is SpecialStatusManager)
+        {
+            if ((_statusManager as SpecialStatusManager).broken)
+            {
+                return;
+            }
+        }
+
+        _behavior.ActionEnd(!_behavior.controllAfflictionProtect);
+        hurt = false;
+    }
+
+
+
     public bool CheckPowerOfBonds()
     {
         if(_statusManager.GetConditionsOfType((int)BasicCalculation.BattleCondition.PowerOfBonds).Count > 0)
@@ -480,6 +495,45 @@ public class EnemyController : ActorBase
     {
     }
 
+    public virtual void OnFreezeEnter()
+    {
+        OnHurtEnter();
+        isAction = true;
+        isMove = 0;
+        //BattleEffectManager.Instance.PlayBreakEffect();
+        SetCounter(false);
+        _behavior.isAction = true;
+        if (_behavior.currentAction != null)
+        {
+            _behavior.StopCoroutine(_behavior.currentAction);
+            _behavior.currentAction = null;
+        }
+
+        if (_behavior.currentAttackAction != null)
+        {
+            _behavior.StopCoroutine(_behavior.currentAttackAction);
+            _behavior.currentAttackAction = null;
+        }
+
+        if (_behavior.currentMoveAction != null)
+        {
+            _behavior.StopCoroutine(_behavior.currentMoveAction);
+            _behavior.currentMoveAction = null;
+        }
+        ResetGravityScale();
+
+    }
+
+    public virtual void OnFreezeExit()
+    {
+        OnHurtExit();
+        SetCounter(false);
+        
+        _behavior.ActionEnd(false);
+        //_behavior.isAction = false;
+        //UI_BossODBar.Instance?.ODBarRecharge();
+    }
+
     public virtual void OnBreakEnter()
     {
     }
@@ -490,13 +544,22 @@ public class EnemyController : ActorBase
 
     protected virtual void OnDeath()
     {
-        if (isSummonEnemy)
-        {
+        _statusManager.BeforeReviveOrDeath?.Invoke();
+        
+        if(_statusManager.currentHp > 0)
             return;
+        
+        if (!isSummonEnemy)
+        {
+            BattleStageManager.Instance.EnemyEliminated(gameObject);
         }
 
-        //FindObjectOfType<BattleStageManager>().EnemyEliminated(gameObject);
-        BattleStageManager.Instance.EnemyEliminated(gameObject);
+        _statusManager.OnReviveOrDeath?.Invoke();
+        BattleStageManager.Instance.InvokeEnemyOnEliminated(gameObject);
+        
+
+        
+        
     }
     
     public virtual void SwapWeaponVisibility(bool flag)
@@ -576,15 +639,29 @@ public class EnemyController : ActorBase
 
     protected void InitSimpleHealthBar()
     {
-        if(GetComponentInChildren<UI_SimpleHPGauge>() != null)
+
+
+        var uiHpGauge = GetComponentInChildren<UI_SimpleHPGauge>();
+        if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
+        {
+            if(uiHpGauge != null)
+                Destroy(uiHpGauge.gameObject);
+        }else if (uiHpGauge != null)
+        {
             return;
-        
+        }
+
         var hpbar = Instantiate(BattleStageManager.Instance.simpleHealthBar,
             transform.position + (Vector3)HPBarOffset, Quaternion.identity, transform);
         
         hpbar.name = "SimpleHPGauge";
         
         
+    }
+    
+    public void SetSummoned(bool flag)
+    {
+        isSummonEnemy = flag;
     }
 
 }

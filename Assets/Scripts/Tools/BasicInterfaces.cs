@@ -15,9 +15,39 @@ public interface IEnemySealedContainer
     
 }
 
+public interface IForceAttackable
+{
+    /// <summary>
+    /// 在进入爆发攻击蓄力动画时调用
+    /// </summary>
+    public void OnForceEnter();
+    /// <summary>
+    /// 爆发攻击可以选择方向的执行方法
+    /// </summary>
+    public void OnForcingPointerSelectable();
+    /// <summary>
+    /// 爆发攻击可移动的执行方法
+    /// </summary>
+    public void OnForcingMoveable();
+    /// <summary>
+    /// 开始爆发攻击
+    /// </summary>
+    public void OnForceAttackEnter();
+    /// <summary>
+    /// 退出爆发攻击阶段
+    /// </summary>
+    public void OnForceAttackExit();
+    //public void ForceAttackRelease();
+}
+
 public interface IKnockbackable
 {
     public bool GetDodge();
+
+    public virtual void InvokeDodge(AttackBase atk, GameObject source)
+    {
+    }
+
     public void TakeDamage(float kbPower, float kbtime, float kbForce, Vector2 kbDir);
 }
 
@@ -140,4 +170,10 @@ public interface IHumanActor
     
 
 
+}
+
+public interface ISpeedControllable
+{
+    public void SetRate(int ComponentID, float rate);
+    public void GetTargetComponents();
 }

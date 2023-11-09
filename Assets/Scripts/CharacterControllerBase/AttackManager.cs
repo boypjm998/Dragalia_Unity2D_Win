@@ -79,13 +79,18 @@ public class AttackManager : MonoBehaviour
         return prefabInstance;
     }
 
-    protected GameObject InstantiateMeele(GameObject prefab, Vector3 position, GameObject container)
+    protected GameObject InstantiateMeele(GameObject prefab, Vector3 position, GameObject container,Transform _parent = null)
     {
         var prefabInstance = Instantiate(prefab, position, Quaternion.identity, container.transform);
 
         try
         {
-            prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+            if(_parent == null)
+                prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+            else
+            {
+                prefabInstance.GetComponent<AttackFromPlayer>().playerpos = _parent;
+            }
         }
         catch
         {
@@ -101,11 +106,32 @@ public class AttackManager : MonoBehaviour
         return prefabInstance;
     }
 
-    protected GameObject InstantiateRanged(GameObject prefab, Vector3 position, GameObject container,int facedir, int rotateMode = 1)
+    protected virtual GameObject InstantiateRanged(GameObject prefab, Vector3 position, GameObject container,int facedir, int rotateMode = 1)
     {
         var prefabInstance = InstantiateDirectional(prefab, position, container.transform, facedir, 0, rotateMode);
         prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
         prefabInstance.GetComponent<AttackFromPlayer>().firedir = facedir;
+        return prefabInstance;
+    }
+
+    protected virtual GameObject InstantiateDirectionalRanged(GameObject prefab, Vector3 position, GameObject container,
+        int facedir, float angleZ)
+    {
+        var prefabInstance = InstantiateDirectional(prefab, position, container.transform, facedir, 0, 1);
+        prefabInstance.GetComponent<AttackFromPlayer>().playerpos = transform;
+        prefabInstance.GetComponent<AttackFromPlayer>().firedir = facedir;
+
+        prefabInstance.transform.eulerAngles = new Vector3(0, 0, angleZ);
+        //用TryGetComponent来尝试获取DoTweenSimpleController组件，如果有就设置朝向
+        if (prefabInstance.TryGetComponent(out DOTweenSimpleController controller))
+        {
+            var magnitude = controller.moveDirection.magnitude;
+            controller.moveDirection = 
+                new Vector2(magnitude * facedir * Mathf.Cos(angleZ*Mathf.Deg2Rad),
+                    magnitude * Mathf.Sin(angleZ*Mathf.Deg2Rad) * facedir);
+        }
+        
+        
         return prefabInstance;
     }
 
@@ -116,6 +142,71 @@ public class AttackManager : MonoBehaviour
         return res;
     }
 
+    /// <summary>
+    /// 1:Fire,2:Water,3.Wind,4.Light,5.Dark
+    /// </summary>
+    /// <param name="type"></param>
+    public void ShapeShiftingAttackWave(int type)
+    {
+        GameObject container = Instantiate(attackContainer,transform.position,Quaternion.identity,
+            MeeleAttackFXLayer.transform);
+        GameObject shapeShiftingFX = BattleEffectManager.Instance.GetShapeShiftingFX(type);
+        
+        var prefabInstance = 
+            InstantiateMeele(shapeShiftingFX, transform.position, container);
+    }
+
+    protected GameObject InitContainer(bool isMeele, int totalNum = 1, bool displayDmg = false)
+    {
+        var container = Instantiate(attackContainer, transform.position,
+            Quaternion.identity, isMeele ? MeeleAttackFXLayer.transform : RangedAttackFXLayer.transform);
+
+        if (totalNum != 1 || displayDmg)
+        {
+            container.GetComponent<AttackContainer>().InitAttackContainer(totalNum, displayDmg);
+        }
+
+        return container;
+
+    }
+
+    protected GameObject InstantiateSealedContainer(GameObject containerPrefab, bool isMeele, bool displayDmg = false, int totalNum = 1)
+    {
+        var container = Instantiate(containerPrefab, transform.position,
+            Quaternion.identity, isMeele ? MeeleAttackFXLayer.transform : RangedAttackFXLayer.transform);
+        
+        if (totalNum != 1 || displayDmg)
+        {
+            container.GetComponent<AttackContainer>().InitAttackContainer(totalNum, displayDmg);
+        }
+
+        return container;
+    }
+
+    protected void LifeSteal(StatusManager statusManager, int damage, int fraction, int maxHealPercentage)
+    {
+        float maxHealHP = statusManager.maxHP * 0.01f * maxHealPercentage;
+
+        float healHP = Mathf.Min(damage * fraction * 0.01f,maxHealHP);
+        
+        statusManager.HPRegenImmediatelyWithoutRandomDirectly(statusManager,(int)healHP);
+
+
+    }
+
+    protected void AddParticleSystemSpeedModifier(GameObject fx)
+    {
+        var speedModifier = fx.AddComponent<PlayerParticleSystemSpeedModifier>();
+        speedModifier.actorController = ac as ActorController;
+    }
+
+    protected void AddAnimationSpeedModifier(GameObject fx)
+    {
+        var speedModifier = fx.AddComponent<PlayerAnimationSpeedModifier>();
+        speedModifier.actorController = ac as ActorController;
+    }
     
+    
+
 
 }

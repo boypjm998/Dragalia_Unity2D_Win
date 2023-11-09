@@ -11,12 +11,12 @@ public class UI_Tutorial_PauseMenu : UI_PauseMenu
     // Start is called before the first frame update
     private TutorialLevelManager _tutorialLevelManager;
     [SerializeField] private TextAsset tutorialTextAsset;
-    private int currentMaxPages = 1;
-    private int currentPage = 1;
-    private Transform pagesParent;
-    private GameObject leftPageButton;
-    private GameObject rightPageButton;
-    private GameObject currentPageObject;
+    protected int currentMaxPages = 1;
+    protected int currentPage = 1;
+    protected Transform pagesParent;
+    protected GameObject leftPageButton;
+    protected GameObject rightPageButton;
+    protected GameObject currentPageObject;
     
     private void Awake()
     {
@@ -68,7 +68,7 @@ public class UI_Tutorial_PauseMenu : UI_PauseMenu
             DisplayPage(currentPage-1);
     }
 
-    protected void DisplayPage(int targetPageID)
+    protected virtual void DisplayPage(int targetPageID)
     {
         if(currentPage!=0)
             pagesParent.GetChild(currentPage).gameObject.SetActive(false);

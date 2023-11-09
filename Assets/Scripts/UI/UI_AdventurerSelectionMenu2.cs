@@ -38,7 +38,8 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
 
     public void ChooseCharacter(int id)
     {
-        if (upperMenu.currentSelectedCharaID == id && ContentTransform.Find($"{id}").childCount==1)
+        //Find({id}).childCount == 1
+        if (upperMenu.currentSelectedCharaID == id && ContentTransform.Find($"{id}").childCount != 2)
         {
             GlobalController.currentCharacterID = id;
             RedirectSelectionArrow(id);
@@ -49,20 +50,20 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
     
     private void RedirectSelectionArrow(int id)
     {
-        id = id - 1;
+        //id = id - 1;
         print(id);
         for(int i = 0 ; i < ContentTransform.childCount; i++)
         {
-            print(ContentTransform.GetChild(i).GetChild(0).name);
-            if (i == id && ContentTransform.GetChild(i).childCount == 1)
+            var child = ContentTransform.GetChild(i);
+            if (child.name == id.ToString() && child.childCount != 2)
             {
-                print(ContentTransform.GetChild(i).Find("Light").gameObject);
-                ContentTransform.GetChild(i).Find("Light").gameObject.SetActive(true);
+                print(child.Find("Light").gameObject);
+                child.Find("Light").gameObject.SetActive(true);
             }
             else
             {
                 //print(ContentTransform.GetChild(i).Find("Light").gameObject);
-                ContentTransform.GetChild(i).Find("Light")?.gameObject.SetActive(false);
+                child.Find("Light")?.gameObject.SetActive(false);
             }
         }
     }

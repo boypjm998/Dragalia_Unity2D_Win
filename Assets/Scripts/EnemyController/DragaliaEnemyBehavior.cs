@@ -26,6 +26,10 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     protected bool TaskSuccess;
     public bool isAction;
     public bool breakable = true;
+    /// <summary>
+    /// 当生效时，在攻击被异常状态打断后，敌人不会进行下一个行动
+    /// </summary>
+    public bool controllAfflictionProtect = false;
     public bool playerAlive = true;
     public List<GameObject> playerList = new();
 
@@ -55,6 +59,11 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         status = GetComponent<StatusManager>();
         isAction = false;
         
+    }
+
+    private void OnDestroy()
+    {
+        BattleStageManager.Instance.OnMapInfoRefresh -= SearchTarget;
     }
 
     protected virtual void Update()
@@ -88,6 +97,7 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         yield return new WaitWhile(() => GlobalController.currentGameState == GlobalController.GameState.WaitForStart
                                          );
         SearchTarget();
+        BattleStageManager.Instance.OnMapInfoRefresh += SearchTarget;
         state = 0;
         substate = 0;
         yield return new WaitForSeconds(awakeTime);
@@ -115,9 +125,10 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         targetPlayer = FindObjectOfType<ActorController>().gameObject;
         viewerPlayer = targetPlayer;
         var players = GameObject.Find("Player");
+        playerList.Clear();
         for (int i = 0; i < players.transform.childCount; i++)
         {
-            if(players.transform.GetChild(i).Find("HitSensor").gameObject.activeSelf)
+            if(players.transform.GetChild(i).Find("HitSensor").gameObject.activeInHierarchy)
                 this.playerList.Add(players.transform.GetChild(i).gameObject);
         }
     }
@@ -128,7 +139,7 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         List<GameObject> playerList = new List<GameObject>();
         for (int i = 0; i < players.transform.childCount; i++)
         {
-            if(players.transform.GetChild(i).Find("HitSensor").gameObject.activeSelf)
+            if(players.transform.GetChild(i).Find("HitSensor").gameObject.activeInHierarchy)
                 playerList.Add(players.transform.GetChild(i).gameObject);
         }
         return playerList;
@@ -195,9 +206,14 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     public virtual void ActionEnd(bool substateIncrement = true)
     {
         isAction = false;
-        
+
         if (substateIncrement)
+        {
             substate++;
+            print("substate++");
+        }
+
+        
     }
 
     public void StopAction()

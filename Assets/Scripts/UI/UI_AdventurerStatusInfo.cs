@@ -8,11 +8,12 @@ using UnityEngine.UI;
 
 public class UI_AdventurerStatusInfo : MonoBehaviour
 {
-    private StatusManager statusManager;
+    private PlayerStatusManager statusManager;
     
 
     protected Coroutine HurtRoutine = null;
     protected Slider _slider;
+    protected Slider _shieldSlider;
     private Image HPBarImage;
     protected float currentHP;
     protected float maxHP;
@@ -31,6 +32,12 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
     [SerializeField] private Sprite HurtImageSprite;
 
     [SerializeField] private Sprite normalImageSprite;
+    
+    [SerializeField] private Sprite DModeNormalImageSprite;
+    
+    [SerializeField] private Sprite DModeHurtImageSprite;
+
+    private GameObject DModeUI;
 
     // Start is called before the first frame update
     void Start()
@@ -38,14 +45,25 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
         fullScreenEffect = GameObject.Find("UI").transform.Find("FullScreenEffect").
             GetChild(0).GetComponent<UI_FullScreenEffect_Injury>();
         var characterID = GlobalController.currentCharacterID;
-        statusManager = GameObject.Find("PlayerHandle").GetComponent<StatusManager>();
-        _slider = GetComponentInChildren<Slider>();
+        statusManager = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
+        _slider = transform.Find("HPbar").GetComponent<Slider>();
+        //_shieldSlider = transform.Find("Shield").GetComponent<Slider>();
+        
         statusImage = transform.Find("CharacterIcon").GetComponent<Image>();
         HPText = GetComponentInChildren<TextMeshProUGUI>();
         HPBarImage = transform.Find("HPbar").Find("Fill").GetComponent<Image>();
         currentHP = statusManager.currentHp;
         maxHP = statusManager.maxHP;
         GetHPValue();
+        var dModeTransform = transform.parent.Find("DragonStatus");
+        if (dModeTransform != null)
+        {
+            DModeUI = dModeTransform.gameObject;
+            //DModeUI.GetComponent<CanvasGroup>().alpha = 0;
+            statusManager.OnShapeshiftingEnter += ActiveDModeStatusUI;
+            statusManager.OnShapeshiftingExit += DeactiveDModeStatusUI;
+        }
+
     }
 
     // Update is called once per frame
@@ -103,10 +121,36 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
 
     private IEnumerator ChangeImage()
     {
-        statusImage.sprite = HurtImageSprite;
+        statusImage.sprite = statusManager.isShapeshifting?DModeHurtImageSprite:HurtImageSprite;
         yield return new WaitForSeconds(0.5f);
-        statusImage.sprite = normalImageSprite;
+        statusImage.sprite = statusManager.isShapeshifting?DModeNormalImageSprite:normalImageSprite;
         HurtRoutine = null;
+    }
+    
+    protected virtual void ActiveDModeStatusUI()
+    {
+        statusImage.sprite = DModeNormalImageSprite;
+    }
+    
+    protected virtual void DeactiveDModeStatusUI()
+    {
+        statusImage.sprite = normalImageSprite;
+    }
+
+    public void SetImage(int id)
+    {
+        if (id == 0)
+        {
+            statusImage.sprite = normalImageSprite;
+        }else if (id == 1)
+        {
+            statusImage.sprite = HurtImageSprite;
+        }
+    }
+    
+    public void SetImage(Sprite sprite)
+    {
+        statusImage.sprite = sprite;
     }
 
 

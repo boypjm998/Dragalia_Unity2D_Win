@@ -134,7 +134,14 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
         
     }
 
-    protected void GetBehavior()
+    public void SetBehavior(TextAsset behaviorTextAsset)
+    {
+        this.behaviorTextAsset = behaviorTextAsset;
+        GetBehavior();
+    }
+    
+
+        protected void GetBehavior()
     {
         _pattern = JsonUtility.FromJson<EnemyActionPattern>(behaviorTextAsset.text);
         foreach (var phase in _pattern.phasePattern)
@@ -165,6 +172,16 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
 
     public override void ActionEnd(bool substateIncrement = true)
     {
+        print("调用一次ActionEnd "+substateIncrement);
+        
+        if (substateIncrement == false && ((_currentActionStage.unbreakable)||controllAfflictionProtect))
+        {
+            base.ActionEnd(false);
+            print("INCREMENET FALSE");
+            return;
+        }
+
+
         print(_currentActionStage.jump_action);
         if (_currentActionStage.jump_action == "next")
         {

@@ -70,6 +70,8 @@ public class EnemyControllerTherian : EnemyController
     protected override void OnDeath()
     {
         base.OnDeath();
+        if(_statusManager.currentHp > 0)
+            return;
         StartCoroutine(DeathRoutine());
     }
     
@@ -146,11 +148,37 @@ public class EnemyControllerTherian : EnemyController
         anim.Play("defeat");
         yield return null;
         
-        yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f);
+        yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f);
         anim.speed = 0;
         
-        if(isSummonEnemy)
+        if (disappearTimeAfterDeath > 0)
+        {
+            yield return new WaitForSeconds(disappearTimeAfterDeath);
             Destroy(gameObject);
+        }
+        
+    }
+    
+    public override void SetActionUnable(bool flag)
+    {
+        if (flag)
+        {
+            anim.SetBool("hurt",true);
+            
+            hurt = true;
+            //moveEnable = false;
+            //_behavior.isAction = true;
+            isMove = 0;
+        }
+        else
+        {
+            anim.SetBool("hurt",false);
+            hurt = false;
+            //moveEnable = true;
+            //_behavior.isAction = false;
+            // if(breakRoutine == null)
+            //anim.Play("idle");
+        }
         
     }
 }

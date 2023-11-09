@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +37,11 @@ public class AnimationEventSender_C010_NPC : AnimationEventSender
         _attackManagerSp.ComboAttack3();
     }
 
+    public override void OnStandardAttackEnter()
+    {
+        
+    }
+
     protected void Skill1(int eventID)
     {
         if (eventID == 1)
@@ -50,6 +56,16 @@ public class AnimationEventSender_C010_NPC : AnimationEventSender
         {
             _attackManagerSp.Skill1_Appear();
         }
+    }
+
+    protected void Skill4()
+    {
+        _attackManagerSp.Skill4(0);
+    }
+
+    protected void ReplayAnim()
+    {
+        _attackManagerSp.Skill1_Replay();
     }
 
     protected void Skill2()

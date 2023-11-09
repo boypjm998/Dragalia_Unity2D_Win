@@ -130,12 +130,10 @@ public class AttackManagerDagger : AttackManager
     
     public virtual void Skill4(int eventID)
     {
-        _statusManager.HPRegenImmediately(0,10);
+        _statusManager.HPRegenImmediately(0,10,true);
         BattleEffectManager.Instance.SpawnHealEffect(gameObject);
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
-        _statusManager.ObtainTimerBuff
-        ((int)BasicCalculation.BattleCondition.HealOverTime,
-            -10,15);
+        _statusManager.ObtainHealOverTimeBuff(10,15,true);
     }
 
 

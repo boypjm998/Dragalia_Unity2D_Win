@@ -1,0 +1,89 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 10000, 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 1,
+      "args": [65]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "buff",
+          "args": [ 2, 30 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 12000, 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 1 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 0,
+      "args": []
+    }
+  ]
+}

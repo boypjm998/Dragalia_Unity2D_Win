@@ -6,10 +6,37 @@ using UnityEngine;
 public class EnemyOneWayPlatformEffector : MonoBehaviour
 {
     StandardGroundSensor groundSensor;
+
+    private int bugFix = 0;
+    private Rigidbody2D rigid;
+    public Collider2D platformSensor;
     // Start is called before the first frame update
     void Start()
     {
+        rigid = GetComponentInParent<Rigidbody2D>();
+        platformSensor = GetComponent<Collider2D>();
         groundSensor = transform.parent.GetComponentInChildren<StandardGroundSensor>();
+    }
+
+    private void FixedUpdate()
+    {
+        if (rigid.velocity.y == 0 && !groundSensor.currentPlatform && !groundSensor.currentGround)
+        {
+            bugFix++;
+        }
+        else
+        {
+            bugFix = 0;
+        }
+
+        if (bugFix > 300)
+        {
+            rigid.position += new Vector2(-transform.localScale.x, 0.01f);
+            bugFix = 0;
+        }
+
+
+
     }
 
     // Update is called once per frame

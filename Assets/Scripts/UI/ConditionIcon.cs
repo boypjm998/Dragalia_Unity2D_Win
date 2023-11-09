@@ -73,7 +73,8 @@ public class ConditionIcon : MonoBehaviour
             sb.Append(val.ToString());
             sb.Append("%");
             _text.text = sb.ToString();
-        }else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue)
+        }
+        else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue)
         {
             textObj.SetActive(true);
             int val = (int)(_statusManager.GetConditionTotalValue(conditionInfo.buffID));
@@ -85,7 +86,8 @@ public class ConditionIcon : MonoBehaviour
             StringBuilder sb = new StringBuilder();
             sb.Append(val.ToString());
             _text.text = sb.ToString();
-        }else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.Level)
+        }
+        else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.Level)
         {
             textObj.SetActive(true);
             int val = (int)(_statusManager.GetConditionTotalValue(conditionInfo.buffID));
@@ -96,6 +98,19 @@ public class ConditionIcon : MonoBehaviour
 
             StringBuilder sb = new StringBuilder();
             sb.Append("Lv." + val.ToString());
+            _text.text = sb.ToString();
+        }
+        else if (conditionInfo.DisplayType == BattleCondition.buffEffectDisplayType.EnergyOrInspiration)
+        {
+            textObj.SetActive(true);
+            int val = (int)(_statusManager.GetConditionTotalValue(conditionInfo.buffID));
+            if (val > 5)
+            {
+                val = 5;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"×{val}");
             _text.text = sb.ToString();
         }
     }

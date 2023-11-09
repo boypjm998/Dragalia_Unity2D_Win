@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ForcedAttackFromPlayer : AttackFromPlayer
 {
-    private ActorController ac;
+    //private ActorController ac;
     public GameObject target;
     public List<GameObject> extraTargets = new();
     public float triggerTime;

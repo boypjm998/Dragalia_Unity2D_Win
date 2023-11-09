@@ -49,9 +49,15 @@ public class CustomRangedFromEnemy : AttackFromEnemy
         {
             if (Avoidable == AvoidableProperty.Red)
             {
-                if(collision.GetComponentInParent<IKnockbackable>().GetDodge())
+                var knockbackable = collision.GetComponentInParent<IKnockbackable>();
+                if (knockbackable.GetDodge())
+                {
+                    knockbackable.InvokeDodge(this, enemySource);
                     //如果是红圈并且角色在技能中
                     return;
+                }
+
+                
                 
                 var npcController = collision.GetComponentInParent<NpcController>();
                 if (npcController != null)
@@ -87,5 +93,11 @@ public class CustomRangedFromEnemy : AttackFromEnemy
     protected override void OnDestroy()
     {
         base.OnDestroy();
+
+        if (ac != null)
+        {
+            ac.OnAttackInterrupt -= DestroyContainer;
+        }
+
     }
 }

@@ -15,7 +15,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     protected int jumpTime = 2;
     protected float jumpAscentTime = 0.5f;
     [SerializeField] protected float jumpHeight = 5f;
-    public float disappearTimeAfterDeath = 0;
+    
     
     
     public bool dodging = false;
@@ -57,6 +57,11 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         if(canDeath)
             _statusManager.OnHPBelow0 += OnDeath;
         currentKBRes = _statusManager.knockbackRes;
+        
+        
+        _statusManager.OnControlAfflictionRemoved += OnControlAfflictionRemoved;
+        
+        
 
         _groundSensor.IsGround += GroundCheck;
         mapInfo = BattleStageManager.InitMapInfo();
@@ -348,6 +353,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         if (VerticalMoveRoutine != null)
             VerticalMoveRoutine = null;
+        
+        print("Enter Moving To Same Ground");
         
         TurnMove(target);
         if (CheckTargetStandOnSameGround(target) == 0 && Mathf.Abs(GetTargetDistanceX(target)) <= arriveDistanceX)
@@ -712,6 +719,15 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         isAction = false;
     }
 
+    /// <summary>
+    /// 只在x轴上移动
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="maxFollowTime"></param>
+    /// <param name="minDistance"></param>
+    /// <param name="maxDistance"></param>
+    /// <param name="continueThoughConditionOK"></param>
+    /// <returns></returns>
     public virtual IEnumerator KeepDistanceFromTarget(GameObject target, float maxFollowTime, float minDistance, float maxDistance = 999f, bool continueThoughConditionOK = false)
     {
         isAction = true;
@@ -871,6 +887,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         float distanceY = 0;
         if (groundTargetAttached)
         {
+            print("PlayerGroundAttached");
             distanceY = GetTargetGroundDistanceY(groundTargetAttached);
         }
         else
@@ -886,10 +903,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             yield break;
         }
         
-        //print(distanceY);
         if ((Math.Abs(distanceY) > jumpHeight))
         {
-            print("2段跳");
+            //print("2段跳");
             Jump();
             yield return new WaitUntil(() => rigid.velocity.y < 0.5f);
             
@@ -909,7 +925,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             //二段跳
         }else if (Math.Abs(distanceY) < jumpHeight && Math.Abs(distanceY) > requiredY)
         {
-            print("一段跳");
+            //print("一段跳");
             Jump();
             
             //yield return new WaitUntil(() => rigid.velocity.y < 0.5f);
@@ -1259,6 +1275,17 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     }
 
+    public void StartKnockback(float time, float force, Vector2 kbDir)
+    {
+        if (KnockbackRoutine == null)
+        {
+            SetVelocity(rigid.velocity.x,0);
+            SetActionUnable(true);
+            StartCoroutine(KnockBackEffect(time, force, kbDir));
+        }
+
+        
+    }
 
     protected virtual IEnumerator KnockBackEffect(float time,float force, Vector2 kbDir)
     {
@@ -1373,8 +1400,12 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             if (counterOn && kbpower > currentKBRes+_statusManager.GetKBResBuff()
                           && _statusManager is SpecialStatusManager)
             {
-                DamageNumberManager.GenerateCounterText(transform);
-                atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+                var container = atkBase.GetComponentInParent<AttackContainer>();
+                if (container.IfODCounter == false)
+                {
+                    DamageNumberManager.GenerateCounterText(transform, true);
+                    atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
+                }
             }
 
             return;
@@ -1440,7 +1471,38 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         anim.speed = percentage;
     }
-    
+
+    protected override void OnReceiveControlAffliction()
+    {
+        hurt = true;
+        SetCounter(false);
+        // base.OnReceiveControlAffliction();
+        
+        if (_behavior.currentAction != null)
+        {
+            _behavior.StopCoroutine(_behavior.currentAction);
+            _behavior.currentAction = null;
+        }
+
+        if (_behavior.currentMoveAction != null)
+        {
+            _behavior.StopCoroutine(_behavior.currentMoveAction);
+            _behavior.currentMoveAction = null;
+        }
+            
+        if (_behavior.currentAttackAction != null) {
+            _behavior.StopCoroutine(_behavior.currentAttackAction);
+            _behavior.currentAttackAction = null;
+        }
+
+        if (_behavior.controllAfflictionProtect)
+        {
+            StageCameraController.SwitchMainCamera();
+        }
+
+
+    }
+
     public override void OnHurtEnter()
     {
         
@@ -1498,6 +1560,11 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
         transform.GetChild(0).GetComponentInChildren<AnimationEventSender_Enemy>()?.ChangeFaceExpression(0f);
 
+        // if (_behavior.controllAfflictionProtect)
+        // {
+        //     _behavior.ActionEnd(false);
+        // }
+
     }
 
     public override void OnAttackEnter()
@@ -1527,11 +1594,13 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         isMove = 0;
         BattleEffectManager.Instance.PlayBreakEffect();
         SetCounter(false);
-        print((_statusManager as SpecialStatusManager).breakTime);
+        //print((_statusManager as SpecialStatusManager).breakTime);
         UI_BossODBar.Instance?.ODBarClear();
         breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
         
     }
+    
+    
     
     public override void OnBreakExit()
     {
@@ -1547,9 +1616,17 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         else spStatus.currentBreak = 0.1f;
         
         spStatus.broken = false;
-        isAction = false;
-        _behavior.ActionEnd();
-        _behavior.isAction = false;
+
+        if (_statusManager.controlRoutine == null)
+        {
+            _behavior.ActionEnd(false);
+            _behavior.isAction = false;
+            isAction = false;
+        }
+
+        
+        
+        
         UI_BossODBar.Instance?.ODBarRecharge();
     }
 
@@ -1561,9 +1638,17 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             _behavior.isAction = true;
             if (_behavior.currentAction != null)
             {
-                StopCoroutine(_behavior.currentAction);
+                _behavior.StopCoroutine(_behavior.currentAction);
                 _behavior.currentAction = null;
             }
+
+            if (_behavior.currentMoveAction != null)
+            {
+                _behavior.StopCoroutine(_behavior.currentMoveAction);
+                _behavior.currentMoveAction = null;
+            }
+
+            
             spStatus.broken = true;
             SetKBRes(999);
             anim.SetBool("break",true);
@@ -1608,6 +1693,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         //TODO:信赖之力不会导致死亡
 
         base.OnDeath();
+        if(_statusManager.currentHp > 0)
+            return;
         StartCoroutine(DeathRoutine());
     }
 
@@ -1679,14 +1766,13 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             flashBody.SetActive(false);
             var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
             flashWeapon.SetActive(false);
-            
             hurtEffectCoroutine = null;
-            
         }
 
         //yield return new WaitUntil(()=>!anim.GetCurrentAnimatorStateInfo(0).IsName("hurt"));
         yield return null;
-        
+        moveEnable = false;
+        isMove = 0;
         anim.Play("defeat");
         yield return null;
         anim.SetFloat("forward",0);

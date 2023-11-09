@@ -348,15 +348,11 @@ public class AttackManager_C001 : AttackManager
 
     public void Skill4()
     {
-        _statusManager.HPRegenImmediately(0,10);
+        _statusManager.HPRegenImmediately(0,10,true);
         _effectManager.SpawnHealEffect(gameObject);
         //Instantiate(healbuff, transform.position, Quaternion.identity, BuffFXLayer.transform);
-        _statusManager.ObtainTimerBuff
-            ((int)BasicCalculation.BattleCondition.HealOverTime,
-                -10,15);
+        _statusManager.ObtainHealOverTimeBuff(10,15,true);
         
-        // if(_statusManager.healRoutine == null)
-        //     _statusManager.healRoutine = StartCoroutine(_statusManager.HotRecoveryTick());
     
     }
 

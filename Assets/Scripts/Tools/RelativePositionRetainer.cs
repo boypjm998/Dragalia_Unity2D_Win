@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class RelativePositionRetainer : MonoBehaviour
 {
-    private Transform _parent;
-    private Vector3 _relativePosition;
+    [SerializeField] protected Transform _parent;
+    protected Vector3 _relativePosition;
     
     public void SetParent(Transform _parent)
     {
@@ -13,10 +13,7 @@ public class RelativePositionRetainer : MonoBehaviour
         _relativePosition = transform.position - _parent.position;
     }
 
-    void Start()
-    {
-        
-    }
+    
 
     // Update is called once per frame
     void Update()

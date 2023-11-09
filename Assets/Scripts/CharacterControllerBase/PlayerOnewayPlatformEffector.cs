@@ -38,7 +38,7 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
         attackStates = new string[]
         {
             "combo","crunch", "recover","airdash","dash","s1","s2","s3","s4","s1_boost","s2_boost","s3_boost","combo1",
-            "combo2","combo3","combo4","combo5","combo6","combo7","combo8","combo9"
+            "combo2","combo3","combo4","combo5","combo6","combo7","combo8","combo9","force_attack"
         };
     }
 

@@ -21,6 +21,21 @@ public class UI_BuffLogPopManager : MonoBehaviour
     public Queue<string> ConditionStr;
     public Queue<(int,int)> ConditionStrInfo;
     private GlobalController.Language _language;
+    
+    public enum SpecialConditionType
+    {
+        Reset,
+        ReliefAllDebuff,
+        ReliefAllAffliction,
+        SPCharge,
+        CounterReady,
+        DModePurged,
+        Energized,
+        Inspired,
+        SkillUpgradedReset,
+        ReduceSigilTime,
+        ImmuneToControlAffliction
+    }
 
     private void Awake()
     {
@@ -128,7 +143,9 @@ public class UI_BuffLogPopManager : MonoBehaviour
             sb.Append("<sprite=" + (condition.buffID-1) + ">");
         }
 
-        if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value || condition.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue)
+        if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value ||
+            condition.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue ||
+            condition.DisplayType == BattleCondition.buffEffectDisplayType.EnergyOrInspiration)
         {
             var formatStr = String.Format
                 (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
@@ -178,6 +195,36 @@ public class UI_BuffLogPopManager : MonoBehaviour
             var formatStr = String.Format
                 (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),String.Empty);
             sb.Append(formatStr);
+        }else if (condition.DisplayType == BattleCondition.buffEffectDisplayType.EnergyOrInspiration)
+        {
+            if (condition.effect < 5)
+            {
+                var formatStr = String.Format
+                    (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
+                sb.Append(formatStr);
+            }
+            else
+            {
+                if (condition.buffID == (int)BasicCalculation.BattleCondition.Energy)
+                {
+                    if (_language == GlobalController.Language.ZHCN)
+                    {
+                        sb.Append("超强斗志");
+                    }
+                    else if(_language == GlobalController.Language.EN)
+                        sb.Append("Energized");
+                }else if (condition.buffID == (int)BasicCalculation.BattleCondition.Inspiration)
+                {
+                    if (_language == GlobalController.Language.ZHCN)
+                    {
+                        sb.Append("超强灵感");
+                    }
+                    else if(_language == GlobalController.Language.EN)
+                        sb.Append("Inspired");
+                }
+
+
+            }
         }
         else
         {
@@ -227,27 +274,59 @@ public class UI_BuffLogPopManager : MonoBehaviour
     }
     private void CustomText_ZH(string message)
     {
-        switch (message)
+        //将message解析为枚举SpecialConditionType的类型,存在msgType
+        
+        var msgType = (SpecialConditionType)Enum.Parse(typeof(SpecialConditionType), message);
+
+        switch (msgType)
         {
-            case "Reset":
+            case SpecialConditionType.Reset:
                 EnqueueNewCondition("全状态重置");
                 ConditionStrInfo.Enqueue(new(1000,0));//Other
                 break;
-            case "ReliefAllDebuff":
+            case SpecialConditionType.ReliefAllDebuff:
                 EnqueueNewCondition("全减益状态解除");
                 ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
-            case "ReliefAllAffliction":
+            case SpecialConditionType.ReliefAllAffliction:
                 EnqueueNewCondition("全异常状态解除");
                 ConditionStrInfo.Enqueue(new(1002,0));//Other
                 break;
-            case "SPCharge":
+            case SpecialConditionType.SPCharge:
                 EnqueueNewCondition("技能充能");
                 ConditionStrInfo.Enqueue(new(1003,0));//Other
                 break;
-            case "CounterReady":
+            case SpecialConditionType.CounterReady:
                 EnqueueNewCondition("反击待命");
                 ConditionStrInfo.Enqueue(new(1004,0));//Other
+                break;
+            case SpecialConditionType.DModePurged:
+                EnqueueNewCondition("龙化解除");
+                ConditionStrInfo.Enqueue(new(1005,0));//Other
+                break;
+            case SpecialConditionType.Energized:
+                EnqueueNewCondition("超强斗志发动");
+                ConditionStrInfo.Enqueue(new(1007,0));//Other
+                break;
+            case SpecialConditionType.Inspired:
+                EnqueueNewCondition("超强灵感发动");
+                ConditionStrInfo.Enqueue(new(1008,0));//Other
+                break;
+            case SpecialConditionType.SkillUpgradedReset:
+                EnqueueNewCondition("技能重置");
+                ConditionStrInfo.Enqueue(new(1009,0));//Other
+                break;
+            case SpecialConditionType.ReduceSigilTime:
+                EnqueueNewCondition("圣痕枷锁剩余时间减少");
+                ConditionStrInfo.Enqueue(new(1010,0));//Other
+                break;
+            case SpecialConditionType.ImmuneToControlAffliction:
+                EnqueueNewCondition("免疫控制类异常状态");
+                ConditionStrInfo.Enqueue(new(1011,0));//Other
+                break;
+            default:
+                EnqueueNewCondition("未知状态");
+                ConditionStrInfo.Enqueue(new(1006,0));//Other
                 break;
                 
         }
@@ -284,27 +363,56 @@ public class UI_BuffLogPopManager : MonoBehaviour
     
     private void CustomText_EN(string message)
     {
-        switch (message)
+        var msgType = (SpecialConditionType)Enum.Parse(typeof(SpecialConditionType), message);
+        switch (msgType)
         {
-            case "Reset":
+            case SpecialConditionType.Reset:
                 EnqueueNewCondition("Reset All Status");
                 ConditionStrInfo.Enqueue(new(1000,0));//Other
                 break;
-            case "ReliefAllDebuff":
+            case SpecialConditionType.ReliefAllDebuff:
                 EnqueueNewCondition("Recover from Debuffs");
                 ConditionStrInfo.Enqueue(new(1001,0));//Other
                 break;
-            case "ReliefAllAffliction":
+            case SpecialConditionType.ReliefAllAffliction:
                 EnqueueNewCondition("Recover from Afflictions");
                 ConditionStrInfo.Enqueue(new(1002,0));//Other
                 break;
-            case "SPCharge":
+            case SpecialConditionType.SPCharge:
                 EnqueueNewCondition("Skill Prep");
                 ConditionStrInfo.Enqueue(new(1003,0));//Other
                 break;
-            case "CounterReady":
+            case SpecialConditionType.CounterReady:
                 EnqueueNewCondition("Counter Stance");
                 ConditionStrInfo.Enqueue(new(1004,0));//Other
+                break;
+            case SpecialConditionType.DModePurged:
+                EnqueueNewCondition("Shapeshifting Purged");
+                ConditionStrInfo.Enqueue(new(1005,0));//Other
+                break;
+            case SpecialConditionType.Energized:
+                EnqueueNewCondition("Energized");
+                ConditionStrInfo.Enqueue(new(1007,0));//Other
+                break;
+            case SpecialConditionType.Inspired:
+                EnqueueNewCondition("Inspired");
+                ConditionStrInfo.Enqueue(new(1008,0));//Other
+                break;
+            case SpecialConditionType.SkillUpgradedReset:
+                EnqueueNewCondition("Skill Reset");
+                ConditionStrInfo.Enqueue(new(1009,0));//Other
+                break;
+            case SpecialConditionType.ReduceSigilTime:
+                EnqueueNewCondition("Unlocking Sigil...");
+                ConditionStrInfo.Enqueue(new(1010,0));//Other
+                break;
+            case SpecialConditionType.ImmuneToControlAffliction:
+                EnqueueNewCondition("Control Affliction Immunity");
+                ConditionStrInfo.Enqueue(new(1011,0));//Other
+                break;
+            default:
+                EnqueueNewCondition("Unknown Status");
+                ConditionStrInfo.Enqueue(new(1006,0));//Other
                 break;
                 
         }
