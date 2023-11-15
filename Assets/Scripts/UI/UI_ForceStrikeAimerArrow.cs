@@ -42,6 +42,8 @@ public class UI_ForceStrikeAimerArrow : MonoBehaviour
     {
         fx.GetChild(1).gameObject.SetActive(false);
         fx.GetChild(0).gameObject.SetActive(false);
+        if (ac.hurt)
+            currentFSLV = 0;
         _attackManagerRanged.ForceStrikeRelease(currentFSLV);
     }
 

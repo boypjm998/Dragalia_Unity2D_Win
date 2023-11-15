@@ -21,9 +21,9 @@ public class GlobalController : MonoBehaviour
     public int clickEffCD = 0;
     public enum Language
     {
-        ZHCN,
-        JP,
-        EN
+        ZHCN = 0,
+        JP = 2,
+        EN = 1
     }
 
     public enum GameState
@@ -1461,7 +1461,10 @@ public class GlobalController : MonoBehaviour
         
         var path = Application.streamingAssetsPath + "/savedata/GameOptions.json";
         
-        var jsonStr = JsonUtility.ToJson(gameOptions);
+        
+        //var jsonStr = JsonUtility.ToJson(gameOptions);
+        var jsonStr = JsonConvert.SerializeObject(gameOptions);
+        
 
         try
         {
@@ -1516,4 +1519,6 @@ public class GameOptions
     /// Music, Voice, SoundEffect
     /// </summary>
     public int[] soundSettings = new[] { 1, 1, 1 };
+
+    public List<AchievementInfo> achievementList = new();
 }

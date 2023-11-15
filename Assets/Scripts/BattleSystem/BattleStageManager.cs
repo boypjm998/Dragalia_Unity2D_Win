@@ -68,6 +68,11 @@ public class BattleStageManager : MonoBehaviour
     public static int currentDisplayingBossInfo = 1;//正在显示的boss信息
 
     public Action OnMapInfoRefresh;
+    public Action<string> OnQuestCleared;
+    /// <summary>
+    /// 退出任务时调用，参数为(任务ID)
+    /// </summary>
+    public Action<string> OnQuestQuit;
 
 
     public delegate void StageManagerIntegerDelegate(int id);
@@ -579,7 +584,7 @@ public class BattleStageManager : MonoBehaviour
 
 
             targetStat.OnTakeDirectDamage?.Invoke(targetStat);
-            targetStat.OnTakeDirectDamageFrom?.Invoke(targetStat,playerstat);
+            targetStat.OnTakeDirectDamageFrom?.Invoke(targetStat,playerstat,damageM[i]);
             attackStat.OnAttackDealDamage?.Invoke(playerstat,targetStat,attackStat,damageM[i]);
 
 
@@ -1276,6 +1281,7 @@ public class BattleStageManager : MonoBehaviour
     IEnumerator GameClearedRoutine(float loseControllTime = 0f)
     {
         //var fxs = GameObject.Find("AttackFXPlayer");
+        OnQuestCleared?.Invoke(quest_id);
 
         var playerinput = player.GetComponent<PlayerInput>();
         player.GetComponent<StatusManager>().ResetAllStatusForced();

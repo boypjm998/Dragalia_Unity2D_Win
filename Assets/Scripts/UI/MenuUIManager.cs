@@ -586,6 +586,11 @@ public class MenuUIManager : MonoBehaviour
                 activeList = new[] { "Help_About" };
                 break;
             }
+            case 105:
+            {
+                activeList = new[] { "AchievementList" };
+                break;
+            }
 
         }
         

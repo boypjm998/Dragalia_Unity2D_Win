@@ -54,7 +54,8 @@ public class Projectile_C018_1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            inList.Remove(other.transform.parent.gameObject);
+            inList.Remove(other.gameObject);
+            //inList.Remove(other.transform.parent.gameObject);
         }
     }
 }

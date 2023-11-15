@@ -29,7 +29,7 @@ public abstract class AttackBase : MonoBehaviour
     public AttackBaseDelegate OnAttackHit;
     public AttackBaseDelegate BeforeAttackHit;
     /// <summary>
-    /// 当造成伤害时触发，arg1:自身 arg2:目标 ,arg3:攻击 arg4:造成的伤害
+    /// 当造成伤害时(前)触发，arg1:自身 arg2:目标 ,arg3:攻击 arg4:造成的伤害
     /// </summary>
     public Action<StatusManager, StatusManager, AttackBase, float> OnAttackDealDamage;
 

@@ -38,6 +38,7 @@ public class UI_PauseMenu : MonoBehaviour
         {
             button.interactable = false;
         }
+        _battleStageManager.OnQuestQuit?.Invoke(_battleStageManager.quest_id);
         FindObjectOfType<GlobalController>().TestReturnMainMenu();
     }
 

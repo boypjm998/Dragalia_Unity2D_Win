@@ -101,7 +101,7 @@ public class ActorController_c018 : ActorControllerRangedWithFS
         }
     }
 
-    private void RemoveBlessingBuff(StatusManager myStatus,StatusManager enemyStatus)
+    private void RemoveBlessingBuff(StatusManager myStatus,StatusManager enemyStatus,float damage)
     {
         if (Projectile_C018_1.Instance != null)
         {

@@ -144,7 +144,7 @@ public class StatusManager : MonoBehaviour
     /// <summary>
     /// arg1:自身 arg2:攻击者
     /// </summary>
-    public DualStatusManagerDelegate OnTakeDirectDamageFrom;
+    public Action<StatusManager,StatusManager,float> OnTakeDirectDamageFrom;
     public DualStatusManagerDelegate BeforeTakeDirectDamageFrom;
     
 

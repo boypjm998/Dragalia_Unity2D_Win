@@ -74,7 +74,7 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
         
           print((!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled)?"正在蓄力":"没有蓄力");
         
-          if(!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled
+          if(!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled && !dodging
              && !pi.hurt && grounded && !pi.isSkill && !anim.GetCurrentAnimatorStateInfo(0).IsName("walk"))
           {
                if (forceLevel < 0)
@@ -108,7 +108,8 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
                {
                     forceLevel = -1;
                     OnForceAttackExit();
-                    anim.Play("idle");
+                    if(!pi.hurt)
+                         anim.Play("idle");
                     forcingTime = 0;
                }
           }
