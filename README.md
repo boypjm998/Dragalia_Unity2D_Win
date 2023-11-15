@@ -1,6 +1,6 @@
 # DL_2D_Win (Not Realeased) (2023/11/15）
 
-[English Version](./README_en.md)
+[English Version](./README_EN.md)
 
 ## v0.2.6
 
