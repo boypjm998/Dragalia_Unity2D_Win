@@ -12,7 +12,7 @@
 **Adjustments**
 
 1. Modified the algorithm of ability effect calculation to optimize game performance
-2. Adjusted the action logic of the adventurer "Sheila", fixed the issue where the adventurer would warp to the platform below when performing some attacks at the edge of the platform.
+2. Adjusted the action logic of the adventurer "Sheila", fixed the issue where the adventurer would move to the platform below when performing some attacks at the edge of the platform.
 
 **Bug Fixes**
 
