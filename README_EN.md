@@ -67,7 +67,7 @@
 2. Modify Zena's ability 'Auspex's Prayer', add an additional effect of increasing the critical rate by 8% when combo counts more than 15.
 3. With the strengthening of some adventurers, the HP of some BOSSs is increased.
 4. Now some enemy attacks will forcibly cancel the player's shapeshifting.
-5. In Zena's Trial Legend, when the player gets the gain from 'Glorious Sanctuary', there will be special effects to prompt its layers.
+5. In Zena's Trial Legend, when the player gets the gain from 'Glorious Sanctuary', there will be special visual effects to prompt its layers.
 
 ---
 
