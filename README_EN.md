@@ -58,16 +58,16 @@
 1. In Zena's Trial Legend, the BOSS may behave abnormally under certain circumstances.
 2. When the player uses Sheila and continuously holds down the dodge and attack key, the actions will interrupt each other indefinitely.
 3. In Sheila's Trial Legend, the background turns to black when the player clears the quest.
-4. In Sheila's Trial Legend, after the Boss uses the skill "Blazing Azure" and enters the break state, Boss' will behave abnormally under certain circumtances.
+4. In Sheila's Trial Legend, after the Boss uses the skill "Blazing Azure" and enters the break state, Boss will behave abnormally under certain circumtances.
 5. In Sheila's Trial Legend, the color of the small map mark of "Blazing Azure" is displayed incorrectly.
 
 **Adjustments**
 
 1. Modify Ilia's ability 'Critical Output', increase the critical damage to the "Flashburn" foes: 30% => 50%.
 2. Modify Zena's ability 'Auspex's Prayer', add an additional effect of increasing the critical rate by 8% when combo counts more than 15.
-3. With the strengthening of some adventurers, the HP of some BOSSs is increased.
+3. With the strengthening of some adventurers, the HP of some Enemies is increased.
 4. Now some enemy attacks will forcibly cancel the player's shapeshifting.
-5. In Zena's Trial Legend, when the player gets the gain from 'Glorious Sanctuary', there will be special visual effects to prompt its layers.
+5. In Zena's Trial Legend, when the player gets the gain from 'Glorious Sanctuary', there will be special visual effects to display its buff count.
 
 ---
 
