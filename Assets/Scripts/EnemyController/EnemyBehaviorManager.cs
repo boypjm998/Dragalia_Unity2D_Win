@@ -60,7 +60,7 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
         
         if (phase.jumpOutCondition == EnemyActionPattern.PhasePattern.JumpOutCondition.HP)
         {
-            var cond = float.Parse(phase.args[0]) / 100f;
+            var cond = ObjectExtensions.ParseInvariantFloat(phase.args[0]) / 100f;
             print(phase.loopCount);
             if (phase.args.Length == 2)
             {
@@ -200,7 +200,7 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
             CheckCondition(cond_args, out dest);
             print("IS CONDITIONAL,JUMP TO "+dest);
             this.substate = dest;
-        }else if (_currentActionStage.jump_action == "to")
+        }else if(_currentActionStage.jump_action == "to")
         {
             base.ActionEnd(false);
             var jmp_args = _currentActionStage.jump_args;
@@ -214,6 +214,27 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
             var len = jmp_args.Length;
             var rand = UnityEngine.Random.Range(0, len);
             this.substate = int.Parse(jmp_args[rand]);
+        }else if (_currentActionStage.jump_action == "to+")
+        {
+            base.ActionEnd(false);
+            var jmp_args = _currentActionStage.jump_args;
+            this.substate = int.Parse(jmp_args[0])+ substate;
+        }
+        else if (_currentActionStage.jump_action == "random+")
+        {
+            base.ActionEnd(false);
+            var jmp_args = _currentActionStage.jump_args;
+            var len = jmp_args.Length;
+            var rand = UnityEngine.Random.Range(0, len);
+            this.substate = int.Parse(jmp_args[rand])+substate;
+        }else if (_currentActionStage.jump_action == "conditional+")
+        {
+            base.ActionEnd(false);
+            var cond_args = _currentActionStage.jump_args;
+            int dest;
+            CheckCondition(cond_args, out dest);
+            print("IS CONDITIONAL,JUMP TO " + dest);
+            this.substate = dest + substate;
         }
         else
         {

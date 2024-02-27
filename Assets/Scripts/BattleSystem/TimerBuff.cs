@@ -9,6 +9,8 @@ public class TimerBuff : BattleCondition
 {
     public int extra_iconID = -1;
 
+    
+
         #region Constructors
         
         
@@ -71,6 +73,19 @@ public class TimerBuff : BattleCondition
             this.buffID = 999;
         }
 
+        public TimerBuff(TimerBuff origin, int extraIconID)
+        {
+            this.buffID = origin.buffID;
+            this.duration = origin.duration;
+            this.effect = origin.effect;
+            this.DisplayType = origin.DisplayType;
+            this.maxStackNum = origin.maxStackNum;
+            this.lastTime = origin.duration;
+            this.specialID = origin.specialID;
+            this.dispellable = origin.dispellable;
+            this.extra_iconID = extraIconID;
+        }
+
 
 
 
@@ -100,18 +115,11 @@ public class TimerBuff : BattleCondition
             
         }
 
+       
+       
 
 
-        public override void BuffStart()
-        {
-            
-        }
-
-        public override void BuffExpired()
-        {
-            
-            throw new System.NotImplementedException();
-        }
+       
 
         public override void BuffDispell()
         {
@@ -120,6 +128,9 @@ public class TimerBuff : BattleCondition
 
         public override Sprite GetIcon()
         {
+            if (buffIcon != null)
+                return buffIcon;
+
             StringBuilder sb = new StringBuilder();
             sb.Append("UI/InBattle/BuffIcons/Icons/Icon_Buff_");
             string id = this.buffID.ToString();
@@ -130,8 +141,12 @@ public class TimerBuff : BattleCondition
             sb.Append(id);
 
             var sprite = Resources.Load<Sprite>(sb.ToString());
+
+            buffIcon = sprite;
+
             if (sprite != null)
                 return sprite;
+            
             else return null;
 
         }
@@ -154,6 +169,8 @@ public class AdvancedTimerBuff : TimerBuff
         else if(id == 3)
             effect3 = val;
     }
+
+    
 
     public AdvancedTimerBuff(int buffID, float effect, float effect2, float effect3, float duration,
         int maxStack = 100, int spID = -1, float effectArg = 1)

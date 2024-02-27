@@ -5,6 +5,7 @@ using CharacterSpecificProjectiles;
 using DG.Tweening;
 using GameMechanics;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyMoveController_HB04 : EnemyMoveManager
 {
@@ -24,10 +25,11 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         Projectile,
         Buff,
         HPBelow70,
-        Defeat
+        Defeat,
+        ChangePhase
     }
 
-    private MyVoiceGroup[] _voiceGroups;
+    //private MyVoiceGroup[] _voiceGroups;
 
     protected override void Awake()
     {
@@ -39,12 +41,15 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
     protected override void Start()
     {
         base.Start();
-        
+        OnInit();
+    }
+
+    protected virtual void OnInit()
+    {
         _statusManager.OnHPDecrease += CheckHealBuff;
         BattleStageManager.Instance.AddFieldAbility(20111);
         _statusManager.OnReviveOrDeath += (()=>voice?.BroadCastMyVoice((int) MyVoiceGroup.Defeat));
     }
-
 
     protected void CheckHealBuff(int dmg, AttackBase atkBase)
     {
@@ -278,10 +283,11 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
 
         bossBanner?.PrintSkillName("HB04_Action05");
         ac.TurnMove(_behavior.targetPlayer);
-
+        ac.OnAttackEnter(999);
+        
         yield return new WaitForSeconds(0.5f);
 
-        ac.OnAttackEnter(999);
+        
 
         anim.Play("s1");
 
@@ -415,9 +421,10 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         
         ac.AppearRenderer();
         ac.TurnMove(_behavior.viewerPlayer);
-        
 
-        StunningGlareAttack(punishment?_behavior.difficulty * 2:1);
+        int difficultyModifier = _behavior.difficulty < 4 ? 1 : 3;
+
+        StunningGlareAttack(punishment?_behavior.difficulty * 2:difficultyModifier);
 
         yield return new WaitForSeconds(1f);
         
@@ -461,7 +468,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         ac.TurnMove(_behavior.viewerPlayer);
         
 
-        StunningGlareAttack(2);
+        StunningGlareAttack(_behavior.difficulty);
 
         yield return new WaitForSeconds(1f);
         
@@ -600,8 +607,9 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
             //              Mathf.Abs(nearestCollider.bounds.min.x - transform.position.x) ?
             //             nearestCollider.bounds.max.x : nearestCollider.bounds.min.x;
             
-            warpPosition = new Vector2(targetPosX, nearestCollider.bounds.max.y + ac.GetActorHeight());
-            print(nearestCollider);
+            warpPosition = new Vector2(targetPosX, nearestCollider.bounds.max.y + 1.3f);
+            print(warpPosition);
+            print(nearestCollider.bounds.max.y);
         }
 
 
@@ -612,6 +620,37 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         yield return new WaitForSeconds(0.1f);
         
         ac.DisappearRenderer();
+        
+        transform.position = warpPosition.SafePosition(Vector2.zero);
+        WarpEffect();
+        yield return new WaitForSeconds(0.1f);
+        
+        ac.AppearRenderer();
+        ac.TurnMove(_behavior.viewerPlayer);
+        
+        QuitAttack();
+    }
+
+    public IEnumerator HB04_Action11_V(float xPos)
+    {
+        yield return _canAction;
+        
+        ac.TurnMove(_behavior.targetPlayer);
+        ac.OnAttackEnter(999);
+        WarpEffect();
+        yield return new WaitForSeconds(0.1f);
+        
+        ac.DisappearRenderer();
+        Vector3 warpPosition;
+
+        if (_behavior.targetPlayer.transform.position.x < 0)
+        {
+            warpPosition = new Vector3(xPos, transform.position.y, 0);
+        }else
+        {
+            warpPosition = new Vector3(-xPos, transform.position.y, 0);
+        }
+        
         
         transform.position = warpPosition.SafePosition(Vector2.zero);
         WarpEffect();
@@ -640,7 +679,6 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         yield return new WaitForSeconds(1f);
 
         float tweenTime;
-
 
         var hints = BlessedWallHintDoubleDirection();
 
@@ -759,6 +797,146 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         anim.Play("idle");
         
         QuitAttack();
+
+    }
+
+    /// <summary>
+    /// 创世巫女
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator HB04_Action14()
+    {
+        _statusManager.OnHPDecrease = null;
+        
+        ac.rigid.velocity = Vector2.zero;
+        //StageCameraController.SwitchMainCamera();
+        yield return new WaitForSeconds(0.25f);
+        
+        WarpEffect();
+        
+        yield return new WaitForSeconds(0.25f);
+        
+        DisappearRenderer();
+        ac.SwapWeaponVisibility(false);
+        
+        transform.position = new Vector2(0, 8);
+        ac.SetFaceDir(1);
+
+        while (!UI_DialogDisplayer.Instance.IsEmpty)
+        {
+            yield return null;
+            print("wait for voice");
+        }
+
+        
+
+        yield return new WaitForSeconds(0.5f);
+        
+
+        voice?.BroadCastSpecificVoice((int)MyVoiceGroup.ChangePhase,0);
+        
+        yield return new WaitForSeconds(2f);
+
+        
+        
+        yield return new WaitUntil(()=>voice.voice.isPlaying == false);
+        StageCameraController.SwitchMainCameraFollowObject(gameObject);
+        
+        WarpEffect();
+        
+        yield return new WaitForSeconds(0.25f);
+        
+        AppearRenderer();
+        //ac.SwapWeaponVisibility(true);
+        anim.Play("transform_1");
+        
+        voice?.BroadCastSpecificVoice((int)MyVoiceGroup.ChangePhase,1);
+        
+        
+        var projectileI =
+            BattleStageManager.Instance.RangedAttackFXLayer.GetComponentInChildren<Projectile_C019_1_Boss>();
+        if(projectileI != null)
+            Destroy(projectileI.gameObject);
+        
+        var projectileII =
+            BattleStageManager.Instance.RangedAttackFXLayer.GetComponentInChildren<Projectile_C019_2_Boss>();
+        if(projectileII != null)
+            Destroy(projectileII.gameObject);
+        
+        var projectileIII =
+            BattleStageManager.Instance.RangedAttackFXLayer.GetComponentInChildren<Projectile_C019_3_Boss>();
+        if(projectileIII != null)
+            Destroy(projectileIII.gameObject);
+        
+        yield return new WaitForSeconds(1.6f);
+
+        var fx = Instantiate(GetProjectileOfFormatName("action14_1"), transform.position + new Vector3(2.4f, 1),
+            Quaternion.identity, RangedAttackFXLayer.transform);
+        
+        yield return new WaitForSeconds(6.25f);
+
+        voice?.BroadCastSpecificVoice((int)MyVoiceGroup.ChangePhase,2);
+        bossBanner?.PrintSkillName("HB04_Action14");
+
+        yield return new WaitForSeconds(2.5f);
+        
+        anim.SetTrigger("next");
+        StageCameraController.SwitchMainCameraFollowObject(fx.transform.Find("HCFX_ElementOrb_01").gameObject);
+        
+        var bg2 = BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Background2") as SpriteRenderer;
+        bg2.DOColor(Color.black, 1f);
+
+
+        yield return new WaitForSeconds(1.25f);
+        
+        CineMachineOperator.Instance.CamaraShake(15f,2f);
+        
+        yield return new WaitForSeconds(0.8f);
+        
+        
+        var whiteScreenImage = GameObject.Find("FullScreenEffect").transform.Find("BlackIn").GetComponent<Image>();
+        whiteScreenImage.color = new Color(1, 1, 1, 0);
+
+        whiteScreenImage.DOFade(1, 1f);
+        //StageCameraController.SwitchMainCameraFollowObject(_behavior.viewerPlayer);
+        
+        yield return new WaitForSeconds(1);
+
+        var environmentRenderers = 
+            BattleEnvironmentManager.Instance.GetAllEnvironmentRenderer();
+
+        foreach (var renderer in environmentRenderers)
+        {
+            if (renderer.name == "Background2")
+            {
+                (renderer as SpriteRenderer).color = new Color(1, 1, 1, 0);
+            }else if (renderer.name == "Background1")
+            {
+                (renderer as SpriteRenderer).color = new Color(1, 1, 1, 1);
+            }else if (renderer.name.StartsWith("eff"))
+            {
+                renderer.gameObject.SetActive(true);
+            }
+            else
+            {
+                renderer.gameObject.SetActive(false);
+            }
+        }
+        
+        whiteScreenImage.DOFade(0, 0.5f);
+        
+        //
+        anim.Play("idle");
+        ac.SwapWeaponVisibility(true);
+        Destroy(fx);
+        StageCameraController.SwitchMainCameraFollowObject(_behavior.viewerPlayer);
+        
+
+        yield return null;
+        
+        QuitAttack();
+        _behavior.currentMoveAction = null;
+
 
     }
 
@@ -881,7 +1059,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
 
     protected void RingOfAffection_Effect()
     {
-
+        InvokeOnUseSkill(4);
 
         var fx = Instantiate(GetProjectileOfFormatName("action04_2"),
             transform.position,
@@ -996,12 +1174,6 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
     
     protected GameObject BlessedWallHintDoubleDirectionR(GameObject hintR, float distance,float stopTime, out float tweenTime)
     {
-        
-        // var hintR = GenerateWarningPrefab("action06_1",
-        //     new Vector3(
-        //         BattleStageManager.Instance.mapBorderR, 0),
-        //     Quaternion.identity, RangedAttackFXLayer.transform);
-        // hintR.transform.localScale = new Vector3(-1, 1, 1);
         var shineHint = hintR.GetComponentInChildren<EnemyAttackHintBarShine>();
         tweenTime = 0.5f;
         
@@ -1013,32 +1185,16 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
             OnComplete(
             () =>
             {
-                // hintR.transform.position = 
-                //     new Vector3(
-                //     (_behavior.targetPlayer.transform.position - new Vector3(-distance, 0)).SafePosition(Vector2.zero).x,
-                //     hintR.transform.position.y, hintR.transform.position.z);
-                // var rPosRetainer = hintR.AddComponent<RelativePositionRetainerAdvanced>();
-                // rPosRetainer.stopTime = stopTime;
-                // rPosRetainer.SetParent(_behavior.targetPlayer.transform);
-                // rPosRetainer.lockType = RelativePositionRetainerAdvanced.LockType.X;
+                
             }
         );
-        
-
-        // tweenerCoreR.OnUpdate(() =>
-        //     tweenerCoreR.ChangeEndValue(
-        //         (_behavior.targetPlayer.transform.position - new Vector3(-distance, 0)).SafePosition(Vector2.zero),
-        //         -1, true));
 
         return hintR;
     }
     
     protected Tweener BlessedWallHintDoubleDirectionL(GameObject hintL, float distance,float stopTime, out float tweenTime)
     {
-        // var hintL = GenerateWarningPrefab("action06_1",
-        //     new Vector3(
-        //         BattleStageManager.Instance.mapBorderL, 0),
-        //     Quaternion.identity, RangedAttackFXLayer.transform);
+        
         var shineHint = hintL.GetComponentInChildren<EnemyAttackHintBarShine>();
 
         var safePosition =
@@ -1048,14 +1204,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         var tweenerCoreL = hintL.transform.DOMoveX(safePosition.x, tweenTime).OnComplete(
             () =>
             {
-                // hintL.transform.position = 
-                //     new Vector3(
-                //         (_behavior.targetPlayer.transform.position - new Vector3(distance, 0)).SafePosition(Vector2.zero).x,
-                //         hintL.transform.position.y, hintL.transform.position.z);
-                // var rPosRetainer = hintL.AddComponent<RelativePositionRetainerAdvanced>();
-                // rPosRetainer.stopTime = stopTime;
-                // rPosRetainer.SetParent(_behavior.targetPlayer.transform);
-                // rPosRetainer.lockType = RelativePositionRetainerAdvanced.LockType.X;
+                
             });
 
         
@@ -1063,6 +1212,8 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         return tweenerCoreL;
     }
 
+    
+    
     protected void StunningGlareAttack(int punishmentModifier = 1)
     {
         var proj = InstantiateRanged(GetProjectileOfFormatName("action07_1"),
@@ -1098,19 +1249,24 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
             }
             
             
-            
+            var stunResDebuff = new TimerBuff((int)BasicCalculation.BattleCondition.StunResDown,
+                100, 3, 1);
 
             var stunDebuff = new TimerBuff((int)BasicCalculation.BattleCondition.Stun,
                 1, 5, 1);
-            
-            
-            
+
+            if (_behavior.difficulty > 3)
+            {
+                atk.AddWithConditionAll(stunResDebuff,100);
+            }
+
+
             if (_behavior.viewerPlayer.transform.localScale.x > 0
                 && _behavior.viewerPlayer.transform.position.x <= transform.position.x)
             {
                 //atk.attackInfo[0].dmgModifier[0] *= punishmentModifier;
                 atk.attackInfo[0].knockbackPower = 200;
-                atk.AddWithConditionAll(stunDebuff,200);
+                atk.AddWithConditionAll(stunDebuff,200,1);
                 
             }
             else if (_behavior.viewerPlayer.transform.localScale.x < 0
@@ -1118,7 +1274,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
             {
                 //atk.attackInfo[0].dmgModifier[0] *= punishmentModifier;
                 atk.attackInfo[0].knockbackPower = 200;
-                atk.AddWithConditionAll(stunDebuff,200);
+                atk.AddWithConditionAll(stunDebuff,200,1);
             }
             else
             {
@@ -1211,7 +1367,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
 
     }
 
-    protected void UprisingStars()
+    protected void UprisingStars(bool playVoice = true)
     {
         GenerateWarningPrefab("action11_1", new Vector3(0,-10),Quaternion.identity,
             RangedAttackFXLayer.transform);
@@ -1219,7 +1375,9 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         DOVirtual.DelayedCall(1.6f,
             () =>
             {
-                voice?.PlayMyVoice((int)MyVoiceGroup.Combo5);
+                if(playVoice)
+                    voice?.PlayMyVoice((int)MyVoiceGroup.Combo5);
+                
                 var sealedContainer = InstantiateSealedContainer(
                     GetProjectileOfFormatName("action11_1"), new Vector3(0,-10), false, 1);
                 GenerateWarningPrefab("action11_2", new Vector3(0,-10),Quaternion.identity,
@@ -1237,7 +1395,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
             , false);
     }
 
-    protected void FallingStars()
+    protected void FallingStars(bool playVoice = true)
     {
         GenerateWarningPrefab("action11_2", new Vector3(0,-10),Quaternion.identity,
             RangedAttackFXLayer.transform);
@@ -1245,7 +1403,8 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         DOVirtual.DelayedCall(1.6f,
             () =>
             {
-                voice?.PlayMyVoice((int)MyVoiceGroup.Combo5);
+                if(playVoice)
+                    voice?.PlayMyVoice((int)MyVoiceGroup.Combo5);
                 var sealedContainer = InstantiateSealedContainer(
                     GetProjectileOfFormatName("action11_2"), new Vector3(0,35), false, 1);
                 GenerateWarningPrefab("action11_1", new Vector3(0,-10),Quaternion.identity,

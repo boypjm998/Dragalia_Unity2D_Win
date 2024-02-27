@@ -1243,7 +1243,11 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
             
         }
 
-        
+        if (tarX > _stageManager.mapBorderR)
+            tarX = _stageManager.mapBorderR - 1;
+            
+        if (tarX < _stageManager.mapBorderL)
+            tarX = _stageManager.mapBorderL + 1;
             //var target = hitinfo.collider.gameObject.GetComponent<BoxCollider2D>();
             //var tarX = target.offset.x + (-(target.size.x + 1));
         _tweener = transform.DOMoveX(tarX, 0.2f);
@@ -1267,7 +1271,7 @@ public class EnemyMoveController_HB01 : EnemyMoveManager
 
         //print(target);
         
-        _tweener = transform.DOMove(target, 0.25f);
+        _tweener = ac.rigid.DOMove(target, 0.25f);
         _tweener.SetEase(Ease.OutExpo).OnComplete(DisappearRenderer);
         //print(_tweener.active);
 

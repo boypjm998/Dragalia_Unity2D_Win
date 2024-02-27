@@ -19,9 +19,14 @@ public class UI_DialogDisplayer : MonoBehaviour
     protected JsonData questDialogInfoDataBasic;
     protected int currentPrority = 0;
     protected string currentStoryID;
+    protected DialogFormat currentDialog;
 
     public static UI_DialogDisplayer Instance { get; private set; }
 
+    public bool IsEmpty
+    {
+        get => displayRoutine == null;
+    }
 
 
     private void Awake()
@@ -67,6 +72,7 @@ public class UI_DialogDisplayer : MonoBehaviour
                 displayRoutine = StartCoroutine(DisplayDialog());
             }else if(dialogQueue.Peek().priority > currentPrority)
             {
+                //ClearLastDialog(currentDialog);
                 StopCoroutine(displayRoutine);
                 displayRoutine = StartCoroutine(DisplayDialog());
             }
@@ -105,6 +111,12 @@ public class UI_DialogDisplayer : MonoBehaviour
             return;
         var dialogInfo = questDialogInfoData[$"SPEAKER_{speakerID}"][$"DIALOG_CLIP_{clipID}"];
         DialogFormat dialogFormat = new DialogFormat();
+        
+        if (dialogFormat.priority <= 0 && dialogQueue.Count > 2)
+        {
+            return;
+        }
+
         dialogFormat.text = dialogInfo["TEXT"].ToString();
         dialogFormat.ballonType = Convert.ToInt32(dialogInfo["BALLOON"].ToString());
         dialogFormat.faceExpression = Convert.ToInt32(dialogInfo["FACE"].ToString());
@@ -112,6 +124,11 @@ public class UI_DialogDisplayer : MonoBehaviour
         dialogFormat.speakerID = speakerID;
         dialogFormat.audioSource = audioSource;
         dialogFormat.clip = clip;
+        
+        //如果队列的长度大于等于2且自身priority为0，则不入栈。
+        
+
+
         dialogQueue.Enqueue(dialogFormat);
     }
 
@@ -162,9 +179,51 @@ public class UI_DialogDisplayer : MonoBehaviour
         dialogFormat.clip = clip;
         dialogQueue.Enqueue(dialogFormat);
     }
-    
-    
 
+
+
+    private void ClearLastDialog(DialogFormat dialog)
+    {
+        GameObject balloon;
+        if (dialog.ballonType == 1)
+        {
+            balloon = balloons.transform.GetChild(0).gameObject;
+        }else if (dialog.ballonType == 2)
+        {
+            balloon = balloons.transform.GetChild(1).gameObject;
+        }
+        else
+        {
+            Debug.LogError("NotFountBallonType");
+            return;
+            
+        }
+
+        //balloon.SetActive(true);
+        //_swapper.LoadFaceExpression(dialog.speakerID,dialog.faceExpression);
+        tmp = balloon.GetComponentInChildren<TextMeshProUGUI>();
+        //tmp.text = dialog.text;
+
+        var image = balloon.GetComponent<Image>();
+
+        // image.color = new Color(1, 1, 1, 0);
+        // tmp.color = Color.clear;
+        // portraitIcon.color = new Color(1, 1, 1, 0);
+        
+        DOTween.To(() => image.color, x => image.color = x,
+            Color.white, 
+            0.5f).OnComplete(() =>
+        {
+            displayRoutine = null;
+            balloon.SetActive(false);
+        });
+        DOTween.To(() => tmp.color, x => tmp.color = x,
+            Color.black, 
+            0.5f);
+        DOTween.To(() => portraitIcon.color, x => portraitIcon.color = x,
+            Color.white, 
+            0.5f);
+    }
 
     private IEnumerator DisplayDialog()
     {
@@ -191,6 +250,7 @@ public class UI_DialogDisplayer : MonoBehaviour
             yield break;
         }
 
+        currentDialog = dialog;
         balloon.SetActive(true);
         _swapper.LoadFaceExpression(dialog.speakerID,dialog.faceExpression);
         tmp = balloon.GetComponentInChildren<TextMeshProUGUI>();

@@ -115,6 +115,10 @@ public class UISortingGroup : MonoBehaviour
         }
         if(_menuUIManager.GUIAnimCount>0)
             return;
+        if(UI_GameOption.isSettingKey == true)
+            return;
+        
+        
         print("Clicked Return");
         _menuUIManager.ToPreviousUIState();
     }

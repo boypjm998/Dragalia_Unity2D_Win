@@ -30,7 +30,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     
     
     public float _defaultgravityscale;
-    public StandardGroundSensor _groundSensor;
+    
 
     
     protected AStar _aStar;
@@ -61,7 +61,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         
         _statusManager.OnControlAfflictionRemoved += OnControlAfflictionRemoved;
         
-        
+        _statusManager.OnBuffEventDelegate += CheckBog;
+        _statusManager.OnBuffExpiredEventDelegate += CheckBog;
+        _statusManager.OnBuffDispelledEventDelegate += CheckBog;
+
 
         _groundSensor.IsGround += GroundCheck;
         mapInfo = BattleStageManager.InitMapInfo();
@@ -102,7 +105,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         if(!moveEnable)
             return;
-        rigid.position += new Vector2(movespeed * facedir * isMove, 0) * Time.fixedDeltaTime;
+        
+        float bogModifier = isBog ? 0.5f : 1;
+        
+        rigid.position += new Vector2(movespeed * facedir * isMove * bogModifier, 0) * Time.fixedDeltaTime;
         //print(6 * facedir * isMove * Time.fixedDeltaTime);
         CheckFaceDir();
     }
@@ -112,11 +118,11 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         if (jumpTime == 1)
         {
             anim.Play("jump2");
-            SetVelocity(rigid.velocity.x,jumpforce);
+            SetVelocity(rigid.velocity.x,jumpforce * GetBogModifier(0.75f));
             jumpTime--;
         }else if (jumpTime == 2)
         {
-            SetVelocity(rigid.velocity.x,jumpforce);
+            SetVelocity(rigid.velocity.x,jumpforce * GetBogModifier(0.75f));
             jumpTime--;
             anim.Play("jump");
             
@@ -583,7 +589,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     }
     
     /// <summary>
-    /// New Method
+    /// New Method With AStar
     /// </summary>
     /// <param name="target"></param>
     /// <param name="arriveDistance"></param>
@@ -601,8 +607,15 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         }
 
         var mySensor = GetComponentInChildren<IGroundSensable>();
+        DOVirtual.DelayedCall(maxFollowTime, () =>
+        {
+            maxFollowTime = 0;
+        }, false);
+        
+        
         while (maxFollowTime>0)
         {
+            
 
             yield return new WaitUntil(() =>
                 anim.GetBool("isGround") && !hurt);
@@ -632,11 +645,12 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 while (targetSensor.GetCurrentAttachedGroundCol() == null)
                 {
                     yield return null;
+                    //maxFollowTime -= Time.deltaTime;
                     if(anim.GetBool("isGround")==false)
                         continue;
                     //4.3添加
-                    if(transform.position.x >= mySensor.GetCurrentAttachedGroundCol().bounds.max.x ||
-                       transform.position.x <= mySensor.GetCurrentAttachedGroundCol().bounds.min.x ||
+                    if(transform.position.x >= gameObject.RaycastedPlatform().bounds.max.x ||
+                       transform.position.x <= gameObject.RaycastedPlatform().bounds.min.x ||
                        (transform.position.x >= target.transform.position.x && facedir==1) ||
                        (transform.position.x <= target.transform.position.x && facedir==-1))
                         isMove = 0;
@@ -653,6 +667,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 
                 if (path == null)
                 {
+                    Debug.LogWarning("Path is null");
                     float distance = Mathf.Abs(transform.position.x - target.transform.position.x);
                     if (arriveDistance > distance)
                     {
@@ -689,6 +704,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                     }
                     
 
+                    Debug.LogWarning("Start Move To Platform");
                     VerticalMoveRoutine = StartCoroutine(MoveToPlatform(platform));
                 
                     // 等待VerticalMoveRoutine结束或被中断
@@ -711,6 +727,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             }
         
             yield return null;
+            //maxFollowTime -= Time.deltaTime;
         }
         isMove = 0;
         OnMoveFinished?.Invoke(false);
@@ -1451,17 +1468,21 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     
     protected override IEnumerator HurtEffectCoroutine()
     {
-        var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
+        GameObject flashWeapon = null;
+        if(weaponObject)
+            flashWeapon = weaponObject.transform.Find("Flash").gameObject;
         var time = hurtEffectDuration;
         while (time > 0)
         {
             time -= Time.deltaTime;
             flashBody.SetActive(true);
-            flashWeapon.SetActive(true);
+            if(!flashWeapon)
+                flashWeapon?.SetActive(true);
             yield return null;
         }
         flashBody.SetActive(false);
-        flashWeapon.SetActive(false);
+        if(!flashWeapon)
+            flashWeapon?.SetActive(false);
         hurtEffectCoroutine = null;
     }
 
@@ -1480,17 +1501,21 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         
         if (_behavior.currentAction != null)
         {
+            //StopCoroutine(_behavior.currentAction);
             _behavior.StopCoroutine(_behavior.currentAction);
+            print("SetCurrentActionNull");
             _behavior.currentAction = null;
         }
 
         if (_behavior.currentMoveAction != null)
         {
+            //StopCoroutine(_behavior.currentMoveAction);
             _behavior.StopCoroutine(_behavior.currentMoveAction);
             _behavior.currentMoveAction = null;
         }
             
         if (_behavior.currentAttackAction != null) {
+            //StopCoroutine(_behavior.currentAttackAction);
             _behavior.StopCoroutine(_behavior.currentAttackAction);
             _behavior.currentAttackAction = null;
         }
@@ -1702,7 +1727,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     {
         SetKBRes(999);
         _effectManager.DisplayCounterIcon(gameObject,false);
-        GetComponentInChildren<AudioSource>().Stop();
+        
+        GetComponentInChildren<AudioSource>()?.Stop();
         transform.Find("MeeleAttackFX").gameObject.SetActive(false);
         transform.Find("HitSensor").gameObject.SetActive(false);
         anim.SetBool("defeat",true);
@@ -1764,8 +1790,11 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         {
             StopCoroutine(hurtEffectCoroutine);
             flashBody.SetActive(false);
-            var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
-            flashWeapon.SetActive(false);
+            if (weaponObject)
+            {
+                var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
+                flashWeapon.SetActive(false);
+            }
             hurtEffectCoroutine = null;
         }
 
@@ -1827,7 +1856,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     /// <returns></returns>
     
 
-    void GroundCheck(bool flag)
+    protected void GroundCheck(bool flag)
     {
         if (flag && rigid.velocity.y < 0.15f)
         {
@@ -1864,7 +1893,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         while (time > 0)
         {
             
-            transform.position = new Vector2(transform.position.x + movedir * speed * Time.fixedDeltaTime,
+            rigid.position = new Vector2(rigid.position.x + movedir * speed * GetBogModifier() * Time.fixedDeltaTime,
                 transform.position.y);
             
 
@@ -1884,6 +1913,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
 
     public override void SwapWeaponVisibility(bool flag)
     {
+        if(!weaponObject)
+            return;
         weaponObject.transform.GetChild(0).gameObject.SetActive(flag);
     }
     
@@ -1974,8 +2005,11 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public void SetFlashBody(bool flag)
     {
         flashBody.SetActive(flag);
-        var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
-        flashWeapon.SetActive(flag);
+        if (weaponObject != null)
+        {
+            var flashWeapon = weaponObject.transform.Find("Flash").gameObject;
+            flashWeapon.SetActive(flag);
+        }
     }
 
     public override void SetActionUnable(bool flag)
@@ -1986,5 +2020,22 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     public override void ResetGravityScale()
     {
         rigid.gravityScale = _defaultgravityscale;
+    }
+
+    protected override void CheckBog(BattleCondition condition)
+    {
+        if (_statusManager.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Bog) > 0)
+        {
+            isBog = true;
+        }
+        else
+            isBog = false;
+    }
+
+    protected float GetBogModifier(float val = 0.5f)
+    {
+        if (isBog)
+            return val;
+        else return 1;
     }
 }

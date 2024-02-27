@@ -10,41 +10,41 @@ public class HomingAttack : MonoBehaviour
     
     public Vector2 angle = Vector2.zero;
     [SerializeField]
-    private float speed;
+    protected float speed;
     [SerializeField]
-    private float lifeTime;
+    protected float lifeTime;
     [SerializeField]
-    private float acceleration = 0;
+    protected float acceleration = 0;
     [SerializeField]
-    private float homingStartTime;
+    protected float homingStartTime;
     [SerializeField]
-    private float angularAcceleration;
+    protected float angularAcceleration;
     [SerializeField]
-    private float angularSpeed;
+    protected float angularSpeed;
     
     [Header("Direction Fix")]
     [SerializeField]
-    private bool directionFix;
+    protected bool directionFix;
     [SerializeField]
-    private Vector3 smoothRotateVector;
+    protected Vector3 smoothRotateVector;
     [SerializeField]
-    private float preAngularSpeed;
+    protected float preAngularSpeed;
 
-    [SerializeField] private float stopChasingAfterTime;
-    [SerializeField] private bool stopChasingAfterMiss;
+    [SerializeField] protected float stopChasingAfterTime;
+    [SerializeField] protected bool stopChasingAfterMiss;
     
     
     
     [Header("Target Late Lock Settings")]
     [SerializeField]
-    private float targetLockTime;
+    protected float targetLockTime;
     
 
-    private Vector3 smoothPoint;
+    protected Vector3 smoothPoint;
 
     public int firedir = 1;
 
-    private bool stopFlag = false;
+    protected bool stopFlag = false;
     
     
     
@@ -58,10 +58,11 @@ public class HomingAttack : MonoBehaviour
         SetDirection(angle);
         smoothRotateVector = new Vector3(smoothRotateVector.x * angle.x, smoothRotateVector.y * angle.y, 0);
         smoothPoint = transform.position + smoothRotateVector;
+        
         Destroy(gameObject,lifeTime);
     }
 
-    private void FixedUpdate()
+    protected void FixedUpdate()
     {
         if (targetLockTime > 0)
         {
@@ -148,7 +149,7 @@ public class HomingAttack : MonoBehaviour
     }
 
 
-    void SetDirection(Vector2 angle)
+    protected void SetDirection(Vector2 angle)
     {
         transform.right = angle.normalized;
     }

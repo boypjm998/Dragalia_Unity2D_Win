@@ -23,6 +23,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public float jumpforce = 20.0f;
     public Action<AttackBase, GameObject> OnDodgeSuccessed;
 
+    public GameObject weaponGameObject;
+
 
     public float attackRate =>
         _statusManager.GetConditionTotalValue((int)BasicCalculation.BattleCondition.AttackRateUp);
@@ -42,6 +44,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     [SerializeField] public bool[] isAttackSkill = new bool[4];
     [SerializeField] public bool[] isRecoverSkill = new bool[4];
+    protected bool[] canPerformInAir = new[] { false, false, false, true };
     
     public TargetAimer ta;
     private Coroutine KnockbackRoutine = null;
@@ -77,7 +80,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
             return;
         }
 
-        rigid.position += new Vector2(speedModifier * movespeed * (pi.isMove), 0) * Time.fixedDeltaTime;
+        float bogModifier = isBog ? 0.5f : 1;
+        rigid.position += new Vector2(
+            bogModifier * speedModifier * movespeed * (pi.isMove), 0) * Time.fixedDeltaTime;
 
         //print("moved rigid");
         
@@ -139,10 +144,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         {
             AttackFromPlayer.CheckEnergyLevel(_statusManager);
         }
-
-
-
-
+        
         switch (id)
         {
             case 1:
@@ -242,6 +244,10 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         rollspeed = _statusManager.rollspeed;
 
         _statusManager.OnHPBelow0 += CheckLife;
+        
+        _statusManager.OnBuffEventDelegate += CheckBog;
+        _statusManager.OnBuffDispelledEventDelegate += CheckBog;
+        _statusManager.OnBuffExpiredEventDelegate += CheckBog;
 
     }
 
@@ -260,6 +266,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         if (_statusManager.remainReviveTimes > 0)
         {
             _statusManager.remainReviveTimes--;
+            _statusManager.currentReviveTimes++;
             OnRevive();
         }
         else
@@ -273,25 +280,39 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         if(!canTransform)
             return;
     }
+    
+    public virtual void CheckAirRoll()
+    {
+        if (pi.roll)
+        {
+            if ((pi.rollEnabled || !grounded) && !pi.hurt)
+            {
+                anim.Play("roll");
+            }
+        }
+
+        
+
+    }
 
     protected virtual void CheckSkill()
     {
-        if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        if (pi.skill[0] && (anim.GetBool("isGround") || canPerformInAir[0]) && !pi.hurt && !pi.isSkill)
         {
             UseSkill(1);
         }
 
-        if (pi.skill[1] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        if (pi.skill[1] && (anim.GetBool("isGround") || canPerformInAir[1]) && !pi.hurt && !pi.isSkill)
         {
             UseSkill(2);
         }
 
-        if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+        if (pi.skill[2] && (anim.GetBool("isGround") || canPerformInAir[2]) && !pi.hurt && !pi.isSkill)
         {
             UseSkill(3);
         }
 
-        if (pi.skill[3] && !pi.hurt && !pi.isSkill)
+        if (pi.skill[3] && (anim.GetBool("isGround") || canPerformInAir[3]) && !pi.hurt && !pi.isSkill)
         {
             UseSkill(4);
         }
@@ -303,7 +324,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     protected virtual void Update()
     {
 
-        if(DModeIsOn)
+        if(DModeIsOn && !dc.dragondrive)
             return;
         
         
@@ -362,12 +383,14 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
                 Roll();
         }
         
+        CheckAirRoll();
+        
         
     }
 
     void FixedUpdate()
     {
-        if(DModeIsOn)
+        if(DModeIsOn && !dc.dragondrive)
             return;
         
         Move();
@@ -388,20 +411,26 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         //print(rigid.velocity);
 
     }
+    
+    public override void SetMoveSpeed(float speed)
+    {
+        movespeed = speed;
+    }
 
     public IEnumerator HorizontalMoveInteria(float time, float groundSpeed, float airSpeed)
     {
         while (time > 0)
         {
+            var bogModifier = isBog ? 0.5f : 1;
             if (anim.GetBool("isGround") == true)
             {
-                transform.position = new Vector2(transform.position.x + facedir * groundSpeed * Time.fixedDeltaTime,
+                transform.position = new Vector2(transform.position.x + facedir * bogModifier* groundSpeed * Time.fixedDeltaTime,
                     transform.position.y);
                 //transform.position = new Vector2(transform.position.x + transform.right.x * groundSpeed * Time.fixedDeltaTime, transform.position.y); 
             }
             else
             {
-                transform.position = new Vector2(transform.position.x + facedir * airSpeed * Time.fixedDeltaTime,
+                transform.position = new Vector2(transform.position.x + facedir *bogModifier * airSpeed * Time.fixedDeltaTime,
                     transform.position.y);
             }
 
@@ -421,8 +450,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
         while (time > 0)
         {
+            var bogModifier = isBog ? 0.5f : 1;
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            rigid.position = new Vector3(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+            rigid.position = new Vector3(transform.position.x + facedir * speed * bogModifier * Time.fixedDeltaTime,
                 transform.position.y, transform.position.z);
             //transform.position = new Vector2(transform.position.x+transform.right.x * speed * Time.fixedDeltaTime,transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
@@ -463,8 +493,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
         while (time > 0)
         {
+            var bogModifier = isBog ? 0.5f : 1;
             //Debug.Log(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(move));
-            transform.position = new Vector2(transform.position.x + facedir * speed * Time.fixedDeltaTime,
+            transform.position = new Vector2(transform.position.x + facedir * speed * bogModifier * Time.fixedDeltaTime,
                 transform.position.y);
             //rigid.velocity = new Vector2(transform.localScale.x*speed, rigid.velocity.y);
             time -= Time.fixedDeltaTime;
@@ -557,13 +588,16 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
             SetFaceDir(1);
         }
 
-        StartCoroutine(HorizontalMove(rollspeed, 0.4f, "roll"));
+        var bogModifier = isBog ? 0.5f : 1;
+
+        StartCoroutine(HorizontalMove(rollspeed * bogModifier, 0.4f, "roll"));
 
     }
 
     public virtual void EventDash()
     {
-        //SetVelocity(facedir*rollspeed,rigid.velocity.y);
+        
+        
         StartCoroutine(HorizontalMove(rollspeed * 3f, 10.0f, 0.1f, "dash"));
 
     }
@@ -625,7 +659,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public void onJumpEnter()
     {
         //print("onJump"); 
-        rigid.velocity = new Vector2(rigid.velocity.x, jumpforce);
+        rigid.velocity = new Vector2(rigid.velocity.x, jumpforce * (isBog?0.75f:1f));
         //pi.rollEnabled = false;
         anim.SetBool("jump", false);
     }
@@ -633,7 +667,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public void onDoubleJumpEnter()
     {
         //print("onDoubleJump");
-        rigid.velocity = new Vector2(rigid.velocity.x, jumpforce);
+        rigid.velocity = new Vector2(rigid.velocity.x, jumpforce * (isBog?0.75f:1f));
         anim.SetBool("wjump", false);
         //pi.rollEnabled = false;
     }
@@ -824,9 +858,11 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.directionLock = false;
         pi.isSkill = false;
         pi.stdAtk = false;
+        pi.roll = false;
         rigid.gravityScale = 1;
         speedModifier = 1;
         SetGroundCollision(true);
+        SetWeaponVisibility(true);
 
         try
         {
@@ -856,7 +892,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     }
 
-    public void OnHurtExit()
+    public virtual void OnHurtExit()
     {
         pi.SetInputEnabled("roll");
         pi.SetInputEnabled("jump");
@@ -876,6 +912,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
         _statusManager.OnReviveOrDeath?.Invoke();
         _statusManager.ResetAllStatus();
+        _statusManager.GetMaxHP();
         _statusManager.ClearSP();
         BattleEffectManager effectManager = BattleEffectManager.Instance;
         effectManager.PlayReviveSoundEffect();
@@ -903,7 +940,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     }
 
-    public bool CheckPowerOfBonds()
+    public virtual bool CheckPowerOfBonds()
     {
         if(_statusManager.GetConditionsOfType((int)BasicCalculation.BattleCondition.PowerOfBonds).Count > 0)
         {
@@ -979,7 +1016,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
 
         anim.Play("die");
-        anim.SetFloat("forward", 0);
+        //anim.SetFloat("forward", 0);
+        anim.ResetParameters();
 
         _statusManager.enabled = false;
 
@@ -1227,6 +1265,12 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         }
     }
 
+    public void SetWeaponVisibility(bool flag)
+    {
+        if(weaponGameObject)
+            weaponGameObject?.SetActive(flag);
+    }
+
     public override void SetGravityScale(float value)
     {
         rigid.gravityScale = value;
@@ -1276,6 +1320,22 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public virtual bool BlockDPCharge(bool abilityCharge)
     {
         return false;
+    }
+
+    protected override void CheckBog(BattleCondition condition)
+    {
+        if (_statusManager.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Bog) > 0)
+        {
+            isBog = true;
+        }
+        else
+            isBog = false;
+
+    }
+
+    public void SetSkillAirPerformProperty(int id, bool flag)
+    {
+        canPerformInAir[id - 1] = flag;
     }
 
 

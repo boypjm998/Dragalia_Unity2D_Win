@@ -232,6 +232,7 @@ public class ActorController_c005 : ActorControllerDagger
             Roll();
         }
         
+        
         CheckAccelerateLanding();
         CheckSkill();
 
@@ -268,12 +269,13 @@ public class ActorController_c005 : ActorControllerDagger
             return;
         }
 
+        var debug = false;
 
+        //在地面上
+        //if (pi.rollEnabled && !pi.hurt)
         if (pi.rollEnabled && !pi.hurt)
         {
             AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-            
-            
             
             if ((IsComboState(stateInfo) || Combo > 0) && dodgeAttackUsed == false && pi.inputAttackEnabled)
             {
@@ -281,19 +283,23 @@ public class ActorController_c005 : ActorControllerDagger
                 pi.inputRollEnabled = false;
                 pi.rollEnabled = false;
                 pi.roll = false;
-                print("IS COMBO STATE");
+                print($"IS COMBO STATE, On GROUND:{grounded}");
                 lastPositionAfterCombo6 = Vector2.zero;
                 anim.Play("roll_attack");
+                debug = true;
             }else if(stateInfo.IsName("roll_attack"))
             {
                 // if(dodgeAttackUsed)
                 //     Combo = 0;
-                print("IS DODGE COMBO STATE");
+                print($"IS DODGE COMBO STATE, On GROUND:{grounded}");
                 anim.SetBool("roll",true);
                 return;
             }
             
         }
+        
+        
+        //不在地面上
         if(grounded)
             anim.SetBool("roll",true);
         else
@@ -305,9 +311,19 @@ public class ActorController_c005 : ActorControllerDagger
                 pi.inputRollEnabled = false;
                 pi.rollEnabled = false;
                 pi.roll = false;
-                print("IS COMBO STATE");
+                print($"CAN DODGE +{grounded}");
                 lastPositionAfterCombo6 = Vector2.zero;
                 anim.Play("roll_attack");
+            }
+            else if((IsComboState(anim.GetCurrentAnimatorStateInfo(0)) && Combo > 0) == false
+                     && pi.inputAttackEnabled
+                     && !anim.GetCurrentAnimatorStateInfo(0).IsName("roll_attack"))
+            {
+                //print($"Triggered Again: {debug}");
+                //pi.roll = false;
+                print("SetBool:Roll");
+                //anim.SetBool("roll",true);
+                anim.Play("roll");
             }
         }
     }
@@ -378,7 +394,7 @@ public class ActorController_c005 : ActorControllerDagger
             Invoke("AppearRenderer",0.1f);
             _tweener = rigid.DOMoveX(currentPosition.x,0.1f).SetEase(Ease.OutSine).OnComplete(() =>
             {
-                ResetGravityScale();
+                Invoke("ResetGravityScale",0.1f);//ResetGravityScale();
                 SetGroundCollision(true);
             }).OnKill(() =>
             {
@@ -388,7 +404,7 @@ public class ActorController_c005 : ActorControllerDagger
             });
         }).OnKill(() =>
         {
-            ResetGravityScale();
+            //ResetGravityScale();
             SetGroundCollision(true);
         });
     }
@@ -481,7 +497,7 @@ public class ActorController_c005 : ActorControllerDagger
 
         var warpCheckGO = Combo4_WarpCheck();
         
-        
+        var col = lastPlatformBeforeCombo4;
 
         if (warpCheckGO != null)
         {
@@ -492,15 +508,21 @@ public class ActorController_c005 : ActorControllerDagger
                 Instantiate(warpFX, transform.position, Quaternion.identity, 
                     BattleStageManager.Instance.RangedAttackFXLayer.transform);
 
+                float targetX;
+
                 if (facedir == 1)
                 {
-                    transform.position = new Vector3(warpCheckGO.transform.position.x - 8,
-                        transform.position.y, transform.position.z);
+                    targetX = Mathf.Clamp(warpCheckGO.transform.position.x - 8,
+                        col.bounds.min.x, col.bounds.max.x);
+                    transform.position = new Vector3(targetX,
+                        transform.position.y, transform.position.z).SafePosition(Vector2.zero);
                 }
                 else if (facedir == -1)
                 {
-                    transform.position = new Vector3(warpCheckGO.transform.position.x + 8,
-                        transform.position.y, transform.position.z);
+                    targetX = Mathf.Clamp(warpCheckGO.transform.position.x + 8,
+                        col.bounds.min.x, col.bounds.max.x);
+                    transform.position = new Vector3(targetX,
+                        transform.position.y, transform.position.z).SafePosition(Vector2.zero);
                 }
 
             }
@@ -517,7 +539,7 @@ public class ActorController_c005 : ActorControllerDagger
         Vector2 safeEndPoint = new Vector2(transform.position.x + facedir * 3, transform.position.y);
 
 
-        var col = lastPlatformBeforeCombo4;
+        
         
         if(col == null)
             col = safeEndPoint.RaycastedPlatform();
@@ -579,6 +601,8 @@ public class ActorController_c005 : ActorControllerDagger
         
         var warpCheckGO = Combo4_WarpCheck();
 
+        var currentPlatform = gameObject.RaycastedPlatform();
+
         if (warpCheckGO != null)
         {
             if (Mathf.Abs(warpCheckGO.transform.position.x - transform.position.x) > 4 &&
@@ -588,14 +612,20 @@ public class ActorController_c005 : ActorControllerDagger
                 Instantiate(warpFX, transform.position, Quaternion.identity, 
                     BattleStageManager.Instance.RangedAttackFXLayer.transform);
 
+                float targetX;
+
                 if (facedir == 1)
                 {
-                    transform.position = new Vector3(warpCheckGO.transform.position.x - 5,
+                    targetX = Mathf.Clamp(warpCheckGO.transform.position.x - 5,
+                        currentPlatform.bounds.min.x, currentPlatform.bounds.max.x);
+                    transform.position = new Vector3(targetX,
                         transform.position.y, transform.position.z);
                 }
                 else if (facedir == -1)
                 {
-                    transform.position = new Vector3(warpCheckGO.transform.position.x + 5,
+                    targetX = Mathf.Clamp(warpCheckGO.transform.position.x + 5,
+                        currentPlatform.bounds.min.x, currentPlatform.bounds.max.x);
+                    transform.position = new Vector3(targetX,
                         transform.position.y, transform.position.z);
                 }
 
@@ -876,6 +906,18 @@ public class ActorController_c005 : ActorControllerDagger
         }
 
         base.OnSkillEnter();
+
+        if (pi.buttonLeft.IsPressing && !pi.buttonRight.IsPressing)
+        {
+            SetFaceDir(-1);
+        }else if(pi.buttonRight.IsPressing && !pi.buttonLeft.IsPressing)
+        {
+            SetFaceDir(1);
+        }
+
+        
+        
+        
     }
 
     public override void OnSkillExit()
@@ -885,6 +927,7 @@ public class ActorController_c005 : ActorControllerDagger
         _statusManager.knockbackRes = 0;
         base.OnSkillExit();
         Invoke("CancelSkillBoost",0.5f);
+        ResetGravityScale();
     }
 
     public void SkillPrepCheck(int skillID)

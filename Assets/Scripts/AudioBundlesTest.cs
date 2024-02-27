@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using GameMechanics;
 using UnityEngine;
 using LitJson;
 
@@ -161,11 +162,11 @@ public class AudioBundlesTest : MonoBehaviour
         var voice_info = currentLevelVoiceData[voice_name];
         foreach (var start_time in voice_info["start"])
         {
-            start_times.Add(float.Parse(start_time.ToString()));
+            start_times.Add(ObjectExtensions.ParseInvariantFloat(start_time.ToString()));
         }
         foreach (var end_time in voice_info["end"])
         {
-            end_times.Add(float.Parse(end_time.ToString()));
+            end_times.Add(ObjectExtensions.ParseInvariantFloat(end_time.ToString()));
         }
     }
 

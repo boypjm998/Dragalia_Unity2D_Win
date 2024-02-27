@@ -20,7 +20,8 @@ public class EnemyControllerFlying : EnemyController
         rigid = GetComponentInChildren<Rigidbody2D>();
         MoveManager = GetComponent<EnemyMoveManager>();
         _behavior = GetComponent<DragaliaEnemyBehavior>();
-        
+        //_groundSensor.IsGround += GroundCheck;
+
     }
 
     protected override void Start()
@@ -43,6 +44,8 @@ public class EnemyControllerFlying : EnemyController
         //print(6 * facedir * isMove * Time.fixedDeltaTime);
         CheckFaceDir();
     }
+    
+    
 
 
     public override void OnAttackEnter()
@@ -229,6 +232,7 @@ public class EnemyControllerFlying : EnemyController
     protected IEnumerator DeathRoutine()
     {
         SetKBRes(999);
+        _statusManager.ResetAllStatusForced();
         _effectManager.DisplayCounterIcon(gameObject,false);
         GetComponentInChildren<AudioSource>()?.Stop();
         transform.Find("MeeleAttackFX").gameObject.SetActive(false);
@@ -338,6 +342,20 @@ public class EnemyControllerFlying : EnemyController
     {
         if(canDeath)
             _statusManager.OnHPBelow0 -= OnDeath;
+        
+        //_groundSensor.IsGround -= GroundCheck;
+    }
+    
+    protected void GroundCheck(bool flag)
+    {
+        if (flag && rigid.velocity.y < 0.15f)
+        {
+            anim.SetBool("isGround",true);
+        }
+        else
+        {
+            anim.SetBool("isGround",false);
+        }
     }
 
     

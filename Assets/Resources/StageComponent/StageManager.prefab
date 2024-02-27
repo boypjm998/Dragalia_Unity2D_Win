@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1652822927677469780}
   m_Layer: 0
   m_Name: Sound
-  m_TagString: Untagged
+  m_TagString: SoundEffect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -140,7 +140,7 @@ GameObject:
   - component: {fileID: 4475591855030385869}
   m_Layer: 0
   m_Name: SharedVoice
-  m_TagString: Untagged
+  m_TagString: Voice
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 8905817584630699169}
   m_Layer: 0
   m_Name: StageManager
-  m_TagString: Untagged
+  m_TagString: Music
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -313,16 +313,18 @@ MonoBehaviour:
   maxReviveTime: 3
   crownReviveTime: 0
   crownTimeLimit: 300
+  clearConditionType: 0
   attackContainer: {fileID: 497525783265369579, guid: 20655c64630fcbd419fffcbc147c5e39, type: 3}
   attackContainerEnemy: {fileID: 390410345794427676, guid: 4fed0cfcb020ad34ebc13587f9ebf4e8, type: 3}
   attackSubContainer: {fileID: 4590971301714068341, guid: 8815efee16698f746b1d46083c175ab6, type: 3}
+  simpleHealthBar: {fileID: 4779990366591673112, guid: 9a00717fd100fa54783b70d8f7f3001d, type: 3}
   buffLogPrefab: {fileID: 7553018530641137342, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
   gameFailedPrefab: {fileID: 2722878352171708836, guid: 410cdfceee400df46984c7ceaa63ad1b, type: 3}
   gameClearPrefab: {fileID: 495785828030051020, guid: 425a88c6c1e7c1042aeb9079253cded6, type: 3}
   gameFailedBGM: {fileID: 8300000, guid: 185e23b44399ced4f99eafe0f3cc9ab3, type: 3}
   gameClearBGM: {fileID: 8300000, guid: b6ef56101a8aedd4eaacafb924ab769e, type: 3}
   resultPage: {fileID: 7189568907353856948, guid: 379b8819306492440887c70d851aa7fc, type: 3}
-  player: {fileID: 0}
+  player: {fileID: 4779990366591673112, guid: 9a00717fd100fa54783b70d8f7f3001d, type: 3}
 --- !u!114 &8905817584630699168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,17 +343,25 @@ MonoBehaviour:
   burnFXPrefab: {fileID: 6834888581270861595, guid: 52357dd7385fecd49b6d6257319ec695, type: 3}
   schorchrendColor: {r: 0.8627451, g: 0, b: 0, a: 1}
   scorchrendFXPrefab: {fileID: 2143380524094881360, guid: 3c9c9684d4bbe2d4184d1cd8f0979df5, type: 3}
-  poisonColor: {r: 0, g: 0, b: 0, a: 0}
-  poisonFXPrefab: {fileID: 0}
+  poisonColor: {r: 0.7707939, g: 0, b: 1, a: 1}
+  poisonFXPrefab: {fileID: 83189318291453715, guid: f2d70d520ce6cc14089c434e13e11aea, type: 3}
   stormlashColor: {r: 0.10635225, g: 0.7924528, b: 0, a: 1}
   stormlashFXPrefab: {fileID: 3989815838187211519, guid: 907ac6eca304e0c47a3ab2760780615d, type: 3}
+  paralysisFXPrefab: {fileID: 1175188663404931898, guid: ad809a4f01760644c95be9dd69de61fa, type: 3}
+  frostbiteFXPrefab: {fileID: 8609371760649803314, guid: 3656d1863b7aaea4899f0e3c9cb2513b, type: 3}
+  shadowblightFXPrefab: {fileID: 4035048306080278186, guid: d8a556af75bf6434e86c52b2a897d7ff, type: 3}
   stunFXPrefab: {fileID: 893531317993312175, guid: 15b3a7c1657e0c44eadc36d2e2749ae6, type: 3}
+  freezeFXPrefab: {fileID: 4858369249850137933, guid: 0bba1bae0c48ce64897463e74eb19d24, type: 3}
+  sleepFXPrefab: {fileID: 6790082577763520316, guid: 5e6c6cdebd89752418c2c6b0aa2e1463, type: 3}
+  bogFXPrefab: {fileID: 5535960379689215796, guid: dccf93f4b4a35a84cb8bee4b243b3188, type: 3}
   healFXPrefab: {fileID: 2819481691769256717, guid: 0b7a7f4c1d7976b4b82e57f1e378e537, type: 3}
   dispellFXPrefab: {fileID: 5745233382303972556, guid: 780b0f6e77c4463439c500c2615ebab6, type: 3}
   buffFXPrefab: {fileID: 4580996428673532752, guid: d6fdafac4838f1e458c42a38530d4613, type: 3}
   debuffFXPrefab: {fileID: 7234651375369715019, guid: a8f0fa98a279cf043ba8a2c39e1cb050, type: 3}
   reviveFXPrefab: {fileID: 6116830349921751093, guid: 4ae8da6a7689b0340a2c1559fbffbee3, type: 3}
   breakFXPrefab: {fileID: 7769612837028600590, guid: 0fcb2c7fedbcf0548ae72b80b8c7d5f6, type: 3}
+  shapeShiftPurgeFXPrefab: {fileID: 6663386288513072225, guid: 9aa7628a4ebc7be4d9b24bfc36bcea39, type: 3}
+  shapeShiftFXWind: {fileID: 6663386288513072225, guid: 9d8e571ace3a1fb43a151fae5631048d, type: 3}
   targetLockPrefab: {fileID: 7544618195546783032, guid: ed7bee8143392f34c8ba3e47df731262, type: 3}
   exclamationPrefab: {fileID: 5392681824071123439, guid: fd6896f89cf8c0d41a41acf0cf798392, type: 3}
   counterIconPrefab: {fileID: 7588947929834200099, guid: 4fbdad96a869bdd41b0dbffbbfa778be, type: 3}
@@ -363,7 +373,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 974341e2b46a3324ebb31b191c43443d, type: 3}
   soundEffectSource: {fileID: 1652822927677469780}
   sharedVoiceSource: {fileID: 4475591855030385869}
-  bgmVoiceSource: {fileID: 8905817584630699169}
 --- !u!82 &8905817584630699169
 AudioSource:
   m_ObjectHideFlags: 0
@@ -374,9 +383,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 3e8d1b15cbc60c34cbf07db0b1b65ffa, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 1
   Mute: 0

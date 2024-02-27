@@ -83,7 +83,7 @@ public class MenuUIManager : MonoBehaviour
         //_sequence.Append(obj.transform.DOLocalMove(localPosition, 0.5f));
         if(disable)
             obj.SetActive(false);
-        print("UI因为hideGUI而被关闭");
+        //print("UI因为hideGUI而被关闭");
 
         GUIAnimCount--;
     }
@@ -589,6 +589,11 @@ public class MenuUIManager : MonoBehaviour
             case 105:
             {
                 activeList = new[] { "AchievementList" };
+                break;
+            }
+            case 106:
+            {
+                activeList = new[] { "ManaCircleMenu" };
                 break;
             }
 

@@ -86,15 +86,15 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
 
     private void Update()
     {
-        if (debug)
-        {
-            debug = false;
-            //print(Vector2.SignedAngle(currentTargetPosition-(Vector2)transform.position,Vector2.right));
-
-             //_behavior.currentMoveAction = StartCoroutine((ac as EnemyControllerHumanoidHigh).MoveTowardsTargetNavigatorWithDesignedRoutine(
-            //     nameof(COND_StandardAttackAimCheck), _behavior.targetPlayer,1,56f));
-            _behavior.currentAttackAction = StartCoroutine(HB03_Action11());
-        }
+        // if (debug)
+        // {
+        //     debug = false;
+        //     //print(Vector2.SignedAngle(currentTargetPosition-(Vector2)transform.position,Vector2.right));
+        //
+        //      //_behavior.currentMoveAction = StartCoroutine((ac as EnemyControllerHumanoidHigh).MoveTowardsTargetNavigatorWithDesignedRoutine(
+        //     //     nameof(COND_StandardAttackAimCheck), _behavior.targetPlayer,1,56f));
+        //     _behavior.currentAttackAction = StartCoroutine(HB03_Action11());
+        // }
 
         
     }
@@ -244,7 +244,7 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
                 float distance = Vector2.Distance(target.transform.position, sensor.transform.position);
 
                 // 判断距离是否在有效范围内
-                if (distance > 10 && distance < 25)
+                if (distance > 10 && distance <= 27)
                 {
                     // 判断夹角是否小于30度
                     Vector3 direction = (sensor.transform.position - target.transform.position).normalized;

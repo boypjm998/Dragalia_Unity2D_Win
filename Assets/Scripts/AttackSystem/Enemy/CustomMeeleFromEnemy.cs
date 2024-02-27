@@ -5,7 +5,7 @@ using UnityEngine;
 public class CustomMeeleFromEnemy : AttackFromEnemy
 {
     // Start is called before the first frame update
-    private EnemyController ac;
+    //protected EnemyController ac;
     
     protected override void Awake()
     {

@@ -63,6 +63,12 @@ public class PlayerOnewayPlatformEffector : MonoBehaviour, IGroundSensable
             ContactGroundEvent?.Invoke(currentOnewayPlatform);
         }else if (collision.gameObject.CompareTag("Ground"))
         {
+            
+            //2023.12.8: Add a condition 
+            if(collision.collider.bounds.min.y > transform.position.y)
+                return;
+            
+            
             currentGround = collision.gameObject;
             lastContanctGround = currentGround;
             ContactGroundEvent?.Invoke(currentGround);

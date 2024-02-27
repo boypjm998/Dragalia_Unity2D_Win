@@ -2,8 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks;
+using GameMechanics;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using TouchPhase = UnityEngine.TouchPhase;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -21,6 +24,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]private float accTime = 0.1f;
     public bool standardAttackContinious = true;
     public bool allowForceStrike = false;
+    
     public KeyCode keyRight = KeyCode.D;
     public KeyCode keyLeft = KeyCode.A;
     public KeyCode keyDown = KeyCode.S;
@@ -33,6 +37,7 @@ public class PlayerInput : MonoBehaviour
     public KeyCode keySkill3 = KeyCode.O;
     public KeyCode keySkill4 = KeyCode.H;
     public KeyCode keyEsc = KeyCode.Escape;
+    public Dictionary<string, InputBinding> gamepadButtonDict = new();
 
     public MyInputMoudle buttonRight = new MyInputMoudle();
     public MyInputMoudle buttonLeft = new MyInputMoudle();
@@ -103,8 +108,10 @@ public class PlayerInput : MonoBehaviour
         {
             skill[i] = false;
         }
-        //DisableAllInput();
+        
         LoadKeySetting();
+        GamePadInput.InitSensitivity();
+        
     }
 
 
@@ -130,7 +137,7 @@ public class PlayerInput : MonoBehaviour
     void Update()
     {
         if(ControlEnable(keyEsc))
-            buttonEsc.Tick(Input.GetKey(keyEsc));
+            buttonEsc.Tick(Input.GetKey(keyEsc) || GamePadInput.GetButton("Escape"));
         
         if(BattleStageManager.Instance.isGamePaused)
             return;
@@ -144,72 +151,50 @@ public class PlayerInput : MonoBehaviour
 
         if (keyLeft != KeyCode.None)
         {
-            
-            buttonLeft.Tick(Input.GetKey(keyLeft));
+            buttonLeft.Tick(Input.GetKey(keyLeft) || GamePadInput.GetAxis("Move",-1));
         }
-
-
         if (keyRight != KeyCode.None)
         {
-            
-            buttonRight.Tick(Input.GetKey(keyRight));
+            buttonRight.Tick(Input.GetKey(keyRight) || GamePadInput.GetAxis("Move",1));
         }
-
-
         if (keyAttack != KeyCode.None)
         {
-            buttonAttack.Tick(Input.GetKey(keyAttack));
+            buttonAttack.Tick(Input.GetKey(keyAttack) || GamePadInput.GetButton("Attack"));
         }
-
-
         if (keyJump != KeyCode.None)
         {
-            buttonJump.Tick(Input.GetKey(keyJump));
+            buttonJump.Tick(Input.GetKey(keyJump) || GamePadInput.GetButton("Jump"));
         }
-
-
-
         if (keyRoll != KeyCode.None)
         {
-            buttonRoll.Tick(Input.GetKey(keyRoll));
+            buttonRoll.Tick(Input.GetKey(keyRoll) || GamePadInput.GetButton("Dodge"));
         }
-
-
         if (keyDown != KeyCode.None)
         {
-            buttonDown.Tick(Input.GetKey(keyDown));
+            buttonDown.Tick(Input.GetKey(keyDown) || GamePadInput.GetButton("Down"));
         }
-
-
         if (keyUp != KeyCode.None)
         {
-            buttonUp.Tick(Input.GetKey(keyUp));
+            buttonUp.Tick(Input.GetKey(keyUp) || GamePadInput.GetButton("Special"));
         }
-
-
         if (keySkill1 != KeyCode.None)
         {
-            buttonSkill1.Tick(Input.GetKey(keySkill1));
+            buttonSkill1.Tick(Input.GetKey(keySkill1) || GamePadInput.GetButton("Skill1"));
         }
-
         if (keySkill2 != KeyCode.None)
         {
-            buttonSkill2.Tick(Input.GetKey(keySkill2));
+            buttonSkill2.Tick(Input.GetKey(keySkill2)|| GamePadInput.GetButton("Skill2"));
         }
-
-
         if (keySkill3 != KeyCode.None)
         {
-            buttonSkill3.Tick(Input.GetKey(keySkill3));
+            buttonSkill3.Tick(Input.GetKey(keySkill3)|| GamePadInput.GetButton("Skill3"));
         }
-
-
         if (keySkill4 != KeyCode.None)
         {
-            buttonSkill4.Tick(Input.GetKey(keySkill4));
+            buttonSkill4.Tick(Input.GetKey(keySkill4)|| GamePadInput.GetButton("Skill4"));
         }
 
-        
+        //print(buttonSkill4.OnPressed);
         
         
         
@@ -613,6 +598,42 @@ public class PlayerInput : MonoBehaviour
         keyDown = GlobalController.keyDown;
         keyRoll = GlobalController.keyRoll;
         keyJump = GlobalController.keyJump;
+        
+        if(Input.GetJoystickNames().Length == 0)
+            return;
+        
+        GlobalController.Instance.inputActionAsset.Enable();
+        GlobalController.gamepadMap = GlobalController.Instance.inputActionAsset.FindActionMap("Player");
+        GlobalController.gamepadMap.Enable();
+        
+        var actionMap = GlobalController.Instance.inputActionAsset.FindActionMap("Player");
+        var actions = actionMap.actions;
+
+        var moveL = actions[0].bindings[1];
+        var moveR = actions[0].bindings[2];
+        var moveD = actions[1].bindings[0];
+        var attack = actions[2].bindings[0];
+        var jump = actions[3].bindings[0];
+        var roll = actions[4].bindings[0];
+        var special = actions[5].bindings[0];
+        var skill1 = actions[6].bindings[0];
+        var skill2 = actions[7].bindings[0];
+        var skill3 = actions[8].bindings[0];
+        var skill4 = actions[9].bindings[0];
+        var escape = actions[10].bindings[0];
+        
+        gamepadButtonDict = new()
+        {
+            {"MoveL",moveL},
+            {"MoveR",moveL},
+            {"MoveD",moveD},
+            {"Attack",attack},{"Jump",jump},{"Dodge",roll},{"Special",special},
+            {"Skill1",skill1},{"Skill2",skill2},{"Skill3",skill3},{"Skill4",skill4},
+            {"Escape",escape}
+        };
+
+        
+
     }
     /// <summary>
     /// 设置按键
@@ -686,39 +707,37 @@ public class PlayerInput : MonoBehaviour
         DRight = 0;
     }
 
-    private bool CheckSwipeLeft()
+    public static string GetGamepadInputKeyPath(string name)
     {
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Moved)
-            {
-                if (touch.deltaPosition.x < 0f)
-                {
-                    return true;
-                }
-            }
-        }
+        var actionMap = GlobalController.Instance.inputActionAsset.FindActionMap("Player");
+        var actions = actionMap.actions;
 
-        return false;
-    }
-    
-    private bool CheckSwipeRight()
-    {
-        print(Input.touchCount);
-        if (Input.touchCount > 0)
+        var moveL = actions[0].bindings[1];
+        var moveR = actions[0].bindings[2];
+        var moveD = actions[1].bindings[0];
+        var attack = actions[2].bindings[0];
+        var jump = actions[3].bindings[0];
+        var roll = actions[4].bindings[0];
+        var special = actions[5].bindings[0];
+        var skill1 = actions[6].bindings[0];
+        var skill2 = actions[7].bindings[0];
+        var skill3 = actions[8].bindings[0];
+        var skill4 = actions[9].bindings[0];
+        var escape = actions[10].bindings[0];
+        
+        Dictionary<string,InputBinding> gamepadButtonDict = new()
         {
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Moved)
-            {
-                if (touch.deltaPosition.x > 0f)
-                {
-                    return true;
-                }
-            }
-        }
+            {"MoveL",moveL},
+            {"MoveR",moveR},
+            {"MoveD",moveD},
+            {"Attack",attack},{"Jump",jump},{"Dodge",roll},{"Special",special},
+            {"Skill1",skill1},{"Skill2",skill2},{"Skill3",skill3},{"Skill4",skill4},
+            {"Escape",escape}
+        };
+        var binding = gamepadButtonDict[name];
 
-        return false;
+        return UI_GameOption.SimplifyInputActionName(binding.path);
+
     }
 
 

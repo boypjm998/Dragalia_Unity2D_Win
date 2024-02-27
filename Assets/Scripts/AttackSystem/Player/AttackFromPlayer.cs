@@ -7,11 +7,9 @@ public class AttackFromPlayer : AttackBase
 {
     public bool energized = false;
     public bool inspired = false;
-    
     public GameObject self;
-
     public ActorBase ac;
-    
+    public int attackId { get; protected set; }
 
     [Header("Damage Basic Attributes")] 
 
@@ -55,6 +53,7 @@ public class AttackFromPlayer : AttackBase
         
         hitFlags = SearchEnemyList();
         BattleStageManager.Instance.OnEnemyAwake += AddFlag;
+        BattleStageManager.Instance.OnAttackAwake?.Invoke(this);
         //withConditionFlags = SearchEnemyList();
         if(playerpos==null)
             playerpos = GameObject.Find("PlayerHandle").transform;
@@ -247,7 +246,33 @@ public class AttackFromPlayer : AttackBase
             }
     }
 
-    
+    public override Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType, GameObject target)
+    {
+        var kbdirtemp = attackInfo[0].knockbackDirection;
+        switch (knockBackType)
+        {
+            case BasicCalculation.KnockBackType.FaceDirection:
+                if(firedir!=0 && ac)
+                    firedir = ac.facedir;
+                kbdirtemp = new Vector2(firedir * kbdirtemp.x,kbdirtemp.y);
+                break;
+
+            case BasicCalculation.KnockBackType.FromCenterRay:
+                kbdirtemp = transform.InverseTransformPoint(target.transform.position);
+                break;
+            case BasicCalculation.KnockBackType.FromCenterFixed:
+                kbdirtemp = transform.position.x > target.transform.position.x
+                    ? new Vector2(-attackInfo[0].knockbackDirection.x, attackInfo[0].knockbackDirection.y)
+                    : attackInfo[0].knockbackDirection;
+                break;
+            case BasicCalculation.KnockBackType.None:
+                kbdirtemp = Vector2.zero;
+                break;
+        }
+
+        return kbdirtemp;
+    }
+
 
     public float GetDmgModifier()
     {
@@ -300,8 +325,7 @@ public class AttackFromPlayer : AttackBase
             attackInfo.RemoveAt(0);
         }
 
-        
-
+        attackId++;
         ResetFlags();
         //NextWithCondition();
     }

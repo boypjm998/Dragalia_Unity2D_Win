@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ForcedAttackFromEnemy : AttackFromEnemy
 {
-    private EnemyController ac;
+    //private EnemyController ac;
     public GameObject target;
     public List<GameObject> extraTargets = new();
     public float triggerTime;
@@ -67,10 +67,13 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
     
     private void OnTriggerStay2D(Collider2D collision)
     {
+        if(enabled == false)
+            return;
 
         if (collision.CompareTag("Player") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
-
+            
+            
             CauseDamage(collision);
 
         }

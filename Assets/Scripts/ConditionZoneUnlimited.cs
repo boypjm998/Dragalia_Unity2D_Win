@@ -8,6 +8,9 @@ public class ConditionZoneUnlimited : MonoBehaviour
     
     protected List<StatusManager> StatusManagers = new();
 
+    public bool playerEnable = true;
+    public bool enemyEnable = true;
+
     public delegate void OnEnterZone(StatusManager statusManager);
     public event OnEnterZone onEnterZone;
     
@@ -28,8 +31,14 @@ public class ConditionZoneUnlimited : MonoBehaviour
     private void Awake()
     {
         if(field_duration > 0)
-            Destroy(gameObject,field_duration);
+            Invoke("DisableZone",field_duration);
         
+    }
+
+    public void DisableZone()
+    {
+        GetComponent<Collider2D>().enabled = false;
+        Destroy(gameObject,0.1f);
     }
     
     private void OnTriggerEnter2D(Collider2D col)
@@ -38,7 +47,7 @@ public class ConditionZoneUnlimited : MonoBehaviour
             return;
         
             //如果是Character层，return
-            if (col.gameObject.tag == "Player")
+            if (col.gameObject.tag == "Player" && playerEnable)
             {
                 var statusManager = col.GetComponentInParent<StatusManager>();
                 
@@ -64,7 +73,7 @@ public class ConditionZoneUnlimited : MonoBehaviour
 
             }
             
-            if (col.gameObject.tag == "Enemy")
+            if (col.gameObject.tag == "Enemy" && enemyEnable)
             {
                 var statusManager = col.GetComponentInParent<StatusManager>();
                 
@@ -92,14 +101,14 @@ public class ConditionZoneUnlimited : MonoBehaviour
 
     private void OnDestroy()
     {
-        var Stats = FindObjectsOfType<StatusManager>();
-        foreach (var statusManager in Stats)
-        {
-            foreach (var buffZone in BuffZoneInfos)
-            {
-                statusManager.RemoveSpecificTimerbuff(buffZone.conditionID, buffZone.spID);
-            }
-        }
+        // var Stats = FindObjectsOfType<StatusManager>();
+        // foreach (var statusManager in Stats)
+        // {
+        //     foreach (var buffZone in BuffZoneInfos)
+        //     {
+        //         statusManager.RemoveSpecificTimerbuff(buffZone.conditionID, buffZone.spID);
+        //     }
+        // }
         
     }
 
@@ -109,7 +118,7 @@ public class ConditionZoneUnlimited : MonoBehaviour
             return;
         
         
-            if (col.gameObject.tag == "Player")
+            if (col.gameObject.tag == "Player" && playerEnable)
             {
                 var statusManager = col.GetComponentInParent<StatusManager>();
                 if(statusManager == null)
@@ -127,7 +136,7 @@ public class ConditionZoneUnlimited : MonoBehaviour
 
             }
             
-            if (col.gameObject.tag == "Enemy")
+            if (col.gameObject.tag == "Enemy" && enemyEnable)
             {
                 var statusManager = col.GetComponentInParent<StatusManager>();
                 if(statusManager == null)

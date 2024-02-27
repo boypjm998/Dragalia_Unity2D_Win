@@ -113,42 +113,91 @@ public class UI_Tutorial_PauseMenu : UI_PauseMenu
     {
         print(pageID);
         var controller = TutorialLevelManager.Instance;
-        switch (pageID)
-        { 
-            case 1:
-            {
-                var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                var txt = tmp.text;
-                tmp.text = String.Format(txt,GlobalController.keyLeft.ToString(),GlobalController.keyRight.ToString(),
-                    GlobalController.keyDown.ToString());
-                break;
-            }
-            case 2:
-            {
-                var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                tmp.text = String.Format(tmp.text,GlobalController.keyAttack.ToString());
-                break;
-            }
-            case 3:
-            {
-                var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                tmp.text = String.Format(tmp.text,GlobalController.keyRoll.ToString());
-                break;
-            }
-            case 5:
-            {
-                var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                tmp.text = String.Format(tmp.text,GlobalController.keyJump.ToString());
-                break;
-            }
-            case 9:
-            {
-                var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-                print(controller.keySpecial);
-                tmp.text = String.Format(tmp.text,GlobalController.keySpecial.ToString());
-                break;
+        if (GlobalController.Instance.gameOptions.gamepadSettings[0] == 1)
+        {
+            switch (pageID)
+            { 
+                case 1:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    var txt = tmp.text;
+                    tmp.text = String.Format(txt,GlobalController.keyLeft.ToString(),GlobalController.keyRight.ToString(),
+                        GlobalController.keyDown.ToString());
+                    break;
+                }
+                case 2:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    tmp.text = String.Format(tmp.text,GlobalController.keyAttack.ToString());
+                    break;
+                }
+                case 3:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    tmp.text = String.Format(tmp.text,GlobalController.keyRoll.ToString());
+                    break;
+                }
+                case 5:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    tmp.text = String.Format(tmp.text,GlobalController.keyJump.ToString());
+                    break;
+                }
+                case 9:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    print(controller.keySpecial);
+                    tmp.text = String.Format(tmp.text,GlobalController.keySpecial.ToString());
+                    break;
+                }
             }
         }
+        else
+        {
+            switch (pageID)
+            {
+
+                case 1:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    var txt = tmp.text;
+                    tmp.text = String.Format(txt,
+                        PlayerInput.GetGamepadInputKeyPath("MoveL"),
+                        PlayerInput.GetGamepadInputKeyPath("MoveR"),
+                        PlayerInput.GetGamepadInputKeyPath("MoveD"));
+                    break;
+                }
+                case 2:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    tmp.text = String.Format(tmp.text,
+                        PlayerInput.GetGamepadInputKeyPath("Attack"));
+                    break;
+                }
+                case 3:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    tmp.text = String.Format(tmp.text, PlayerInput.GetGamepadInputKeyPath("Dodge"));
+                    break;
+                }
+                case 5:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    tmp.text = String.Format(tmp.text, PlayerInput.GetGamepadInputKeyPath("Jump"));
+                    break;
+                }
+                case 9:
+                {
+                    var tmp = currentPageObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+                    //print(controller.keySpecial);
+                    tmp.text =
+                        String.Format(tmp.text,
+                            PlayerInput.GetGamepadInputKeyPath("Special"));
+                    break;
+                }
+            }
+        }
+        
     }
 
     public override string ToString()

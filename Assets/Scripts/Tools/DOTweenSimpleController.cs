@@ -20,6 +20,10 @@ public class DOTweenSimpleController : MonoBehaviour
     [SerializeField] private Ease EaseType = Ease.Linear;
 
     [SerializeField] private float waitTime = 0;
+
+    [SerializeField] private bool useRigid = false;
+
+    private Rigidbody2D _rigid;
     // Start is called before the first frame update
     public bool isCalled = false;
 
@@ -47,20 +51,45 @@ public class DOTweenSimpleController : MonoBehaviour
         {
             if (absolutePosition)
             {
-                _tweener = transform.DOLocalMove
-                (
-                    moveDirection,
-                    duration);
+                if (!useRigid)
+                {
+                    _tweener = transform.DOLocalMove
+                    (
+                        moveDirection,
+                        duration);
+                }
+                else
+                {
+                    _rigid = GetComponent<Rigidbody2D>();
+                    _tweener = _rigid.DOMove
+                    (
+                        moveDirection + _rigid.position,
+                        duration);
+                }
+                
             }
             else
             {
                 //将moveDirection沿着transform.rotation的方向进行旋转。
                 var rotatedVector = (Vector3)moveDirection;
+
+                if (useRigid)
+                {
+                    _rigid = GetComponent<Rigidbody2D>();
+                    _tweener = _rigid.DOMove
+                    (
+                        new Vector3(rotatedVector.x * transform.localScale.x,
+                            rotatedVector.y * transform.localScale.y, rotatedVector.z * transform.localScale.z)+transform.position,
+                        duration);
+                }
+                else
+                {
+                    _tweener = transform.DOLocalMove
+                    (
+                        rotatedVector+transform.localPosition,
+                        duration);
+                }
                 
-                _tweener = transform.DOLocalMove
-                (
-                    rotatedVector+transform.localPosition,
-                    duration);
                 
                 
             }

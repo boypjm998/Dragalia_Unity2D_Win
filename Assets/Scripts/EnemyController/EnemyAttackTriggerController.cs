@@ -16,6 +16,8 @@ public class EnemyAttackTriggerController : MonoBehaviour
     
     [SerializeField] private Collider2D targetCollider;
     [SerializeField] private float destroyTime = 1;
+    
+    public bool IsSleeping { get; private set; }
     public float DestroyTime
     {
         get => destroyTime;
@@ -38,10 +40,7 @@ public class EnemyAttackTriggerController : MonoBehaviour
 
     private void Awake()
     {
-        if (targetCollider == null)
-        {
-            targetCollider = GetComponent<Collider2D>();
-        }
+        
 
         _attackFromEnemy = GetComponent<AttackFromEnemy>();
     }
@@ -57,6 +56,10 @@ public class EnemyAttackTriggerController : MonoBehaviour
 
     private void Start()
     {
+        if (targetCollider == null)
+        {
+            targetCollider = GetComponent<Collider2D>();
+        }
         InitInvokes();
     }
 
@@ -123,10 +126,12 @@ public class EnemyAttackTriggerController : MonoBehaviour
         {
             CineMachineOperator.Instance.CamaraShake(_attackFromEnemy.hitShakeIntensity,0.1f);
         }
+        IsSleeping = false;
     }
     void AttackSleep()
     {
         targetCollider.enabled = false;
+        IsSleeping = true;
     }
 
     void NextCondition()

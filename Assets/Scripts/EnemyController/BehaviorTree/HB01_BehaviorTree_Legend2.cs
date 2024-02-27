@@ -21,6 +21,8 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
     public static TimerBuff brightBuff_2;
     public static TimerBuff brightBuff_3;
     public static TimerBuff brightBuff_4;
+
+    //public static TimerBuff legendPlusBuff;
     
     public static TimerBuff catastrophicBuff_1;
     public static TimerBuff catastrophicBuff_2;
@@ -52,9 +54,16 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
         InitAllBuff();
         InstantiateAllTargetsWithFlameUI();
         GetBehavior();
-        BattleEffectManager.Instance.SetBGM(BGM);
-        BattleEffectManager.Instance.PlayBGM();
-        
+        if (difficulty == 4)
+        {
+            BattleEffectManager.Instance.SetBGM(BGM);
+            BattleEffectManager.Instance.PlayBGM();
+        }
+        else
+        {
+            BattleEffectManager.Instance.SetBGM(BGM);
+        }
+
     }
 
     
@@ -168,50 +177,50 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
         
         
         
-        DragaliaBossActionTypes.HB1001 actionType = 
-            (DragaliaBossActionTypes.HB1001) Enum.Parse(typeof(DragaliaBossActionTypes.HB1001), action_name);
+        DragaliaEnemyActionTypes.HB1001 actionType = 
+            (DragaliaEnemyActionTypes.HB1001) Enum.Parse(typeof(DragaliaEnemyActionTypes.HB1001), action_name);
 
         switch (actionType)
         {
-            case DragaliaBossActionTypes.HB1001.ComboA:
+            case DragaliaEnemyActionTypes.HB1001.ComboA:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboA(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.ComboB:
+            case DragaliaEnemyActionTypes.HB1001.ComboB:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboB(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.ComboC:
+            case DragaliaEnemyActionTypes.HB1001.ComboC:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboC(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.ComboD:
+            case DragaliaEnemyActionTypes.HB1001.ComboD:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboD(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.CarmineRush:
+            case DragaliaEnemyActionTypes.HB1001.CarmineRush:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CarmineRush(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.FlameRaid:
+            case DragaliaEnemyActionTypes.HB1001.FlameRaid:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_FlameRaid(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.BrightCarmineRush:
+            case DragaliaEnemyActionTypes.HB1001.BrightCarmineRush:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
 
                 if (_currentActionStage.args.Length > 1)
                 {
@@ -220,9 +229,9 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
                     currentAction = StartCoroutine(ACT_BrightCarmineRush(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.SavageFlameRaid:
+            case DragaliaEnemyActionTypes.HB1001.SavageFlameRaid:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 if (_currentActionStage.args.Length > 1)
                 {
                     currentAction = StartCoroutine(ACT_SavageFlameRaid(interval, 0));
@@ -230,23 +239,23 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
                     currentAction = StartCoroutine(ACT_SavageFlameRaid(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.Inferno:
+            case DragaliaEnemyActionTypes.HB1001.Inferno:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ScarletInferno(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.SetWorld:
+            case DragaliaEnemyActionTypes.HB1001.SetWorld:
             {
                 int type = int.Parse(_currentActionStage.args[0]);
-                float interval = float.Parse(_currentActionStage.args[1]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                 currentAction = StartCoroutine(ACT_SetWorld(type, interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.ScorArea:
+            case DragaliaEnemyActionTypes.HB1001.ScorArea:
             {
                 int type = int.Parse(_currentActionStage.args[0]);
-                float interval = float.Parse(_currentActionStage.args[1]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                 if(type == 2)
                     currentAction = StartCoroutine(ACT_BlazingAzureChasing(interval));
                 else if(type == 1)
@@ -255,50 +264,50 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
                     currentAction = StartCoroutine(ACT_BlazingAzureFixed(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.DashAttack:
+            case DragaliaEnemyActionTypes.HB1001.DashAttack:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SingleDodgeCombo(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.Charge:
+            case DragaliaEnemyActionTypes.HB1001.Charge:
             {
                 int type = int.Parse(_currentActionStage.args[0]);
-                float interval = float.Parse(_currentActionStage.args[1]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                 currentAction = StartCoroutine(ACT_ReadyForAOE(type,interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.AOE:
+            case DragaliaEnemyActionTypes.HB1001.AOE:
             {
                 int type = int.Parse(_currentActionStage.args[0]);
-                float interval = float.Parse(_currentActionStage.args[1]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                 currentAction = StartCoroutine(ACT_JudgementFlameAOE(type, interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.Mirage:
+            case DragaliaEnemyActionTypes.HB1001.Mirage:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BlazingBlitz(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.UpdateBuff:
+            case DragaliaEnemyActionTypes.HB1001.UpdateBuff:
             {
                 int buffSelf = int.Parse(_currentActionStage.args[0]);
                 int buffOthers = int.Parse(_currentActionStage.args[1]);
-                float interval = float.Parse(_currentActionStage.args[2]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                 currentAction = StartCoroutine(ACT_FlameHeart(buffSelf,buffOthers,interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.Counter:
+            case DragaliaEnemyActionTypes.HB1001.Counter:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CounterBlade(interval));
                 break;
             }
-            case DragaliaBossActionTypes.HB1001.DualFlame:
+            case DragaliaEnemyActionTypes.HB1001.DualFlame:
             {
                 int type = int.Parse(_currentActionStage.args[0]);
-                float interval = float.Parse(_currentActionStage.args[1]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                 currentAction = StartCoroutine(ACT_InheritorOfBlazewolf(interval,type));
                 break;
             }
@@ -935,6 +944,9 @@ public class HB01_BehaviorTree_Legend2 : EnemyBehaviorManager
 
     protected void InitAllBuff()
     {
+        
+        
+        
         catastrophicBuff_1 = new TimerBuff((int)BasicCalculation.BattleCondition.DamageUp,
             10,-1,1,8101402);
         catastrophicBuff_2 = new TimerBuff((int)BasicCalculation.BattleCondition.SkillHasteBuff,

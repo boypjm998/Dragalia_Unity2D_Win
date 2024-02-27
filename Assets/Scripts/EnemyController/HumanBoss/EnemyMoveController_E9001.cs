@@ -32,6 +32,7 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
     private int dmgSkill4;
 
     [SerializeField] private GameObject DPS_PauseMenu;
+    [SerializeField] private GameObject DPS_PauseMenuEN;
     
     
     
@@ -45,6 +46,7 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         ac = GetComponent<EnemyControllerHumanoid>();
         _statusManager.OnHPChange += TurnMoveToTarget;
         _statusManager.OnHPDecrease += AddTotalDamage;
+        BattleStageManager.Instance.OnGameStart += ResetTime;
     }
 
     void TurnMoveToTarget()
@@ -58,14 +60,21 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         
     }
 
+    private void ResetTime()
+    {
+        currentTime = 0.1f;
+        BattleStageManager.Instance.OnGameStart -= ResetTime;
+    }
     public float GetTime()
     {
         return currentTime;
     }
 
-    private GameObject InstantiateNewPrefabMenu()
+    public GameObject InstantiateNewPrefabMenu()
     {
-        var ui = Instantiate(DPS_PauseMenu, GameObject.Find("UI").transform);
+        var prefab = GlobalController.Instance.GameLanguage == GlobalController.Language.EN ? DPS_PauseMenuEN : DPS_PauseMenu;
+        
+        var ui = Instantiate(prefab, GameObject.Find("UI").transform);
         ui.GetComponent<UI_DPS_PauseMenu>().dmgSource = this;
         return ui;
     }
@@ -223,12 +232,7 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
             currentTime = 0.1f;
         }
 
-        if (printDamagePercentage)
-        {
-            BattleSceneUIManager.Instance.ReplacePauseMenu(InstantiateNewPrefabMenu());
-            printDamagePercentage = false;
-            PrintPercentagesAndSort();
-        }
+        
 
         dps = damageTotal / currentTime;
         currentTime += Time.deltaTime;
@@ -239,6 +243,8 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
     {
         yield return null;
         UI_DialogDisplayer.Instance.EnqueueDialogShared(10101,90011,null);
+        
+        
 
         yield return new WaitForSeconds(4f);
         

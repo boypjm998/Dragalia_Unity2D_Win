@@ -1,0 +1,1190 @@
+{
+    "phasePattern": [
+        {
+            "action_list": [
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 0,
+                    "args": [
+                        "1",
+                        "1",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ScorArea",
+                    "state": 1,
+                    "args": [
+                        "0",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 2,
+                    "args": [
+                        "2",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Inferno",
+                    "state": 3,
+                    "args": [
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 4,
+                    "args": [
+                        "1",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Mirage",
+                    "state": 5,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [6,9]
+                },
+                {
+                    "action_name": "CarmineRush",
+                    "state": 6,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 7,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "8",
+                        "12"
+                    ]
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 8,
+                    "args": [
+                        "0",
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [12]
+                },
+                {
+                    "action_name": "FlameRaid",
+                    "state": 9,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 10,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "11",
+                        "12"
+                    ]
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 11,
+                    "args": [
+                        "0","0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Counter",
+                    "state": 12,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "DualFlame",
+                    "state": 13,
+                    "args": [
+                        "0",
+                        "5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ScorArea",
+                    "state": 14,
+                    "args": [
+                        "2",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 15,
+                    "args": [
+                        "1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 16,
+                    "args": [
+                        "1",
+                        "1",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 17,
+                    "args": [
+                        "2",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "DashAttack",
+                    "state": 18,
+                    "args": [
+                        "0.4"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 19,
+                    "args": [
+                        "0",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboA",
+                    "state": 20,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboB",
+                    "state": 21,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboC",
+                    "state": 22,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboD",
+                    "state": 23,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 24,
+                    "args": [
+                        "0",
+                        "3"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["loop_count",25,26]
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 25,
+                    "args": [
+                        "0",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 26,
+                    "args": [
+                        "1",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [28]
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 27,
+                    "args": [
+                        "2",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 28,
+                    "args": [
+                        "1",
+                        "1",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Inferno",
+                    "state": 29,
+                    "args": [
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "loop",
+                    "jump_args": []
+                }
+            ],
+            "jumpOutCondition": 1,
+            "loopStartPoint": 18,
+            "loopCount": 0,
+            "args": [
+                "70",
+                "15"
+            ]
+        },
+        {
+            "action_list": [
+                {
+                    "action_name": "SetWorld",
+                    "state": 0,
+                    "args": [
+                        "0",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["aoe_released","4","1"]
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 1,
+                    "args": [
+                        "3",
+                        "3",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["aoe_type_upward","2","3"]
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 2,
+                    "args": [
+                        "1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [4]
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 3,
+                    "args": [
+                        "0",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [4]
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 4,
+                    "args": [
+                        "1",
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 5,
+                    "args": [
+                        "3",
+                        "3",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ScorArea",
+                    "state": 6,
+                    "args": [
+                        "2",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Counter",
+                    "state": 7,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboA",
+                    "state": 8,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Inferno",
+                    "state": 9,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 10,
+                    "args": [
+                        "0",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboB",
+                    "state": 11,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ScorArea",
+                    "state": 12,
+                    "args": [
+                        "2",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboD",
+                    "state": 13,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 14,
+                    "args": [
+                        "0",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 15,
+                    "args": [
+                        "0",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 16,
+                    "args": [
+                        "3",
+                        "0",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 17,
+                    "args": [
+                        "1",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [18, 21]
+                },
+                {
+                    "action_name": "CarmineRush",
+                    "state": 18,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 19,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "20",
+                        "24"
+                    ]
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 20,
+                    "args": [
+                        "0",
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [24]
+                },
+                {
+                    "action_name": "FlameRaid",
+                    "state": 21,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 22,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "23",
+                        "24"
+                    ]
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 23,
+                    "args": [
+                        "0","2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 24,
+                    "args": [
+                        "2",
+                        "2.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "DualFlame",
+                    "state": 25,
+                    "args": [
+                        "1",
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 26,
+                    "args": [
+                        "1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Counter",
+                    "state": 27,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                }
+            ],
+            "jumpOutCondition": 0,
+            "jump_condition": "none",
+            "loopStartPoint": 0,
+            "loopCount": 0,
+            "args": []
+        },
+        {
+            "action_list": [
+                {
+                    "action_name": "SetWorld",
+                    "state": 0,
+                    "args": [
+                        "0",
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [1,2]
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 1,
+                    "args": [
+                        "3",
+                        "1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [3,4]
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 2,
+                    "args": [
+                        "1",
+                        "3",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [3,4]
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 3,
+                    "args": [
+                        "0",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [5]
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 4,
+                    "args": [
+                        "1",
+                        "0.1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 5,
+                    "args": [
+                        "2",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboB",
+                    "state": 6,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboD",
+                    "state": 7,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "FlameRaid",
+                    "state": 8,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 9,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "10",
+                        "11"
+                    ]
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 10,
+                    "args": [
+                        "0","2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 11,
+                    "args": [
+                        "1",
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Inferno",
+                    "state": 12,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Mirage",
+                    "state": 13,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["aoe_type_upward","15","14"]
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 14,
+                    "args": [
+                        "1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [16]
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 15,
+                    "args": [
+                        "0",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "UpdateBuff",
+                    "state": 16,
+                    "args": [
+                        "2",
+                        "2",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [17,18]
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 17,
+                    "args": [
+                        "1",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["loop_count",19,20]
+                },
+                {
+                    "action_name": "Charge",
+                    "state": 18,
+                    "args": [
+                        "0",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["loop_count",20,19]
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 19,
+                    "args": [
+                        "1",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [21,22,23]
+                },
+                {
+                    "action_name": "SetWorld",
+                    "state": 20,
+                    "args": [
+                        "2",
+                        "0.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [21,22,23]
+                },
+                {
+                    "action_name": "ComboA",
+                    "state": 21,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [24]
+                },
+                {
+                    "action_name": "ComboB",
+                    "state": 22,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [24]
+                },
+                {
+                    "action_name": "ComboC",
+                    "state": 23,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboD",
+                    "state": 24,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Mirage",
+                    "state": 25,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "Inferno",
+                    "state": 26,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [27,30]
+                },
+                {
+                    "action_name": "CarmineRush",
+                    "state": 27,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 28,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "29",
+                        "33"
+                    ]
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 29,
+                    "args": [
+                        "0",
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [33]
+                },
+                {
+                    "action_name": "FlameRaid",
+                    "state": 30,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "BrightCarmineRush",
+                    "state": 31,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_buff",
+                        "32",
+                        "33"
+                    ]
+                },
+                {
+                    "action_name": "SavageFlameRaid",
+                    "state": 32,
+                    "args": [
+                        "0","2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "ComboC",
+                    "state": 33,
+                    "args": [
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": ["aoe_type_upward","34","35"]
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 34,
+                    "args": [
+                        "1",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "to",
+                    "jump_args": [36]
+                },
+                {
+                    "action_name": "AOE",
+                    "state": 35,
+                    "args": [
+                        "0",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "DashAttack",
+                    "state": 36,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "random",
+                    "jump_args": [37, 38]
+                },
+                {
+                    "action_name": "DualFlame",
+                    "state": 37,
+                    "args": [
+                        "0",
+                        "8"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "loop",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "DualFlame",
+                    "state": 38,
+                    "args": [
+                        "1",
+                        "8"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "loop",
+                    "jump_args": []
+                }
+            ],
+            "jumpOutCondition": 0,
+            "jump_condition": "none",
+            "loopStartPoint": 16,
+            "loopCount": 0,
+            "args": []
+        }
+        
+    ]
+}

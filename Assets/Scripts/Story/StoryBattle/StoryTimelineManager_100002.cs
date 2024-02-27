@@ -59,8 +59,9 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
             Instantiate(playerBundle.LoadAsset<GameObject>("PlayerHandle"),
                 new Vector3(2.5f,-1),Quaternion.identity,
                 BattleStageManager.Instance.PlayerLayer.transform);
-
+        
         GO_Pinon.name = "PlayerHandle";
+        BattleStageManager.Instance.SetPlayer(GO_Pinon);
         GO_Pinon.GetComponent<PlayerStatusManager>().remainReviveTimes = BattleStageManager.Instance.maxReviveTime;
         PI_Pinon = GO_Pinon.GetComponent<PlayerInput>();
         PI_Pinon.enabled = false;
@@ -413,7 +414,7 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
         
         //哈尔开始攻击乌里尔
         SpawnFXPrefab(prefabList[8], EC_FallenUriel.transform.position);
-        PlayAnimation(EC_FallenUriel,"break_enter");
+        PlayAnimation(EC_FallenUriel,"knockback_enter");
         SpawnFXPrefab(prefabList[12],waterBallFX.transform.position);
         CineMachineOperator.Instance.CamaraShake(10f,0.25f);
         Destroy(waterBallFX);
@@ -449,7 +450,7 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
         
         AC_Harle.ResetGravityScale();
         CineMachineOperator.Instance.CamaraShake(15f,0.3f);
-        PlayAnimation(EC_FallenGabriel,"break_enter");
+        PlayAnimation(EC_FallenGabriel,"knockdown_enter");
         Destroy(windBallFX);
         SpawnFXPrefab(prefabList[13],windBallFX.transform.position);
         SpawnFXPrefab(prefabList[10],EC_FallenGabriel.transform.position + new Vector3(0,1.5f,0));

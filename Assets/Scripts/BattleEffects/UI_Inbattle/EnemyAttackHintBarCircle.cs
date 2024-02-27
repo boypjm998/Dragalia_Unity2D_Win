@@ -39,8 +39,8 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
         _tweener.Kill();
     }
 
-    // protected override float GetWarningTimeLeft()
-    // {
-    //     return (1-_tweener.ElapsedPercentage()) * warningTime;
-    // }
+    public void SetDoScale(bool flag)
+    {
+        doScale = flag;
+    }
 }

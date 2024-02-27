@@ -254,7 +254,7 @@ MonoBehaviour:
   m_fontSizeMax: 27
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -687,8 +687,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: -5}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: -5}
+  m_SizeDelta: {x: 260, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7358159633215514012
 CanvasRenderer:
@@ -748,9 +748,9 @@ MonoBehaviour:
   m_fontSize: 27
   m_fontSizeBase: 27
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 24
+  m_fontSizeMax: 27
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a643d247806bf44fb359e2270d5b418, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storyData: {fileID: 0}
+  storyData: {fileID: 4900000, guid: 1a8418e8f50516b4da03c7cbcfa91aee, type: 3}
   prologueStoryData: {fileID: 4900000, guid: 09f126cfda3e165428027a9e57e086a4, type: 3}
   autoMode: 0
   paused: 0
@@ -1630,8 +1630,8 @@ MonoBehaviour:
   autoNextTime: 1
   started: 0
   voiceData: []
-  isDebug: 0
-  currentStoryID: 
+  isDebug: 1
+  currentStoryID: 100003
   storyComponent:
     backGround:
       gameObject: {fileID: 0}
@@ -1765,6 +1765,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 470ec1d44538b41428141f5ad2eccb52, type: 3}
   - {fileID: 21300000, guid: aa82d7645cea58b47b478b6fa6e04cff, type: 3}
   - {fileID: 21300000, guid: d1223a8b749cebc4a8143bbe05cd0df0, type: 3}
+  - {fileID: 21300000, guid: f0ac14c31e0d74f4981cff95b0634418, type: 3}
+  - {fileID: 21300000, guid: ce67ec228639c3542b5ac3fb6c986ed4, type: 3}
+  - {fileID: 21300000, guid: 0f20d578dd993b04eaed309f91a35232, type: 3}
+  - {fileID: 21300000, guid: 2e1257b3c3b36974a8af2310a668a039, type: 3}
+  - {fileID: 21300000, guid: 5da32910d9bf0094aa4ee4cc7fda0d43, type: 3}
+  - {fileID: 21300000, guid: 41d60dfbcb1b92743ae28731e5668199, type: 3}
 --- !u!223 &374493297
 Canvas:
   m_ObjectHideFlags: 0

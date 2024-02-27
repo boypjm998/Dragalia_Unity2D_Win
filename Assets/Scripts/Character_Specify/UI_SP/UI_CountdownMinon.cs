@@ -37,7 +37,7 @@ public class UI_CountdownMinon : MonoBehaviour
 
     public int KillAllMinons()
     {
-        var minionsLeft = _statusManagers.Count;
+        var minionsLeft = capacity;
         foreach (var _status in _statusManagers)
         {
             _status.currentHp = 0;

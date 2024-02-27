@@ -14,6 +14,9 @@ public class HB02_BehaviorTree_2 : EnemyBehaviorManager
         enemyController = GetComponent<EnemyControllerHumanoid>();
         enemyAttackManager = GetComponent<EnemyMoveController_HB02>();
         GetBehavior();
+        
+        enemyController.OnMoveFinished += FinishMove;
+        enemyAttackManager.OnAttackFinished += FinishAttack;
     }
 
     
@@ -38,9 +41,9 @@ public class HB02_BehaviorTree_2 : EnemyBehaviorManager
         {
             case "KeepDistance":
             {
-                float distanceMin = float.Parse(_currentActionStage.args[0]);
-                float distanceMax = float.Parse(_currentActionStage.args[1]);
-                float followTime = float.Parse(_currentActionStage.args[2]);
+                float distanceMin = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                float distanceMax = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                 currentAction = StartCoroutine(ACT_KeepDistance(distanceMin, distanceMax, followTime));
                 break;
             }
@@ -48,112 +51,112 @@ public class HB02_BehaviorTree_2 : EnemyBehaviorManager
             {
                 if (_currentActionStage.args.Length == 4)
                 {
-                    float arriveDistanceX = float.Parse(_currentActionStage.args[0]);
-                    float arriveDistanceY = float.Parse(_currentActionStage.args[1]);
-                    float triggerDistance = float.Parse(_currentActionStage.args[2]);
-                    float followTime = float.Parse(_currentActionStage.args[3]);
+                    float arriveDistanceX = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float arriveDistanceY = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    float triggerDistance = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[3]);
                     currentAction = StartCoroutine(ACT_ApproachTarget(arriveDistanceX, arriveDistanceY, triggerDistance, followTime));
                 }else if (_currentActionStage.args.Length == 3)
                 {
-                    float arriveDistanceX = float.Parse(_currentActionStage.args[0]);
-                    float arriveDistanceY = float.Parse(_currentActionStage.args[1]);
-                    float followTime = float.Parse(_currentActionStage.args[2]);
+                    float arriveDistanceX = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float arriveDistanceY = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                     currentAction = StartCoroutine(ACT_ApproachTarget(arriveDistanceX, arriveDistanceY, followTime));
                 }else if (_currentActionStage.args.Length == 2)
                 {
-                    float arriveDistance = float.Parse(_currentActionStage.args[0]);
-                    float followTime = float.Parse(_currentActionStage.args[1]);
+                    float arriveDistance = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                     currentAction = StartCoroutine(ACT_ApproachTarget(arriveDistance, followTime));
                 }else throw new System.Exception("ApproachTarget参数数量错误");
                 break;
             }
             case "ComboA":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboA(interval));
                 break;
             }
             case "ComboB":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboB(interval));
                 break;
             }
             case "ComboC":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboC(interval));
                 break;
             }
             case "DashAttack":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_DashAttack(interval));
                 break;
             }
             case "GloriousSanctuary":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_GloriousSanctuary(interval));
                 break;
             }
             case "HolyCrown":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_HolyCrown(interval));
                 break;
             }
             case "TwilightCrown":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_TwilightCrown(interval));
                 break;
             }
             case "CelestialPrayer":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CelestialPrayer(interval));
                 break;
             }
             case "TwilightMoon":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_TwilightMoon(interval));
                 break;
             }
             case "WarpAttack":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_WarpAttack(interval));
                 break;
             }
             case "FaithEnhancement":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_FaithEnhancement(interval));
                 break;
             }
             case "EarthBarrier":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_EarthBarrier(interval));
                 break;
             }
             case "CombinedTwilightAttack":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CombinedTwilightAttack(interval));
                 break;
             }
             case "PhaseShift":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_PhaseShift(interval));
                 break;
             }
             case "SpinDash":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SpinDash(interval));
                 break;
             }
@@ -459,7 +462,7 @@ public class HB02_BehaviorTree_2 : EnemyBehaviorManager
             case "distance":
             {
                 var distance = Mathf.Abs(targetPlayer.transform.position.x - transform.position.x);
-                var cond = float.Parse(args[1]);
+                var cond = ObjectExtensions.ParseInvariantFloat(args[1]);
                 if (distance <= cond)
                 {
                     dest_state = int.Parse(args[2]);

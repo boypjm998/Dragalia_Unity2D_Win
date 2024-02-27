@@ -21,16 +21,45 @@ public class UI_AchievementMenu : MonoBehaviour
     {
         achievementInfos = GlobalController.Instance.gameOptions.achievementList;
 
+        // if (achievementInfos == null)
+        //     achievementInfos = new List<AchievementInfo>();
+
         InstantiateAchievementListUI();
 
 
+        //4KBE9i2jzoBNZuQoYPpqjg== : 2个角色完成
     }
 
     private void InstantiateAchievementListUI()
     {
         var achievementData = AchievementManager.Instance.Achievements;
+        
+        List<Achievement> sortedAchievements = new List<Achievement>();
 
-        foreach (var data in achievementData)
+        // 首先添加所有已完成的成就
+        foreach (var achievement in achievementData)
+        {
+            if (achievement.IsFinished)
+            {
+                sortedAchievements.Add(achievement);
+            }
+        }
+
+        // 对已完成的成就进行排序
+        sortedAchievements.Sort((a, b) => a.id.CompareTo(b.id));
+
+        // 然后添加所有未完成的成就
+        foreach (var achievement in achievementData)
+        {
+            if (!sortedAchievements.Contains(achievement))
+            {
+                sortedAchievements.Add(achievement);
+            }
+        }
+        
+        print(sortedAchievements.Count);
+
+        foreach (var data in sortedAchievements)
         {
             var singleUI = Instantiate(singleAchievementPrefab
                 [(int)GlobalController.Instance.GameLanguage], achievementParent);
@@ -53,8 +82,8 @@ public class UI_AchievementMenu : MonoBehaviour
             
             var trueProgress =
                 trueAchievement == null ? String.Empty : trueAchievement.progressStr;
-            
-            print(data.id);
+
+            singleUI.name = data.id.ToString();
             
             var tempAchievement = new Achievement(data.id,data.rarity,data.name,data.description,data.progressType,
                 trueProgress,data.hideCondition,data.maxProgress);
@@ -74,10 +103,8 @@ public class UI_AchievementMenu : MonoBehaviour
             }
             
 
-
-
         }
-        
+
         
         
         

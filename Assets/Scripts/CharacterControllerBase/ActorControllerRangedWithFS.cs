@@ -121,25 +121,27 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
           if(pi.allowForceStrike && forceLevel>=0)
                return;
           
-          if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-          {
-               UseSkill(1);
-          }
-
-          if (pi.skill[1] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-          {
-               UseSkill(2);
-          }
+          base.CheckSkill();
           
-          if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-          {
-               UseSkill(3);
-          }
-
-          if (pi.skill[3] && !pi.hurt && !pi.isSkill)
-          {
-               UseSkill(4);
-          }
+          // if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+          // {
+          //      UseSkill(1);
+          // }
+          //
+          // if (pi.skill[1] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+          // {
+          //      UseSkill(2);
+          // }
+          //
+          // if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
+          // {
+          //      UseSkill(3);
+          // }
+          //
+          // if (pi.skill[3] && !pi.hurt && !pi.isSkill)
+          // {
+          //      UseSkill(4);
+          // }
           
           
      }

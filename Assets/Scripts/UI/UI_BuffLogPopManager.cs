@@ -34,7 +34,12 @@ public class UI_BuffLogPopManager : MonoBehaviour
         Inspired,
         SkillUpgradedReset,
         ReduceSigilTime,
-        ImmuneToControlAffliction
+        ImmuneToControlAffliction,
+        ImmuneToDoTAffliction,
+        AutoChargeRateUp,
+        DragondriveCharge,
+        DragondrivePurged,
+        BuffCount
     }
 
     private void Awake()
@@ -140,7 +145,13 @@ public class UI_BuffLogPopManager : MonoBehaviour
         StringBuilder sb = new StringBuilder();
         if (condition.GetIcon() != null)
         {
-            sb.Append("<sprite=" + (condition.buffID-1) + ">");
+            var buffID = condition.buffID - 1;
+            if (buffID >= 500)
+            {
+                buffID = (condition as TimerBuff).extra_iconID - 1;
+            }
+
+            sb.Append("<sprite=" + buffID + ">");
         }
 
         if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value ||
@@ -275,8 +286,17 @@ public class UI_BuffLogPopManager : MonoBehaviour
     private void CustomText_ZH(string message)
     {
         //将message解析为枚举SpecialConditionType的类型,存在msgType
+
+        string extraMsg = "";
+
+        if (message.Contains("_"))
+        {
+            extraMsg = message.Split("_")[^1];
+            message = message.Split("_")[0];
+        }
         
-        var msgType = (SpecialConditionType)Enum.Parse(typeof(SpecialConditionType), message);
+        
+        SpecialConditionType msgType = (SpecialConditionType)Enum.Parse(typeof(SpecialConditionType), message);
 
         switch (msgType)
         {
@@ -324,6 +344,28 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("免疫控制类异常状态");
                 ConditionStrInfo.Enqueue(new(1011,0));//Other
                 break;
+            case SpecialConditionType.ImmuneToDoTAffliction:
+                EnqueueNewCondition("免疫持续伤害类异常状态");
+                ConditionStrInfo.Enqueue(new(1011,0));//Other
+                break;
+            case SpecialConditionType.AutoChargeRateUp:
+                EnqueueNewCondition("技能自动充能率提升");
+                ConditionStrInfo.Enqueue(new(1012,0));//Other
+                break;
+            case SpecialConditionType.DragondriveCharge:
+                EnqueueNewCondition("强袭充能");
+                ConditionStrInfo.Enqueue(new(1013,0));
+                break;
+            case SpecialConditionType.DragondrivePurged:
+                EnqueueNewCondition("强袭解除");
+                ConditionStrInfo.Enqueue(new(1013,0));
+                break;
+            
+            case SpecialConditionType.BuffCount:
+                EnqueueNewCondition($"增强效果×{extraMsg}");
+                ConditionStrInfo.Enqueue(new(1014,0));
+                break;
+            
             default:
                 EnqueueNewCondition("未知状态");
                 ConditionStrInfo.Enqueue(new(1006,0));//Other
@@ -363,6 +405,14 @@ public class UI_BuffLogPopManager : MonoBehaviour
     
     private void CustomText_EN(string message)
     {
+        string extraMsg = "";
+
+        if (message.Contains("_"))
+        {
+            extraMsg = message.Split("_")[^1];
+            message = message.Split("_")[0];
+        }
+        
         var msgType = (SpecialConditionType)Enum.Parse(typeof(SpecialConditionType), message);
         switch (msgType)
         {
@@ -410,6 +460,28 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("Control Affliction Immunity");
                 ConditionStrInfo.Enqueue(new(1011,0));//Other
                 break;
+            case SpecialConditionType.ImmuneToDoTAffliction:
+                EnqueueNewCondition("DoT Affliction Immunity");
+                ConditionStrInfo.Enqueue(new(1011,0));//Other
+                break;
+            case SpecialConditionType.AutoChargeRateUp:
+                EnqueueNewCondition("SP Regen Rate Up");
+                ConditionStrInfo.Enqueue(new(1012,0));//Other
+                break;
+            case SpecialConditionType.DragondriveCharge:
+                EnqueueNewCondition("Dragondrive Prep");
+                ConditionStrInfo.Enqueue(new(1013,0));
+                break;
+            case SpecialConditionType.DragondrivePurged:
+                EnqueueNewCondition("Dragondrive Purged");
+                ConditionStrInfo.Enqueue(new(1013,0));
+                break;
+            case SpecialConditionType.BuffCount:
+                EnqueueNewCondition($"Skill Boost × {extraMsg}");
+                ConditionStrInfo.Enqueue(new(1014,0));
+                break;
+            
+            
             default:
                 EnqueueNewCondition("Unknown Status");
                 ConditionStrInfo.Enqueue(new(1006,0));//Other

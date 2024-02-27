@@ -13,6 +13,8 @@ namespace CharacterSpecificProjectiles
         private Animator anim;
         private AttackFromEnemy attackFromEnemy;
         private Projectile_C003_14_Boss protection;
+
+        public int difficulty = 4;
         void Start()
         {
             anim = GetComponent<Animator>();
@@ -40,11 +42,13 @@ namespace CharacterSpecificProjectiles
 
             if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20033))
             {
-                attackFromEnemy.attackInfo[0].dmgModifier[0] = 5.33f * 1.2f;
+                var modifier = difficulty == 4 ? 1.2f : 1.15f;
+                attackFromEnemy.attackInfo[0].dmgModifier[0] = 5.33f * modifier;
             }
             else if (BattleStageManager.Instance.FieldAbilityIDList.Contains(20034))
             {
-                attackFromEnemy.attackInfo[0].dmgModifier[0] = 5.33f * 4;
+                var modifier = difficulty == 4 ? 4f : 4.8f;
+                attackFromEnemy.attackInfo[0].dmgModifier[0] = 5.33f * modifier;
             }
             else
             {

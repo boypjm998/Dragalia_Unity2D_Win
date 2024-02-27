@@ -100,9 +100,11 @@ MonoBehaviour:
   rendererObject: {fileID: 0}
   isAction: 0
   canDeath: 1
+  disappearTimeAfterDeath: 0
   displayHPBar: 0
   HPBarOffset: {x: 0, y: 0}
   hurt: 0
+  _groundSensor: {fileID: 0}
   counterOn: 0
   flashBody: {fileID: 1937144555932017329}
   minimapIcon: {fileID: 0}
@@ -114,12 +116,10 @@ MonoBehaviour:
   rollspeed: 9
   jumpforce: 20
   jumpHeight: 5
-  disappearTimeAfterDeath: 0
   dodging: 0
   moveEnable: 1
   tar: {fileID: 0}
   _defaultgravityscale: 4
-  _groundSensor: {fileID: 0}
 --- !u!50 &6133123882682155446
 Rigidbody2D:
   serializedVersion: 4
@@ -397,8 +397,8 @@ MonoBehaviour:
   stormlashRes: 0
   flashburnRes: 0
   shadowblightRes: 0
-  stunRes: 100
-  sleepRes: 100
+  stunRes: 60
+  sleepRes: 60
   bogRes: 0
   freezeRes: 60
   blindnessRes: 200
@@ -629,6 +629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &5072748283469620636
 GameObject:
   m_ObjectHideFlags: 0

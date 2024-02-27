@@ -58,19 +58,17 @@ public abstract class BattleCondition
         effect = newEffect;
     }
 
-    // protected virtual void OnBuffEnable()
-    // {
-    // }
-    //
-    // protected virtual void OnBuffDisable()
-    // {
-    // }
-    
-    
+    public void SetDuration(float value)
+    {
+        var diff = value - duration;
+        duration = value;
+        lastTime += diff;
+    }
 
-    public abstract void BuffStart();
 
-    public abstract void BuffExpired();
+
+    public Action<StatusManager> OnBuffStart;
+    public Action<StatusManager> OnBuffRemove;
 
     public abstract void BuffDispell();
 

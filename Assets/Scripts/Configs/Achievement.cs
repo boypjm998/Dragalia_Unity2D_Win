@@ -22,7 +22,7 @@ public class Achievement
     
     //private fields
     private string progressInfoStr;
-    private string plainProgressInfo;
+    private string plainProgressInfo = "";
     
     //properties
     public bool IsFinished => IsCompleted();
@@ -81,6 +81,7 @@ public class Achievement
                 //如果plainText不包含标志FINISHED，强行设置为FINISHED:FALSE
                 if (!plainText.Contains("FINISHED=TRUE"))
                 {
+                    Debug.Log("强制设置为FALSE");
                     plainText = "FINISHED=FALSE";
                 }
                 else
@@ -103,7 +104,7 @@ public class Achievement
                     count = 0;
                 }
                 
-                if (count >= maxProgress)
+                if (count >= maxProgress && count>0)
                 {
                     finished = true;
                 }
@@ -180,12 +181,20 @@ public class Achievement
                 //plainText的格式为LIST=/data1,data2,data3/, 把amount作为新的data加入到LIST中
                 // 找到最后一个"/"的位置
                 int endIndex = plainText.LastIndexOf("/");
+
+                if (endIndex == -1)
+                {
+                    plainText = "LIST=//";
+                    endIndex = 6;
+                }
+
                 string newList;
                 int count = 0;
                 
-                if (plainText.Contains("," + amount + ",") ||
-                    plainText.Contains("/" + amount + ",") ||
-                    plainText.Contains("," + amount + "/"))
+                if (plainText.Contains("," + amount.ToString() + ",") ||
+                    plainText.Contains("/" + amount.ToString() + ",") ||
+                    plainText.Contains("," + amount.ToString() + "/") ||
+                    plainText.Contains("/" + amount.ToString() + "/"))
                 {
                     // 如果存在，那么直接返回
                     return false;
@@ -202,7 +211,9 @@ public class Achievement
                     // 如果列表不为空，那么在新的数据前添加一个逗号，然后插入
                     newList = plainText.Insert(endIndex, "," + amount.ToString());
                     
-                    count = plainText.Count(ch => ch == ',') + 1;
+                    count = newList.Count(ch => ch == ',') + 1;
+                    
+                    Debug.Log("COUNT:"+count);
 
                 }
                 
@@ -218,6 +229,8 @@ public class Achievement
         }
         
         AchievementSystem.EncryptAchievementProcessString(this,plainText);
+        plainProgressInfo = AchievementSystem.DecryptAchievementProcessString(this);
+        
 
         return finished;
         
@@ -243,6 +256,7 @@ public class AchievementSystem
     {
         var type = achievement.progressType.ToString();
         
+        
         var keyBytes = Encoding.UTF8.GetBytes(type + achievement.id.ToString("D3"));
         var ivBytes = Encoding.UTF8.GetBytes(achievement.id.ToString("D3")+IVString + achievement.id.ToString("D3"));
         Debug.Log(keyBytes);
@@ -256,6 +270,22 @@ public class AchievementSystem
         
         var keyBytes = Encoding.UTF8.GetBytes(type + achievement.id.ToString("D3"));
         var ivBytes = Encoding.UTF8.GetBytes(achievement.id.ToString("D3")+IVString + achievement.id.ToString("D3"));
+
+        if (achievement.GetProgress() == string.Empty)
+        {
+            if (achievement.progressType == ProgressType.DistinctArray)
+            {
+                EncryptAchievementProcessString(achievement,"LIST=//");
+            }else if (achievement.progressType == ProgressType.RepeatInteger)
+            {
+                EncryptAchievementProcessString(achievement, "CURRENT=0");
+            }
+            else
+            {
+                EncryptAchievementProcessString(achievement, "FINISHED=FALSE");
+            }
+        }
+
 
         return DecryptString(achievement.GetProgress(), keyBytes, ivBytes);
     }
@@ -325,6 +355,7 @@ public class AchievementSystem
 }
 
 
+[Serializable]
 public class AchievementInfo
 {
     public int id;

@@ -74,6 +74,7 @@ MonoBehaviour:
   hitSoundEffect: {fileID: 8300000, guid: c026fcadbb03b224fa00d572cffd112f, type: 3}
   attackSE: []
   extraODModifier: 0
+  conditionalAttackEffects: []
   enemySource: {fileID: 0}
   isMeele: 0
   hitFlags: 
@@ -5173,6 +5174,10 @@ PrefabInstance:
     - target: {fileID: 7125801063976163602, guid: 49d76bb479f609d49aa9ddabb49cbe3e, type: 3}
       propertyPath: ShapeModule.m_Position.z
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125801063976163602, guid: 49d76bb479f609d49aa9ddabb49cbe3e, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49d76bb479f609d49aa9ddabb49cbe3e, type: 3}

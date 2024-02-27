@@ -724,7 +724,27 @@
           "jump_condition": "",
           "loopStartPoint": 3,
           "loopCount": 0,
-          "args": ["revive", "4"]
+          "args": ["revive", "3"]
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "affectionRing",
+                  "state": 0,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "jump_condition": "",
+          "loopStartPoint": 0,
+          "loopCount": 0,
+          "args": []
       },
       {
           "action_list": [
@@ -758,7 +778,7 @@
                   "action_name": "projectiles",
                   "state": 2,
                   "args": [
-                      "2",
+                      "3",
                       "1"
                   ],
                   "lock_phase": true,
@@ -1112,6 +1132,428 @@
           "loopStartPoint": 6,
           "loopCount": 0,
           "args": []
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "warp",
+                  "state": 0,
+                  "args": [
+                      "0",
+                      "11",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": [
+                      "resetWorld",
+                      "2",
+                      "1"
+                  ]
+              },
+              {
+                  "action_name": "setWorld",
+                  "state": 1,
+                  "args": [
+                      "0",
+                      "0"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "heal",
+                  "state": 2,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random+",
+                  "jump_args": [
+                      "1",
+                      "2"
+                  ]
+              },
+              {
+                  "action_name": "genesis",
+                  "state": 3,
+                  "args": [
+                      "120123",
+                      "1",
+                      "0",
+                      "1",
+                      "10",
+                      "20"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [
+                      "2"
+                  ]
+              },
+              {
+                  "action_name": "genesis",
+                  "state": 4,
+                  "args": [
+                      "120123",
+                      "0",
+                      "1",
+                      "1",
+                      "10",
+                      "20"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [
+                      "1"
+                  ]
+              },
+              {
+                  "action_name": "shared",
+                  "state": 5,
+                  "args": [
+                      "10",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ball",
+                  "state": 6,
+                  "args": [
+                      "8"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "glare",
+                  "state": 7,
+                  "args": [
+                      "0",
+                      "1",
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboA",
+                  "state": 8,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "prayers",
+                  "state": 9,
+                  "args": [
+                      "2",
+                      "-1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "comboB",
+                  "state": 10,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "prayers",
+                  "state": 11,
+                  "args": [
+                      "2",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "squares",
+                  "state": 12,
+                  "args": [
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "warp",
+                  "state": 13,
+                  "args": [
+                      "24",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "wall",
+                  "state": 14,
+                  "args": [
+                      "0",
+                      "1",
+                      "16",
+                      "0"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 15,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "pillars",
+                  "state": 16,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "glare",
+                  "state": 17,
+                  "args": [
+                      "1",
+                      "0",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "setWorld",
+                  "state": 18,
+                  "args": [
+                      "0",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "prayers",
+                  "state": 19,
+                  "args": [
+                      "2",
+                      "0",
+                      "1",
+                      "1",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "prayers",
+                  "state": 20,
+                  "args": [
+                      "2",
+                      "0",
+                      "-1",
+                      "1",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "prayers",
+                  "state": 21,
+                  "args": [
+                      "3",
+                      "0",
+                      "1",
+                      "0",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "prayers",
+                  "state": 22,
+                  "args": [
+                      "3",
+                      "0",
+                      "-1",
+                      "0",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "celestial",
+                  "state": 23,
+                  "args": [
+                      "0",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "forward",
+                  "state": 24,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "rainbows",
+                  "state": 25,
+                  "args": [
+                      "8"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "pillars",
+                  "state": 26,
+                  "args": [
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "blazingFount",
+                  "state": 27,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random+",
+                  "jump_args": [
+                      "1",
+                      "2"
+                  ]
+              },
+              {
+                  "action_name": "genesis",
+                  "state": 28,
+                  "args": [
+                      "120123",
+                      "1",
+                      "1",
+                      "1",
+                      "7",
+                      "21",
+                      "14"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [
+                      "2"
+                  ]
+              },
+              {
+                  "action_name": "genesis",
+                  "state": 29,
+                  "args": [
+                      "120123",
+                      "1",
+                      "1",
+                      "1",
+                      "21",
+                      "7",
+                      "14"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [
+                      "1"
+                  ]
+              },
+              {
+                  "action_name": "projectiles",
+                  "state": 30,
+                  "args": [
+                      "3",
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "loopStartPoint": 7,
+          "args": [],
+          "loopCount": 0
       }
   ]
 }

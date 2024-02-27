@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using GameMechanics;
+using Unity.Mathematics;
 
 public class PlayerStatusManager : StatusManager
 {
@@ -25,6 +26,7 @@ public class PlayerStatusManager : StatusManager
 
     //public float specialDModeGauge = 0;
     public bool isShapeshifting => ac.DModeIsOn;
+    public bool shapeShiftingImmuneToDebuff = true;
     public float shapeshiftingCD = 10;
     public float shapeshiftingCDTimer = 0;
     
@@ -49,7 +51,7 @@ public class PlayerStatusManager : StatusManager
     public float[] requiredSP;
     public float[] currentSP;
     public bool[] skillRegenByAttack = new bool[4] { true, true, true, true };
-    private float spRegenPerSecond = 200;
+    private float[] spRegenPerSecond = new float[] {200,200,200,200};
 
     
     //public float attackspeed = 1.0f;
@@ -58,6 +60,7 @@ public class PlayerStatusManager : StatusManager
     public float rollspeed = 10.0f;
     
     public int remainReviveTimes = 9;
+    public int currentReviveTimes = 0;
     public bool debug;
 
 
@@ -91,6 +94,7 @@ public class PlayerStatusManager : StatusManager
         shapeshiftingCDTimer = 0;
         OnShapeshiftingEnter += ResizeCameraSizeToShapeshiftingMode;
         OnShapeshiftingExit += ResizeCameraSizeToNormalMode;
+        AbilityCalculation.GetPlayerAbilityFromTree(this);
     }
 
     public void GetPlayerConditionBar()
@@ -120,6 +124,24 @@ public class PlayerStatusManager : StatusManager
         }
 
     }
+    
+    public void SetSPChargeRate(int id, float rate)
+    {
+        spRegenPerSecond[id] = rate;
+    }
+    
+    public void SetSPChargeRateAll(float rate)
+    {
+        for (int i = 0; i < spRegenPerSecond.Length; i++)
+        {
+            spRegenPerSecond[i] = rate;
+        }
+    }
+    
+    public void ResetSPChargeRate()
+    {
+        spRegenPerSecond = new float[] {200,200,200,200};
+    }
 
     protected override void Start()
     {
@@ -131,13 +153,13 @@ public class PlayerStatusManager : StatusManager
     {
         base.Update();
         
-        if(ac.DModeIsOn)
+        if(ac.DModeIsOn && !ac.dc.dragondrive)
             return;
 
-        SpGainInStatus(0, spRegenPerSecond * Time.deltaTime,true);
-        SpGainInStatus(1, spRegenPerSecond * Time.deltaTime,true);
-        SpGainInStatus(2, spRegenPerSecond * Time.deltaTime,true);
-        SpGainInStatus(3, spRegenPerSecond * Time.deltaTime,true);
+        SpGainInStatus(0, spRegenPerSecond[0] * Time.deltaTime,true);
+        SpGainInStatus(1, spRegenPerSecond[1] * Time.deltaTime,true);
+        SpGainInStatus(2, spRegenPerSecond[2] * Time.deltaTime,true);
+        SpGainInStatus(3, spRegenPerSecond[3] * Time.deltaTime,true);
         ShapeShiftingCDTick();
 
         if (debug)
@@ -176,8 +198,12 @@ public class PlayerStatusManager : StatusManager
 
         if (isShapeshifting)
         {
-            SpGainWhenShapeShifting(id,num);
-            return;
+            if (!ac.dc.dragondrive)
+            {
+                SpGainWhenShapeShifting(id,num);
+                return;
+            }
+                
         }
 
 
@@ -262,7 +288,15 @@ public class PlayerStatusManager : StatusManager
     {
         currentSP[skillID] += sp;
     }
-    
+
+    public void ChargeSPAll(float sp)
+    {
+        for (int i = 0; i < currentSP.Length; i++)
+        {
+            currentSP[i] += sp;
+        }
+    }
+
     public void FillSP(int skillID, int percent)
     {
         currentSP[skillID] += requiredSP[skillID] * percent * 0.01f;
@@ -287,6 +321,10 @@ public class PlayerStatusManager : StatusManager
                 debuff += (int)condition.effect;
             }
 
+            if (condition.buffID == (int)BasicCalculation.BattleCondition.VampireMaiden)
+            {
+                buff += 50;
+            }
         }
 
         if (buff > BasicCalculation.BattleConditionLimit(9))
@@ -334,8 +372,14 @@ public class PlayerStatusManager : StatusManager
     {
         OnShapeshiftingExit?.Invoke();
         
-        OnSpecialBuffDelegate?.Invoke(
-            UI_BuffLogPopManager.SpecialConditionType.DModePurged.ToString());
+        if(!ac.dc.dragondrive)
+            OnSpecialBuffDelegate?.Invoke(
+                UI_BuffLogPopManager.SpecialConditionType.DModePurged.ToString());
+        else
+        {
+            OnSpecialBuffDelegate?.Invoke(
+                UI_BuffLogPopManager.SpecialConditionType.DragondrivePurged.ToString());
+        }
     }
 
     public void ChargeDP(float quantity, bool abilityCharge = true)

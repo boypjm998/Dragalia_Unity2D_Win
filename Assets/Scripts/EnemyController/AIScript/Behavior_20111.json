@@ -1,0 +1,325 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "null",
+          "args": [ 2 ],
+          "jump_action": "random",
+          "jump_args": [1, 2, 3, 4]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,22.5,15000,600,
+            "e_9003_01",24,22.5,15000,600,
+            "e_9004_01",-24,9,8000,700,
+            "e_9004_01",24,9,8000,700,
+            "e_9003_01",-10,16.5,15000,600,
+            "e_9003_01",10,16.5,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,15000,600,
+            "e_9003_01",24,9,15000,600,
+            "e_9004_01",-24,0,8000,700,
+            "e_9004_01",24,0,8000,700,
+            "e_9003_01",-10,16.5,15000,600,
+            "e_9003_01",10,16.5,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,15000,600,
+            "e_9003_01",24,9,15000,600,
+            "e_9004_01",-10,16.5,8000,700,
+            "e_9004_01",10,16.5,8000,700,
+            "e_9003_01",-24,0,15000,600,
+            "e_9003_01",24,0,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,15000,600,
+            "e_9003_01",24,9,15000,600,
+            "e_9004_01",-24,22.5,8000,700,
+            "e_9004_01",24,22.5,8000,700,
+            "e_9003_01",-10,16.5,15000,600,
+            "e_9003_01",10,16.5,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3, 1 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 5,
+      "args": [ 50 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "corrosion",
+          "args": [ 800, 3, 0 ],
+          "jump_action": "random",
+          "jump_args": [1, 2, 3, 4]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,22.5,15000,600,
+            "e_9003_01",24,22.5,15000,600,
+            "e_9004_01",-24,9,8000,700,
+            "e_9004_01",24,9,8000,700,
+            "e_9003_01",-10,16.5,15000,600,
+            "e_9003_01",10,16.5,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,15000,600,
+            "e_9003_01",24,9,15000,600,
+            "e_9004_01",-24,0,8000,700,
+            "e_9004_01",24,0,8000,700,
+            "e_9003_01",-10,16.5,15000,600,
+            "e_9003_01",10,16.5,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,15000,600,
+            "e_9003_01",24,9,15000,600,
+            "e_9004_01",-10,16.5,8000,700,
+            "e_9004_01",10,16.5,8000,700,
+            "e_9003_01",-24,0,15000,600,
+            "e_9003_01",24,0,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,15000,600,
+            "e_9003_01",24,9,15000,600,
+            "e_9004_01",-24,22.5,8000,700,
+            "e_9004_01",24,22.5,8000,700,
+            "e_9003_01",-10,16.5,15000,600,
+            "e_9003_01",10,16.5,15000,600,
+            3.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20,2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "charge",
+          "args": [ 10000, 3, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "prison",
+          "args": [ 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9004_01",0,0,8000,700,
+            "e_9004_01",-10,16.5,8000,700,
+            "e_9003_01",0,16.5,15000,600,
+            "e_9004_01",10,16.5,8000,700,
+            4],
+          "jump_action": "to",
+          "jump_args": [ 12 ]
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 2 ],
+          "jump_action": "random",
+          "jump_args": [ 14, 15 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2, 1 ],
+          "jump_action": "to",
+          "jump_args": [ 16 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "prison",
+          "args": [ 1, 1 ],
+          "jump_action": "random",
+            "jump_args": [ 22, 23 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9003_01",-24,9,15000,700,
+            "e_9003_01",24,9,15000,700,
+            "e_9003_01",-10,16.5,15000,700,
+            "e_9003_01",10,16.5,15000,700,
+            3],
+          "jump_action": "to",
+          "jump_args": [ 24 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9003_01",-24,22.5,15000,700,
+            "e_9003_01",24,22.5,15000,700,
+            "e_9003_01",-10,16.5,15000,700,
+            "e_9003_01",10,16.5,15000,700,
+            3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 0,
+      "args": []
+    }
+  ]
+}

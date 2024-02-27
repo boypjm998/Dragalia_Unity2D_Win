@@ -1,0 +1,608 @@
+﻿{
+  "phasePattern": [
+      {
+          "action_list": [
+              {
+                  "action_name": "IcePillar",
+                  "state": 0,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 1,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 2,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 3,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBlast",
+                  "state": 4,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 5,
+                  "args": [
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 6,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 7,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 8,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 9,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 1,
+          "loopStartPoint": 1,
+          "loopCount": 0,
+          "args": [ 85, 4 ]
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 0,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 1,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 2,
+                  "args": [
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 3,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 4,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 5,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["dragondrive",1,2]
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 6,
+                  "args": [
+                      
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBlast",
+                  "state": 7,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 8,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 9,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 10,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 11,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 12,
+                  "args": [
+                      
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 13,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 1,
+          "loopStartPoint": 3,
+          "loopCount": 0,
+          "args": [ 60, 7 ]
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "Fog",
+                  "state": 0,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Warp",
+                  "state": 1,
+                  "args": [
+                      "0","1","0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 1,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Buff",
+                  "state": 2,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBreaker",
+                  "state": 5,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["dragondrive",1,2]
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 6,
+                  "args": [],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 6,
+                  "args": [1],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SnowStorm",
+                  "state": 7,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 8,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 9,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBlast",
+                  "state": 10,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 11,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 12,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBlast",
+                  "state": 13,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 14,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Fog",
+                  "state": 15,
+                  "args": [2],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 16,
+                  "args": [ 1 ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 17,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 18,
+                  "args": [ 1 ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 19,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 20,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Buff",
+                  "state": 21,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBreaker",
+                  "state": 22,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 23,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SnowStorm",
+                  "state": 24,
+                  "args": [ 1 ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 25,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 26,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 27,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["dragondrive",1,2]
+              },
+              {
+                  "action_name": "Dragondrive",
+                  "state": 28,
+                  "args": [],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 29,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "loopStartPoint": 11,
+          "loopCount": 0,
+          "args": []
+      }
+  ]
+}

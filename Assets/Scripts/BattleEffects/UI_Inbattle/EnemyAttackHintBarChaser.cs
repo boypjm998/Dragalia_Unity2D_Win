@@ -12,11 +12,15 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
     private float currentTime = 0;
     [SerializeField] private float lag;
     public bool moveable = false;
+    public bool hardLock = false;
 
     public GameObject target;
     public bool isRanged = true;
 
-    float currentRotateSpeed;
+    private float currentRotateSpeed;
+    
+    
+    
     private void Start()
     {
         currentRotateSpeed = rotateSpeed;
@@ -40,6 +44,7 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
         {
             if (moveable)
             {
+                
                 if (Vector2.Distance(transform.position, target.transform.position) < moveSpeed * 0.1f)
                 {
                     if(moveSpeed > 0)
@@ -49,6 +54,9 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
                 {
                     transform.position -= moveSpeed * Time.fixedDeltaTime * vector;
                 }
+                
+                if(hardLock)
+                    transform.position = target.transform.position;
             }
 
             var angle = Vector2.SignedAngle(transform.right, vector);
@@ -89,6 +97,10 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
             currentTime += Time.fixedDeltaTime;
         }
     }
-    
+
+    public void SetLockTime(float value)
+    {
+        lockTime = value;
+    }
     
 }

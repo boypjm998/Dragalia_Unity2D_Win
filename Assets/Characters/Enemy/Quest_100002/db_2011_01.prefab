@@ -375,6 +375,7 @@ MonoBehaviour:
   displayHPBar: 1
   HPBarOffset: {x: 0, y: 6}
   hurt: 0
+  _groundSensor: {fileID: 0}
   counterOn: 0
   flashBody: {fileID: 126425075377589261}
   minimapIcon: {fileID: 0}
@@ -846,19 +847,8 @@ MonoBehaviour:
   - {fileID: 0}
   voiceAssetBundlePath: 
   speakerID: 0
-  voiceGroups:
-  - clipIndexID: 00000000
-    clipTextID: 01000000
-  - clipIndexID: 0000000000000000
-    clipTextID: 0200000007000000
-  - clipIndexID: 00000000
-    clipTextID: 03000000
-  - clipIndexID: 00000000
-    clipTextID: 04000000
-  - clipIndexID: 00000000
-    clipTextID: 05000000
-  - clipIndexID: 00000000
-    clipTextID: 06000000
+  voiceGroups: []
+  groupOfIntro: -1
   groupOfDialogWhenHPBelow70: -1
   groupOfDialogWhenHPBelow40: -1
   groupOfDialogWhenHPBelow0: -1
@@ -933,6 +923,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &3516285685307350659
 GameObject:
   m_ObjectHideFlags: 0

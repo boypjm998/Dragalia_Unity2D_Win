@@ -32,6 +32,9 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     public bool controllAfflictionProtect = false;
     public bool playerAlive = true;
     public List<GameObject> playerList = new();
+    protected IEnumerator _moveIsNull;
+    protected IEnumerator _attackIsNull;
+    protected event Action OnBehaviorStart; 
 
     protected virtual void UpdateAttack()
     {
@@ -58,7 +61,8 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         //enemyAttackManager = GetComponent<EnemyMoveManager>();
         status = GetComponent<StatusManager>();
         isAction = false;
-        
+        _moveIsNull = new WaitUntil(()=>currentMoveAction == null);
+        _attackIsNull = new WaitUntil(()=>currentAttackAction == null);
     }
 
     private void OnDestroy()
@@ -100,7 +104,10 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         BattleStageManager.Instance.OnMapInfoRefresh += SearchTarget;
         state = 0;
         substate = 0;
+        yield return null;
+        OnBehaviorStart?.Invoke();
         yield return new WaitForSeconds(awakeTime);
+        
         StartCoroutine(UpdateBehavior());
         //tartCoroutine(UpdateBehavior());
     }
@@ -158,6 +165,7 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
 
     protected IEnumerator UpdateBehavior()
     {
+        yield return new WaitUntil(() => !status.HasControlAffliction());
         while (true)
         {
             UpdateAttack();

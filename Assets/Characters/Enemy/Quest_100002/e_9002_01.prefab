@@ -743,6 +743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &5912966341109201299
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,7 +861,7 @@ MonoBehaviour:
   freezeRes: 0
   blindnessRes: 100
   cursedRes: 0
-  abilityList: 674e00005d4e0000
+  abilityList: 
   _conditionBar: {fileID: 0}
   waitForRevive: 0
 --- !u!114 &4638124791511158501
@@ -888,6 +889,7 @@ MonoBehaviour:
   displayHPBar: 1
   HPBarOffset: {x: 0, y: 1.8}
   hurt: 0
+  _groundSensor: {fileID: 0}
   counterOn: 0
   flashBody: {fileID: 31075731267717509}
   minimapIcon: {fileID: 0}
@@ -903,7 +905,6 @@ MonoBehaviour:
   moveEnable: 1
   tar: {fileID: 0}
   _defaultgravityscale: 4
-  _groundSensor: {fileID: 0}
 --- !u!50 &336477946688068323
 Rigidbody2D:
   serializedVersion: 4

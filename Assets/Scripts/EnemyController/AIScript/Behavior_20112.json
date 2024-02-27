@@ -1,0 +1,371 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "null",
+          "args": [ 2 ],
+          "jump_action": "random",
+          "jump_args": [1, 2, 3, 4]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,22.5,19500,750,
+            "e_9003_01",24,22.5,19500,750,
+            "e_9004_01",-24,9,10000,900,
+            "e_9004_01",24,9,10000,900,
+            "e_9003_01",-10,16.5,19500,750,
+            "e_9003_01",10,16.5,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,19500,750,
+            "e_9003_01",24,9,19500,750,
+            "e_9004_01",-24,0,10000,900,
+            "e_9004_01",24,0,10000,900,
+            "e_9003_01",-10,16.5,19500,750,
+            "e_9003_01",10,16.5,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,19500,750,
+            "e_9003_01",24,9,19500,750,
+            "e_9004_01",-10,16.5,10000,900,
+            "e_9004_01",10,16.5,10000,900,
+            "e_9003_01",-24,0,19500,750,
+            "e_9003_01",24,0,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,19500,750,
+            "e_9003_01",24,9,19500,750,
+            "e_9004_01",-24,22.5,10000,900,
+            "e_9004_01",24,22.5,10000,900,
+            "e_9003_01",-10,16.5,19500,750,
+            "e_9003_01",10,16.5,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "prison",
+          "args": [ 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 1000, 2, 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3, 1 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 0,
+      "args": [ 70, 12 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "platform_splash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,22.5,19500,750,
+            "e_9003_01",24,22.5,19500,750,
+            "e_9004_01",-24,9,10000,900,
+            "e_9004_01",24,9,10000,900,
+            "e_9003_01",-10,16.5,19500,750,
+            "e_9003_01",10,16.5,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,19500,750,
+            "e_9003_01",24,9,19500,750,
+            "e_9004_01",-24,0,10000,900,
+            "e_9004_01",24,0,10000,900,
+            "e_9003_01",-10,16.5,19500,750,
+            "e_9003_01",10,16.5,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,19500,750,
+            "e_9003_01",24,9,19500,750,
+            "e_9004_01",-10,16.5,10000,900,
+            "e_9004_01",10,16.5,10000,900,
+            "e_9003_01",-24,0,19500,750,
+            "e_9003_01",24,0,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-24,9,19500,750,
+            "e_9003_01",24,9,19500,750,
+            "e_9004_01",-24,22.5,10000,900,
+            "e_9004_01",24,22.5,10000,900,
+            "e_9003_01",-10,16.5,19500,750,
+            "e_9003_01",10,16.5,19500,750,
+            2.5],
+          "jump_action": "to",
+          "jump_args": [ 5 ]
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20,2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "charge",
+          "args": [ 15000, 3, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "prison",
+          "args": [ 0, 1 ],
+          "jump_action": "random",
+          "jump_args": [ 9, 10 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 0, 2 ],
+          "jump_action": "to",
+          "jump_args": [ 11 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 0, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 1000, 2, 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 1 ],
+          "jump_action": "random",
+          "jump_args": [ 16, 15 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9003_01",-24,9,19500,700,
+            "e_9003_01",24,9,19500,700,
+            "e_9003_01",-10,16.5,19500,700,
+            "e_9003_01",10,16.5,19500,700,
+            3],
+          "jump_action": "to",
+          "jump_args": [ 17 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9003_01",-24,22.5,19500,700,
+            "e_9003_01",24,22.5,19500,700,
+            "e_9003_01",-10,16.5,19500,700,
+            "e_9003_01",10,16.5,19500,700,
+            3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20,2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "charge",
+          "args": [ 15000, 1, 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "random",
+            "jump_args": [ 23, 24 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2, 1 ],
+          "jump_action": "to",
+            "jump_args": [ 25 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "random",
+          "jump_args": [ 26, 27 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9004_01",0,9.5,10000,900,
+            "e_9004_01",-24,22.5,10000,900,
+            "e_9003_01",0,16.5,19500,700,
+            "e_9004_01",24,22.5,10000,900,
+            4],
+          "jump_action": "to",
+          "jump_args": [ 28 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 4,
+            "e_9004_01",0,0,10000,900,
+            "e_9004_01",-10,16.5,10000,900,
+            "e_9003_01",0,16.5,19500,700,
+            "e_9004_01",10,16.5,10000,900,
+            4],
+          "jump_action": "to",
+          "jump_args": [ 28 ]
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "random",
+          "jump_args": [ 30, 31 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 3, 1 ],
+          "jump_action": "to",
+          "jump_args": [ 32 ]
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 1000, 3, 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "prison",
+          "args": [ 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 2 ],
+          "jump_action": "random",
+          "jump_args": [ 1, 2, 3, 4 ]
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 0,
+      "args": []
+    }
+  ]
+}

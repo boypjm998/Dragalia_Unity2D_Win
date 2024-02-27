@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-
+using GameMechanics;
 
 public class DB01_BehaviorTree : EnemyBehaviorManager
 {
@@ -188,133 +188,133 @@ public class DB01_BehaviorTree : EnemyBehaviorManager
         {
             case "forward":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ForwardWind(interval));
                 break;
             }
             case "combo":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_Combo(interval));
                 break;
             }
             case "around":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_AroundAttack(interval));
                 break;
             }
             case "roar":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_Roar(interval));
                 break;
             }
             case "tornado":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_GaleBlasts(interval));
                 break;
             }
             case "wallFixed":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_StormWallFixed(interval));
                 break;
             }
             case "wallChasing":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_StormWallChasing(interval));
                 break;
             }
             case "bounce":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BounceWind(interval));
                 break;
             }
             case "lock":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_StormStrike(interval));
                 break;
             }
             case "pillar":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_RendingBlasts(interval));
                 break;
             }
             case "multi":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CycloneCrusher(interval));
                 break;
             }
             case "golem":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonHelp(interval));
                 break;
             }
             case "launcher":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_StormRush(interval));
                 break;
             }
             case "upward":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_UpwardWind(interval));
                 break;
             }
             case "ground":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SurgingTempestGround(interval));
                 break;
             }
             case "sky":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SurgingTempestSky(interval));
                 break;
             }
             case "leif":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonLeif(interval));
                 break;
             }
             case "meene":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonMeene(interval));
                 break;
             }
             case "lathna":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonLathna(interval));
                 break;
             }
             case "tobias":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonTobias(interval));
                 break;
             }
             case "melsa":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonMelsa(interval));
                 break;
             }
             case "gale":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_GaleCatastrophe(interval));
                 break;
             }

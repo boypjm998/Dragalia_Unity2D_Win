@@ -27,7 +27,7 @@ public class ActorController_c006 : ActorControllerMeeleWithFS
 
     private void Start()
     {
-        _statusManager.ChargeDP(10);
+        _statusManager.ChargeDP(30);
     }
 
     protected override void CheckShapeShifting()
@@ -125,8 +125,6 @@ public class ActorController_c006 : ActorControllerMeeleWithFS
     protected override void Update()
     {
         base.Update();
-        
-        
     }
     
     
@@ -179,6 +177,21 @@ public class ActorController_c006 : ActorControllerMeeleWithFS
         voiceController?.PlayAttackVoice(6,true);
     }
 
+    public override void CheckAirRoll()
+    {
+        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        
+        if(pi.roll == false || grounded)
+            return;
+        
+        
+        if ((IsComboState(stateInfo) || Combo > 0)==false && pi.hurt == false)
+        {
+            anim.Play("roll");
+        }
+        
+    }
+
     public override void Roll()
     {
         if (pi.inputRollEnabled == false)
@@ -223,6 +236,7 @@ public class ActorController_c006 : ActorControllerMeeleWithFS
         
         if(grounded)
             anim.SetBool("roll",true);
+        
         
     }
 

@@ -243,7 +243,7 @@ public class EnemyMoveController_HB02 : EnemyMoveManager
         
         ac.TurnMove(target);
         anim.Play("forcing_enter");
-        if (_behavior.difficulty == 4)
+        if (_behavior.difficulty >= 4)
         {
             BattleEffectManager.Instance.SpawnTargetLockIndicator(target,2f);
         }

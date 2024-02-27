@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Cinemachine;
@@ -9,6 +10,7 @@ using TMPro;
 using GameMechanics;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -37,6 +39,7 @@ public class GlobalController : MonoBehaviour
     public static GameState currentGameState { protected set; get; }
     public Dictionary<string, AssetBundle> loadedBundles;
     protected JsonData QuestInfo;
+    public JsonData QuestData => QuestInfo;
     protected JsonData SettingsInfo;
     public GameOptions gameOptions;
     protected List<StatusInformation> StatusInfoList;
@@ -48,8 +51,21 @@ public class GlobalController : MonoBehaviour
 
     public Language GameLanguage;
     public static int currentCharacterID = 1;
-    
-    
+    public int MaxSkillTreeNode
+    {
+        get
+        {
+            if (_skillTreeInfoData == null)
+            {
+                _skillTreeInfoData = 
+                    JsonConvert.DeserializeObject
+                        <UI_ManaCircleMenu.SkillTreeInfo>(SkillTreeNodeInfoData.text);
+            }
+
+            return _skillTreeInfoData.skillTreeNodes.Count;
+        }
+    }
+
     public static KeyCode keyRight = KeyCode.D;
     public static KeyCode keyLeft = KeyCode.A;
     public static KeyCode keyDown = KeyCode.S;
@@ -63,8 +79,12 @@ public class GlobalController : MonoBehaviour
     public static KeyCode keySkill4 = KeyCode.H;
     public static KeyCode keyEscape = KeyCode.Escape;
     
+    public InputActionAsset inputActionAsset;
+    public bool gamepadEnable = false;
+    public static InputActionMap gamepadMap;
+    public static string[] gamepadButtonStr = new string[12];
     
-    
+
     #endregion
     
     #region GameCheckpoint
@@ -78,6 +98,8 @@ public class GlobalController : MonoBehaviour
     #region GameData
 
     [SerializeField] protected CharacterAssetInfo CharaAssetData;
+    [SerializeField] protected TextAsset SkillTreeNodeInfoData;
+    protected UI_ManaCircleMenu.SkillTreeInfo _skillTreeInfoData;
 
     #endregion
     
@@ -97,7 +119,8 @@ public class GlobalController : MonoBehaviour
 
     protected void Awake()
     {
-        //读入各种文件
+        //Read files
+        Debug.Log("Current Culture:" + CultureInfo.CurrentCulture.Name);
         if (GameLanguage == Language.ZHCN)
         {
             QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
@@ -123,6 +146,7 @@ public class GlobalController : MonoBehaviour
         Instance = this;
         this.loadedBundles = new Dictionary<string, AssetBundle>();
         LoadPlayerSettings();
+        LoadGamepadOption();
         LoadGameOptionsFromFile();
         ReadStatusInformation();
         CharaAssetData?.Init();
@@ -315,15 +339,12 @@ public class GlobalController : MonoBehaviour
         {
             requiredBundleList.AddRange(extraCharaAssets);
         }
-        // if (currentCharacterID == 10)
-        // {
-        //     requiredBundleList.Add("eff/eff_d010");
-        //     requiredBundleList.Add("model/model_d010");
-        // }
         
         
-        
-        
+
+
+
+
 
 
         foreach (var abpath in requiredBundleList)
@@ -524,6 +545,9 @@ public class GlobalController : MonoBehaviour
         
         yield return new WaitForSeconds(1.5f);
         currentGameState = GameState.Inbattle;
+        
+        AchievementManager.Instance.InitializeAchievements();
+        
         plrclone.GetComponent<PlayerInput>().enabled = true;
         
         
@@ -540,6 +564,7 @@ public class GlobalController : MonoBehaviour
         FinishLoad(false);
         var loadingScreen = Instantiate(LoadingScreen, Vector3.zero, Quaternion.identity, transform);
         var anim = loadingScreen.GetComponent<Animator>();
+        loadingScreen.name = "LoadingScreen";
         //yield return new WaitForSecondsRealtime(2f);
         
         // var clonedStack = new Stack<int>(new Stack<int>(MenuUIManager.Instance.menuLevelStack));
@@ -662,6 +687,10 @@ public class GlobalController : MonoBehaviour
         var bgm_name = currentLevelDetailedInfo.bgm_path.Split('/')[1];
         //print(bgm_name);
         var bgm = bgmBundle.LoadAsset<AudioClip>(bgm_name);
+        // foreach (var otherBgm in bgmBundle.GetAllAssetNames())
+        // {
+        //     bgmBundle.LoadAsset<AudioClip>(otherBgm);
+        // }
 
 
 
@@ -738,14 +767,29 @@ public class GlobalController : MonoBehaviour
         // othercamera.targetTexture = null;
         // yield return null;
         othercamera.targetTexture = UIElements.transform.Find("Minimap/MiniMap").GetComponent<RawImage>().texture as RenderTexture;
-        anim.SetBool("loaded",true);
-        storyTimelineManager.ActiveStartScreen();
-        yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
-        Destroy(loadingScreen);
-        FinishLoad(true);
         
+        var startScreenFade = storyTimelineManager.ActiveStartScreen();
+        anim.SetBool("loaded",startScreenFade);
+        
+        if(startScreenFade)
+            yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
+        
+        FinishLoad(true);
+        AchievementManager.Instance.InitializeAchievements();
 
-        yield return new WaitForSeconds(2.5f);
+        if (startScreenFade)
+        {
+            Destroy(loadingScreen);
+            yield return new WaitForSeconds(2.5f);
+        }
+
+        if (startScreenFade == false)
+        {
+            storyTimelineManager.StartQuest();
+            loadingRoutine = null;
+            yield break;
+        }
+
         GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
         
         yield return new WaitForSeconds(1.5f);
@@ -770,6 +814,7 @@ public class GlobalController : MonoBehaviour
     protected IEnumerator LoadMainMenu()
     {
         currentGameState = GameState.End;
+        gamepadMap.Enable();
         FinishLoad(false);
         FindObjectOfType<TargetAimer>().enabled = false;
         yield return null;
@@ -792,12 +837,15 @@ public class GlobalController : MonoBehaviour
         cameraTransform = GameObject.Find("Main Camera").transform;
         
         
-        //AssetBundle.UnloadAllAssetBundles(true);
+        
+        
+        
         var bundles = AssetBundle.GetAllLoadedAssetBundles();
         print(bundles.Count());
         foreach (var ab in bundles)
         {
-            if (ab.name == "iconsmall" || ab.name == "allin1" || ab.name == "eff/eff_general" || ab.name == "animation/anim_common")
+            if (ab.name == "iconsmall" || ab.name == "allin1" || ab.name == "eff/eff_general" || ab.name == "animation/anim_common"
+                || ab.name == "118effbundle")
             {
                 continue;
             }
@@ -862,10 +910,13 @@ public class GlobalController : MonoBehaviour
         onGlobalControllerAwake?.Invoke();
         MenuUIManager.SetMaxMenuLevel(1);
         UpdateQuestSaveData();
-
+        yield return Resources.UnloadUnusedAssets();
         yield return new WaitForSeconds(0.5f);
         currentGameState = GameState.Outbattle;
         FinishLoad(true);
+        
+        
+        
         //loadingEnd = true;
         loadingRoutine = null;
         
@@ -919,6 +970,7 @@ public class GlobalController : MonoBehaviour
         anim.SetBool("loaded",true);
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("End"));
         Destroy(loadingScreen);
+        
         
         yield return new WaitForSeconds(2.5f);
         //BattleStageManager.Instance.GetMapBorderInfo();
@@ -1027,6 +1079,7 @@ public class GlobalController : MonoBehaviour
         //BattleStageManager.Instance.GetMapBorderInfo();
         //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
         FinishLoad(true);
+        
         loadingRoutine = null;
     }
 
@@ -1119,6 +1172,7 @@ public class GlobalController : MonoBehaviour
         Destroy(loadingScreen);
         
         yield return new WaitForSeconds(2.5f);
+        AchievementManager.Instance.InitializeAchievements();
         BattleStageManager.Instance.GetMapBorderInfo();
         //GameObject.Find("StartScreen").GetComponent<UI_StartScreen>().FadeOut();
         FinishLoad(true);
@@ -1358,9 +1412,54 @@ public class GlobalController : MonoBehaviour
 
     public List<QuestSave> GetQuestInfo()
     {
-        print(questSaveDataString);
+        //print(questSaveDataString);
         var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
         return questSaveDataList.quest_info;
+    }
+
+    public bool CheckQuestClear(string qid)
+    {
+        if (questSaveDataString == null)
+            return false;
+        var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
+        //if qid exists in questSaveDataList, return true
+        if (questSaveDataList.quest_info.Exists(x => x.quest_id == qid))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public int GetTotalCrownCount()
+    {
+        var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
+        //遍历questSaveDataList，每一个元素中都有一个crown_1, crown_2, crown_3. 如果有值，就加1
+        int count = 0;
+        foreach (var questSave in questSaveDataList.quest_info)
+        {
+            if(questSave.quest_id == "100001")
+                continue;
+            
+            if (questSave.crown_1 != 0)
+            {
+                count++;
+            }
+
+            if (questSave.crown_2 != 0)
+            {
+                count++;
+            }
+
+            if (questSave.crown_3 != 0)
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     private void LoadGameOptionsFromFile()
@@ -1373,15 +1472,56 @@ public class GlobalController : MonoBehaviour
 
         try
         {
-            gameOptions = JsonUtility.FromJson<GameOptions>(str);
+            //gameOptions = JsonUtility.FromJson<GameOptions>(str);
+            gameOptions = JsonConvert.DeserializeObject<GameOptions>(str);
         }
         catch
         {
+            print("No Game Option");
             gameOptions = new();
         }
 
         currentCharacterID = gameOptions.last_adventurer_id;
 
+    }
+    
+    public void LoadGamepadOption()
+    {
+        var path = Application.streamingAssetsPath + "/savedata/GamepadSettings.json";
+        StreamReader sr = new StreamReader(path);
+        var str = sr.ReadToEnd();
+        sr.Close();
+        try
+        {
+            print(str);
+            //gameOptions = JsonUtility.FromJson<GameOptions>(str);
+            inputActionAsset = ScriptableObject.CreateInstance<InputActionAsset>();
+            inputActionAsset.LoadFromJson(str);
+            
+            gamepadMap = inputActionAsset.actionMaps[0];
+            gamepadMap.Enable();
+            
+        }
+        catch(Exception e)
+        {
+            print("No Game Option, " + e);
+            
+        }
+
+    }
+
+    public void ReloadAndSaveGameadOption(string str)
+    {
+        //var path = Application.streamingAssetsPath + "/savedata/GamepadSettings.json";
+        
+        inputActionAsset.LoadFromJson(str);
+        gamepadMap = inputActionAsset.actionMaps[0];
+        gamepadMap.Enable();
+        
+        
+        
+            
+        
     }
 
     private List<String> GetExtraCharacterAssets(int charaID)
@@ -1391,6 +1531,15 @@ public class GlobalController : MonoBehaviour
     }
 
 
+    public void ChangeLayoutHintKeyboardOrGamepad(bool isKeyboard)
+    {
+        if (isKeyboard)
+            gameOptions.gamepadSettings[0] = 1;
+        else
+        {
+            gameOptions.gamepadSettings[0] = 0;
+        }
+    }
 
     public void ChangeFontSizeOfDamageNum(int size)
     {
@@ -1417,6 +1566,10 @@ public class GlobalController : MonoBehaviour
         {
             ResetMusicSources();
         }
+    }
+    public void ChangeGamepadSensitivity(int sensitivity)
+    {
+        gameOptions.gamepadSettings[1] = sensitivity;
     }
 
     private void ResetAllAudioSources(Scene scene,LoadSceneMode mode)
@@ -1455,6 +1608,8 @@ public class GlobalController : MonoBehaviour
 
     }
 
+    
+
     public void WriteGameOptionToFile()
     {
         //Write GameOptions to file of path, Use JsonUtility.ToJson
@@ -1484,7 +1639,9 @@ public class GlobalController : MonoBehaviour
         {
             ResetAllAudioSources(SceneManager.GetActiveScene(),LoadSceneMode.Single);
             //OnLoadFinish?.Invoke();
+            
         }
+        
     }
 
     private void OnApplicationQuit()
@@ -1519,6 +1676,11 @@ public class GameOptions
     /// Music, Voice, SoundEffect
     /// </summary>
     public int[] soundSettings = new[] { 1, 1, 1 };
+
+    public int[] gamepadSettings = new[] { 0, 2 };
+    
+    public List<int> skillTreeInfo = new List<int>();
+
 
     public List<AchievementInfo> achievementList = new();
 }

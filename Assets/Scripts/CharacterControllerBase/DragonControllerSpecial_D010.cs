@@ -86,7 +86,7 @@ public class DragonControllerSpecial_D010 : DragonController
         var normalizedSpeed = NormalizedSpeed(new Vector2(pi.isMove, pi.DUp));
         
         rigid.position += new Vector2
-            ( moveSpeed * normalizedSpeed.x, moveSpeed * normalizedSpeed.y * 1.1f) * Time.fixedDeltaTime;
+            ( moveSpeed * normalizedSpeed.x, moveSpeed * normalizedSpeed.y * 1.25f) * Time.fixedDeltaTime;
         
         if (pi.directionLock == true)
         {

@@ -11,7 +11,12 @@ public class FSMOnEnter : StateMachineBehaviour
     {
         //    
         foreach (var msg in onEnterMessages)
-            animator.gameObject.SendMessageUpwards(msg);
+        {
+            //animator.GetComponentInParent<ActorBase>().SendMessage(msg,SendMessageOptions.DontRequireReceiver);
+            animator.gameObject.SendMessageUpwards(msg, SendMessageOptions.DontRequireReceiver);
+        }
+
+        
         
     }
 

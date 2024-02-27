@@ -1,0 +1,660 @@
+﻿{
+  "skillTreeNodes": [
+    {
+      "nodeID": 0,
+      "preNodes": [],
+      "crownCost": 0,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【铳】怒气槽减少量+20%",
+        "(Manacaster) Gauge Accelerator +20%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为铳时，对敌人怒气槽的削减量提升20%。",
+        "If the user wields a Manacaster, speeds the rate the OD gauge decreases by 20%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 1,
+      "preNodes": [0],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "暴击率提升 I",
+        "Critical Rate I",
+        ""
+      ],
+      "description": [
+        "所有角色的暴击率提升2%。",
+        "Increase user's critical rate by 2%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 2,
+      "preNodes": [1],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "攻击力提升 I",
+        "Strength I",
+        ""
+      ],
+      "description": [
+        "所有角色的基础攻击力提升3%。",
+        "Increase user's base strength by 3%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 3,
+      "preNodes": [1],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "HP提升 I",
+        "HP I",
+        ""
+      ],
+      "description": [
+        "所有角色的最大HP提升2%。",
+        "Increase user's HP by 2%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 4,
+      "preNodes": [2, 3],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【铳】连击数持续时间 I",
+        "(Manacaster) Combo Time I",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为铳时，最后一次攻击命中后至连击数重置前的时间延长0.5秒。",
+        "If the user wields a Manacaster, extends the window between them hitting an enemy and the combo counter resetting by 0.5 seconds.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 5,
+      "preNodes": [4],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "攻击力提升 II",
+        "Strength II",
+        ""
+      ],
+      "description": [
+        "所有角色的基础攻击力提升6%。",
+        "Increase user's base strength by 6%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 6,
+      "preNodes": [5],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "HP提升 II",
+        "HP II",
+        ""
+      ],
+      "description": [
+        "所有角色的最大HP提升5%。",
+        "Increase user's HP by 5%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 7,
+      "preNodes": [6],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "暴击率提升 II",
+        "Critical Rate II",
+        ""
+      ],
+      "description": [
+        "所有角色的暴击率提升5%。",
+        "Increase user's critical rate by 5%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 8,
+      "preNodes": [7],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "爆发攻击伤害提升 I",
+        "Force Strike Damage I",
+        ""
+      ],
+      "description": [
+        "所有角色的爆发攻击造成的伤害提升7%。",
+        "Increases force strike damage by 7%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 9,
+      "preNodes": [5],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【短剑】疾风怒涛·攻+10%",
+        "(Dagger) Flurry Strength +10%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为短剑时，连击达到15次以上时攻击力提升10%。",
+        "If the user wields a Dagger, increases their strength by 10% when the combo count is 15 or higher.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 10,
+      "preNodes": [5],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【刀】攻击力+5%",
+        "(Blade) Strength +5%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为刀时，攻击力额外提升5%。",
+        "If the user wields a Blade, increases their strength by 5%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 11,
+      "preNodes": [6],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【枪】HP+7%",
+        "(Lance) HP +7%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为枪时，最大HP提升7%。",
+        "If the user wields a Lance, increases their HP by 7%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 12,
+      "preNodes": [6],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【法杖】HP+7%",
+        "(Staff) HP +7%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为法杖时，最大HP提升7%。",
+        "If the user wields a Staff, increases their HP by 7%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 13,
+      "preNodes": [2],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【弓】技能自动充能速率+10%",
+        "(Bow) SP Fill Rate +10%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为弓时，技能的自动充能速率提升10%。",
+        "If the user wields a Bow, increases their SP fill rate by 10%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 14,
+      "preNodes": [4],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【魔杖】技能伤害+7%",
+        "(Wand) Skill Damage +7%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为魔杖时，技能造成的伤害提升7%。",
+        "If the user wields a Wand, increases their skill damage by 7%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 15,
+      "preNodes": [0],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【铳】会心威力+13%",
+        "(Manacaster) Critical Damage +13%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为铳时，暴击伤害倍率提升13%。",
+        "If the user wields a Manacaster, adds 13% to the modifier applied to critical damage.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 16,
+      "preNodes": [-1],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【斧】会心威力+13%",
+        "(Axe) Critical Damage +13%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为斧时，暴击伤害倍率提升13%。",
+        "If the user wields a Axe, adds 13% to the modifier applied to critical damage.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 17,
+      "preNodes": [8],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "攻击力提升 III",
+        "Strength III",
+        ""
+      ],
+      "description": [
+        "所有角色的基础攻击力提升10%。",
+        "Increase user's base strength by 10%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 18,
+      "preNodes": [7],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【剑】攻击力&开场龙化槽 I",
+        "(Sword) Strength&Shapeshifting Prep I",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为剑时，攻击力提升3%，任务开始时自身龙化槽充能5%。\n\n(龙化系统还没有实装，目前该效果无效。)",
+        "If the user wields a Sword, increases their strength by 3% and fills 5% of the dragon gauge at the start of quests.\n\n(Note that Shapeshifting is not implemented in this version.)",
+        ""
+      ]
+    },
+    {
+      "nodeID": 19,
+      "preNodes": [7],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【铳】连击数持续时间 II",
+        "(Manacaster) Combo Time II",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为铳时，最后一次攻击命中后至连击数重置前的时间延长1.5秒。",
+        "If the user wields a Manacaster, extends the window between them hitting an enemy and the combo counter resetting by 1.5 seconds.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 20,
+      "preNodes": [13],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【弓】技能自动充能速率+25%",
+        "(Bow) SP Fill Rate +25%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为弓时，技能的自动充能速率提升25%。",
+        "If the user wields a Bow, increases their SP fill rate by 25%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 21,
+      "preNodes": [14],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【魔杖】技能伤害+15%",
+        "(Wand) Skill Damage +15%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为魔杖时，技能造成的伤害提升15%。",
+        "If the user wields a Wand, increases their skill damage by 15%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 22,
+      "preNodes": [9],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【短剑】疾风怒涛·攻+20%",
+        "(Dagger) Flurry Strength +20%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为短剑时，连击达到15次以上时攻击力提升20%。",
+        "If the user wields a Dagger, increases their strength by 20% when the combo count is 15 or higher.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 23,
+      "preNodes": [10],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【刀】攻击力+10%",
+        "(Blade) Strength +10%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为刀时，攻击力额外提升10%。",
+        "If the user wields a Blade, increases their strength by 10%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 24,
+      "preNodes": [11],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【枪】HP+15%",
+        "(Lance) HP +15%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为枪时，最大HP提升15%。",
+        "If the user wields a Lance, increases their HP by 15%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 25,
+      "preNodes": [12],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "【法杖】回复技能效果+15%",
+        "(Staff) Recovery Potency +15%",
+        ""
+      ],
+      "description": [
+        "当角色的武器种类为法杖时，回复技能效果提升15%。",
+        "If the user wields a Staff, increases the potency of recovery skills by 15%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 26,
+      "preNodes": [17],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "连击数持续时间 +1秒",
+        "(Manacaster) Combo Time +1",
+        ""
+      ],
+      "description": [
+        "所有角色最后一次攻击命中后至连击数重置前的时间延长1秒。",
+        "Extends the window between user hitting an enemy and the combo counter resetting by 1 seconds.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 27,
+      "preNodes": [17],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "HP70% 防+10%",
+        "HP 70% = Defense +10%",
+        ""
+      ],
+      "description": [
+        "角色HP在70%以上时，防御力提升10%。",
+        "Increases defense by 10% when HP is 70% or above.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 28,
+      "preNodes": [26],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "暴击率提升 III",
+        "Critical Rate III",
+        ""
+      ],
+      "description": [
+        "所有角色的暴击率提升8%。",
+        "Increase user's critical rate by 8%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 29,
+      "preNodes": [27],
+      "crownCost": 3,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "攻击力提升 IV",
+        "Strength IV",
+        ""
+      ],
+      "description": [
+        "所有角色的基础攻击力提升15%。",
+        "Increase user's base strength by 15%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 30,
+      "preNodes": [28],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "HP提升 III",
+        "HP III",
+        ""
+      ],
+      "description": [
+        "所有角色的最大HP提升8%。",
+        "Increase user's HP by 8%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 31,
+      "preNodes": [29],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "技能伤害+5%",
+        "Skill Damage +5%",
+        ""
+      ],
+      "description": [
+        "所有角色的技能造成的伤害提升5%。",
+        "Increases user's skill damage by 5%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 32,
+      "preNodes": [26],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "回复技能效果+10%",
+        "Recovery Potency +10%",
+        ""
+      ],
+      "description": [
+        "所有角色的回复技能效果提升10%。",
+        "Increases the potency of recovery skills by 10%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 33,
+      "preNodes": [27],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "HP70% 防+20%",
+        "HP 70% = Defense +20%",
+        ""
+      ],
+      "description": [
+        "角色HP在70%以上时，防御力提升20%。",
+        "Increases defense by 20% when HP is 70% or above.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 34,
+      "preNodes": [28],
+      "crownCost": 1,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "会心威力+10%",
+        "Critical Damage +10%",
+        ""
+      ],
+      "description": [
+        "所有角色的暴击伤害倍率提升10%。",
+        "Adds 10% to the modifier applied to critical damage.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 35,
+      "preNodes": [29],
+      "crownCost": 3,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "攻击力提升 V",
+        "Strength V",
+        ""
+      ],
+      "description": [
+        "所有角色的基础攻击力提升22%。",
+        "Increase user's base strength by 22%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 36,
+      "preNodes": [30],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "HP提升 IV",
+        "HP IV",
+        ""
+      ],
+      "description": [
+        "所有角色的最大HP提升12%。",
+        "Increase user's HP by 12%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 37,
+      "preNodes": [31],
+      "crownCost": 3,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "技能伤害+10%",
+        "Skill Damage +10%",
+        ""
+      ],
+      "description": [
+        "所有角色的技能造成的伤害提升10%。",
+        "Increases user's skill damage by 10%.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 38,
+      "preNodes": [37,36,35,34,33,32],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "重生祝福（防御力）",
+        "Draconic Resurrection(Defense)",
+        ""
+      ],
+      "description": [
+        "角色重生时，防御力提升10%，此效果在任务中最多发动3次。",
+        "Increases user's defense by 10% when they revive. This effect can stack up to 3 times.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 39,
+      "preNodes": [38],
+      "crownCost": 2,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "重生祝福（伤害提升）",
+        "Draconic Resurrection(Damage)",
+        ""
+      ],
+      "description": [
+        "角色重生时，造成的伤害提升10%，此效果在任务中最多发动3次。",
+        "Increases user's strength by 10% when they revive. This effect can stack up to 3 times.",
+        ""
+      ]
+    },
+    {
+      "nodeID": 40,
+      "preNodes": [39],
+      "crownCost": 4,
+      "unlockedRequireAllPreNodes": true,
+      "name": [
+        "攻击力提升 VI",
+        "Strength VI",
+        ""
+      ],
+      "description": [
+        "所有角色的基础攻击力提升30%。",
+        "Increase user's base strength by 30%.",
+        ""
+      ]
+    }
+  ]
+}

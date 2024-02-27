@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 
 /// <summary>
@@ -39,44 +40,44 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
             return;
         }
         
-        DragaliaBossActionTypes.DB2015 actionType = 
-            (DragaliaBossActionTypes.DB2015) Enum.Parse(typeof(DragaliaBossActionTypes.DB2015), action_name);
+        DragaliaEnemyActionTypes.DB2015 actionType = 
+            (DragaliaEnemyActionTypes.DB2015) Enum.Parse(typeof(DragaliaEnemyActionTypes.DB2015), action_name);
 
         switch (actionType)
         {
-            case DragaliaBossActionTypes.DB2015.crystal_chase:
+            case DragaliaEnemyActionTypes.DB2015.crystal_chase:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CrystalChase(interval));
                 break;
             }
-            case DragaliaBossActionTypes.DB2015.crystal_fixed:
+            case DragaliaEnemyActionTypes.DB2015.crystal_fixed:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CrystalFixed(interval));
                 break;
             }
-            case DragaliaBossActionTypes.DB2015.nihil:
+            case DragaliaEnemyActionTypes.DB2015.nihil:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_Nihil(interval));
                 break;
             }
-            case DragaliaBossActionTypes.DB2015.combo:
+            case DragaliaEnemyActionTypes.DB2015.combo:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_Combo(interval));
                 break;
             }
-            case DragaliaBossActionTypes.DB2015.buff:
+            case DragaliaEnemyActionTypes.DB2015.buff:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_DefenseBuff(interval));
                 break;
             }
-            case DragaliaBossActionTypes.DB2015.fireball:
+            case DragaliaEnemyActionTypes.DB2015.fireball:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BouncingFireball(interval));
                 break;
             }

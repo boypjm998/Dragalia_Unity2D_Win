@@ -11,7 +11,7 @@ public class CutSceneController : MonoBehaviour
     public RenderTexture rt;
     public Material skyMat;
     
-    public void Replay()
+    public virtual void Replay()
     {
         //anim.Play("start");
         _director.Stop();
@@ -21,7 +21,6 @@ public class CutSceneController : MonoBehaviour
     private void Awake()
     {
         _director = GetComponent<PlayableDirector>();
-        skyMat = GetComponentInChildren<Skybox>().material;
-        
+        skyMat = GetComponentInChildren<Skybox>()?.material;
     }
 }

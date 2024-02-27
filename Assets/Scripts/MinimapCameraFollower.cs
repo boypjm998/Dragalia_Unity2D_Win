@@ -13,6 +13,20 @@ public class MinimapCameraFollower : MonoBehaviour
     private float minWidth;
     private Camera mainCamera;
     private Camera myCamera;
+    
+    public static MinimapCameraFollower Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
+
+
     IEnumerator Start()
     {
         myCamera = GetComponent<Camera>();
@@ -31,6 +45,12 @@ public class MinimapCameraFollower : MonoBehaviour
         minHeight = cameraRange.bounds.min.y + myCamera.orthographicSize;
         maxWidth = cameraRange.bounds.max.x - myCamera.orthographicSize * myCamera.aspect;
         minWidth = cameraRange.bounds.min.x + myCamera.orthographicSize * myCamera.aspect;
+    }
+
+    public void SetSize(float size)
+    {
+        myCamera.orthographicSize = size;
+        RefreshBorderInfo();
     }
 
     private void LateUpdate()

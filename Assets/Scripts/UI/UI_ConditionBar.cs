@@ -36,7 +36,7 @@ public class UI_ConditionBar : MonoBehaviour
     private void Start()
     {
         //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
-        targetStat = GameObject.Find("PlayerHandle").GetComponentInChildren<PlayerStatusManager>();
+        targetStat = BattleStageManager.Instance.GetPlayer().GetComponent<PlayerStatusManager>();
         conditionCount = targetStat.conditionList.Count;
         targetStat.SetConditionBar(this);
 
@@ -113,7 +113,7 @@ public class UI_ConditionBar : MonoBehaviour
         var sprite = buff.GetIcon();
         bool isBuff = false;
 
-        if (buff.buffID<=200)
+        if (StatusManager.IsBuff(buff.buffID))
         {
             isBuff = true;
         }
@@ -126,10 +126,17 @@ public class UI_ConditionBar : MonoBehaviour
                     transform.position,
                     Quaternion.identity, transform);
         }
-        else
+        else if(buff.buffID < 500)
         {
             icon = 
                 Instantiate(AfflictionPrefab, 
+                    transform.position,
+                    Quaternion.identity, transform);
+        }
+        else
+        {
+            icon = 
+                Instantiate(isBuff?buffIconPrefab:debuffIconPrefab, 
                     transform.position,
                     Quaternion.identity, transform);
         }
@@ -206,19 +213,7 @@ public class UI_ConditionBar : MonoBehaviour
             if(loopDisplayRoutine==null)
                 loopDisplayRoutine = StartCoroutine(LoopDisplayIcon());
         }
-
-        // foreach (var child in childs)
-        // {
-        //     if(child.order>maxCapacity)
-        //         child.GetComponent<CanvasGroup>().alpha = 0;
-        //     else
-        //     {
-        //         child.GetComponent<CanvasGroup>().alpha = 1;
-        //     }
-        // }
         
-
-
 
 
     }
@@ -278,7 +273,7 @@ public class UI_ConditionBar : MonoBehaviour
 
     private int GetConditionType(int buffID)
     {
-        if (buffID <= 200)
+        if (StatusManager.IsBuff(buffID))
         {
            return 1;
         }else if (buffID <= 400)
@@ -402,7 +397,7 @@ public class UI_ConditionBar : MonoBehaviour
         conditionIcons = GetComponentsInChildren<ConditionIcon>();
         foreach (var icon in conditionIcons)
         {
-            if(icon.order>=maxCapacity)
+            if(icon.order>maxCapacity)
                 icon.canvasGroup.alpha = 0;
             else 
                 icon.canvasGroup.alpha = 1;

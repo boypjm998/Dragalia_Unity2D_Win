@@ -1,0 +1,38 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "buff",
+          "args": [ 0, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 0, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "smash",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+        
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 1,
+      "args": []
+    }
+  ]
+}

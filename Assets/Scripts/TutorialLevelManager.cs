@@ -9,6 +9,7 @@ using DG.Tweening;
 using GameMechanics;
 using LitJson;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using UnityEngine.UI;
@@ -76,6 +77,7 @@ public class TutorialLevelManager : MonoBehaviour
     protected GameObject SkillUseHint2;
     protected GameObject SkillUseHint3;
     public bool lastStage = false;
+    [SerializeField] private CanvasGroup staffCanvasGroup;
     
     AlchemicGauge playerAlchemicGauge;
     private EnemyControllerFlying bossController;
@@ -349,6 +351,10 @@ public class TutorialLevelManager : MonoBehaviour
         player.keySkill2 = KeyCode.None;
         player.keySkill3 = KeyCode.None;
         player.keySkill4 = KeyCode.None;
+        GlobalController.gamepadMap.Disable();
+        GlobalController.gamepadMap.FindAction("Move").Enable();
+        GlobalController.gamepadMap.FindAction("Escape").Enable();
+        //GlobalController.gamepadMap.FindAction("Attack").Enable();
         player.keyJump = KeyCode.None;
         player.keyRoll = KeyCode.None;
         player.keyDown = KeyCode.None;
@@ -417,6 +423,7 @@ public class TutorialLevelManager : MonoBehaviour
         _playerInput.InvokeAttackSignal();
         OpenTutorialHintPauseMenuAndTurnToNewestPage();
         _playerInput.keyAttack = keyAttack;
+        GlobalController.gamepadMap.FindAction("Attack").Enable();
         //_playerInput.EnableAndIdle();
         
         yield return new WaitUntil(() => BattleStageManager.Instance.isGamePaused == false);
@@ -434,6 +441,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         OpenTutorialHintPauseMenuAndTurnToNewestPage();
         _playerInput.keyRoll = keyRoll;
+        GlobalController.gamepadMap.FindAction("Dodge").Enable();
         
         currentRoutine = null;
     }
@@ -446,6 +454,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return null;
         Notte.GetComponent<NpcController>().SetSkillTimer(1f); 
         _playerInput.keySkill1 = keySkill1;
+        GlobalController.gamepadMap.FindAction("Skill1").Enable();
         
         //yield return new WaitUntil(()=>_playerInput.buttonSkill1.OnPressed);
         currentRoutine = null;
@@ -488,6 +497,9 @@ public class TutorialLevelManager : MonoBehaviour
         OpenTutorialHintPauseMenuAndTurnToNewestPage();
         _playerInput.keyJump = keyJump;
         _playerInput.keyDown = keyDown;
+        GlobalController.gamepadMap.FindAction("Jump").Enable();
+        GlobalController.gamepadMap.FindAction("Down").Enable();
+
         _playerInput.EnableAndIdle();
         //Notte.GetComponent<NpcController>().enabled = true;
         BossTerminal.transform.Find("HitSensor").gameObject.SetActive(true);
@@ -525,7 +537,10 @@ public class TutorialLevelManager : MonoBehaviour
         
         yield return new WaitForSeconds(3f);
         OpenTutorialHintPauseMenuAndTurnToNewestPage();
+        
         _playerInput.keySkill2 = keySkill2;
+        GlobalController.gamepadMap.FindAction("Skill2").Enable();
+        
         var chara_UIGroup = UIElements.transform.Find("CharacterInfo").GetComponent<CanvasGroup>();
         UIElements.transform.Find("CharacterInfo/Skill02").gameObject.SetActive(true);
         var alchemicGaugeObj = UIElements.transform.Find("CharacterInfo/AlchemicGauge");
@@ -647,6 +662,10 @@ public class TutorialLevelManager : MonoBehaviour
         OpenTutorialHintPauseMenuAndTurnToNewestPage();//解锁技能3
         _playerInput.keySkill3 = keySkill3;
         _playerInput.keyUp = keySpecial;
+        GlobalController.gamepadMap.FindAction("Skill3").Enable();
+        GlobalController.gamepadMap.FindAction("Special").Enable();
+        
+        
         UIElements.transform.Find("CharacterInfo/Skill03").gameObject.SetActive(true);
         
         yield return new WaitForSeconds(2f);
@@ -872,11 +891,28 @@ public class TutorialLevelManager : MonoBehaviour
         PlayStoryVoiceWithDialog(35,1008,sharedVoice);
 
         GlobalController.Instance.EndGame();
-        UpdatePrologueProgress();
+        UpdatePrologueProgress(); //Update the savedata
         currentCutScene = 5;
         
-        //yield return new WaitUntil(()=>sharedVoice.isPlaying == false);
         yield return new WaitForSeconds(7f);
+        
+        //Whitescreen fadeout
+        staffCanvasGroup.DOFade(1, 1f);
+        
+        yield return new WaitForSeconds(3f);
+
+        float time = 0f;
+
+        while (time < 5)
+        {
+            time += Time.deltaTime;
+            yield return null;
+            if(Input.anyKey)
+                break;
+        }
+        
+        staffCanvasGroup.DOFade(0, 1f);
+        yield return new WaitForSeconds(1f);
         
         var resultPage = Instantiate(this.resultPage, UIElements.transform);
         UIElements.transform.Find("Minimap").gameObject.SetActive(false);

@@ -1,0 +1,665 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "KeepDistance",
+          "state": 0,
+          "args": [1,10,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "SpinDash",
+          "state": 1,
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryG",
+          "state": 2,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightCrownG",
+          "state": 3,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ReflectionOn",
+          "state": 4,
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboC",
+          "state": 5,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PickupBuff",
+          "state": 6,
+          "args": [0],
+          "jump_action": "next",
+          "unbreakable": true
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 7,
+          "args": [1,12,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayerF",
+          "state": 8,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BusterOn",
+          "state": 9,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 10,
+          "args": [0,15,3,1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 11,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 12,
+          "args": [
+            3,
+            0.5,
+            4,
+            5
+          ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "DashAttack",
+          "state": 13,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "HolyCrownG",
+          "state": 14,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "SpinDashFast",
+          "state": 15,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryG",
+          "state": 16,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BackWarpSmash",
+          "state": 17,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboA",
+          "state": 18,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PickupBuff",
+          "state": 19,
+          "args": [1],
+          "jump_action": "next",
+          "unbreakable": true
+        },
+        {
+          "action_name": "ComboC",
+          "state": 20,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayerG",
+          "state": 21,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "state": 22,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 23,
+          "args": [
+            6,
+            4
+          ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "SpinDash",
+          "state": 24,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 25,
+          "args": [0],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 2,
+      "args": [75,13]
+    },
+    {
+      "action_list":
+      [
+        {
+          "action_name": "WorldReset",
+          "state": 0,
+          "args": [1.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GalaxyPrayerOn",
+          "state": 1,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryG",
+          "state": 2,
+          "args": [0.1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "SummonOrbs",
+          "state": 3,
+          "args": [0.1],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "GloriousSanctuaryC",
+          "state": 4,
+          "args": [0.1],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "BusterOn",
+          "state": 5,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayerG",
+          "state": 6,
+          "args": [2.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BackWarpSmash",
+          "state": 7,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PickupBuff",
+          "state": 8,
+          "args": [1],
+          "jump_action": "next",
+          "unbreakable": true
+        },
+        {
+          "action_name": "ComboA",
+          "state": 9,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "state": 10,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryG",
+          "state": 11,
+          "args": [0.1],
+          "jump_action": "next",
+          "jump_args": [6]
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 12,
+          "args": [3],
+          "jump_action": "random+",
+          "jump_args": [1,2]
+        },
+        {
+          "action_name": "CelestialPrayerF",
+          "state": 13,
+          "args": [2.5],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "CelestialPrayerG",
+          "state": 14,
+          "args": [2.8],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "GalaxyPrayerOff",
+          "state": 15,
+          "args": [1],
+          "jump_action": "to",
+          "jump_args": [17]
+        },
+        {
+          "action_name": "ComboC",
+          "state": 16,
+          "args": [2],
+          "jump_action": "to",
+          "jump_args": [17]
+        },
+        {
+          "action_name": "HolyCrownG",
+          "state": 17,
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ReflectionOn",
+          "state": 18,
+          "args": [1.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PickupBuff",
+          "state": 19,
+          "args": [0],
+          "jump_action": "next",
+          "unbreakable": true
+        },
+        {
+          "action_name": "GenesisCrownSingle",
+          "state": 20,
+          "args": [3],
+          "jump_action": "conditional",
+          "jump_args": ["distance",5,21,22]
+        },
+        {
+          "action_name": "DashAttack",
+          "state": 21,
+          "args": [2],
+          "jump_action": "to",
+          "jump_args": [23]
+        },
+        {
+          "action_name": "ComboB",
+          "state": 22,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BusterOn",
+          "state": 23,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GalaxyPrayerOn",
+          "state": 24,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryC",
+          "state": 25,
+          "args": [1.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BackWarpSmash",
+          "state": 26,
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 27,
+          "args": [3],
+          "jump_action": "random",
+          "jump_args": [29,30]
+        },
+        {
+          "action_name": "PickupBuff",
+          "state": 28,
+          "args": [2],
+          "jump_action": "next",
+          "unbreakable": true
+        },
+        {
+          "action_name": "CelestialPrayerF",
+          "state": 29,
+          "args": [3.5],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "CelestialPrayerG",
+          "state": 30,
+          "args": [2.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 31,
+          "args": [5,12,1],
+          "jump_action": "random",
+          "jump_args": [32,33]
+        },
+        {
+          "action_name": "ComboA",
+          "state": 32,
+          "args": [2],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "ComboB",
+          "state": 33,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 34,
+          "args": [0,5,1],
+          "jump_action": "conditional",
+          "jump_args": ["distance",5,35,36]
+        },
+        {
+          "action_name": "DashAttack",
+          "state": 35,
+          "args": [2],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "ComboB",
+          "state": 36,
+          "args": [2],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "GloriousSanctuaryC",
+          "state": 37,
+          "args": [2],
+          "jump_action": "random+",
+          "jump_args": [1,2]
+        },
+        {
+          "action_name": "TwilightCrownG",
+          "state": 38,
+          "args": [2],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "TwilightCrownF",
+          "state": 39,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ApproachTarget",
+          "state": 40,
+          "args": [6,1,2.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 41,
+          "args": [5,10,1],
+          "jump_action": "conditional",
+          "jump_args": ["distance",10,42,43]
+        },
+        {
+          "action_name": "SpinDashFast",
+          "state": 42,
+          "args": [3],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "BackWarpSmash",
+          "state": 43,
+          "args": [3],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "GenesisCrown",
+          "state": 44,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 45,
+          "args": [2],
+          "jump_action": "random",
+          "jump_args": [46,47]
+        },
+        {
+          "action_name": "CelestialPrayerG",
+          "state": 46,
+          "args": [0.5],
+          "jump_action": "to",
+          "jump_args": [48]
+        },
+        {
+          "action_name": "CelestialPrayerF",
+          "state": 47,
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TwilightCrownG",
+          "state": 48,
+          "args": [1],
+          "jump_action": "random",
+          "jump_args": [49,50]
+        },
+        {
+          "action_name": "ComboA",
+          "state": 49,
+          "args": [2],
+          "jump_action": "random",
+          "jump_args": [51,52]
+        },
+        {
+          "action_name": "ComboB",
+          "state": 50,
+          "args": [2],
+          "jump_action": "random",
+          "jump_args": [51,52]
+        },
+        {
+          "action_name": "WarpAttack",
+          "state": 51,
+          "bug": 1,
+          "args": [1.5],
+          "jump_action": "random",
+          "jump_args": [53,54]
+        },
+        {
+          "action_name": "BackWarpSmash",
+          "state": 52,
+          "args": [3],
+          "jump_action": "random",
+          "jump_args": [53,54]
+        },
+        {
+          "action_name": "TwilightCrownF",
+          "state": 53,
+          "args": [2],
+          "jump_action": "to",
+          "jump_args": [55]
+        },
+        {
+          "action_name": "TwilightCrownG",
+          "state": 54,
+          "args": [2],
+          "jump_action": "to",
+          "jump_args": [55]
+        },
+        {
+          "action_name": "SpinDashFast",
+          "state": 55,
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "HolyCrownG",
+          "state": 56,
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayerF",
+          "state": 57,
+          "args": [2.8],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BackWarpGround",
+          "state": 58,
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GalaxyPrayerOff",
+          "state": 59,
+          "args": [1],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "ComboA",
+          "state": 60,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "state": 61,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryC",
+          "state": 62,
+          "args": [0.1],
+          "jump_action": "next",
+          "jump_args": [6]
+        },
+        {
+          "action_name": "TwilightCrownF",
+          "state": 63,
+          "args": [3],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "PickupBuff",
+          "state": 64,
+          "args": [2.5],
+          "jump_action": "next",
+          "unbreakable": true
+        },
+        {
+          "action_name": "TwilightMoon",
+          "state": 65,
+          "args": [3],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "KeepDistance",
+          "state": 66,
+          "args": [5,12,1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboA",
+          "state": 67,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboB",
+          "state": 68,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ComboC",
+          "state": 69,
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GloriousSanctuaryG",
+          "state": 70,
+          "args": [1],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "TwilightCrownG",
+          "state": 71,
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CelestialPrayerF",
+          "state": 72,
+          "args": [1],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 18,
+      "args": []
+    }
+  ]
+}

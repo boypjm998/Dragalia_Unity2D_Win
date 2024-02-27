@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class SkillUIBase : MonoBehaviour
@@ -57,7 +58,51 @@ public class SkillUIBase : MonoBehaviour
                 break;
         }
 
+        if (GlobalController.Instance.gameOptions.gamepadSettings[0] == 0 &&
+            Input.GetJoystickNames().Length > 0)
+        {
+            string path;
+            switch (sid)
+            {
+                case 1:
+                {
+                    path = PlayerInput.
+                        GetGamepadInputKeyPath("Skill1");
+                    break;
+                }
+                case 2:
+                {
+                    path = PlayerInput.
+                        GetGamepadInputKeyPath("Skill2");
+                    break;
+                }
+                case 3:
+                {
+                    path = PlayerInput.
+                        GetGamepadInputKeyPath("Skill3");
+                    break;
+                }
+                case 4:
+                {
+                    path = PlayerInput.
+                        GetGamepadInputKeyPath("Skill4");
+                    break;
+                }
+                default:
+                    path = "";
+                    break;
+                    
+            }
+            //path = path.Replace("[Gamepad]", "");
+            skillButton = path;
+        }
+
         keyHint.GetComponentInChildren<TextMeshProUGUI>().text = skillButton;
+
+        var dc = sm.GetComponent<ActorController>().dc;
+
+        if(dc && dc.dragondrive)
+            return;
 
         if (this is DragonSkillUIBase)
         {
@@ -81,7 +126,8 @@ public class SkillUIBase : MonoBehaviour
         //SwapSkillIcon();
 
         CheckSkillCD();
-
+        //print(GlobalController.gamepadMap.FindAction("Skill2").bindings[0].effectivePath);
+        //print(GlobalController.gamepadMap.FindAction("Skill2").bindings[0].overridePath);
     }
 
     protected void DisableSkill()

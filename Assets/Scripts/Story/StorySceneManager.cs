@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using DG.Tweening;
+using GameMechanics;
 using UnityEngine;
 using LitJson;
 using TMPro;
@@ -54,7 +56,12 @@ public class StorySceneManager : MonoBehaviour
         try
         {
             if (_globalController.loadingEnd == false || paused)
-                return;
+            {
+                if(!isDebug) 
+                    return;
+            }
+
+           
         }
         catch
         {
@@ -65,6 +72,9 @@ public class StorySceneManager : MonoBehaviour
 
         if (autoMode)
         {
+            print(currentCoroutine == null? "currentCoroutine null":"currentCoroutine not null");
+            
+            
             if (currentCoroutine == null && characterIsSpeaking == false && !taskRunning &&
                 storyComponent.dialog.voiceSource.isPlaying == false)
             {
@@ -137,7 +147,7 @@ public class StorySceneManager : MonoBehaviour
         
         ReadCommands();
         
-        yield return new WaitUntil(() => started);
+        yield return new WaitUntil(() => started || isDebug);
         
         _globalController = FindObjectOfType<GlobalController>();
         
@@ -197,6 +207,7 @@ public class StorySceneManager : MonoBehaviour
         {
             storyData = prologueStoryData;
         }
+        
 
         print(storyData.text);
         JsonData storyJsonData = JsonMapper.ToObject(storyData.text);
@@ -305,13 +316,22 @@ public class StorySceneManager : MonoBehaviour
                 if(args.Length == 1)
                     AddCharacter(args[0]);
                 else if(args.Length == 2)
-                    AddCharacter(args[0],float.Parse(args[1]));
+                    AddCharacter(args[0],ObjectExtensions.ParseInvariantFloat(args[1]));
                 else if(args.Length == 3)
-                    AddCharacter(args[0],float.Parse(args[1]),float.Parse(args[2]));
+                    AddCharacter(args[0],ObjectExtensions.ParseInvariantFloat(args[1]),ObjectExtensions.ParseInvariantFloat(args[2]));
                 else if(args.Length == 4)
-                    AddCharacter(args[0],float.Parse(args[1]),float.Parse(args[2]),int.Parse(args[3]));
+                    AddCharacter(args[0],ObjectExtensions.ParseInvariantFloat(args[1]),ObjectExtensions.ParseInvariantFloat(args[2]),int.Parse(args[3]));
                 else if(args.Length == 5)
-                    AddCharacter(args[0],float.Parse(args[1]),float.Parse(args[2]),int.Parse(args[3]),int.Parse(args[4]));
+                    AddCharacter(args[0],ObjectExtensions.ParseInvariantFloat(args[1]),ObjectExtensions.ParseInvariantFloat(args[2]),int.Parse(args[3]),int.Parse(args[4]));
+                else if (args.Length == 6)
+                {
+                    AddCharacter(args[0],ObjectExtensions.ParseInvariantFloat(args[1]),ObjectExtensions.ParseInvariantFloat(args[2]),int.Parse(args[3]),int.Parse(args[4]),args[5]);
+                }
+                else if (args.Length == 7)
+                {
+                    AddCharacter(args[0],ObjectExtensions.ParseInvariantFloat(args[1]),ObjectExtensions.ParseInvariantFloat(args[2]),
+                        int.Parse(args[3]),int.Parse(args[4]),args[5],int.Parse(args[6]));
+                }
                 else
                 {
                     Debug.LogError("ADD_CHARA命令参数错误");
@@ -326,10 +346,10 @@ public class StorySceneManager : MonoBehaviour
                 BlackIn();
                 break;
             case StoryCommand.CommandType.BLACKSCREEN:
-                BlackScreen(float.Parse(args[0]));
+                BlackScreen(ObjectExtensions.ParseInvariantFloat(args[0]));
                 break;
             case StoryCommand.CommandType.BLACKSCREEN_FADE:
-                BlackScreenFade(float.Parse(args[0]));
+                BlackScreenFade(ObjectExtensions.ParseInvariantFloat(args[0]));
                 break;
             case StoryCommand.CommandType.BLACKSCREEN_PRINT:
             {
@@ -338,6 +358,9 @@ public class StorySceneManager : MonoBehaviour
                 else
                     BlackScreenPrint();
             }
+                break;
+            case StoryCommand.CommandType.BLACKSCREEN_PRINTS:
+                BlackScreenPrints(int.Parse(args[0]));
                 break;
             case StoryCommand.CommandType.BUTTON_VISIBILITY:
                 ButtonVisiblity(Convert.ToInt32(args[0]));
@@ -373,7 +396,7 @@ public class StorySceneManager : MonoBehaviour
                 Effects(args);
                 break;
             case StoryCommand.CommandType.FADE_BGM:
-                FadeBGM(int.Parse(args[0]),float.Parse(args[1]));
+                FadeBGM(int.Parse(args[0]),ObjectExtensions.ParseInvariantFloat(args[1]));
                 break;
             case StoryCommand.CommandType.SET_CHARA:
                 SetCharacter(args);
@@ -388,7 +411,15 @@ public class StorySceneManager : MonoBehaviour
                 SetSpeakerName(args[0]);
                 break;
             case StoryCommand.CommandType.SET_BACKGROUND:
-                SetBackground(args[0],float.Parse(args[1]));
+                if (args.Length == 2)
+                {
+                    SetBackground(args[0],ObjectExtensions.ParseInvariantFloat(args[1]));
+                }else if(args.Length == 4)
+                {
+                    SetBackgroundImageColor(ObjectExtensions.ParseInvariantFloat(args[0]),
+                        ObjectExtensions.ParseInvariantFloat(args[1]),ObjectExtensions.ParseInvariantFloat(args[2]),
+                        ObjectExtensions.ParseInvariantFloat(args[3]));
+                }
                 break;
             case StoryCommand.CommandType.SWITCH_SPEAKER:
                 SetCurrentSpeakingCharacter(args[0]);
@@ -415,7 +446,7 @@ public class StorySceneManager : MonoBehaviour
                 BlackScreenAnimation(args);
                 break;
             case StoryCommand.CommandType.WAIT:
-                Wait(float.Parse(args[0]));
+                Wait(ObjectExtensions.ParseInvariantFloat(args[0]));
                 break;
 
 
@@ -565,6 +596,11 @@ public class StorySceneManager : MonoBehaviour
     {
         currentCoroutine = StartCoroutine(BlackScreenPrintRoutine());
     }
+    
+    private void BlackScreenPrints(int lines)
+    {
+        currentCoroutine = StartCoroutine(BlackScreenPrintsRoutine(lines));
+    }
 
     private IEnumerator BlackScreenPrintRoutine()
     {
@@ -575,14 +611,57 @@ public class StorySceneManager : MonoBehaviour
         if (maxLine == 0)
         {
             maxLine = 1;
-            //tmp.maxVisibleLines = 1;
         }
         else
         {
-            maxLine += 2;
+            maxLine += 2; // 2->lines * 2
             //tmp.maxVisibleLines = maxLine + 2;
         }
         var info = tmp.textInfo.lineInfo[maxLine-1];//第几行显示,wordInfo
+        
+        //获取第maxLine行的文本
+        var originText = tmp.text;
+        //将第tmp的第3行前加上<alpha=#00>
+        var newText = tmp.text.Insert(info.firstCharacterIndex, "<alpha=#00>");
+
+        tmp.text = newText;
+        tmp.maxVisibleLines = maxLine;
+        
+        
+        skip = false;
+        var newAlpha = 0;
+        while (newAlpha < 254 && skip == false)
+        {
+            newAlpha += 5;
+            //将tmp.text从info.firstCharacterIndex开始的11个字符替换为"123456789XY"
+            newText = tmp.text.Replace(tmp.text.Substring(info.firstCharacterIndex, 11),
+                $"<alpha=#{newAlpha.ToString("X2")}>");
+            tmp.text = newText;
+            yield return new WaitForSeconds(0.02f);
+        }
+
+
+        tmp.text = originText;
+        skip = false;
+        taskRunning = false;
+        currentCoroutine = null;
+    }
+    
+    private IEnumerator BlackScreenPrintsRoutine(int lines = 1)
+    {
+        taskRunning = true;
+        
+        var tmp = storyComponent.dialog.blackScreenText;
+        var maxLine = tmp.maxVisibleLines;
+        if (maxLine == 0)
+        {
+            maxLine = 1 + (lines - 1) * 2;
+        }
+        else
+        {
+            maxLine += 2 * lines; // 2->lines * 2
+        }
+        var info = tmp.textInfo.lineInfo[ maxLine-(1 + (lines-1) * 2) ]; //第几行显示,wordInfo
         
         //获取第maxLine行的文本
         var originText = tmp.text;
@@ -759,7 +838,8 @@ public class StorySceneManager : MonoBehaviour
         {
             faceID = -1;
             mouthID = -1;
-        }else if(args.Length == 2)
+        }
+        else if(args.Length == 2)
         {
             faceID = int.Parse(args[1]);
             mouthID = -1;
@@ -768,7 +848,8 @@ public class StorySceneManager : MonoBehaviour
         {
             faceID = int.Parse(args[1]);
             mouthID = int.Parse(args[2]);
-        }else return;
+        }
+        else return;
         print("faceID"+faceID);
         print("mouthID"+mouthID);
 
@@ -782,7 +863,11 @@ public class StorySceneManager : MonoBehaviour
                     if (currentSpeakingChara != null)
                     {
                         if (currentSpeakingChara?.portraitParts.blinkingAnimationRoutine != null)
+                        {
                             StopCoroutine(currentSpeakingChara.portraitParts.blinkingAnimationRoutine);
+                        }
+
+                        
                     }
                 }
                 catch
@@ -952,7 +1037,7 @@ public class StorySceneManager : MonoBehaviour
 
     }
 
-    private void AddCharacter(string id, float positionX = 0, float positionY = -108, int faceID = -1, int mouthID = -1)
+    private void AddCharacter(string id, float positionX = 0, float positionY = -108, int faceID = -1, int mouthID = -1, string originID = "", int black = 0)
     {
         taskRunning = true;
         bool found = false;
@@ -998,7 +1083,14 @@ public class StorySceneManager : MonoBehaviour
                     VARIABLE.portraitParts.currentBaseMouthIndex = mouthID;
                 }
 
-                
+                if (black != 0)
+                {
+                    VARIABLE.faceImage.color = new Color(0,0,0,0);
+                    VARIABLE.mouthImage.color = new Color(0,0,0,0);
+                    VARIABLE.baseImage.color = new Color(0,0,0,0);
+                }
+
+
             }
             else
             {
@@ -1008,10 +1100,23 @@ public class StorySceneManager : MonoBehaviour
         if (!found)
         {
             //处理异常
-            InstantiateCharacter(id);
-            AddCharacter(id, positionX, positionY, faceID, mouthID);
+            if (originID != "")
+            {
+                InstantiateCharacter(originID,id);
+            }
+            else
+            {
+                InstantiateCharacter(id);
+            }
+
+            
+            AddCharacter(id, positionX, positionY, faceID, mouthID, originID, black);
             return;
         }
+
+        
+
+
         taskRunning = false;
         moveNext = true;
     }
@@ -1047,11 +1152,21 @@ public class StorySceneManager : MonoBehaviour
     }
 
 
-    private void InstantiateCharacter(string id)
+    private void InstantiateCharacter(string id, string newID = "")
     {
         //Load assetbundle from streamingAssets/storyPortrait/{id}
-        var bundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath+"/storyportrait/" + id);
-        _globalController.loadedBundles.Add("storyportrait/"+id,bundle);
+        AssetBundle bundle;
+        try
+        {
+            bundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/storyportrait/" + id);
+            _globalController.loadedBundles.Add("storyportrait/" + id, bundle);
+        }
+        catch
+        {
+            bundle = _globalController.loadedBundles["storyportrait/" + id];
+        }
+
+
         //Load PortraitBase from assetbundle
         var portraitBase = bundle.LoadAsset<GameObject>("PortraitBase");
         //Instantiate PortraitBase
@@ -1064,7 +1179,9 @@ public class StorySceneManager : MonoBehaviour
         var portraitParts = portrait.GetComponent<PortraitParts>();
 
         portraitParts.speakerID = id;
-        
+        if(newID != "")
+            portraitParts.speakerID = newID;
+
         StoryComponent.DialogMain.Portrait newPortrait = new StoryComponent.DialogMain.Portrait();
         newPortrait.Init(portrait);
         storyComponent.dialog.Portraits.Add(newPortrait);
@@ -1079,6 +1196,17 @@ public class StorySceneManager : MonoBehaviour
         
         storyComponent.backGround.image.transform.localPosition = new Vector3(0, posY, 0);
         
+        storyComponent.backGround.image.color = Color.white;
+        
+        taskRunning = false;
+        moveNext = true;
+    }
+
+    private void SetBackgroundImageColor(float r, float g, float b, float duration = 0.5f)
+    {
+        taskRunning = true;
+        
+        storyComponent.backGround.image.DOColor(new Color(r, g, b),duration);
         
         taskRunning = false;
         moveNext = true;
@@ -1104,7 +1232,7 @@ public class StorySceneManager : MonoBehaviour
         storyComponent.dialog.bgmSource.Stop();
         storyComponent.dialog.bgmSource.clip = audioBundlesTest.GetBGM(args[0]);
         if(args.Length > 1)
-            storyComponent.dialog.bgmSource.volume = float.Parse(args[1]);
+            storyComponent.dialog.bgmSource.volume = ObjectExtensions.ParseInvariantFloat(args[1]);
         
         storyComponent.dialog.bgmSource.Play();
         taskRunning = false;
@@ -1123,7 +1251,7 @@ public class StorySceneManager : MonoBehaviour
         storyComponent.dialog.SESource.Stop();
         storyComponent.dialog.SESource.clip = audioBundlesTest.GetSE(args[0]);
         if(args.Length > 1)
-            storyComponent.dialog.SESource.volume = float.Parse(args[1]);
+            storyComponent.dialog.SESource.volume = ObjectExtensions.ParseInvariantFloat(args[1]);
         
         storyComponent.dialog.SESource.Play();
         taskRunning = false;
@@ -1138,7 +1266,7 @@ public class StorySceneManager : MonoBehaviour
         
         storyComponent.dialog.voiceSource.clip = audioBundlesTest.GetVoice(args[0]);
         if(args.Length > 1)
-            storyComponent.dialog.voiceSource.volume = float.Parse(args[1]);
+            storyComponent.dialog.voiceSource.volume = ObjectExtensions.ParseInvariantFloat(args[1]);
 
         if (args.Length > 3)
         {
@@ -1238,6 +1366,7 @@ public class StorySceneManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
         CancelInvoke();
+        characterIsSpeaking = false;
         currentSpeakingCharaPortraitParts.speakingAnimationRoutine = null;
         currentSpeakingChara.mouthImage.sprite = currentSpeakingChara.portraitParts.GetMouthSprite(mouthClose);
     }
@@ -1317,7 +1446,7 @@ public class StorySceneManager : MonoBehaviour
         var effectInstance = Instantiate(effect, storyComponent.dialog.effectRoot);
         if (args.Length >= 3)
         {
-            effectInstance.transform.localPosition = new Vector3(float.Parse(args[1]), float.Parse(args[2]), 0);
+            effectInstance.transform.localPosition = new Vector3(ObjectExtensions.ParseInvariantFloat(args[1]), ObjectExtensions.ParseInvariantFloat(args[2]), 0);
         }
         effectInstance.name = args[0];
 
@@ -1332,7 +1461,7 @@ public class StorySceneManager : MonoBehaviour
     {
         
         currentCoroutine = 
-            StartCoroutine(ScreenShakeRoutine(float.Parse(args[0]), float.Parse(args[1])));
+            StartCoroutine(ScreenShakeRoutine(ObjectExtensions.ParseInvariantFloat(args[0]), ObjectExtensions.ParseInvariantFloat(args[1])));
                 
         
     }
@@ -1378,7 +1507,7 @@ public class StorySceneManager : MonoBehaviour
         
         var fadeIn = int.Parse(args[0]);//0 for fade in, 1 for fade out
         var direction = args[1];
-        var duration = float.Parse(args[2]);
+        var duration = ObjectExtensions.ParseInvariantFloat(args[2]);
 
         Tweener tweener;
         
@@ -1466,15 +1595,15 @@ public class StorySceneManager : MonoBehaviour
                 if (args.Length == 4)
                 {
                     currentCoroutine =
-                        StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(float.Parse(args[1]), float.Parse(args[2])),
-                            float.Parse(args[3])));
+                        StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(ObjectExtensions.ParseInvariantFloat(args[1]), ObjectExtensions.ParseInvariantFloat(args[2])),
+                            ObjectExtensions.ParseInvariantFloat(args[3])));
                 }else if (args.Length == 5)
                 {
                     //Parse the args[4] to get the easing enum type
                     var easingType = (DG.Tweening.Ease) Enum.Parse(typeof(DG.Tweening.Ease), args[4]);
                     currentCoroutine =
-                        StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(float.Parse(args[1]), float.Parse(args[2])),
-                            float.Parse(args[3]), easingType));
+                        StartCoroutine(PortraitSimpleMoveRoutine(new Vector2(ObjectExtensions.ParseInvariantFloat(args[1]), ObjectExtensions.ParseInvariantFloat(args[2])),
+                            ObjectExtensions.ParseInvariantFloat(args[3]), easingType));
                 }
 
                 break;
@@ -1483,25 +1612,25 @@ public class StorySceneManager : MonoBehaviour
                 if(args.Length != 3)
                     Debug.LogError("Portrait Shake Command Error");
                 currentCoroutine = 
-                    StartCoroutine(PortraitShakeRoutine(float.Parse(args[1]), float.Parse(args[2])));
+                    StartCoroutine(PortraitShakeRoutine(ObjectExtensions.ParseInvariantFloat(args[1]), ObjectExtensions.ParseInvariantFloat(args[2])));
                 break;
             case "JUMP":
                 if(args.Length != 6)
                     Debug.LogError("Portrait Jump Command Error");
                 currentCoroutine = 
-                    StartCoroutine(PortraitJumpRoutine(args[1], float.Parse(args[2]), int.Parse(args[3]), float.Parse(args[4]), args[5]));
+                    StartCoroutine(PortraitJumpRoutine(args[1], ObjectExtensions.ParseInvariantFloat(args[2]), int.Parse(args[3]), ObjectExtensions.ParseInvariantFloat(args[4]), args[5]));
                 break;
             case "WALK":
                 if(args.Length != 5)
                     Debug.LogError("Portrait Walk Command Error");
                 currentCoroutine = 
-                    StartCoroutine(PortraitWalkRoutine(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]), float.Parse(args[4])));
+                    StartCoroutine(PortraitWalkRoutine(ObjectExtensions.ParseInvariantFloat(args[1]), ObjectExtensions.ParseInvariantFloat(args[2]), ObjectExtensions.ParseInvariantFloat(args[3]), ObjectExtensions.ParseInvariantFloat(args[4])));
                 break;
             case "ZOOM":
                 if(args.Length != 5)
                     Debug.LogError("Portrait Zoom Command Error");
                 currentCoroutine = 
-                    StartCoroutine(PortraitZoomRoutine(float.Parse(args[1]), int.Parse(args[2]), float.Parse(args[3]), args[4]));
+                    StartCoroutine(PortraitZoomRoutine(ObjectExtensions.ParseInvariantFloat(args[1]), int.Parse(args[2]), ObjectExtensions.ParseInvariantFloat(args[3]), args[4]));
                 break;
             default:
                 break;
@@ -1698,11 +1827,11 @@ public class StorySceneManager : MonoBehaviour
         if (args[1] == "IN")
         {
             character.baseImage.color = new Color(0, 0, 0, 0);
-            _tweener = character.baseImage.DOFade(1, float.Parse(args[2]));
+            _tweener = character.baseImage.DOFade(1, ObjectExtensions.ParseInvariantFloat(args[2]));
             _tweener.OnComplete(() =>
             {
                 taskRunning = false;
-                if (float.Parse(args[3]) == 0)
+                if (ObjectExtensions.ParseInvariantFloat(args[3]) == 0)
                 {
                     moveNext = true;
                 }
@@ -1713,12 +1842,12 @@ public class StorySceneManager : MonoBehaviour
         }else if (args[1] == "OUT")
         {
             character.baseImage.color = new Color(0, 0, 0, 1);
-            _tweener = character.baseImage.DOColor(Color.white, float.Parse(args[2]));
+            _tweener = character.baseImage.DOColor(Color.white, ObjectExtensions.ParseInvariantFloat(args[2]));
             
             _tweener.OnComplete(() =>
             {
                 taskRunning = false;
-                if (float.Parse(args[3]) == 0)
+                if (ObjectExtensions.ParseInvariantFloat(args[3]) == 0)
                 {
                     moveNext = true;
                 }
@@ -1732,7 +1861,7 @@ public class StorySceneManager : MonoBehaviour
             Debug.LogError("Character Portrait Black In Out Command Error");
         }
 
-        if (float.Parse(args[3]) != 0)
+        if (ObjectExtensions.ParseInvariantFloat(args[3]) != 0)
         {
             moveNext = true;
             taskRunning = false;
@@ -1760,7 +1889,7 @@ public class StorySceneManager : MonoBehaviour
     private void PrintDialog(string[] args,int end)
     {
         if(args.Length == 2) 
-            currentCoroutine = StartCoroutine(PrintDialogRoutine(args[0], float.Parse(args[1]),end));
+            currentCoroutine = StartCoroutine(PrintDialogRoutine(args[0], ObjectExtensions.ParseInvariantFloat(args[1]),end));
     }
     
     private IEnumerator PrintDialogRoutine(string dialog,float voiceTime, int end)
@@ -1931,6 +2060,7 @@ public class StoryCommand
         BLACKSCREEN_FADE, //半透明黑屏淡出
         BLACKSCREEN, //半透明黑屏
         BLACKSCREEN_PRINT,//输出全屏文本
+        BLACKSCREEN_PRINTS,//输出多行全屏文本
         BUTTON_VISIBILITY,//按钮可见性
         
         CLEAR_DIALOG,//清空对话框
@@ -1952,7 +2082,10 @@ public class StoryCommand
         PLAY_VOICE,//播放语音
         PLAY_SE,//播放音效
         PORTRAIT_MOVE,//人物立绘运动
+        PORTRAIT_MOVE_GROUP,//多个人物立绘运动
         PRINT_DIALOG,//输出对话
+        
+        RENAME_SPEAKER,//重命名人物ID
         
         SCREEN_SHAKE,//屏幕震动
         SET_BACKGROUND,//设置背景图片

@@ -23,6 +23,8 @@ public class ForcedAttackFromPlayer : AttackFromPlayer
 
     private void CauseDamageInstantly()
     {
+        if(target == null)
+            return;
 
         var col = target.transform.Find("HitSensor")?.GetComponent<Collider2D>();
         if(col == null)

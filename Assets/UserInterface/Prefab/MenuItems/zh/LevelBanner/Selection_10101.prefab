@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5965\u8389\u52A0\u7684\u8BD5\u70BC\n<size=18>\u656C\u8BF7\u671F\u5F85</size>"
+  m_text: "\u5965\u8389\u52A0\u7684\u8BD5\u70BC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0f371689b72231449b4af96eca013b88, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: a45e1daca39a89e4f86b9541178c17d9, type: 2}
@@ -75,8 +75,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288453788
-  m_fontColor: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -737,6 +737,8 @@ MonoBehaviour:
     menuID: 91010103
   - menuPrefab: {fileID: 1852669785954684417, guid: cfc3c528d0b2f1e49bd2c3510aaec64b, type: 3}
     menuID: 91010104
+  - menuPrefab: {fileID: 1852669785954684417, guid: deab8e9be8945c94fbde51fd09254f65, type: 3}
+    menuID: 91010105
 --- !u!1 &2029898931297049487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3219,7 +3221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3318,11 +3320,23 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 7627032284747288671}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3827500134457900319}
+        m_TargetAssemblyTypeName: UI_LevelSubSelection, Assembly-CSharp
+        m_MethodName: EnterNextMenu
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 91010105
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &968352291257432923
 Animator:
   serializedVersion: 4

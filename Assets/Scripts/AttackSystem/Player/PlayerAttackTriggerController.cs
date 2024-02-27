@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerAttackTriggerController : MonoBehaviour
 {
@@ -21,10 +22,7 @@ public class PlayerAttackTriggerController : MonoBehaviour
     {
         
         
-        if (targetCollider == null)
-        {
-            targetCollider = GetComponent<Collider2D>();
-        }
+        
 
         _attackFromPlayer = GetComponent<AttackFromPlayer>();
         
@@ -65,6 +63,14 @@ public class PlayerAttackTriggerController : MonoBehaviour
             Destroy(gameObject,destroyTime);
         //Destroy(gameObject,destroyTime);
 
+    }
+
+    private void Start()
+    {
+        if (targetCollider == null)
+        {
+            targetCollider = GetComponent<Collider2D>();
+        }
     }
 
     private void OnDestroy()

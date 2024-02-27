@@ -1,0 +1,203 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "corrosion",
+          "args": [ 1250, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 1, 25 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "scatter",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 0,
+      "args": [ 75, 1 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "buff",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "sphere",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "cascade",
+          "args": [
+            -15,2,
+            15,2,
+            -12,8,
+            12,8,
+            15000,
+            25,
+            3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "corrosion",
+          "args": [ 1250, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "scatter",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "whirl",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "water_jet",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "cascade",
+          "args": [
+            -12,2,
+            12,2,
+            -15,8,
+            15,8,
+            15000,
+            25,
+            3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "scatter",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "sphere",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "whirl",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "slap",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 2,
+      "args": []
+    }
+  ]
+}

@@ -11,7 +11,6 @@ namespace GameMechanics
     public static class Ability
     {
 
-
         public static void GetEffectFunc(this StatusManager self, int abilityID)
         {
             
@@ -25,6 +24,7 @@ namespace GameMechanics
                 case 10004://防御力下降特效-艾赛莉特
                 {
                     self.SpecialPunisherEffectFunc += Ability_Punisher_10004;
+                    self.SpecialBreakPunisherEffectFunc += Ability_BreakPunisher_10004;
                     break;
                 }
                 case 10006://巫女之祈愿
@@ -56,9 +56,31 @@ namespace GameMechanics
                     self.SpecialDamageCutEffectFunc += Ability_DamageCut_10012;
                     break;
                 }
+                case 10014://塞西娅的试炼 守护的意志
+                {
+                    self.SpecialSkillDamageEffectFunc += Ability_SkillDamage_10014;
+                    break;
+                }
                 case 10016://使徒：恶魔堕天使特攻
                 {
                     self.SpecialPunisherEffectFunc += Ability_Punisher_10016;
+                    break;
+                }
+                case 10019://奥莉加
+                {
+                    self.SpecialAttackEffectFunc += Ability_Attack_10019;
+                    break;
+                }
+                case 10020://异常状态特攻
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10020;
+                    break;
+                }
+                case 10022://库菈乌 伟大的遗产
+                {
+                    self.SpecialRecoveryPotencyEffectFunc += Ability_RecoveryPotency_10022;
+                    self.SpecialDamageCutEffectFunc += Ability_DamageCut_10022;
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10022;
                     break;
                 }
                 case 10057://芙露露：麻痹特攻
@@ -71,11 +93,32 @@ namespace GameMechanics
                     self.SpecialSkillRateEffectFunc += Ability_SkillRate_10058;
                     break;
                 }
-                
-                
-                
-                
-                
+                case 10063: //35技伤
+                {
+                    self.SpecialSkillDamageEffectFunc += Ability_SkillDamage_10063;
+                    break;
+                }
+                case 10064: // 40% OD加速
+                {
+                    self.SpecialODAcceralatorEffectFunc += Ability_ODAccelerator_10064;
+                    break;
+                }
+                case 10066: //五翼统帅者
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10066;
+                    break;
+                }
+
+                case 10071: //盛夏的圣骑士
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10071;
+                    self.SpecialCritEffectFunc += Ability_CritRate_10071;
+                    self.SpecialODAcceralatorEffectFunc += Ability_ODAccelerator_10071;
+                    break;
+                }
+
+
+
                 case 20011://席菈的试炼 闪狼战技
                 {
                     self.SpecialCritEffectFunc += Ability_CritRate_20011;
@@ -94,17 +137,54 @@ namespace GameMechanics
                     self.SpecialDamageCutEffectFunc += Ability_DamageCut_20032;
                     break;
                 }
+                case 20112://塞西娅的试炼 巫女的奇迹（绝级）
+                {
+                    self.SpecialDamageCutEffectFunc += Ability_DamageCut_20112;
+                    self.SpecialRecoveryPotencyEffectFunc += Ability_RecoveryPotency_20112;
+                    break;
+                }
                 case 20121://塞西娅的试炼 守护的意志
                 {
                     self.SpecialSkillDamageEffectFunc += Ability_SkillDamage_20121;
                     break;
                 }
-                case 20131:
+                case 20131://塞西娅的试炼 起源的庇佑
                 {
                     self.SpecialDamageCutEffectFunc += Ability_DamageCut_20131;
                     break;
                 }
+                case 20141://教会骑士 进攻阵型
+                {
+                    self.SpecialAttackEffectFunc += Ability_Attack_20141;
+                    break;
+                }
+                case 20161://冰狱
+                {
+                    self.SpecialAttackEffectFunc += Ability_Attack_20161;
+                    break;
+                }
+                case 20171://异常状态特攻
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_20171;
+                    break;
+                }
+                
+                case 80001://战斗人偶
+                {
+                    self.SpecialRecoveryPotencyEffectFunc += Ability_RecoveryPotency_80001;
+                    break;
+                }
 
+                case 80009:
+                {
+                    self.SpecialODAcceralatorEffectFunc += Ability_ODAccelerator_80009;
+                    break;
+                }
+                case 90001:
+                {
+                    self.SpecialODAcceralatorEffectFunc += Ability_ODAccelerator_90001;
+                    break;
+                }
 
                 default:
                 {
@@ -141,6 +221,17 @@ namespace GameMechanics
         return new Tuple<float, float>(0,0);
     }
     
+    private static Tuple<float,float> Ability_Attack_10019(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float normalModifier = atkStat.attackType == BasicCalculation.AttackType.STANDARD ? 0.5f : 0;
+        
+        if ((sourceStat as PlayerStatusManager).isShapeshifting)
+            return new Tuple<float, float>(0.2f + normalModifier,0);
+
+        return new Tuple<float, float>(0,0);
+    }
+    
     private static Tuple<float,float> Ability_Attack_20031(StatusManager sourceStat, AttackBase atkStat,
         StatusManager targetStat)
     {
@@ -160,6 +251,59 @@ namespace GameMechanics
         }
         
         return new Tuple<float, float>(buffModifier,debuffModifier);
+    }
+    
+    private static Tuple<float, float> Ability_Attack_20141(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        int enemyCount = BattleStageManager.Instance.currentEnemyInLayerDeadAlive;
+        
+        var buffModifier = 0f;
+
+        if (enemyCount >= 2)
+        {
+            buffModifier += 0.1f;
+        }
+
+        if (enemyCount >= 3)
+        {
+            buffModifier += 0.15f;
+        }
+
+        if (enemyCount >= 4)
+        {
+            buffModifier += 0.15f;
+        }
+        
+        if(enemyCount >= 5)
+        {
+            buffModifier += 0.2f;
+        }
+        
+
+        return new Tuple<float, float>(buffModifier,0);
+    }
+    
+    /// <summary>
+    /// 冰狱
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    private static Tuple<float, float> Ability_Attack_20161(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        
+        var buffModifier = 0f;
+
+        if (sourceStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.DemonSealReleased) > 0)
+        {
+            buffModifier = 0.2f;
+        }
+        
+
+        return new Tuple<float, float>(buffModifier,0);
     }
 
     #endregion
@@ -210,6 +354,28 @@ namespace GameMechanics
             targetStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.EvilsBane) > 0)
         {
             return new Tuple<float, float>(999,0);
+        }
+
+        return new Tuple<float, float>(0,0);
+        
+    }
+    
+    /// <summary>
+    /// 水爱妃：超强斗志状态下暴击率提升
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    private static Tuple<float,float> Ability_CritRate_10071(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        
+        if (atkStat.attackType == BasicCalculation.AttackType.SKILL &&
+            (atkStat as AttackFromPlayer).energized)
+        {
+            //Debug.Log("Ability+100%CRIT");
+            return new Tuple<float, float>(100,0);
         }
 
         return new Tuple<float, float>(0,0);
@@ -286,7 +452,17 @@ namespace GameMechanics
         return new Tuple<float, float>(0.2f,0);
     }
     
+    private static Tuple<float,float> Ability_SkillDamage_10063(StatusManager sourceStat, AttackBase atkStat,
+            StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.35f,0);
+    }
     
+    private static Tuple<float,float> Ability_SkillDamage_10014(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return Ability_SkillDamage_20121(sourceStat,atkStat,targetStat);
+    }
     
     #endregion
 
@@ -366,6 +542,21 @@ namespace GameMechanics
         
     }
     
+    
+    /// <summary>
+    /// 库菈乌 伟大的遗产 减伤
+    /// </summary>
+    private static Tuple<float, float> Ability_DamageCut_10022(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if(((float)targetStat.currentHp / (float)targetStat.maxHP) >= 0.5f)
+            return new Tuple<float, float>(0.15f,0);
+
+        return new Tuple<float, float>(0, 0);
+
+    }
+    
+    
     /// <summary>
     /// 泽娜（绝级/敌人：巫女之祈愿）
     /// </summary>
@@ -379,6 +570,18 @@ namespace GameMechanics
         return new Tuple<float, float>(buffModifier,0);
     }
     
+    /// <summary>
+    /// 塞西娅（敌方：绝级）
+    /// </summary>
+    private static Tuple<float, float> Ability_DamageCut_20112(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+
+        if(targetStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.PowerOfBonds) > 0)
+            return new Tuple<float, float>(0.1f,0);
+        
+        return new Tuple<float, float>(0,0);
+    }
     
     /// <summary>
     /// 塞西娅（敌方：起源的庇佑）
@@ -399,6 +602,17 @@ namespace GameMechanics
     #endregion
 
     #region Recovery
+    
+    /// <summary>
+    /// 库菈乌 伟大的遗产 回复20%
+    /// </summary>
+    private static Tuple<float, float> Ability_RecoveryPotency_10022(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        
+        return new Tuple<float, float>(0.2f,0);
+        
+    }
 
     /// <summary>
     /// 战斗人偶（回复）
@@ -414,6 +628,20 @@ namespace GameMechanics
         
     }
 
+    /// <summary>
+    /// 塞西娅（敌人
+    /// </summary>
+    private static Tuple<float, float> Ability_RecoveryPotency_20112(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+        
+        if(sourceStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.PowerOfBonds) > 0)
+            buffModifier += 0.3f;
+
+        return new Tuple<float, float>(buffModifier,0);
+        
+    }
 
 
 
@@ -422,7 +650,7 @@ namespace GameMechanics
     #region Punisher
 
     /// <summary>
-    /// 防御力下降特效
+    /// 防御力下降特效/破防特效
     /// </summary>
     private static Tuple<float, float> Ability_Punisher_10004(StatusManager sourceStat, AttackBase atkStat,
         StatusManager targetStat)
@@ -470,6 +698,66 @@ namespace GameMechanics
         return new Tuple<float, float>(buffModifier,0);
     }
     
+    /// <summary>
+    /// 奥莉加：异常状态特攻
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10020(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+
+        int afflictionCount = 0;
+        List<int> afflictionDict = new List<int>();
+        foreach (var cond in targetStat.conditionList)
+        {
+            if (StatusManager.IsAffliction(cond.buffID) && afflictionDict.Contains(cond.buffID) == false)
+            {
+                afflictionCount++;
+                afflictionDict.Add(cond.buffID);
+            }
+
+            if (afflictionCount >= 4)
+            {
+                afflictionCount = 4;
+                break;
+            }
+        }
+
+        switch (afflictionCount)
+        {
+            case 1:
+                buffModifier += 0.25f;
+                break;
+            case 2:
+                buffModifier += 0.3f;
+                break;
+            case 3:
+                buffModifier += 0.35f;
+                break;
+            case 4:
+                buffModifier += 0.4f;
+                break;
+            
+        }
+
+        return new Tuple<float, float>(buffModifier,0);
+    }
+    
+    /// <summary>
+    /// 库菈乌 伟大的遗产 特攻
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10022(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (targetStat.GetAttackBuff(2) > 0)
+        {
+            return new Tuple<float, float>(0.35f, 0);
+        }
+
+        return new Tuple<float, float>(0, 0);
+
+    }
+    
     
     /// <summary>
     /// 芙露露：麻痹、减益特攻
@@ -504,6 +792,120 @@ namespace GameMechanics
             buffModifier += debuffCount * 0.05f + 0.05f;
         return new Tuple<float, float>(buffModifier,0);
     }
+    
+    
+    
+    /// <summary>
+    /// 五翼统帅者：恶魔特攻+异常状态特攻
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10066(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+        
+        if (targetStat.GetAbility(90004))
+        {
+            buffModifier += 0.35f;
+        }
+
+        int afflictionCount = 0;
+        List<int> afflictionDict = new List<int>();
+        foreach (var cond in targetStat.conditionList)
+        {
+            if (StatusManager.IsAffliction(cond.buffID) && afflictionDict.Contains(cond.buffID) == false)
+            {
+                afflictionCount++;
+                afflictionDict.Add(cond.buffID);
+            }
+
+            if (afflictionCount >= 4)
+            {
+                afflictionCount = 4;
+                break;
+            }
+        }
+
+        switch (afflictionCount)
+        {
+            case 1:
+                buffModifier += 0.25f;
+                break;
+            case 2:
+                buffModifier += 0.3f;
+                break;
+            case 3:
+                buffModifier += 0.35f;
+                break;
+            case 4:
+                buffModifier += 0.4f;
+                break;
+            
+        }
+
+        return new Tuple<float, float>(buffModifier,0);
+    }
+    
+    /// <summary>
+    /// 水爱妃：劫火或暗殇特攻
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10071(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+        if (targetStat.HasBuff((int)BasicCalculation.BattleCondition.Scorchrend) ||
+            targetStat.HasBuff((int)BasicCalculation.BattleCondition.ShadowBlight))
+        {
+            buffModifier = 0.15f;
+        }
+        return new Tuple<float, float>(buffModifier,0);
+    }
+    
+    
+    
+    /// <summary>
+    /// 奥莉加：异常状态特攻
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_20171(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+
+        int afflictionCount = 0;
+        List<int> afflictionDict = new List<int>();
+        foreach (var cond in targetStat.conditionList)
+        {
+            if (StatusManager.IsAffliction(cond.buffID) && afflictionDict.Contains(cond.buffID) == false)
+            {
+                afflictionCount++;
+                afflictionDict.Add(cond.buffID);
+            }
+
+            if (afflictionCount >= 4)
+            {
+                afflictionCount = 4;
+                break;
+            }
+        }
+
+        switch (afflictionCount)
+        {
+            case 1:
+                buffModifier += 0.25f;
+                break;
+            case 2:
+                buffModifier += 0.3f;
+                break;
+            case 3:
+                buffModifier += 0.35f;
+                break;
+            case 4:
+                buffModifier += 0.4f;
+                break;
+            
+        }
+
+        return new Tuple<float, float>(buffModifier,0);
+    }
 
     #endregion
 
@@ -517,12 +919,126 @@ namespace GameMechanics
 
     #region ODAccelerator
 
+    /// <summary>
+    /// 万圣爱妃：怒气槽削减+40%
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    private static Tuple<float, float> Ability_ODAccelerator_10064(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.4f, 0);
+    }
     
+    /// <summary>
+    /// 泳装爱妃：超强斗志时削减怒气槽
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    private static Tuple<float, float> Ability_ODAccelerator_10071(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (atkStat.attackType == BasicCalculation.AttackType.SKILL)
+        {
+            if ((atkStat as AttackFromPlayer).energized)
+            {
+                return new Tuple<float, float>(0.5f, 0);
+            }
+        }
+        return new Tuple<float, float>(0, 0);
+    }
+    
+    /// <summary>
+    /// 铳：怒气槽削减+20%
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    private static Tuple<float, float> Ability_ODAccelerator_80009(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.2f, 0);
+    }
+
+    /// <summary>
+    /// 剧情：怒气槽削减+100%
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    private static Tuple<float, float> Ability_ODAccelerator_90001(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(1, 0);
+    }
+    #endregion
+
+    #region BreakPunisher
+    
+    /// <summary>
+    /// 防御力下降特效/破防特效
+    /// </summary>
+    private static Tuple<float, float> Ability_BreakPunisher_10004(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.3f,0);
+    }
 
     #endregion
 
 
 
+    #region AbilitiesInSkillTree
+
+    public static Tuple<float, float> AbilityTree_GeneralAbility(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat, float buffAmount)
+    {
+        return new Tuple<float, float>(buffAmount,0);
+    }
+
+    public static Tuple<float,float> AbilityTree_FlurryStrength_I(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (sourceStat.comboHitCount >= 15)
+            return new Tuple<float, float>(0.1f,0);
+
+        return new Tuple<float, float>(0,0);
+    }
+    
+    public static Tuple<float,float> AbilityTree_FlurryStrength_II(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (sourceStat.comboHitCount >= 15)
+            return new Tuple<float, float>(0.2f,0);
+
+        return new Tuple<float, float>(0,0);
+    }
+
+    public static Tuple<float, float> AbilityTree_SkillDamage_I(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.07f,0);
+    }
+    
+    public static Tuple<float, float> AbilityTree_SkillDamage_II(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.15f,0);
+    }
+    
+    public static Tuple<float, float> AbilityTree_CritDamage_I(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        return new Tuple<float, float>(0.13f,0);
+    }
+
+    #endregion
 
 
     }
@@ -543,10 +1059,415 @@ namespace GameMechanics
             RCV,
             PUNISHER,
             DBFRATE,
-            ODACC
+            ODACC,
+            BKPUNISHER
         }
         
+        //Units
+        private static int[] swordUnits = new int[] { 8, 12, 36 };
+        private static int[] bladeUnits = new int[] { 6, 33 };
+        private static int[] axeUnits = new int[] { 11 };
+        private static int[] daggerUnits = new int[] { 2, 4, 5, 10, 29 };
+        private static int[] lanceUnits = new int[] { 13, 32 };
+        private static int[] bowUnits = new int[] { 18 };
+        private static int[] wandUnits = new int[] { 7, 9, 19 };
+        private static int[] staffUnits = new int[] { 3 };
+        private static int[] gunUnits = new int[] { 1 };
+
+        private static Dictionary<int, BasicCalculation.GeneralWeaponType> _weaponTypeDict = new();
+
+        //General Abilities
+        private static Dictionary<int, int> hpUpDict = new Dictionary<int, int>
+        {
+            {3,2},
+            {6,5},
+            {30,8},
+            {36,12}
+        };
+        private static Dictionary<int, int> strUpDict = new Dictionary<int, int>
+        {
+            {2,3},
+            {5,6},
+            {17,10},
+            {29,15},
+            {35,22},
+            {40,30}
+        };
+        private static Dictionary<int, int> critUpDict = new Dictionary<int, int>
+        {
+            {1,2},
+            {7,5},
+            {28,8}
+        };
         
+
+
+        
+
+        public static void GetPlayerAbilityFromTree(this PlayerStatusManager stat)
+        {
+            var treeNodesInfo = GlobalController.Instance.gameOptions.skillTreeInfo;
+
+            if (treeNodesInfo.Count == 0)
+            {
+                GlobalController.Instance.gameOptions.skillTreeInfo.Add(1);
+
+                while (GlobalController.Instance.gameOptions.skillTreeInfo.Count
+                       < GlobalController.Instance.MaxSkillTreeNode)
+                {
+                    GlobalController.Instance.gameOptions.skillTreeInfo.Add(0);
+                }
+                return;
+            }
+
+            int totalHPAbilityAmount = GetTotalHPAbilityTree(treeNodesInfo);
+            int totalStrAbilityAmount = GetTotalStrAbilityTree(treeNodesInfo);
+            int totalCritAbilityAmount = GetTotalCritRateAbilityTree(treeNodesInfo)-4;
+            
+            InitWeaponTypeDict();
+            ActiveOtherAbilities(treeNodesInfo,stat);
+            ActiveWeaponSpecificAbilites(treeNodesInfo,GlobalController.currentCharacterID,
+                stat,ref totalHPAbilityAmount,ref totalStrAbilityAmount,ref totalCritAbilityAmount);
+
+            var hpUpAmount = totalHPAbilityAmount * 0.01f;
+            var StrUpAmount = totalStrAbilityAmount * 0.01f;
+
+            Debug.Log($"HP+{hpUpAmount},STR+{StrUpAmount}");
+
+            stat.maxBaseHP = (int)(stat.maxBaseHP * (float)(1 + hpUpAmount));
+            stat.maxHP = stat.maxBaseHP;
+            stat.baseAtk = (int)(stat.baseAtk * (float)(1 + StrUpAmount));
+
+        }
+
+        private static void InitWeaponTypeDict()
+        {
+            if(_weaponTypeDict.Count != 0)
+                return;
+            foreach (var unit in swordUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Sword);
+            }
+            foreach (var unit in bladeUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Blade);
+            }
+            foreach (var unit in axeUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Axe);
+            }
+            foreach (var unit in daggerUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Dagger);
+            }
+            foreach (var unit in lanceUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Lance);
+            }
+            foreach (var unit in bowUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Bow);
+            }
+            foreach (var unit in wandUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Wand);
+            }
+            foreach (var unit in staffUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Staff);
+            }
+            foreach (var unit in gunUnits)
+            {
+                _weaponTypeDict.Add(unit,BasicCalculation.GeneralWeaponType.Gun);
+            }
+        }
+
+        private static int GetTotalHPAbilityTree(List<int> skillTreeNodes)
+        {
+            int value = 0;
+            
+            foreach (var key in hpUpDict.Keys)
+            {
+                if (skillTreeNodes[key] == 1)
+                {
+                    value = hpUpDict[key];
+                }
+            }
+
+            return value;
+        }
+        private static int GetTotalStrAbilityTree(List<int> skillTreeNodes)
+        {
+            int value = 0;
+            
+            foreach (var key in strUpDict.Keys)
+            {
+                if (skillTreeNodes[key] == 1)
+                {
+                    value = strUpDict[key];
+                }
+            }
+
+            return value;
+        }
+        private static int GetTotalCritRateAbilityTree(List<int> skillTreeNodes)
+        {
+            int value = 0;
+            
+            foreach (var key in critUpDict.Keys)
+            {
+                if (skillTreeNodes[key] == 1)
+                {
+                    value = critUpDict[key];
+                }
+            }
+
+            return value;
+        }
+
+        private static void ActiveWeaponSpecificAbilites(List<int> skillTreeNodes,
+            int charaID, PlayerStatusManager statusManager,
+            ref int hpUp,ref int strUp,ref int critUp)
+        {
+            var weaponType = _weaponTypeDict[charaID];
+
+            switch (weaponType)
+            {
+                case BasicCalculation.GeneralWeaponType.Sword:
+                {
+                    if (skillTreeNodes[18] == 1)
+                    {
+                        strUp = (int)((100 + strUp) * 1.03f) - 100;
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Blade:
+                {
+                    if (skillTreeNodes[23] == 1)
+                    {
+                        strUp = (int)((100 + strUp) * 1.1f) - 100;
+                    }
+                    else if (skillTreeNodes[10] == 1)
+                    {
+                        strUp += (int)((100 + strUp) * 1.05f) - 100;
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Axe:
+                {
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Dagger:
+                {
+                    if (skillTreeNodes[22] == 1)
+                    {
+                        statusManager.SpecialAttackEffectFunc += Ability.AbilityTree_FlurryStrength_II;
+                    }
+                    else if (skillTreeNodes[9] == 1)
+                    {
+                        statusManager.SpecialAttackEffectFunc += Ability.AbilityTree_FlurryStrength_I;
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Lance:
+                {
+                    if (skillTreeNodes[24] == 1)
+                    {
+                        hpUp += 15;
+                    }
+                    else if (skillTreeNodes[11] == 1)
+                    {
+                        hpUp += 7;
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Bow:
+                {
+                    if (skillTreeNodes[20] == 1)
+                    {
+                        statusManager.SetSPChargeRateAll(250);
+                    }
+                    else if (skillTreeNodes[13] == 1)
+                    {
+                        statusManager.SetSPChargeRateAll(220);
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Wand:
+                {
+                    if (skillTreeNodes[21] == 1)
+                    {
+                        statusManager.SpecialSkillDamageEffectFunc += Ability.AbilityTree_SkillDamage_II;
+                    }
+                    else if (skillTreeNodes[14] == 1)
+                    {
+                        statusManager.SpecialSkillDamageEffectFunc += Ability.AbilityTree_SkillDamage_I;
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Staff:
+                {
+                    if (skillTreeNodes[12] == 1)
+                    {
+                        hpUp += 7;
+                    }
+                    if (skillTreeNodes[25] == 1)
+                    {
+                        statusManager.SpecialRecoveryPotencyEffectFunc +=
+                            ((stat, attackStat, targetStat) =>
+                            {
+                                return new Tuple<float, float>(0.15f, 0);
+                            });
+                    }
+                    break;
+                }
+                case BasicCalculation.GeneralWeaponType.Gun:
+                {
+                    if (skillTreeNodes[19] == 1)
+                    {
+                        statusManager.comboConnectMaxInterval += 1.5f;
+                    }
+                    else if (skillTreeNodes[4] == 1)
+                    {
+                        statusManager.comboConnectMaxInterval += 0.5f;
+                    }
+
+                    if (skillTreeNodes[15] == 1)
+                    {
+                        statusManager.SpecialCritDamageEffectFunc += Ability.AbilityTree_CritDamage_I;
+                    }
+                    
+                    
+                    
+                    break;
+                }
+            }
+        }
+
+        private static void ActiveOtherAbilities(List<int> skillTreeNodes,
+            PlayerStatusManager statusManager)
+        {
+            //爆发攻击
+            if (skillTreeNodes[8] == 1)
+            {
+                statusManager.SpecialForceStrikeDamageEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        return new Tuple<float, float>(0.07f, 0);
+                    });
+            }
+            
+            //连击时间延长
+            if (skillTreeNodes[26] == 1)
+            {
+                statusManager.comboConnectMaxInterval += 1f;
+            }
+            
+            //暴击伤害
+            if (skillTreeNodes[34] == 1)
+            {
+                statusManager.SpecialCritDamageEffectFunc += (
+                        (stat, attackStat, targetStat) =>
+                        {
+                            return new Tuple<float, float>(0.1f, 0);
+                        });
+            }
+            
+            
+            //技能伤害
+            if (skillTreeNodes[37] == 1)
+            {
+                statusManager.SpecialSkillDamageEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        return new Tuple<float, float>(0.1f, 0);
+                    });
+            }else if (skillTreeNodes[31] == 1)
+            {
+                statusManager.SpecialSkillDamageEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        return new Tuple<float, float>(0.05f, 0);
+                    });
+            }
+            
+            //回复技能效果
+            if(skillTreeNodes[32] == 1)
+            {
+                statusManager.SpecialRecoveryPotencyEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        return new Tuple<float, float>(0.1f, 0);
+                    });
+            }
+            
+            //70%HP 防
+            if (skillTreeNodes[33] == 1)
+            {
+                statusManager.SpecialDefenseEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        var percentage = (float)stat.currentHp / (float)stat.maxHP;
+                        if (percentage >= 0.7f)
+                        {
+                            return new Tuple<float, float>(0.2f, 0);
+                        }
+
+                        return new Tuple<float, float>(0, 0);
+                    });
+            }else if (skillTreeNodes[27] == 1)
+            {
+                statusManager.SpecialDefenseEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        var percentage = (float)stat.currentHp / (float)stat.maxHP;
+                        if (percentage >= 0.7f)
+                        {
+                            return new Tuple<float, float>(0.1f, 0);
+                        }
+
+                        return new Tuple<float, float>(0, 0);
+                    });
+            }
+            
+            
+            //重生加防御
+            if (skillTreeNodes[38] == 1)
+            {
+                statusManager.SpecialDefenseEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        var playerStat = targetStat as PlayerStatusManager;
+                        if (playerStat != null)
+                        {
+                            float buffModifier = Mathf.Min(0.3f, 0.1f * playerStat.currentReviveTimes);
+                            return new Tuple<float, float>(buffModifier, 0);
+                        }
+
+                        return new Tuple<float, float>(0, 0);
+                    });
+            }
+            
+            //重生加攻击
+            if (skillTreeNodes[39] == 1)
+            {
+                statusManager.SpecialDamageEffectFunc += (
+                    (stat, attackStat, targetStat) =>
+                    {
+                        var playerStat = stat as PlayerStatusManager;
+                        if (playerStat != null)
+                        {
+                            float buffModifier = Mathf.Min(0.3f, 0.1f * playerStat.currentReviveTimes);
+                            return new Tuple<float, float>(buffModifier, 0);
+                        }
+
+                        return new Tuple<float, float>(0, 0);
+                    });
+            }
+            
+        }
+
+
         public static Tuple<float, float, float> GetAbilityAmountInfo
             (StatusManager source,StatusManager target, AttackBase atk, ProductArea area)
         {
@@ -636,6 +1557,12 @@ namespace GameMechanics
                     break;
                 }
                 
+                case ProductArea.BKPUNISHER:
+                {
+                    methodList = source.SpecialBreakPunisherEffectFunc?.GetInvocationList();
+                    break;
+                }
+                
                 
                 
                 
@@ -667,13 +1594,21 @@ namespace GameMechanics
         }
 
 
-
-
-
-
-
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     [Serializable]
     public class ConditionalEffect
     {

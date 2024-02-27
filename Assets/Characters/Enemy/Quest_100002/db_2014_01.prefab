@@ -255,7 +255,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6872640842750336773}
   - component: {fileID: 1815954614045648614}
-  - component: {fileID: 819914858028010912}
   m_Layer: 6
   m_Name: Voice
   m_TagString: Untagged
@@ -374,39 +373,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &819914858028010912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5946920698107104514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 688d5149b753a4c4c9bca560645d2041, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  voice: {fileID: 0}
-  myClips:
-  - {fileID: 0}
-  voiceAssetBundlePath: 
-  speakerID: 0
-  voiceGroups:
-  - clipIndexID: 00000000
-    clipTextID: 01000000
-  - clipIndexID: 0000000000000000
-    clipTextID: 0200000007000000
-  - clipIndexID: 00000000
-    clipTextID: 03000000
-  - clipIndexID: 00000000
-    clipTextID: 04000000
-  - clipIndexID: 00000000
-    clipTextID: 05000000
-  - clipIndexID: 00000000
-    clipTextID: 06000000
-  groupOfDialogWhenHPBelow70: -1
-  groupOfDialogWhenHPBelow40: -1
-  groupOfDialogWhenHPBelow0: -1
 --- !u!1 &6190647080836106675
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,6 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &7158554933867210816
 GameObject:
   m_ObjectHideFlags: 0
@@ -657,6 +624,7 @@ MonoBehaviour:
   displayHPBar: 1
   HPBarOffset: {x: 0, y: 6}
   hurt: 0
+  _groundSensor: {fileID: 0}
   counterOn: 0
   flashBody: {fileID: 7683361215788025586}
   minimapIcon: {fileID: 0}
@@ -965,7 +933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8770b3f7fab26148b7d337bcb0761c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  difficulty: 3
+  difficulty: 1
   awakeTime: 0
   state: 0
   substate: 0

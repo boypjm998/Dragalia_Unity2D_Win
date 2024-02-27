@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Cinemachine;
+using DG.Tweening;
 using GameMechanics;
 
 public class TargetAimer : MonoBehaviour
@@ -43,6 +44,7 @@ public class TargetAimer : MonoBehaviour
     [SerializeField]
     private bool stopFlagY;//摄像头Y方向停止位移flag
 
+    private Tweener cameraMoveTweener;
 
     public bool TestButton;
 
@@ -53,7 +55,7 @@ public class TargetAimer : MonoBehaviour
         maxCameraMoveSpeed = 6.0f;
         lookAheadDistanceX = 14.0f;
         lookAheadDistanceY = 0f;
-        cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 20);
+        cinemachineCameraOffset.m_Offset = new Vector3(0, 0, 0);
         stopFlagX = true;
         stopFlagY = true;
         aimSizeX = Mathf.Abs(TargetSearchScale.points[0].x);
@@ -93,11 +95,25 @@ public class TargetAimer : MonoBehaviour
       
     }
 
+    public void ResetOffset()
+    {
+        cinemachineCameraOffset.m_Offset = new Vector3(0, 0,cinemachineCameraOffset.m_Offset.z);
+    }
+
     // Update is called once per frame
     private void LateUpdate()
     {
         if(mainCamera==null)
            return;
+
+        if (StageCameraController.Instance.MainCameraFollowObject != transform.parent)
+        {
+            print("不是主摄像头");
+            cinemachineCameraOffset.m_Offset = new Vector3(0, 0,cinemachineCameraOffset.m_Offset.z);
+            return;
+        }
+
+        
         
         if (stopFlagX == false || stopFlagY == false)
         {
@@ -141,7 +157,7 @@ public class TargetAimer : MonoBehaviour
                 {
                     cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x + cameraMoveSpeed * Time.deltaTime * moveDirX,
-                    cinemachineCameraOffset.m_Offset.y, 0);
+                    cinemachineCameraOffset.m_Offset.y, cinemachineCameraOffset.m_Offset.z);
                     stopFlagX = false;
 
                 }
@@ -156,7 +172,8 @@ public class TargetAimer : MonoBehaviour
                     //print(Mathf.Abs(mainCamera.transform.position.y  - EnemyWatched.transform.position.y));
                     cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x,
-                    cinemachineCameraOffset.m_Offset.y + cameraMoveSpeed * Time.deltaTime * moveDirY, 0);
+                    cinemachineCameraOffset.m_Offset.y + cameraMoveSpeed * Time.deltaTime * moveDirY, 
+                    cinemachineCameraOffset.m_Offset.z);
                     stopFlagY = false;
                     //print("StopFlagY is set to false , offsetY:"+offsetY);
 
@@ -181,18 +198,19 @@ public class TargetAimer : MonoBehaviour
             if (Mathf.Abs(cinemachineCameraOffset.m_Offset.x) < 0.3f)
             {
                 stopFlagX = true;
-                cinemachineCameraOffset.m_Offset = new Vector3(0, cinemachineCameraOffset.m_Offset.y, 0);
+                cinemachineCameraOffset.m_Offset = new Vector3(0, cinemachineCameraOffset.m_Offset.y, 
+                    cinemachineCameraOffset.m_Offset.z);
             }
             else if (cinemachineCameraOffset.m_Offset.x > 0)
             {
                 cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x - cameraMoveSpeed * Time.deltaTime,
-                    cinemachineCameraOffset.m_Offset.y, 0);
+                    cinemachineCameraOffset.m_Offset.y, cinemachineCameraOffset.m_Offset.z);
             }
             else {
                 cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x + cameraMoveSpeed * Time.deltaTime,
-                    cinemachineCameraOffset.m_Offset.y, 0);
+                    cinemachineCameraOffset.m_Offset.y, cinemachineCameraOffset.m_Offset.z);
             }
 
 
@@ -201,19 +219,19 @@ public class TargetAimer : MonoBehaviour
             if (Mathf.Abs(cinemachineCameraOffset.m_Offset.y) < 0.3f)
             {
                 stopFlagY = true;
-                cinemachineCameraOffset.m_Offset = new Vector3(cinemachineCameraOffset.m_Offset.x, 0, 0);
+                cinemachineCameraOffset.m_Offset = new Vector3(cinemachineCameraOffset.m_Offset.x, 0, cinemachineCameraOffset.m_Offset.z);
             }
             else if (cinemachineCameraOffset.m_Offset.y > 0)
             {
                 cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x,
-                    cinemachineCameraOffset.m_Offset.y - cameraMoveSpeed * Time.deltaTime, 0);
+                    cinemachineCameraOffset.m_Offset.y - cameraMoveSpeed * Time.deltaTime, cinemachineCameraOffset.m_Offset.z);
             }
             else
             {
                 cinemachineCameraOffset.m_Offset = new Vector3(
                     cinemachineCameraOffset.m_Offset.x,
-                    cinemachineCameraOffset.m_Offset.y + cameraMoveSpeed * Time.deltaTime, 0);
+                    cinemachineCameraOffset.m_Offset.y + cameraMoveSpeed * Time.deltaTime, cinemachineCameraOffset.m_Offset.z);
             }
 
             if (stopFlagY && stopFlagX)
@@ -225,13 +243,13 @@ public class TargetAimer : MonoBehaviour
         {
             cinemachineCameraOffset.m_Offset = new
                 Vector3(cinemachineCameraOffset.m_Offset.x,
-                    lookAheadDistanceY, 0);
+                    lookAheadDistanceY, cinemachineCameraOffset.m_Offset.z);
             stopFlagY = true;
         }else if (cinemachineCameraOffset.m_Offset.y < -lookAheadDistanceY)
         {
             cinemachineCameraOffset.m_Offset = new
                 Vector3(cinemachineCameraOffset.m_Offset.x,
-                    -lookAheadDistanceY, 0);
+                    -lookAheadDistanceY, cinemachineCameraOffset.m_Offset.z);
             stopFlagY = true;
         }
         
@@ -239,13 +257,13 @@ public class TargetAimer : MonoBehaviour
         {
             cinemachineCameraOffset.m_Offset = new
                 Vector3(lookAheadDistanceX,cinemachineCameraOffset.m_Offset.y,
-                    0);
+                    cinemachineCameraOffset.m_Offset.z);
             stopFlagX = true;
         }else if (cinemachineCameraOffset.m_Offset.x < -lookAheadDistanceX)
         {
             cinemachineCameraOffset.m_Offset = new
                 Vector3(-lookAheadDistanceX,cinemachineCameraOffset.m_Offset.y,
-                    0);
+                    cinemachineCameraOffset.m_Offset.z);
             stopFlagX = true;
         }
 
@@ -256,6 +274,15 @@ public class TargetAimer : MonoBehaviour
     {
         if(!enabled)
             return;
+        
+        
+
+        if (StageCameraController.Instance.MainCameraFollowObject != transform.parent)
+        {
+            print("MainCameraFollowObject != transform.parent");
+        }
+
+        
         
         
         if (collision.CompareTag("Enemy") && collision.GetComponent<Transform>().gameObject != EnemyWatched)
@@ -273,7 +300,9 @@ public class TargetAimer : MonoBehaviour
             //EnemyLocked = EnemyInRange[0];
             //Debug.Log("Locked:" + EnemyWatched);
         }
+        EnemyInRange.RemoveAll(gameObject => gameObject == null);
         EnemyInRange.Sort(SortDistanceDescendent);
+        
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -281,11 +310,14 @@ public class TargetAimer : MonoBehaviour
         if(!enabled)
             return;
         
+        // if(StageCameraController.Instance.MainCameraFollowObject != transform.parent)
+        //     return;
+        
         
         if (!collision.CompareTag("Enemy"))
             return;
         
-        EnemyInRange.RemoveAll(gameObject => gameObject == null);
+        int removedCnt = EnemyInRange.RemoveAll(gameObject => gameObject == null);
         
 
         if (EnemyWatched != null )
@@ -304,7 +336,11 @@ public class TargetAimer : MonoBehaviour
             
             EnemyInRange.Sort(SortDistanceDescendent);
         }
-        
+        else
+        {
+            
+        }
+
 
         if (EnemyInRange.Count > 0)
         {
@@ -314,6 +350,10 @@ public class TargetAimer : MonoBehaviour
             stopFlagY = false;
             print("StopFlagY is set to false");
             maxCameraMoveSpeed = 6;
+            // cameraMoveTweener = DOTween.To
+            //     (() => cinemachineCameraOffset.m_Offset,
+            //         x => cinemachineCameraOffset = x,
+            //         new Vector3(0, 0, 0), 0.1f);
         }
 
     }
@@ -388,7 +428,6 @@ public class TargetAimer : MonoBehaviour
     }
 
     private int SortDistanceDescendent(GameObject a, GameObject b)
-
     {
         float disA = DistanceFromPlayerToTarget(a.transform);
         float disB = DistanceFromPlayerToTarget(b.transform);
@@ -535,11 +574,20 @@ public class TargetAimer : MonoBehaviour
         //return EnemyInRange[0].transform;
     }
 
+    public List<Transform> GetAllEnemiesWithMarkingCheck()
+    {
+        var enemyList = BattleStageManager.Instance.GetEnemyList();
+        return MarkingCheck(enemyList);
+    }
+
     //通过攻击来切换目标
     public void TargetSwapByAttack()
     {
+        int removedCnt = EnemyInRange.RemoveAll(gameObject => gameObject == null);
+        
         if (EnemyInRange.Count==0)
             return;
+        
         int facedir = CameraFollowTarget.GetComponent<ActorController>().facedir;
         EnemyInRange.Sort(SortDistanceDescendent);
         maxCameraMoveSpeed = 6.0f;

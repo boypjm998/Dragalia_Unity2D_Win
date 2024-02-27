@@ -6,10 +6,12 @@ using UnityEngine;
 
 public class RingCollider2D : MonoBehaviour
 {
-    CustomCollider2D collider;
-    public float innerRadius = 2;
-    public float outerRadius = 1;
-    public bool Enabled = false;
+    PolygonCollider2D collider2D;
+    //[SerializeField] private LayerMask layerMask;
+    [SerializeField] private float innerRadius;
+    [SerializeField] private float outerRadius;
+    [SerializeField] private bool isTrigger;
+    [SerializeField] private bool isEnabled;
 
     private void OnTriggerStay2D(Collider2D other)
     {
@@ -19,28 +21,55 @@ public class RingCollider2D : MonoBehaviour
 
     private void Awake()
     {
-        //定义一个环形碰撞器,碰撞区域为内半径为1,外半径为2的环形区域
+        collider2D = gameObject.AddComponent<PolygonCollider2D>();
+        collider2D.pathCount = 2;
+        collider2D.isTrigger = isTrigger;
+        collider2D.enabled = isEnabled;
+        collider2D.pathCount = 2;
+        collider2D.SetPath(1, GeneratePoints(innerRadius));
+        collider2D.SetPath(0, GeneratePoints(outerRadius));
 
-        collider = gameObject.AddComponent<CustomCollider2D>();
-        collider.enabled = Enabled;
-        collider.isTrigger = true;
-        var shapeGroup = new PhysicsShapeGroup2D();
-
-        // 创建外圆
-        shapeGroup.AddCircle(Vector2.zero, outerRadius);
-
-        // 创建内圆
-        shapeGroup.AddCircle(Vector2.zero, innerRadius);
-
-        // 设置自定义形状
-        collider.SetCustomShapes(shapeGroup);
-
-        collider.SetCustomShapes(shapeGroup);
-
-        
     }
 
-        
+    private void Update()
+    {
+        collider2D.isTrigger = isTrigger;
+    }
 
-    
+    private List<Vector2> GeneratePoints(float radius)
+    {
+        int pointCount = 16;
+        if (radius >= 8)
+        {
+            pointCount = 24;
+        }else if (radius >= 15)
+        {
+            pointCount = 32;
+        }else if (radius >= 20)
+        {
+            pointCount = 40;
+        }
+        else if(radius >= 30)
+        {
+            pointCount = 64;
+        }
+
+        List<Vector2> list = new();
+        
+        for (int i = 0; i < pointCount; i++)
+        {
+            float angle = i * Mathf.PI * 2 / pointCount;
+            Vector2 pos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+            list.Add(pos);
+        }
+        
+        return list;
+
+    }
+
+
+
+
+
+
 }

@@ -892,10 +892,9 @@ public class EnemyMoveController_HB01_Legend : EnemyMoveController_HB01
         
         StageCameraController.SwitchMainCameraFollowObject(_behavior.viewerPlayer);
         StageCameraController.SwitchMainCamera();
-   
-        
-        QuitAttack();
+
         _behavior.currentMoveAction = null;
+
     }
 
 

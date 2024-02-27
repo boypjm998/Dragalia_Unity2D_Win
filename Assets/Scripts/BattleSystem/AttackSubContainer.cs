@@ -16,6 +16,8 @@ public class AttackSubContainer : AttackContainer
     void Start()
     {
         conditionCheckDone = parentContainer.conditionCheckDone;
+        inspired = parentContainer.inspired;
+        energized = parentContainer.energized;
         totalDamage = 0;
     }
 

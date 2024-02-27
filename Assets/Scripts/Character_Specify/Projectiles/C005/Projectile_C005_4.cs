@@ -24,6 +24,7 @@ namespace CharacterSpecificProjectiles
 
         public GameObject playerSource;
         public AttackSubContainer attackContainer;
+        public float modifier = 0.8f;
         
         public static Projectile_C005_4 Instance { get; private set; }
 
@@ -35,9 +36,7 @@ namespace CharacterSpecificProjectiles
             }
 
             
-
-
-
+            
             attackContainer = GetComponentInChildren<AttackSubContainer>();
             MeeleFXLayer = transform.Find("Meele").gameObject;
             s1Shadow = transform.Find("s1").gameObject;
@@ -79,7 +78,7 @@ namespace CharacterSpecificProjectiles
                 {
                     for(int j = 0 ; j < attack.attackInfo[i].dmgModifier.Count; j++)
                     {
-                        attack.attackInfo[i].dmgModifier[j] *= 0.8f;
+                        attack.attackInfo[i].dmgModifier[j] *= modifier;
                     }
                 }
                 var vunlerableDebuff = new TimerBuff((int)BasicCalculation.BattleCondition.Vulnerable, 15, 30,
@@ -117,7 +116,7 @@ namespace CharacterSpecificProjectiles
                 {
                     for(int j = 0 ; j < attack.attackInfo[i].dmgModifier.Count; j++)
                     {
-                        attack.attackInfo[i].dmgModifier[j] *= 0.8f;
+                        attack.attackInfo[i].dmgModifier[j] *= modifier;
                     }
                 }
                 attack.AddWithConditionAll(new TimerBuff(999),100,0);

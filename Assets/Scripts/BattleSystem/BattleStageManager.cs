@@ -57,8 +57,8 @@ public class BattleStageManager : MonoBehaviour
     public float mapBorderL { get; private set; }
     public float mapBorderR { get; private set; }
     public float mapBorderT { get; private set; }
-    
     public float mapBorderB { get; private set; }
+    
     protected PolygonCollider2D cameraRange;
 
     public bool isGamePaused { get; private set; }
@@ -68,11 +68,15 @@ public class BattleStageManager : MonoBehaviour
     public static int currentDisplayingBossInfo = 1;//正在显示的boss信息
 
     public Action OnMapInfoRefresh;
+    public Action OnGameStart;
+    
     public Action<string> OnQuestCleared;
     /// <summary>
     /// 退出任务时调用，参数为(任务ID)
     /// </summary>
     public Action<string> OnQuestQuit;
+    
+    public Action<int> OnMapEventTriggered;
 
 
     public delegate void StageManagerIntegerDelegate(int id);
@@ -81,14 +85,14 @@ public class BattleStageManager : MonoBehaviour
     public StageManagerIntegerDelegate OnFieldAbilityRemove;
     public StageManagerIntegerDelegate OnEnemyAwake;
     public StageManagerIntegerDelegate OnEnemyEliminated;
-    
+    public event Action<int> specialEventTriggered;
+    public Action<AttackBase> OnAttackAwake;
+
     public delegate void OnMouseOverDelegate();
     public event OnMouseOverDelegate OnPointerEnter;
     public event OnMouseOverDelegate OnPointerExit;
     
-    public bool giveTwoEnergy = false;
-    public bool giveOneEnergy = false;
-    public bool giveThreeInspiration = false;
+    public bool PlayerViewEnable { get; set; } = true;
     
     public List<int> EnemyList { get; private set; } = new();
 
@@ -120,6 +124,7 @@ public class BattleStageManager : MonoBehaviour
         PlayerLayer = GameObject.Find("Player");
         ResetEnemyList();
         
+        
     }
 
     // Update is called once per frame
@@ -127,6 +132,10 @@ public class BattleStageManager : MonoBehaviour
     {
         if (GlobalController.currentGameState == GlobalController.GameState.Inbattle)
         {
+            if (currentTime == 0)
+            {
+                OnGameStart?.Invoke();
+            }
             currentTime += Time.deltaTime;
         }
 
@@ -188,6 +197,7 @@ public class BattleStageManager : MonoBehaviour
             Instantiate(buffLogPrefab, buffLayer.position + new Vector3(0, 2), Quaternion.identity, buffLayer);
 
         //StartCoroutine(开场buff(player));
+        
     }
 
     public GameObject GetPlayer()
@@ -195,6 +205,10 @@ public class BattleStageManager : MonoBehaviour
         return player;
     }
 
+    public void SetPlayer(GameObject plr)
+    {
+        player = plr;
+    }
 
 
     #endregion
@@ -303,8 +317,8 @@ public class BattleStageManager : MonoBehaviour
         {
             OnMapInfoRefresh?.Invoke();
         }
-        
-        
+
+        mapBorderL = value;
 
     }
     
@@ -329,7 +343,7 @@ public class BattleStageManager : MonoBehaviour
             OnMapInfoRefresh?.Invoke();
         }
         
-
+        mapBorderR = value;
     }
 
     public void SetCameraLeftBorder(float value)
@@ -341,6 +355,11 @@ public class BattleStageManager : MonoBehaviour
 
         PolygonCollider2D polygonCollider = cameraRange;
         Vector2[] points = polygonCollider.points;
+        if (points.Length > 4)
+        {
+            Debug.LogWarning("CameraRange has more than 4 points, use SetCameraBorder instead.");
+            return;
+        }
         Vector2[] sortedPoints = points.OrderBy(point => point.x).ToArray();
         int index1 = Array.IndexOf(points, sortedPoints[0]);
         int index2 = Array.IndexOf(points, sortedPoints[1]);
@@ -348,6 +367,30 @@ public class BattleStageManager : MonoBehaviour
         points[index2].x = value;
         polygonCollider.points = points;
 
+    }
+    
+    public void SetCameraTopBorder(float value)
+    {
+        if (cameraRange == null)
+        {
+            cameraRange = GameObject.Find("CameraRange").GetComponent<PolygonCollider2D>();
+        }
+
+        PolygonCollider2D polygonCollider = cameraRange;
+        Vector2[] points = polygonCollider.points;
+        if (points.Length > 4)
+        {
+            Debug.LogWarning("CameraRange has more than 4 points, use SetCameraBorder instead.");
+            return;
+        }
+        Vector2[] sortedPoints = points.OrderBy(point => point.y).ToArray();
+        int index1 = Array.IndexOf(points, sortedPoints[2]);
+        int index2 = Array.IndexOf(points, sortedPoints[3]);
+        points[index1].y = value;
+        points[index2].y = value;
+        polygonCollider.points = points;
+        
+        
     }
     
     public void SetCameraRightBorder(float value)
@@ -359,12 +402,28 @@ public class BattleStageManager : MonoBehaviour
 
         PolygonCollider2D polygonCollider = cameraRange;
         Vector2[] points = polygonCollider.points;
+
+        if (points.Length > 4)
+        {
+            Debug.LogWarning("CameraRange has more than 4 points, use SetCameraBorder instead.");
+            return;
+        }
+
+        
+
+
         Vector2[] sortedPoints = points.OrderBy(point => point.x).ToArray();
         int index1 = Array.IndexOf(points, sortedPoints[2]);
         int index2 = Array.IndexOf(points, sortedPoints[3]);
         points[index1].x = value;
         points[index2].x = value;
         polygonCollider.points = points;
+    }
+
+
+    public void SetCameraBorder()
+    {
+        
     }
 
     public void RefreshCameraBorder()
@@ -382,6 +441,8 @@ public class BattleStageManager : MonoBehaviour
         GetMapBorderInfo();
         print(mapBorderL);
         print(mapBorderR);
+        
+        OnMapInfoRefresh?.Invoke();
     }
 
 
@@ -549,6 +610,8 @@ public class BattleStageManager : MonoBehaviour
             var isCrit = false;
 
 
+            int extraDamage = (int)attackStat.GetDmgConstInfo(i);
+            int damageCutConst = (int)targetStat.GetDamageCutConst();
 
             var damage =
                 BasicCalculation.CalculateDamageGeneral(
@@ -556,11 +619,12 @@ public class BattleStageManager : MonoBehaviour
                     targetStat,
                     attackStat.GetDmgModifierInfo(i),
                     attackStat,
-                    ref isCrit
+                    ref isCrit,
+                    ref extraDamage
                 );
 
             damageM[i] = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f)) +
-                         (int)attackStat.GetDmgConstInfo(i) - (int)targetStat.GetDamageCutConst();
+                         extraDamage - damageCutConst;
             
             
             
@@ -584,7 +648,7 @@ public class BattleStageManager : MonoBehaviour
 
 
             targetStat.OnTakeDirectDamage?.Invoke(targetStat);
-            targetStat.OnTakeDirectDamageFrom?.Invoke(targetStat,playerstat,damageM[i]);
+            targetStat.OnTakeDirectDamageFrom?.Invoke(targetStat,playerstat,attackStat,damageM[i]);
             attackStat.OnAttackDealDamage?.Invoke(playerstat,targetStat,attackStat,damageM[i]);
 
 
@@ -631,6 +695,10 @@ public class BattleStageManager : MonoBehaviour
             return -1;
         }
         
+        
+
+
+
         //5. Affliction/Debuff
         List<BattleCondition> attachedConditions = new();
         if (attackStat.attackInfo[0].withConditions.Count > 0)
@@ -678,7 +746,8 @@ public class BattleStageManager : MonoBehaviour
                         //龙化免疫异常状态
                         if (targetStat is PlayerStatusManager)
                         {
-                            if ((targetStat as PlayerStatusManager).isShapeshifting)
+                            if ((targetStat as PlayerStatusManager).isShapeshifting &&
+                                (targetStat as PlayerStatusManager).shapeShiftingImmuneToDebuff)
                             {
                                 condFlag = -2;
                             }
@@ -691,6 +760,7 @@ public class BattleStageManager : MonoBehaviour
                         if (condFlag<1)
                         {
                             playerstat.OnAfflictionResist?.Invoke(withCondition.condition);
+                            targetStat.OnAfflictionGuarded?.Invoke(withCondition.condition);
                             //1是成功,0是白字resist,-1是黄字resist
                             if(condFlag == 0)
                                 DamageNumberManager.GenerateResistText(target.transform);
@@ -715,8 +785,10 @@ public class BattleStageManager : MonoBehaviour
                             targetStat.DebuffResistance);
                         if (targetStat is PlayerStatusManager)
                         {
+                            var psm = targetStat as PlayerStatusManager;
                             //龙化免疫大部分减益
-                            if ((targetStat as PlayerStatusManager).isShapeshifting && withCondition.condition.dispellable == true)
+                            if (psm.isShapeshifting && psm.shapeShiftingImmuneToDebuff && withCondition.condition.dispellable == true
+                                && !StatusManager.IsBuff(withCondition.condition.buffID))
                             {
                                 condFlag = -2;
                             }
@@ -830,9 +902,11 @@ public class BattleStageManager : MonoBehaviour
                 }
 
                 //Calculate OD Gauge Punisher
-                var ODpunisher = 1 + playerstat.ODAccerator + 
-                                 BasicCalculation.CheckSpecialODAccerleratorEffect
-                                     (playerstat,targetSpecialStat,attackStat);
+                var ODpunisher = 1 + playerstat.ODAccerator +
+                                 AbilityCalculation.GetAbilityAmountInfo(playerstat, targetStat, attackStat,
+                                     AbilityCalculation.ProductArea.ODACC).Item1;
+                
+                //BasicCalculation.CheckSpecialODAccerleratorEffect(playerstat,targetSpecialStat,attackStat);
                 if (targetSpecialStat.ODLock == false)
                 {
                     targetSpecialStat.currentBreak -= totalDamage * (Random.Range(0.9f, 1.1f) + ODModifier) * ODpunisher;
@@ -845,7 +919,7 @@ public class BattleStageManager : MonoBehaviour
 
         
         
-        CheckSpecialFieldEffect(attackStat, playerstat, targetStat,attachedConditions,damageM);
+        CheckSpecialFieldEffect(attackStat, playerstat, targetStat, attachedConditions,damageM);
 
         return totalDamage;
         
@@ -1042,9 +1116,14 @@ public class BattleStageManager : MonoBehaviour
                 foreach (var condition in attachedCondition)
                 {
                     if (StatusManager.IsControlAffliction(condition.buffID) ||
-                        StatusManager.IsDotAffliction(condition.buffID))
+                        StatusManager.IsDotAffliction(condition.buffID) ||
+                        StatusManager.IsOtherAffliction(condition.buffID))
                     {
                         srcStat.ObtainTimerBuff(condition);
+                        if (srcStat is PlayerStatusManager)
+                        {
+                            specialEventTriggered?.Invoke(condition.buffID);
+                        }
                     }
                 }
             }
@@ -1211,6 +1290,9 @@ public class BattleStageManager : MonoBehaviour
         {
             var audiosrc = voice.GetComponent<AudioSource>();
             
+            if(audiosrc==null)
+                continue;
+            
             if (flag)
             {
                 if(audiosrc.isPlaying)
@@ -1278,6 +1360,13 @@ public class BattleStageManager : MonoBehaviour
                 StartCoroutine(GameClearedRoutine(loseControllTime));
     }
 
+    public void SetGameClearedSimple()
+    {
+        if(gameResultRoutine==null)
+            gameResultRoutine =
+                StartCoroutine(GameClearedRoutineSimple());
+    }
+
     IEnumerator GameClearedRoutine(float loseControllTime = 0f)
     {
         //var fxs = GameObject.Find("AttackFXPlayer");
@@ -1317,8 +1406,10 @@ public class BattleStageManager : MonoBehaviour
         playerinput.DisableAllInput();
         playerinput.SetMoveDisabled();
         playerinput.DisableAndIdle();
-        
+        playerinput.isMove = 0;
+
         var playercontroller = player.GetComponent<ActorController>();
+        playercontroller.anim.ResetParameters();
         playercontroller.anim.SetFloat("forward",0);
         yield return null;
         playercontroller.anim.Play("idle");
@@ -1331,10 +1422,13 @@ public class BattleStageManager : MonoBehaviour
             attack.DestroyInvoke();
         }
         
-        //fxs?.SetActive(false);
-        var music = GetComponent<AudioSource>();
-        music.clip = gameClearBGM;
-        music.Play();
+        BattleEffectManager.Instance.PlayBGM(false);
+        BattleEffectManager.Instance.SetBGM(gameClearBGM);
+        BattleEffectManager.Instance.SetLoop(false);
+        BattleEffectManager.Instance.PlayBGM(true);
+        // var music = GetComponent<AudioSource>();
+        // music.clip = gameClearBGM;
+        // music.Play();
         //music.loop = false;
         yield return new WaitForSeconds(1.5f);
         var waitTime = 0f;
@@ -1351,6 +1445,64 @@ public class BattleStageManager : MonoBehaviour
         var resultPage = Instantiate(this.resultPage, UILayer.transform);
 
 
+    }
+
+    IEnumerator GameClearedRoutineSimple()
+    {
+        OnQuestCleared?.Invoke(quest_id);
+
+        var playerinput = player.GetComponent<PlayerInput>();
+        player.GetComponent<StatusManager>().ResetAllStatusForced();
+        
+        var targetTransform = GameObject.Find("UIFXContainer").transform;
+        var clearGameObject = Instantiate(gameClearPrefab,
+            Camera.main.transform.position+new Vector3(0,0,-5),
+            Quaternion.identity,
+            targetTransform);
+        
+        
+        
+        UI_MultiBossManager.Instance.gameObject.SetActive(false);
+        
+        playerinput.DisableAllInput();
+        playerinput.SetMoveDisabled();
+        playerinput.DisableAndIdle();
+        
+        var playercontroller = player.GetComponent<ActorController>();
+        playercontroller.anim.SetFloat("forward",0);
+        yield return null;
+        playercontroller.anim.Play("idle");
+        playercontroller.enabled = false;
+        playerinput.DisableAndIdle();
+        
+        var attacks = FindObjectsOfType<AttackContainer>();
+        foreach (var attack in attacks)
+        {
+            attack.DestroyInvoke();
+        }
+        
+        BattleEffectManager.Instance.PlayBGM(false);
+        BattleEffectManager.Instance.SetBGM(gameClearBGM);
+        BattleEffectManager.Instance.SetLoop(false);
+        BattleEffectManager.Instance.PlayBGM(true);
+        // var music = GetComponent<AudioSource>();
+        // music.clip = gameClearBGM;
+        // music.Play();
+        //music.loop = false;
+        yield return new WaitForSeconds(1.5f);
+        var waitTime = 0f;
+        while (!Input.GetMouseButton(0) && waitTime<1.5f)
+        {
+            waitTime += 0.02f;
+            yield return new WaitForSeconds(0.02f);
+        }
+        
+        playercontroller.anim.SetFloat("forward",0);
+        playercontroller.anim.Play("idle");
+        Destroy(clearGameObject);
+        var UILayer = GameObject.Find("UI");
+        var resultPage = Instantiate(this.resultPage, UILayer.transform);
+        
     }
 
     public void EnemyEliminated(GameObject enemy)
@@ -1532,6 +1684,7 @@ public class BattleStageManager : MonoBehaviour
         foreach (var stat in enemyStats)
         {
             stat.currentHp = 0;
+            stat.OnHPChange?.Invoke();
         }
     }
 
@@ -1579,7 +1732,16 @@ public class BattleStageManager : MonoBehaviour
 
 
     }
-    public int ObtainAfflictionDirectlyWithCheck(StatusManager targetStat,BattleCondition condition, int chance,int attackType=1)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="targetStat"></param>
+    /// <param name="condition"></param>
+    /// <param name="chance"></param>
+    /// <param name="attackType">0为敌人攻击</param>
+    /// <returns></returns>
+    public int ObtainAfflictionDirectlyWithCheck(StatusManager targetStat,BattleCondition condition, int chance,int attackType=1,
+        StatusManager srcStat = null)
     {
         var condFlag = CheckAffliction(chance,
             targetStat.GetAfflictionResistance
@@ -1596,7 +1758,7 @@ public class BattleStageManager : MonoBehaviour
         
         if (condFlag<1)
         {
-            //sourceStat.OnAfflictionResist?.Invoke(condition);
+            targetStat.OnAfflictionGuarded?.Invoke(condition);
             //1是成功,0是白字resist,-1是黄字resist
             if(condFlag == 0)
                 DamageNumberManager.GenerateResistText(targetStat.transform);
@@ -1612,6 +1774,20 @@ public class BattleStageManager : MonoBehaviour
         {
             if(attackType!=1)
                 targetStat.IncreaseAfflictionResistance(condition.buffID);
+        }
+        
+        if (srcStat &&  FieldAbilityIDList.Contains(20033) )
+        {
+            if (StatusManager.IsControlAffliction(condition.buffID) ||
+                StatusManager.IsDotAffliction(condition.buffID))
+            {
+                srcStat.ObtainTimerBuff(condition);
+                if (srcStat is PlayerStatusManager)
+                {
+                    specialEventTriggered?.Invoke(condition.buffID);
+                }
+                
+            }
         }
 
         return condFlag;

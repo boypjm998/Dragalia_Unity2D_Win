@@ -121,7 +121,7 @@ namespace CharacterSpecificProjectiles
                 punishmentLevel = 0;
             else punishmentLevel = 1;
 
-            var damageTemp = (99 + punishmentLevel*(int)(target.maxHP * 0.01f) - target.GetDamageCutConst());
+            var damageTemp = (99 + punishmentLevel*(int)(target.maxHP * 0.009f) - target.GetDamageCutConst());
             
             if(damageTemp < 0)
                 damageTemp = 0;

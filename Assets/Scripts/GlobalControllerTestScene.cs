@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LitJson;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GlobalControllerTestScene : GlobalController
 {
@@ -11,11 +12,11 @@ public class GlobalControllerTestScene : GlobalController
     public GameObject boss;
     public string questIDFake;
     public int tempCurrentID;
+
+    public GameState FakeState;
     void Start()
     {
-        //ReadStatusInformation();
-        //GameLanguage = Language.ZHCN;
-        currentGameState = GameState.Inbattle;
+        currentGameState = FakeState;
         currentCharacterID = tempCurrentID;
         AssetBundle ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/voice_c001");
         loadedBundles.Add("voice/voice_c001",ab);
@@ -23,28 +24,9 @@ public class GlobalControllerTestScene : GlobalController
         
         BattleStageManager.Instance.GetMapBorderInfo();
         FakeStart();
+        LoadGamepadOption();
+        gamepadEnable = true;
 
-        // var plr = BattleStageManager.Instance.GetPlayer();
-        // var stat = plr.GetComponent<StatusManager>();
-        //
-        //
-        // stat.SpecialAttackEffectFunc += TestDelegateFunc1;
-        // stat.SpecialAttackEffectFunc += TestDelegateFunc2;
-        // stat.SpecialAttackEffectFunc += TestDelegateFunc3;
-        //
-        //
-        // float buffModifier = 0;
-        // float debuffModifier = 0;
-        // foreach (var func in stat.SpecialAttackEffectFunc.GetInvocationList())
-        // {
-        //     var res = ((StatusManager.SpecialEffectFunc)func).Invoke
-        //         (stat, null, stat);
-        //     buffModifier += res.Item1;
-        //     debuffModifier += res.Item2;
-        // }
-        //
-        // print($"buffModifier: {buffModifier}, debuffModifier: {debuffModifier}");
-        
     }
 
     public static Tuple<float, float> TestDelegateFunc1(StatusManager src, AttackBase atk, StatusManager tar)
@@ -77,13 +59,9 @@ public class GlobalControllerTestScene : GlobalController
 
     void Update()
     {
-        // if (SetBoss)
-        // {
-        //     SetBoss = false;
-        //     FindObjectOfType<UI_BossStatus>().SetBoss(boss);
-        // }
+        currentGameState = FakeState;
 
-        
+
     }
 
     // Update is called once per frame

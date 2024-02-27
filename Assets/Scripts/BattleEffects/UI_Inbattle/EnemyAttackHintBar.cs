@@ -24,6 +24,8 @@ public class EnemyAttackHintBar : MonoBehaviour
     protected Tweener _tweener;
     protected List<NpcController> npcInRange = new();
     [SerializeField] protected bool autoDestruct = false;
+    public bool AutoDestruct
+    { get => autoDestruct; set { autoDestruct = value; } }
 
     public void DestroySelf()
     {
@@ -60,7 +62,7 @@ public class EnemyAttackHintBar : MonoBehaviour
         if (ac == null)
         {
             interruptable = false;
-            Debug.LogWarning("HintBar cannot find enemy source.");
+            //Debug.LogWarning("HintBar cannot find enemy source.");
             
         }
 

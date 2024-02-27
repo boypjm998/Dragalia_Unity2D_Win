@@ -14,6 +14,9 @@ public class E9001_BehaviorTree : DragaliaEnemyBehavior
         
     }
 
+    
+    
+
     protected override void DoAction(int state, int substate)
     {
         if(!playerAlive)
@@ -29,6 +32,8 @@ public class E9001_BehaviorTree : DragaliaEnemyBehavior
             status.ObtainTimerBuff(hpRegenBuff);
             currentAction = StartCoroutine(ACT_ReadInformation());
             
+            
+            
             this.substate = 1;
         }
     }
@@ -41,6 +46,10 @@ public class E9001_BehaviorTree : DragaliaEnemyBehavior
         attackController = GetComponent<EnemyMoveController_E9001>();
         status.OnHPBelow0 += CheckPowerOfBonds;
         baseAttackInStat = status.baseAtk;
+        if (true)
+        {
+            BattleSceneUIManager.Instance.ReplacePauseMenu(attackController.InstantiateNewPrefabMenu());
+        }
 
     }
 

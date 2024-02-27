@@ -1,0 +1,110 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_05", -3,0,25000,1900,
+            "e_9002_03", 3,0,35000,970,
+            0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args": 
+          [ "e_9002_05", -2,0,25000,1900,
+            "e_9002_03", 2,0,35000,970,
+            2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_2",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_4",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_3",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 1,
+      "args": [ 70, 2 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_05", -3,0,28000,2300,
+            "e_9002_03", 3,0,37000,1120,
+            1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_05", -2,0,28000,2300,
+            "e_9002_03", 2,0,37000,1120,
+            2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_4",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_3",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_05", -2,0,28000,2300,
+            "e_9002_03", 2,0,37000,1120,
+            1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_3",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_2",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loop_start_point": 0,
+      "loopStartPoint": 1,
+      "args": [ ]
+    }
+  ]
+}

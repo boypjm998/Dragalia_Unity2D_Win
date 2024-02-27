@@ -173,6 +173,7 @@ MonoBehaviour:
   abilityList: 4a27000049270000
   _conditionBar: {fileID: 0}
   waitForRevive: 0
+  shapeShiftingImmuneToDebuff: 1
   shapeshiftingCD: 10
   shapeshiftingCDTimer: 0
   maxSkillNum: 4
@@ -187,11 +188,11 @@ MonoBehaviour:
   - 5934
   - 12000
   skillRegenByAttack: 01010101
-  attackspeed: 1
   movespeed: 7
   jumpforce: 20
   rollspeed: 10
   remainReviveTimes: 3
+  currentReviveTimes: 0
   debug: 0
   _comboIndicator: {fileID: 0}
 --- !u!114 &4940212938784062881
@@ -255,6 +256,7 @@ MonoBehaviour:
   movespeed: 7
   rollspeed: 9
   jumpforce: 20
+  weaponGameObject: {fileID: 0}
   canTransform: 0
   DModeIsOn: 0
   dc: {fileID: 0}
@@ -483,10 +485,11 @@ MonoBehaviour:
   combo4FX: {fileID: 7001036303606759775, guid: a5036ecab450bd54baf950a697a82dca, type: 3}
   combo5FX: {fileID: 7001036303606759775, guid: 63191a79599a0dd4fb3de302b81b873c, type: 3}
   dashFX: {fileID: 7001036303606759775, guid: 8e227546385fb804fa38a07e636a600d, type: 3}
-  skill1FX: {fileID: 6965573707696119159, guid: 221ca24502771284ca200fc93f93f046, type: 3}
+  skill1FX: {fileID: 266737952780162190, guid: 14a36189a0754fb429eb7045d77c4f39, type: 3}
   skill2FX: {fileID: 9027708460100283058, guid: b4e4644299c71ed458fdece8ab482561, type: 3}
   skill3FX: {fileID: 5823959986417716840, guid: 21bd59274da8e8d4ebbb9d3c4a7d5c75, type: 3}
   skill4FX: {fileID: 0}
+  skill1FXUpgrade: {fileID: 6965573707696119159, guid: 221ca24502771284ca200fc93f93f046, type: 3}
 --- !u!1 &1222743914318266763
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,6 +777,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: aec63daa20540aa4aa2137c38827f5b4, type: 3}
   forceStrikeClips: []
   myClips: []
+  transformClip: {fileID: 0}
 --- !u!1 &5272979543028967463
 GameObject:
   m_ObjectHideFlags: 0

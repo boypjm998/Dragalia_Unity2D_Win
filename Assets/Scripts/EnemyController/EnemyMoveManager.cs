@@ -45,6 +45,14 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected List<NPCNavigateAnchorSensor> _navigateAnchorSensors = new();
     protected IEnumerator _canAction;
     protected IEnumerator _canActionOnGround;
+    protected IEnumerator _canActionOnFlyingGround;
+    
+    public event Action<int> OnUseSkill;
+    
+    protected void InvokeOnUseSkill(int skillID)
+    {
+        OnUseSkill?.Invoke(skillID);
+    }
 
     public virtual void UseMove(int moveID)
     {
@@ -57,6 +65,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
         ac = GetComponent<EnemyController>();
         _canAction = new WaitUntil(()=>ac.hurt == false);
         _canActionOnGround = new WaitUntil(()=>ac.hurt == false && ac.grounded);
+        _canActionOnFlyingGround = new WaitUntil(()=>ac.hurt == false && (ac as EnemyControllerFlyingHigh).flyingGrounded);
     }
 
     // Start is called before the first frame update
@@ -129,11 +138,15 @@ public abstract class EnemyMoveManager : MonoBehaviour
     public virtual void AppearRenderer()
     {
         ac.rendererObject.SetActive(true);
+        ac.shadowCaster?.gameObject.SetActive(true);
+        ac.minimapIcon?.gameObject.SetActive(true);
     }
 
     public virtual void DisappearRenderer()
     {
         ac.rendererObject.SetActive(false);
+        ac.shadowCaster?.gameObject.SetActive(false);
+        ac.minimapIcon?.gameObject.SetActive(false);
     }
     
     protected GameObject GenerateWarningPrefab(GameObject prefab, Vector3 where,Quaternion rot, Transform _parent)
@@ -185,6 +198,22 @@ public abstract class EnemyMoveManager : MonoBehaviour
         return clone;
     }
 
+    public GameObject GetWarningPrefab(string prefabName)
+    {
+        GameObject prefab;
+        try
+        {
+            prefab = WarningPrefabs.ToList().Find(
+                x =>
+                    x.name.EndsWith("_" + prefabName))?.gameObject;
+        }
+        catch
+        {
+            return null;
+        }
+
+        return prefab;
+    }
     protected virtual void QuitAttack()
     {
         _behavior.currentAttackAction = null;
@@ -260,6 +289,26 @@ public abstract class EnemyMoveManager : MonoBehaviour
 
     }
 
+    protected GameObject InstantiateSealedContainer(GameObject prefab, Vector3 position,
+        Transform _parent, int facedir = 1)
+    {
+        var layer = _parent;
+        
+        var containerInstance = 
+            Instantiate
+                (prefab, position, Quaternion.identity, layer.transform);
+        
+        containerInstance.GetComponent<IEnemySealedContainer>().SetEnemySource(gameObject);
+        
+        if (facedir == -1 && _parent == RangedAttackFXLayer.transform)
+        {
+            containerInstance.transform.localScale = new Vector3(-containerInstance.transform.localScale.x,
+                containerInstance.transform.localScale.y, containerInstance.transform.localScale.z);
+        }
+
+        return containerInstance;
+
+    }
     protected void QuitMove()
     {
         ac.currentKBRes = 999;
@@ -307,12 +356,14 @@ public abstract class EnemyMoveManager : MonoBehaviour
     /// </summary>
     /// <param name="nameFromAction">例如fx_hb001_action14_1,该参数输入"action14_1"</param>
     /// <returns></returns>
-    public GameObject GetProjectileOfFormatName(string nameFromAction)
+    public GameObject GetProjectileOfFormatName(string nameFromAction,bool ignoreArray = false)
     {
         //查找尾部是_{nameFromAction}的projectile
         
         foreach (var projectile in projectilePool)
         {
+            if(ignoreArray)
+                break;
             if(projectile == null)
                 continue;
             if (projectile.name.EndsWith("_" + nameFromAction))
@@ -512,6 +563,22 @@ public abstract class EnemyMoveManager : MonoBehaviour
 
         
         return go;
+    }
+
+    protected UI_RingSlider SpawnCountDownUI(GameObject UIPrefab,Vector2 position, float countdownTime,
+        int minionTotalCount = 1)
+    {
+        var UI = Instantiate(UIPrefab,
+            position.SafePosition(Vector2.zero), Quaternion.identity,
+            RangedAttackFXLayer.transform);
+        var UIRingSlider = UI.GetComponent<UI_RingSlider>();
+        UIRingSlider.maxValue = countdownTime;
+        UIRingSlider.currentValue = countdownTime;
+        
+        var UICountdownMinon = UI.GetComponent<UI_CountdownMinon>();
+        UICountdownMinon.SetMaxCapacity(Mathf.Clamp(minionTotalCount, 1, 10));
+        
+        return UIRingSlider;
     }
     
     

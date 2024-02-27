@@ -24,11 +24,16 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
     protected bool hint1displayed = false;
     protected bool hint2displayed = false;
     protected bool hint3displayed = false;
+    
+    private TimerBuff legendPlusBuff;
 
     protected override void Start()
     {
         base.Start();
         background = GameObject.Find("Background3").GetComponent<SpriteRenderer>();
+        legendPlusBuff = new TimerBuff((int)BasicCalculation.BattleCondition.DamageUp,
+            5,-1,20,8000000);
+        legendPlusBuff.dispellable = false;
     }
 
     public override IEnumerator HB02_Action04()
@@ -88,6 +93,12 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
     {
         yield return new WaitUntil(() => !ac.hurt);
         ac.OnAttackEnter(999);
+        
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
+        
         ac.SetHitSensor(false);
         _behavior.breakable = false;
         Warp_Effect();
@@ -221,6 +232,12 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         yield return new WaitUntil(() => ac.hurt == false && ac.grounded);
         
         ac.OnAttackEnter(999);
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
+        
+        
         StageCameraController.SwitchOverallCamera();
         ac.SetHitSensor(false);
         _behavior.breakable = false;
@@ -294,6 +311,10 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         yield return new WaitUntil(() => ac.hurt == false && ac.grounded);
         
         ac.OnAttackEnter(999);
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
         StageCameraController.SwitchOverallCamera();
         ac.SetHitSensor(false);
         _behavior.breakable = false;
@@ -734,6 +755,7 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         
         //TODO:设置天空盒的背景色
 
+        BattleStageManager.Instance.PlayerViewEnable = false;
         var RTScene = GameObject.Find("OtherCamera").transform.Find("RT").gameObject;
         var fullScreenUI = GameObject.Find("FullScreenEffect").transform.Find("RT").gameObject;
 
@@ -765,9 +787,11 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         RTScene.SetActive(false);
 
         yield return new WaitForSeconds(0.5f);
+        BattleStageManager.Instance.PlayerViewEnable = true;
 
         var attack = GenesisCrown_Start();
         var controller = attack.GetComponent<Projectile_C003_15_Boss>();
+        controller.difficulty = _behavior.difficulty;
         yield return null;
         controller.SetEnemySource(gameObject);
 
@@ -852,6 +876,11 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         ac.TurnMove(_behavior.targetPlayer);
         
         StageCameraController.SwitchOverallCamera();
+        
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
         
         anim.Play("float_entire");
         bossBanner?.PrintSkillName("HB02_Action30");

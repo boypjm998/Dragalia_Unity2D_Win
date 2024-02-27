@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 
 public class AttackManager : MonoBehaviour
@@ -205,8 +206,64 @@ public class AttackManager : MonoBehaviour
         var speedModifier = fx.AddComponent<PlayerAnimationSpeedModifier>();
         speedModifier.actorController = ac as ActorController;
     }
-    
-    
+
+    protected int SkillUpgrade(int spID,int maxLevel = 2)
+    {
+        var buffList =
+            _statusManager.
+                GetExactConditionsOfType((int)(BasicCalculation.BattleCondition.SkillUpgrade), spID);
+
+        TimerBuff buff;
+        if (buffList.Count == 0)
+        {
+            buff = new TimerBuff((int)BasicCalculation.BattleCondition.SkillUpgrade,
+                1, -1, 1, spID);
+            
+            _statusManager.ObtainTimerBuff(buff);
+            return 0;
+        }
+        
+        
+        buff = buffList[0] as TimerBuff;
+
+        if (buff.effect >= maxLevel)
+        {
+            _statusManager.RemoveSpecificTimerbuff((int)BasicCalculation.BattleCondition.SkillUpgrade, spID);
+            _statusManager.OnSpecialBuffDelegate?.
+                Invoke(UI_BuffLogPopManager.SpecialConditionType.SkillUpgradedReset.ToString());
+            return maxLevel;
+        }
+        else
+        {
+            var newbuff = new TimerBuff((int)BasicCalculation.BattleCondition.SkillUpgrade,
+                buff.effect+1, -1, 1, spID);
+            
+            _statusManager.ObtainTimerBuff(newbuff);
+            return (int)buff.effect;
+        }
+    }
+
+    protected int GetSkillUpgradeLevel(int spID)
+    {
+        var buffList =
+            _statusManager.
+                GetExactConditionsOfType((int)(BasicCalculation.BattleCondition.SkillUpgrade), spID);
+
+        TimerBuff buff;
+        if (buffList.Count == 0)
+        {
+            return 0;
+        }
+        
+        
+        buff = buffList[0] as TimerBuff;
+
+       
+        return (int)buff.effect;
+        
+    }
+
+
 
 
 }

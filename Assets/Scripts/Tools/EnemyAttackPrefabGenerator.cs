@@ -8,7 +8,175 @@ using GameMechanics;
 public class EnemyAttackPrefabGenerator : MonoBehaviour
 {
     private AttackPrefabInfo info;
+    private static Color borderRed = new Color(0.5f, 0f, 0f, 1f);
+    private static Color borderPurple = new Color(0.35f, 0f, 0.5f, 1f);
     
+    public static GameObject GenerateRectEnemyHintBar(ActorBase actor, Vector3 position, Transform parent, Vector2 size, Vector2 offset, bool avoidable,
+        int fillAxis, float fillTime, float rotateAngle, float atkLastTime = 0.5f,bool autoDestroy = true,
+        bool interupptable = true, bool addShine = true, float shineTime = 0.15f)
+    {
+        GameObject instance = Instantiate(Resources.Load<GameObject>
+            ("UI/InBattle/BattleHint/RectTemplate"),position,Quaternion.identity,parent);
+        
+        instance.transform.localRotation = Quaternion.Euler(0, 0, rotateAngle);
+        
+        SpriteRenderer back = instance.transform.Find("Back").GetComponent<SpriteRenderer>();
+        SpriteRenderer fill = instance.transform.Find("Fill").GetComponent<SpriteRenderer>();
+        
+        SpriteRenderer borderL = instance.transform.Find("Borders/L").GetComponent<SpriteRenderer>();
+        SpriteRenderer borderR = instance.transform.Find("Borders/R").GetComponent<SpriteRenderer>();
+        SpriteRenderer borderT = instance.transform.Find("Borders/T").GetComponent<SpriteRenderer>();
+        SpriteRenderer borderB = instance.transform.Find("Borders/B").GetComponent<SpriteRenderer>();
+        
+        var hintBar = instance.AddComponent<EnemyAttackHintBarRect2D>();
+
+        hintBar.warningTime = fillTime;
+        hintBar.interruptable = interupptable;
+        hintBar.AutoDestruct = autoDestroy;
+        hintBar.attackLastTime = atkLastTime;
+        hintBar.SetAc(actor as EnemyController);
+
+        if (addShine)
+        {
+            var shineBar = instance.AddComponent<EnemyAttackHintBarShine>();
+            shineBar.warningTime = fillTime;
+            shineBar.interruptable = interupptable;
+            shineBar.AutoDestruct = autoDestroy;
+            shineBar.attackLastTime = atkLastTime;
+            //shineBar.shineTime = shineTime;
+            shineBar.SetAc(actor as EnemyController);
+        }
+
+        hintBar.SetFillAxis(fillAxis);
+
+
+
+        back.size = size;
+        if (fillAxis == 0)
+        {
+            fill.size = new Vector2(.1f, size.y);
+        }
+        else
+        {
+            fill.size = new Vector2(size.x, .1f);
+        }
+        
+        back.transform.localPosition = offset;
+        fill.transform.localPosition = offset;
+        borderB.transform.parent.localPosition = offset;
+        
+        borderB.size = new Vector2(size.x, 0.1f);
+        borderT.size = new Vector2(size.x, 0.1f);
+        borderL.size = new Vector2(0.1f, size.y);
+        borderR.size = new Vector2(0.1f, size.y);
+        
+        //左对齐的
+        borderL.transform.localPosition = new Vector3(0.05f, 0, 0);
+        borderR.transform.localPosition = new Vector3(size.x - 0.05f, 0, 0);
+        borderT.transform.localPosition = new Vector3(size.x / 2, size.y / 2, 0);
+        borderB.transform.localPosition = new Vector3(size.x / 2, -size.y / 2, 0);
+        
+        
+
+        if (avoidable)
+        {
+            back.color = new Color(1, 0, 0,back.color.a);
+            fill.color = new Color(1, 0, 0,fill.color.a);
+            borderB.color = borderRed;
+            borderT.color = borderRed;
+            borderL.color = borderRed;
+            borderR.color = borderRed;
+        }else
+        {
+            back.color = new Color(0.4f, 0.2f, 0.6f,back.color.a);
+            fill.color = new Color(0.4f, 0.2f, 0.6f,fill.color.a);
+            borderB.color = borderPurple;
+            borderT.color = borderPurple;
+            borderL.color = borderPurple;
+            borderR.color = borderPurple;
+        }
+        
+        return instance;
+
+    }
+
+    public static GameObject GenerateCircEnemyHintBar(ActorBase actor, Vector3 position, Transform parent, float radius,
+        Vector2 offset, bool avoidable, bool doscale,
+        float fillTime, float edgeWidth = 0.1f, float atkLastTime = 0.5f, bool autoDestroy = true,
+        bool interupptable = true, bool addShine = true, float shineTime = 0.15f)
+    {
+        
+        edgeWidth = Mathf.Clamp(edgeWidth, 0.05f, 0.5f);
+        
+        GameObject instance = Instantiate(Resources.Load<GameObject>
+            ("UI/InBattle/BattleHint/CircleTemplate"),position,Quaternion.identity,parent);
+        
+        SpriteRenderer back = instance.transform.Find("Back").GetComponent<SpriteRenderer>();
+        SpriteRenderer fill = instance.transform.Find("Fill").GetComponent<SpriteRenderer>();
+        Transform mask = instance.transform.Find("Borders/Mask");
+        
+        var hintBar = instance.AddComponent<EnemyAttackHintBarCircle>();
+        SpriteRenderer borderRenderer = instance.transform.Find("Borders/Renderer").
+            GetComponent<SpriteRenderer>();
+        
+        
+        hintBar.warningTime = fillTime;
+        hintBar.interruptable = interupptable;
+        hintBar.AutoDestruct = autoDestroy;
+        hintBar.attackLastTime = atkLastTime;
+        hintBar.SetAc(actor as EnemyController);
+        
+        if (addShine)
+        {
+            var shineBar = instance.AddComponent<EnemyAttackHintBarShine>();
+            shineBar.warningTime = fillTime;
+            shineBar.interruptable = interupptable;
+            shineBar.AutoDestruct = autoDestroy;
+            shineBar.attackLastTime = atkLastTime;
+            //shineBar.shineTime = shineTime;
+            shineBar.SetAc(actor as EnemyController);
+        }
+        
+        fill.size = new Vector2(0.1f, 0.1f);
+        back.size = new Vector2(radius * 2, radius * 2);
+        borderRenderer.size = new Vector2(radius * 2, radius * 2);
+
+        var maskScaleFactor = (radius * 2 / 3) - edgeWidth;
+        mask.localScale = maskScaleFactor * Vector3.one;
+        
+        back.transform.localPosition = offset;
+        fill.transform.localPosition = offset;
+        mask.transform.parent.localPosition = offset;
+
+        if (doscale)
+        {
+            instance.transform.localScale = Vector3.one * 0.1f;
+            hintBar.SetDoScale(true);
+        }
+
+        if (avoidable)
+        {
+            back.color = new Color(1, 0, 0,back.color.a);
+            fill.color = new Color(1, 0, 0,fill.color.a);
+            borderRenderer.color = borderRed;
+            
+        }else
+        {
+            back.color = new Color(0.4f, 0.2f, 0.6f,back.color.a);
+            fill.color = new Color(0.4f, 0.2f, 0.6f,fill.color.a);
+            borderRenderer.color = borderPurple;
+        }
+        
+        return instance;
+
+
+    }
+
+
+
+
+
+
     private void ParseAndOutput()
     {
         
@@ -50,7 +218,7 @@ public class EnemyAttackPrefabGenerator : MonoBehaviour
             var polygonCollider2D = collider2D as PolygonCollider2D;
             info.colliderType = AttackPrefabInfo.ColliderType.Polygon;
             info.SetPolygonColliderInfo(polygonCollider2D.GetTotalPointCount(),
-                polygonCollider2D.points.ToList());
+                polygonCollider2D.points);
         }
 
 
@@ -184,10 +352,10 @@ public class AttackPrefabInfo
         
     }
     
-    public void SetPolygonColliderInfo(int pointCount, List<Vector2> points)
+    public void SetPolygonColliderInfo(int pointCount, params Vector2[] points)
     {
         polygonColliderPointCount = pointCount;
-        poloynColliderPoints = points;
+        poloynColliderPoints = points.ToList();
         colliderInfo.Clear();
         colliderInfo.Add(pointCount);
         foreach (var point in points)

@@ -46,6 +46,9 @@ public class UI_ForceStrikeAimerMeele : MonoBehaviour
         innerGaugeSprite.color = originColor;
         forceDirection = (int)(transform.lossyScale.x) > 0 ? 1 : -1;
         currentFSLV = 0;
+        //2024.1.28
+        if(ac)
+            ac.Combo = 0;
     }
 
     private void OnDisable()

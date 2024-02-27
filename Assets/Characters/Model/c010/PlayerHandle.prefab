@@ -432,11 +432,11 @@ MonoBehaviour:
   - 11200
   - 12000
   skillRegenByAttack: 01010101
-  attackspeed: 1
   movespeed: 7
   jumpforce: 22
   rollspeed: 10
   remainReviveTimes: 3
+  currentReviveTimes: 0
   debug: 0
   _comboIndicator: {fileID: 0}
 --- !u!114 &2879582893415996409
@@ -719,6 +719,7 @@ MonoBehaviour:
   movespeed: 7
   rollspeed: 9
   jumpforce: 20
+  weaponGameObject: {fileID: 0}
   canTransform: 1
   DModeIsOn: 0
   dc: {fileID: 1056657196270345896}
@@ -1093,6 +1094,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2791510088360279229}
     m_Modifications:
+    - target: {fileID: 2337548868783517967, guid: a5924153e3bfc49459d2eaf13d175488, type: 3}
+      propertyPath: moveSpeed
+      value: 13.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2337548868783517967, guid: a5924153e3bfc49459d2eaf13d175488, type: 3}
+      propertyPath: gravityScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5089080631743834309, guid: a5924153e3bfc49459d2eaf13d175488, type: 3}
       propertyPath: m_Name
       value: DModel

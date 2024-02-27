@@ -28,44 +28,44 @@ public class AnimationEventSender_Enemy : MonoBehaviour
     }
 
 
-    protected void OnAttackEnter()
-    {
-        _enemyController.OnAttackEnter();
-    }
-    protected void OnAttackExit()
-    {
-        _enemyController.OnAttackExit();
-    }
-    protected void OnHurtEnter()
-    {
-        _enemyController.OnHurtEnter();
-    }
-    protected void OnHurtExit()
-    {
-        _enemyController.OnHurtExit();
-    }
+    // protected void OnAttackEnter()
+    // {
+    //     _enemyController.OnAttackEnter();
+    // }
+    // protected void OnAttackExit()
+    // {
+    //     _enemyController.OnAttackExit();
+    // }
+    // protected void OnHurtEnter()
+    // {
+    //     _enemyController.OnHurtEnter();
+    // }
+    // protected void OnHurtExit()
+    // {
+    //     _enemyController.OnHurtExit();
+    // }
 
-    protected void TurnToMiddle()
-    {
-        //transform.rotation = Quaternion.Euler(0, 120, 0);
-        if(_enemyController.facedir ==1)
-            transform.rotation = Quaternion.Euler(0, 120, 0);
-        else
-        {
-            transform.rotation = Quaternion.Euler(0, -120, 0);
-        }
-    }
-
-    protected void TurnToSide()
-    {
-        //transform.rotation = Quaternion.Euler(0, 102, 0);
-        if(_enemyController.facedir ==1)
-            transform.rotation = Quaternion.Euler(0, 102, 0);
-        else
-        {
-            transform.rotation = Quaternion.Euler(0, -102, 0);
-        }
-    }
+    // protected void TurnToMiddle()
+    // {
+    //     //transform.rotation = Quaternion.Euler(0, 120, 0);
+    //     if(_enemyController.facedir ==1)
+    //         transform.rotation = Quaternion.Euler(0, 120, 0);
+    //     else
+    //     {
+    //         transform.rotation = Quaternion.Euler(0, -120, 0);
+    //     }
+    // }
+    //
+    // protected void TurnToSide()
+    // {
+    //     //transform.rotation = Quaternion.Euler(0, 102, 0);
+    //     if(_enemyController.facedir ==1)
+    //         transform.rotation = Quaternion.Euler(0, 102, 0);
+    //     else
+    //     {
+    //         transform.rotation = Quaternion.Euler(0, -102, 0);
+    //     }
+    // }
     
     public void ChangeFaceExpression(float offset = 0)
     {

@@ -81,6 +81,7 @@ MonoBehaviour:
   jumpforce: 20
   rollspeed: 10
   remainReviveTimes: 9
+  debug: 0
   _comboIndicator: {fileID: 0}
 --- !u!1 &1961515851375070787
 GameObject:
@@ -227,7 +228,7 @@ GameObject:
   - component: {fileID: 3748442639868925788}
   m_Layer: 0
   m_Name: StageManagerT
-  m_TagString: Untagged
+  m_TagString: Music
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -271,8 +272,11 @@ MonoBehaviour:
   maxReviveTime: 3
   crownReviveTime: 0
   crownTimeLimit: 300
+  clearConditionType: 0
   attackContainer: {fileID: 497525783265369579, guid: 20655c64630fcbd419fffcbc147c5e39, type: 3}
   attackContainerEnemy: {fileID: 390410345794427676, guid: 4fed0cfcb020ad34ebc13587f9ebf4e8, type: 3}
+  attackSubContainer: {fileID: 0}
+  simpleHealthBar: {fileID: 4779990366591673112, guid: 9a00717fd100fa54783b70d8f7f3001d, type: 3}
   buffLogPrefab: {fileID: 7553018530641137342, guid: ae6ae057eee5e0e4581e57f5cd2cc058, type: 3}
   gameFailedPrefab: {fileID: 2722878352171708836, guid: 410cdfceee400df46984c7ceaa63ad1b, type: 3}
   gameClearPrefab: {fileID: 495785828030051020, guid: 425a88c6c1e7c1042aeb9079253cded6, type: 3}
@@ -280,6 +284,10 @@ MonoBehaviour:
   gameClearBGM: {fileID: 8300000, guid: b6ef56101a8aedd4eaacafb924ab769e, type: 3}
   resultPage: {fileID: 7189568907353856948, guid: 379b8819306492440887c70d851aa7fc, type: 3}
   player: {fileID: 0}
+  debugAddFieldAbility1: 0
+  debugRemoveFieldAbility1: 0
+  debugAddFieldAbility2: 0
+  debugRemoveFieldAbility2: 0
 --- !u!114 &4061470440197751690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,6 +306,11 @@ MonoBehaviour:
   burnFXPrefab: {fileID: 6834888581270861595, guid: 52357dd7385fecd49b6d6257319ec695, type: 3}
   schorchrendColor: {r: 0.8627451, g: 0, b: 0, a: 1}
   scorchrendFXPrefab: {fileID: 2143380524094881360, guid: 3c9c9684d4bbe2d4184d1cd8f0979df5, type: 3}
+  poisonColor: {r: 0, g: 0, b: 0, a: 0}
+  poisonFXPrefab: {fileID: 0}
+  stormlashColor: {r: 0, g: 0, b: 0, a: 0}
+  stormlashFXPrefab: {fileID: 0}
+  stunFXPrefab: {fileID: 0}
   healFXPrefab: {fileID: 2819481691769256717, guid: 0b7a7f4c1d7976b4b82e57f1e378e537, type: 3}
   dispellFXPrefab: {fileID: 5745233382303972556, guid: 780b0f6e77c4463439c500c2615ebab6, type: 3}
   buffFXPrefab: {fileID: 4580996428673532752, guid: d6fdafac4838f1e458c42a38530d4613, type: 3}
@@ -310,7 +323,9 @@ MonoBehaviour:
   hitEffectClip: {fileID: 8300000, guid: a35c55a5f7b1eff4ba0e3fa5d8260593, type: 3}
   reviveSEClip: {fileID: 8300000, guid: 19b5ae4650e42724b8239a33b0661a35, type: 3}
   healSEClip: {fileID: 8300000, guid: 001004c49a802304c8f03805e19c0711, type: 3}
+  notteHintClips: []
   soundEffectSource: {fileID: 0}
+  sharedVoiceSource: {fileID: 0}
 --- !u!82 &4061470440197751691
 AudioSource:
   m_ObjectHideFlags: 0
@@ -323,7 +338,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: ffe78cac001e9124e92a171b2aaad26f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.4
+  m_Volume: 0.75
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -420,17 +435,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentCutScene: 0
-  keyDown: 
-  keyLeft: 
-  keyRight: 
-  keyJump: 
-  keyAttack: 
-  keyRoll: 
-  keySkill1: 
-  keySkill2: 
-  keySkill3: 
-  keySkill4: 
-  keySpecial: 
+  keyDown: 0
+  keyLeft: 0
+  keyRight: 0
+  keyJump: 0
+  keyAttack: 0
+  keyRoll: 0
+  keySkill1: 0
+  keySkill2: 0
+  keySkill3: 0
+  keySkill4: 0
+  keySpecial: 0
+  keyEsc: 27
   button: 0
   buttonCD: 999.9
   playerPool: {fileID: 0}
@@ -484,6 +500,8 @@ MonoBehaviour:
   prayerFX: {fileID: 5928874925943910763, guid: c6a9e1b70867ed44c96db69bdea1bdd1, type: 3}
   laserFX: {fileID: 3718091185847512033, guid: 4fb6124492b9eb04c821ea948cb1465a, type: 3}
   holyCrownFX: {fileID: 3210057633788142570, guid: f0c102688b83f7b45a24f9f677be4774, type: 3}
+  absorbingPrayerFX: {fileID: 0}
+  lastStage: 0
 --- !u!114 &1270285842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,7 +584,7 @@ GameObject:
   - component: {fileID: 6141482187213349758}
   m_Layer: 0
   m_Name: Sound
-  m_TagString: Untagged
+  m_TagString: SoundEffect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

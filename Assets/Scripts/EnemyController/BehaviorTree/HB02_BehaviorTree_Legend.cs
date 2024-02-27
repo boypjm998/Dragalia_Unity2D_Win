@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSpecificProjectiles;
 using DG.Tweening;
+using GameMechanics;
 using UnityEngine;
 
 public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
@@ -34,9 +35,13 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         }
         else
         {
-            BattleEffectManager.Instance.SetBGM(bgm2);
-            //BattleEffectManager.Instance.bgmVoiceSource.clip = bgm2;
-            BattleEffectManager.Instance.PlayBGM();
+            if (difficulty < 5)
+            {
+                BattleEffectManager.Instance.SetBGM(bgm2);
+                //BattleEffectManager.Instance.bgmVoiceSource.clip = bgm2;
+                BattleEffectManager.Instance.PlayBGM();
+            }
+            
             
             status.OnHPBelow0 += WorldBreakEffect;
         }
@@ -51,9 +56,17 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         state = 0;
         substate = 0;
         yield return null;
-        
+
+
+        if (difficulty == 5)
+        {
+            BattleStageManager.Instance.RemoveFieldAbility(20034);
+            BattleStageManager.Instance.RemoveFieldAbility(20033);
+        }
         
         yield return new WaitForSeconds(awakeTime);
+        yield return new WaitUntil(()=>status.HasControlAffliction() == false);
+        SetPlayerBuffUI();
         StartCoroutine(UpdateBehavior());
         
         
@@ -81,16 +94,16 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
             {
                 if (_currentActionStage.args.Length == 3)
                 {
-                    float distanceMin = float.Parse(_currentActionStage.args[0]);
-                    float distanceMax = float.Parse(_currentActionStage.args[1]);
-                    float followTime = float.Parse(_currentActionStage.args[2]);
+                    float distanceMin = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float distanceMax = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                     currentAction = StartCoroutine(ACT_KeepDistance(distanceMin, distanceMax, followTime));
                 }
                 else
                 {
-                    float distanceMin = float.Parse(_currentActionStage.args[0]);
-                    float distanceMax = float.Parse(_currentActionStage.args[1]);
-                    float followTime = float.Parse(_currentActionStage.args[2]);
+                    float distanceMin = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float distanceMax = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                     currentAction = StartCoroutine(ACT_KeepDistance(distanceMin, distanceMax, followTime,1));
                 }
                 break;
@@ -99,203 +112,203 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
             {
                 if (_currentActionStage.args.Length == 4)
                 {
-                    float arriveDistanceX = float.Parse(_currentActionStage.args[0]);
-                    float arriveDistanceY = float.Parse(_currentActionStage.args[1]);
-                    float triggerDistance = float.Parse(_currentActionStage.args[2]);
-                    float followTime = float.Parse(_currentActionStage.args[3]);
+                    float arriveDistanceX = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float arriveDistanceY = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    float triggerDistance = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[3]);
                     currentAction = StartCoroutine(ACT_ApproachTarget(arriveDistanceX, arriveDistanceY, triggerDistance, followTime));
                 }else if (_currentActionStage.args.Length == 3)
                 {
-                    float arriveDistanceX = float.Parse(_currentActionStage.args[0]);
-                    float arriveDistanceY = float.Parse(_currentActionStage.args[1]);
-                    float followTime = float.Parse(_currentActionStage.args[2]);
+                    float arriveDistanceX = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float arriveDistanceY = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                     currentAction = StartCoroutine(ACT_ApproachTarget(arriveDistanceX, arriveDistanceY, followTime));
                 }else if (_currentActionStage.args.Length == 2)
                 {
-                    float arriveDistance = float.Parse(_currentActionStage.args[0]);
-                    float followTime = float.Parse(_currentActionStage.args[1]);
+                    float arriveDistance = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    float followTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                     currentAction = StartCoroutine(ACT_ApproachTarget(arriveDistance, followTime));
                 }else throw new System.Exception("ApproachTarget参数数量错误");
                 break;
             }
             case "EarthBarrier":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_EarthBarrier(interval));
                 break;
             }
             case "FaithEnhancement":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_FaithEnhancement(interval));
                 break;
             }
             case "CombinedTwilightAttack":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CombinedTwilightAttack(interval));
                 break;
             }
             case "ComboA":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboA(interval));
                 break;
             }
             case "ComboB":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboB(interval));
                 break;
             }
             case "ComboC":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ComboC(interval));
                 break;
             }
             case "DashAttack":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_DashAttack(interval));
                 break;
             }
             
             case "TwilightMoon":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_TwilightMoon(interval));
                 break;
             }
             case "WarpAttack":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_WarpAttack(interval));
                 break;
             }
             case "SpinDash":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SpinDash(interval));
                 break;
             }
             case "SpinDashFast":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SpinDashRed(interval));
                 break;
             }
             case "SummonOrbs":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonOrbs(interval));
                 break;
             }
             case "GloriousSanctuary":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_GloriousSanctuary(interval));
                 break;
             }
             case "GloriousSanctuaryG":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_GloriousSanctuaryG(interval));
                 break;
             }
             case "GloriousSanctuaryC":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_GloriousSanctuaryC(interval));
                 break;
             }
             case "PickupBuff":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_PickupBuff(interval));
                 break;
             }
             case "ReflectionOn":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ReflectionOn(interval));
                 break;
             }
             case "BusterOn":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BusterOn(interval));
                 break;
             }
             case "WorldReset":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_WorldReset(interval));
                 break;
             }
             case "CelestialPrayer":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CelestialPrayer(interval));
                 break;
             }
             case "CelestialPrayerF":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CelestialPrayerF(interval));
                 break;
             }
             case "CelestialPrayerG":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_CelestialPrayerG(interval));
                 break;
             }
             case "TwilightCrownF":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_TwilightCrownF(interval));
                 break;
             }
             case "TwilightCrownG":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_TwilightCrownG(interval));
                 break;
             }
             case "TwilightCrown":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_TwilightCrown(interval));
                 break;
             }
             case "HolyCrownG":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_HolyCrownG(interval));
                 break;
             }
             case "HolyCrown":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_HolyCrown(interval));
                 break;
             }
             case "BackWarpSmash":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BackWarpSmash(interval));
                 break;
             }
             case "BackWarpGround":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BackWarpGround(interval));
                 break;
             }
             case "GalaxyPrayerOn":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BlessGalaxy(interval));
                 break;
             }
@@ -307,13 +320,13 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
             }
             case "GenesisCrown":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_HolyCrownFWithFullScreenAttack(interval));
                 break;
             }
             case "GenesisCrownSingle":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_FullScreenAttack(interval));
                 break;
             }
@@ -400,7 +413,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         ActionStart();
         //controllAfflictionProtect = true;
         status.ImmuneToAllControlAffliction = true;
-        SetPlayerBuffUI();
+        
         yield return new WaitUntil(() => !enemyController.hurt);
         enemyController.SetKBRes(999);
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action16());
@@ -416,7 +429,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         ActionStart();
         status.ImmuneToAllControlAffliction = true;
         
-        yield return new WaitUntil(() => !enemyController.hurt);
+        yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
         enemyController.SetKBRes(999);
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action17());
         yield return new WaitUntil(()=>currentAttackAction == null);
@@ -429,9 +442,9 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
     protected IEnumerator ACT_GloriousSanctuaryC(float interval)
     {
         ActionStart();
-        controllAfflictionProtect = true;
+        status.ImmuneToAllControlAffliction = true;
         
-        yield return new WaitUntil(() => !enemyController.hurt);
+        yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
         enemyController.SetKBRes(999);
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action18());
         yield return new WaitUntil(()=>currentAttackAction == null);
@@ -462,6 +475,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         breakable = false;
         yield return new WaitUntil(() => !enemyController.hurt);
         enemyController.SetKBRes(999);
+        enemyController.hurt = false;
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action20());
         yield return new WaitUntil(()=>currentAttackAction == null);
         enemyController.SetKBRes(status.knockbackRes);
@@ -477,6 +491,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         breakable = false;
         yield return new WaitUntil(() => !enemyController.hurt);
         enemyController.SetKBRes(999);
+        enemyController.hurt = false;
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action21());
         yield return new WaitUntil(()=>currentAttackAction == null);
         enemyController.SetKBRes(status.knockbackRes);
@@ -490,6 +505,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         ActionStart();
         yield return new WaitUntil(() => !enemyController.hurt);
         enemyController.SetKBRes(999);
+        enemyController.hurt = false;
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action22());
         yield return new WaitUntil(()=>currentAttackAction == null);
         enemyController.SetKBRes(status.knockbackRes);
@@ -647,7 +663,8 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
     
     protected void SetPlayerBuffUI()
     {
-        //var viewerPlayer = FindObjectOfType<PlayerInput>().gameObject;
+        if(enemyAttackManager_legend == null)
+            return;
         Instantiate(buffUIFXPrefab,
             viewerPlayer.transform.position, Quaternion.identity,
             viewerPlayer.transform.Find("BuffLayer"));

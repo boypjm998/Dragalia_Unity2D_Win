@@ -35,6 +35,7 @@ public class DragonController : MonoBehaviour
     
     public bool isSpecial = false;
     public bool canTransformBack = true;
+    public bool dragondrive = false;
     
     /*TODO: 龙化需要注意的地方：
      异常状态期间不可以龙化。
@@ -126,7 +127,7 @@ public class DragonController : MonoBehaviour
             if (pi.hurt == false && pi.isSkill == false && pi.attackEnabled &&
                 dAnim.GetCurrentAnimatorStateInfo(0).IsName("transform")==false)
             {
-                
+                print("解除龙化");
                 DModePurged();
                 //pi.moveEnabled = false;
                 //pi.isSkill = true;
@@ -174,14 +175,15 @@ public class DragonController : MonoBehaviour
         
         _statusManager.knockbackRes = 999;
         _statusManager.ReliefAllAfflication();
-        _statusManager.ReliefAllDebuff();
+        _statusManager.ReliefDebuffExceptNilAndCorrosion();
         
         //重置碰撞体
-        var hitsensorCol = ac.HitSensor as BoxCollider2D;
-        hitsensorCol.offset = new Vector3(HitSensorProperty.x,
-            HitSensorProperty.y);
-        hitsensorCol.size = new Vector3(HitSensorProperty.z,
-            HitSensorProperty.w);
+        SetHitSensorScaleToDragonScale();
+        // var hitsensorCol = ac.HitSensor as BoxCollider2D;
+        // hitsensorCol.offset = new Vector3(HitSensorProperty.x,
+        //     HitSensorProperty.y);
+        // hitsensorCol.size = new Vector3(HitSensorProperty.z,
+        //     HitSensorProperty.w);
         
         ac.SetGravityScale(gravityScale);
         
@@ -223,6 +225,24 @@ public class DragonController : MonoBehaviour
         pi.moveEnabled = true;
     }
 
+    protected virtual void SetHitSensorScaleToDragonScale()
+    {
+        var hitsensorCol = ac.HitSensor as BoxCollider2D;
+        hitsensorCol.offset = new Vector3(HitSensorProperty.x,
+            HitSensorProperty.y);
+        hitsensorCol.size = new Vector3(HitSensorProperty.z,
+            HitSensorProperty.w);
+    }
+
+    protected virtual void SetHitSensorScaleToHumanScale()
+    {
+        var hitsensorCol = ac.HitSensor as BoxCollider2D;
+        hitsensorCol.offset = new Vector3(PlayerStatusManager.NormalHitSensorProperty.x,
+            PlayerStatusManager.NormalHitSensorProperty.y);
+        hitsensorCol.size = new Vector3(PlayerStatusManager.NormalHitSensorProperty.z,
+            PlayerStatusManager.NormalHitSensorProperty.w);
+    }
+
     protected void DisableInputMove()
     {
         pi.inputMoveEnabled = false;
@@ -260,11 +280,17 @@ public class DragonController : MonoBehaviour
 
     protected void ClearBoolSignal(string varname)
     {
+        if(dragondrive)
+            return;
+
         dAnim.SetBool(varname, false);
     }
     
     protected void ClearFloatSignal(string varname)
     {
+        if(dragondrive)
+            return;
+        
         dAnim.SetFloat(varname, 0);
     }
 
@@ -367,11 +393,12 @@ public class DragonController : MonoBehaviour
         print("Called DModePurged");
         
         //重置碰撞体
-        var hitsensorCol = ac.HitSensor as BoxCollider2D;
-        hitsensorCol.offset = new Vector3(PlayerStatusManager.NormalHitSensorProperty.x,
-            PlayerStatusManager.NormalHitSensorProperty.y);
-        hitsensorCol.size = new Vector3(PlayerStatusManager.NormalHitSensorProperty.z,
-            PlayerStatusManager.NormalHitSensorProperty.w);
+        SetHitSensorScaleToHumanScale();
+        // var hitsensorCol = ac.HitSensor as BoxCollider2D;
+        // hitsensorCol.offset = new Vector3(PlayerStatusManager.NormalHitSensorProperty.x,
+        //     PlayerStatusManager.NormalHitSensorProperty.y);
+        // hitsensorCol.size = new Vector3(PlayerStatusManager.NormalHitSensorProperty.z,
+        //     PlayerStatusManager.NormalHitSensorProperty.w);
 
         Instantiate(BattleEffectManager.Instance.shapeShiftPurgeFXPrefab,
             transform.position, Quaternion.identity,
@@ -394,11 +421,17 @@ public class DragonController : MonoBehaviour
             ac.OnHurtExit();
             pi.moveEnabled = true;
         }
-        transform.parent.gameObject.SetActive(false);
+        
+        if(!dragondrive)
+            transform.parent.gameObject.SetActive(false);
     }
 
     public void DModeForcePurge()
     {
+        if(ac == null)
+            return;
+        
+        
         if(ac.DModeIsOn == false)
             return;
         
@@ -412,11 +445,12 @@ public class DragonController : MonoBehaviour
         print("Called DModePurged");
         
         //重置碰撞体
-        var hitsensorCol = ac.HitSensor as BoxCollider2D;
-        hitsensorCol.offset = new Vector3(PlayerStatusManager.NormalHitSensorProperty.x,
-            PlayerStatusManager.NormalHitSensorProperty.y);
-        hitsensorCol.size = new Vector3(PlayerStatusManager.NormalHitSensorProperty.z,
-            PlayerStatusManager.NormalHitSensorProperty.w);
+        SetHitSensorScaleToHumanScale();
+        // var hitsensorCol = ac.HitSensor as BoxCollider2D;
+        // hitsensorCol.offset = new Vector3(PlayerStatusManager.NormalHitSensorProperty.x,
+        //     PlayerStatusManager.NormalHitSensorProperty.y);
+        // hitsensorCol.size = new Vector3(PlayerStatusManager.NormalHitSensorProperty.z,
+        //     PlayerStatusManager.NormalHitSensorProperty.w);
 
         Instantiate(BattleEffectManager.Instance.shapeShiftPurgeFXPrefab,
             transform.position, Quaternion.identity,
@@ -436,7 +470,8 @@ public class DragonController : MonoBehaviour
             ac.OnHurtExit();
             pi.moveEnabled = true;
         }
-        transform.parent.gameObject.SetActive(false);
+        if(!dragondrive)
+            transform.parent.gameObject.SetActive(false);
     }
 
 

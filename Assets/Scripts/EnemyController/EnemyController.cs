@@ -42,6 +42,7 @@ public class EnemyController : ActorBase
     //public int facedir = 1;
     public bool hurt;
     public bool grounded => anim.GetBool("isGround");
+    public StandardGroundSensor _groundSensor;
     
     public bool counterOn = false;
     protected float isMove = 0;
@@ -244,7 +245,7 @@ public class EnemyController : ActorBase
     
     public void EnemyActionStart(int actionID)
     {
-        MoveManager.UseMove(actionID);
+        //MoveManager.UseMove(actionID);
     }
 
     protected virtual IEnumerator HurtEffectCoroutine()
@@ -617,6 +618,11 @@ public class EnemyController : ActorBase
     public void SetKBRes(int value)
     {
         currentKBRes = value;
+    }
+
+    public void ResetKBRes()
+    {
+        currentKBRes = _statusManager.knockbackRes;
     }
 
     protected virtual IEnumerator BreakWait(float time,float recoverTime = 1.67f)

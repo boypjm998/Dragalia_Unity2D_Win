@@ -26,6 +26,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
     private bool hint3Displayed = false;
     private bool hint4Displayed = false;
 
+    private TimerBuff legendPlusBuff;
+
     protected enum VoiceGroupEnum
     {
         StandardAttack = 0,
@@ -53,6 +55,22 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         backGroundSpriteRenderer = GameObject.Find("Background2").GetComponent<SpriteRenderer>();
         _statusManager.OnHPBelow0 += WorldBreakEffect;
         BattleStageManager.Instance.RefreshMapInfo();
+        
+        legendPlusBuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff,
+            10,-1,20,8000000);
+        legendPlusBuff.dispellable = false;
+
+        if (_behavior.difficulty == 5)
+        {
+            DOVirtual.DelayedCall(3f, () =>
+            {
+                BattleStageManager.Instance.RemoveFieldAbility(20081);
+                BattleStageManager.Instance.RemoveFieldAbility(20091);
+            },false);
+            
+        }
+
+        
     }
 
 
@@ -614,6 +632,11 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         yield return new WaitUntil(() => !ac.hurt && ac.grounded);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
+        
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
 
         var SecondFloorWatcher = GetAnchoredSensorOfName("M2F");
         StageCameraController.SwitchOverallCameraFollowObject(SecondFloorWatcher);
@@ -658,6 +681,11 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
         
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
+        
         
         bossBanner?.PrintSkillName("HB01_Action15");
         
@@ -697,6 +725,11 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         yield return new WaitUntil(() => !ac.hurt && ac.grounded);
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
+        
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
 
         var SecondFloorWatcher = GetAnchoredSensorOfName("M2F");
         StageCameraController.SwitchOverallCameraFollowObject(SecondFloorWatcher);
@@ -862,6 +895,11 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
         
+        if (_behavior.difficulty == 5 && _behavior.GetState().Item1 > 0)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
+        }
+        
         bossBanner?.PrintSkillName("HB01_Action19");
 
         yield return new WaitForSeconds(0.5f);
@@ -893,7 +931,7 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
     public IEnumerator HB01_Action20()
     {
         yield return new WaitUntil(() => !ac.hurt && ac.grounded);
-        ac.OnAttackEnter();
+        ac.OnAttackEnter(_behavior.difficulty >= 5? 999: 100);
         ac.TurnMove(_behavior.targetPlayer);
         
         bossBanner?.PrintSkillName("HB01_Action20");
@@ -1000,7 +1038,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
     {
         yield return new WaitUntil(() => !ac.hurt && ac.grounded);
         ac.OnAttackEnter(999);
-
+        
+        
         ac.TurnMove(_behavior.targetPlayer);
         bossBanner?.PrintSkillName("HB01_Action22");
         UI_DialogDisplayer.Instance?.
@@ -1028,7 +1067,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
     {
         yield return new WaitUntil(() => !ac.hurt && ac.grounded);
         ac.OnAttackEnter(999);
-
+        
+        
         ac.TurnMove(_behavior.targetPlayer);
         bossBanner?.PrintSkillName("HB01_Action23");
         UI_DialogDisplayer.Instance?.
@@ -1145,6 +1185,11 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
             hint4Displayed = true;
             UI_DialogDisplayer.Instance?.
                 EnqueueDialogShared(10101,10018,BattleEffectManager.Instance?.notteHintClips[0]);
+        }
+        
+        if (_behavior.difficulty == 5)
+        {
+            _statusManager.ObtainTimerBuff(legendPlusBuff);
         }
 
         

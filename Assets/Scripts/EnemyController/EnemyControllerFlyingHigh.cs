@@ -47,6 +47,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
       public IEnumerator FlyTowardTargetOnSamePlatform(GameObject target, float arriveDistanceX, float allowDistanceY, float maxFollowTime)
       {
             SetGravityScale(0);
+            SetGroundCollision(false);
             
             var targetCollider = BasicCalculation.CheckRaycastedPlatform(target);
             var targetHeight = target.GetComponent<ActorBase>().GetActorHeight();
@@ -84,8 +85,9 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                         //endPoint.y = transform.position.y + 0.5f;
                   }
                   else if (((target.transform.position.y) - targetHeight) - (transform.position.y - GetActorHeight()) >
-                             allowDistanceY)
+                             0)
                    {
+                         //endpoint -> 0
                          endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.1f;
                    }
                   else
@@ -128,7 +130,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   
                   TurnMove(target);
                   
-                  if (Vector2.Distance(transform.position, endPoint) < 0.5f)
+                  if (Vector2.Distance(transform.position, endPoint) < 0.2f)
                   { 
                         OnMoveFinished?.Invoke(true);
                         SetGroundCollision(true);
@@ -140,7 +142,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   
                   yield return null;
                   
-                  time += Time.deltaTime;
+                  //time += Time.deltaTime;
                   //print(endPoint);
             }
 

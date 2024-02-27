@@ -37,7 +37,10 @@ public class UI_RingSlider : MonoBehaviour
         
         currentValue -= Time.deltaTime;
         if (currentValue < 0)
+        {
             currentValue = 0;
+        }
+            
         
         if(fillAmount < 0.25f)
             frontGauge.color = warningColor;

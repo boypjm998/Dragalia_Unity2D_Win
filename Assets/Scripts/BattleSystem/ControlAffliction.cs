@@ -7,15 +7,18 @@ using UnityEngine;
 public class ControlAffliction : MonoBehaviour
 {
     [SerializeField] private BasicCalculation.BattleCondition _condition;
+    [SerializeField] private bool canStack = false;
     private StatusManager _statusManager;
 
     private void Awake()
     {
-        
+        if(canStack)
+            return;
+
         var others = transform.parent.GetComponentsInChildren<ControlAffliction>();
         for (int i = others.Length - 1; i >= 0; i--)
         {
-            if(others[i]!=this)
+            if(others[i]!=this && others[i].canStack == false)
                 Destroy(others[i].gameObject);
         }
 

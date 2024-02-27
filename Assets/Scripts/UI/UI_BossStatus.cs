@@ -113,8 +113,24 @@ public class UI_BossStatus : MonoBehaviour
         
         
         var levelDetailedInfo = _battleStageManager.GetLevelDetailedInfo();
-        var bossAbilities = 
-            levelDetailedInfo.boss_prefab[bossIndex].boss_abilities;
+        var bossAbilities = new List<string>();
+
+        try
+        {
+            bossAbilities =
+                levelDetailedInfo.boss_prefab[bossIndex].boss_abilities;
+        }
+        catch
+        {
+            Debug.LogWarning("No boss ability info");
+            foreach (var ab in bossStat.abilityList)
+            {
+                bossAbilities.Add($"BOSS_ABILITY_{ab}");
+                print("ADDED" + $"BOSS_ABILITY_{ab}");
+            }
+        }
+
+
 
         ClearBossAbility();
         

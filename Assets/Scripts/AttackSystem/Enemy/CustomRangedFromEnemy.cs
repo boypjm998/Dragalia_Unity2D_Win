@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CustomRangedFromEnemy : AttackFromEnemy
 {
-    private EnemyController ac;
+    //protected EnemyController ac;
     protected override void Awake()
     {
         base.Awake();

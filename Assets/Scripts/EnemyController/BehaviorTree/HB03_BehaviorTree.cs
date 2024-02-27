@@ -57,9 +57,11 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
                 status.ReliefAllAfflication();
                 debuffRelived = true;
             }
-            
-            
         }
+        
+        print(currentAttackAction == null?"currentAttackAction is null":"currentAttackAction is not null");
+        print(currentMoveAction == null?"currentMoveAction is null":"currentMoveAction is not null");
+        print(currentAction == null?"currentAction is null":"currentAction is not null");
 
     }
 
@@ -346,9 +348,9 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
         {
             case "free":
             {
-                float type = float.Parse(_currentActionStage.args[0]);
-                float moveTime = float.Parse(_currentActionStage.args[1]);
-                float interval = float.Parse(_currentActionStage.args[2]);
+                float type = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                float moveTime = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[2]);
                 
                 if (type == 0)
                 {
@@ -378,8 +380,8 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
             }
             case "gate":
             {
-                float type = float.Parse(_currentActionStage.args[0]);
-                float interval = float.Parse(_currentActionStage.args[1]);
+                float type = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
                 
                 if(type == 0)
                     currentAction = StartCoroutine(ACT_OtherworldGateFixed(interval));
@@ -392,19 +394,19 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
             }
             case "buff":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BlessingOfGale(interval));
                 break;
             }
             case "summon":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_SummonZethia(interval));
                 break;
             }
             case "force":
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_ForceFieldEnhancement(interval));
                 break;
             }
@@ -447,7 +449,7 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
             case "distance":
             {
                 var distance = Mathf.Abs(targetPlayer.transform.position.x - transform.position.x);
-                var cond = float.Parse(args[1]);
+                var cond = ObjectExtensions.ParseInvariantFloat(args[1]);
                 if (distance <= cond)
                 {
                     dest_state = int.Parse(args[2]);
@@ -494,7 +496,7 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
 
         currentMoveAction = StartCoroutine((enemyController).MoveTowardsTargetNavigatorWithDesignedRoutine(
              nameof(enemyAttackManager.COND_StandardAttackAimCheck),
-             targetPlayer,1,moveTime));
+             targetPlayer,1.5f,moveTime));
         
         yield return new WaitUntil(()=>currentMoveAction == null);
         print("Task0");

@@ -31,6 +31,11 @@ public class DragonPointEnemy : MonoBehaviour
 
     }
 
+    public void DisableAll()
+    {
+        checkedList.Clear();
+    }
+
     private void AddDModeGaugeToPlayer()
     {
         float currentHPInPercent = 100 * _statusManager.currentHp / _statusManager.maxBaseHP;

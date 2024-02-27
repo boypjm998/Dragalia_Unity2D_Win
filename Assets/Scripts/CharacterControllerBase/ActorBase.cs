@@ -29,6 +29,7 @@ public abstract class ActorBase : MonoBehaviour
     public OnHurt OnAttackInterrupt;   
     public int facedir = 1;
     public float speedModifier = 1;
+    public bool isBog { get; protected set; }
     
     public static float DefaultGravity = 4;
     protected Tweener _tweener;
@@ -54,6 +55,35 @@ public abstract class ActorBase : MonoBehaviour
     public virtual void AppearRenderer()
     {
     }
+
+    public virtual void SetMoveSpeed(float spd)
+    {
+        
+    }
+
+
+    protected void TurnToMiddle()
+    {
+        //transform.rotation = Quaternion.Euler(0, 120, 0);
+        if(facedir ==1)
+            anim.transform.rotation = Quaternion.Euler(0, 120, 0);
+        else if(facedir ==-1)
+        {
+            anim.transform.rotation = Quaternion.Euler(0, -120, 0);
+        }
+    }
+
+    protected void TurnToSide()
+    {
+        //transform.rotation = Quaternion.Euler(0, 102, 0);
+        if(facedir ==1)
+            anim.transform.rotation = Quaternion.Euler(0, 102, 0);
+        else if(facedir ==-1)
+        {
+            anim.transform.rotation = Quaternion.Euler(0, -102, 0);
+        }
+    }
+    
 
     public float GetActorHeight()
     {
@@ -103,6 +133,11 @@ public abstract class ActorBase : MonoBehaviour
     }
 
 
+    protected virtual void CheckBog(BattleCondition condition)
+    {
+        
+    }
+    
     #region 攻击返回指令
 
     public virtual void OnStandardAttackConnect()

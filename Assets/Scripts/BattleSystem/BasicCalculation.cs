@@ -1,12 +1,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using CharacterSpecificProjectiles;
 using LitJson;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -14,7 +16,23 @@ namespace GameMechanics
 {
     public static class BasicCalculation
     {
-        
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection)
+        {
+            //随机打乱一个序列
+            var list = collection.ToList();
+            var count = list.Count;
+            for (var i = 0; i < count; i++)
+            {
+                var index = Random.Range(0, count);
+                var temp = list[i];
+                list[i] = list[index];
+                list[index] = temp;
+            }
+
+            collection = list;
+            
+            return list;
+        }
         public static int RandInt(int minInclusive, int maxInclusive)
         {
             float randFloat = Random.Range(0f,1f);
@@ -58,7 +76,11 @@ namespace GameMechanics
             if(str == "Mouse1")
                 return "RMouse";
             return str;
+        }
 
+        public static string ToButtonString(InputBinding binding)
+        {
+            return UI_GameOption.SimplifyInputActionName(binding.path);
         }
 
         public enum AttackType
@@ -76,10 +98,13 @@ namespace GameMechanics
         public static int[] conditionsDisplayedByStacknum = new int[]
         {
             5, 13, 14, 15, 40, 57,
-            101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 114,
+            101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 114, 115, 116, 117, 118, 120,
+            121, 122,
+            
             213, 214, 299, 300,
-            301, 302, 303,
-            401, 402, 403, 404, 405, 406, 407, 408, 411, 412, 413, 414, 415, 416
+            301, 302, 303, 304,
+            401, 402, 403, 404, 405, 406, 407, 408, 411, 412, 413, 414, 415, 416,
+            501, 502, 503, 504
         };
         public static int[] conditionsDisplayedByLevel = new int[]
         {
@@ -101,7 +126,41 @@ namespace GameMechanics
         {
             107
         };
-    
+        
+        public enum GeneralWeaponType
+        {
+            Sword,
+            Blade,
+            Axe,
+            Dagger,
+            Lance,
+            Bow,
+            Wand,
+            Staff,
+            Gun
+        }
+
+        public enum MeeleWeaponType
+        {
+            Sword,
+            Blade,
+            Axe,
+            Lance,
+            Dagger,
+            Special
+        }
+        
+        public enum RangedWeaponType
+        {
+            Bow,
+            Wand,
+            Staff,
+            ManacasterLong,
+            ManacasterRapid,
+            ManacasterShort,
+            Special
+        }
+
         public enum BattleCondition
         {
             //Basic Buff
@@ -133,7 +192,8 @@ namespace GameMechanics
             StormlashRes = 26,
             FlashburnRes = 27,
             ShadowBlightRes = 28,
-            
+            BuffTimeExtend = 29,
+            DebuffTimeExtend = 30,
             StunRes = 31,
             SleepRes = 32,
             BogRes = 33,
@@ -195,7 +255,14 @@ namespace GameMechanics
             HeartAflame = 112,
             ScorchingEnergy = 113,
             AlmightyRage = 114,
-            
+            VampireMaiden = 115,
+            ProtocolPreserve = 116,
+            ProtocolRestore = 117,
+            ProtocolPurify = 118,
+            MoveSpeedUp = 119,
+            PowerOfPrayer = 120,
+            DemonSealReleased = 121,
+            AlteredStrikeCleo = 122,
             
     
             //Basic Debuff
@@ -222,6 +289,8 @@ namespace GameMechanics
             FlashburnResDown = 227,
             ShadowBlightResDown = 228,
             
+            StunResDown = 231,
+            
             
             Corrosion = 298,
             Taunt = 299,
@@ -230,6 +299,7 @@ namespace GameMechanics
             EvilsBane = 301,
             ManaOverloaded = 302,
             LockedSigil = 303,
+            DemonSeal = 304,
     
             //Dot Affliction
             Burn = 401,
@@ -253,6 +323,12 @@ namespace GameMechanics
             NoJump = 417,
             NoRoll = 418,
             
+            //Extra Buff
+            StandardAttackShield = 501,
+            DashForceShield = 502,
+            SkillShield = 503,
+            OtherShield = 504,
+
             Dispell = 999
             
         }
@@ -267,9 +343,8 @@ namespace GameMechanics
             string specialText_c001_cond = String.Empty;
             string specialText_c003 = String.Empty;
             string specialText_c003_cond = String.Empty;
-            
             string specialText_c006 = String.Empty;
-            
+            string specialText_c007 = String.Empty;
             string specialText_c010 = String.Empty;
             
             
@@ -285,6 +360,7 @@ namespace GameMechanics
                 specialText_c003 = "蓄力攻击:持续按下";
                 specialText_c006 = "特殊行动(召唤巴哈姆特)";
                 specialText_c010 = "特殊行动(羽化)";
+                specialText_c007 = "特殊行动(强袭)";
                 specialText_c001_cond = "(当传送门存在时)";
                 specialText_c003_cond = "(当【暮光之月】增益存在时)";
             }else if (language == GlobalController.Language.EN)
@@ -295,42 +371,77 @@ namespace GameMechanics
                 specialText_c001 = "Special Action(Teleport)";
                 specialText_c003 = "Force Strike:Hold ";
                 specialText_c006 = "Special Action(Summon Bahamut)";
+                specialText_c007 = "Special Action(Dragondrive)";
                 specialText_c001_cond = "(When the portal is on the field)";
                 specialText_c003_cond = "(When the user has 'Twilight Moon')";
                 specialText_c010 = "Special Action (Metamorphosis)";
                 
             }
 
+            if (GlobalController.Instance.gameOptions.gamepadSettings[0] == 1)
+            {
+                sb.Append($"{attackText}:{ToButtonString(playerInput.keyAttack)}\n");
+                sb.Append($"{jumpText}:{ToButtonString(playerInput.keyJump)}\n");
+                sb.Append($"{rollText}:{ToButtonString(playerInput.keyRoll)}\n");
+            }
+            else
+            {
+                sb.Append($"{attackText}:{ToButtonString(playerInput.gamepadButtonDict["Attack"])}\n");
+                sb.Append($"{jumpText}:{ToButtonString(playerInput.gamepadButtonDict["Jump"])}\n");
+                sb.Append($"{rollText}:{ToButtonString(playerInput.gamepadButtonDict["Dodge"])}\n");
+            }
 
 
+            if (GlobalController.Instance.gameOptions.gamepadSettings[0] == 1)
+            {
+                if (GlobalController.currentCharacterID == 1)
+                {
+                    sb.Append($"{specialText_c001}:{ToButtonString(playerInput.keyUp)}\n{specialText_c001_cond}");
+                }
+                else if (GlobalController.currentCharacterID == 3)
+                {
 
+                    sb.Append($"{specialText_c003}{ToButtonString(playerInput.keyAttack)}\n{specialText_c003_cond}");
+                }
+                else if (GlobalController.currentCharacterID == 6)
+                {
+                    sb.Append($"{specialText_c006}:{ToButtonString(playerInput.keyUp)}");
+                }
+                else if (GlobalController.currentCharacterID == 7)
+                {
+                    sb.Append($"{specialText_c007}:{ToButtonString(playerInput.keyUp)}");
+                }
+                else if (GlobalController.currentCharacterID == 10)
+                {
+                    sb.Append($"{specialText_c010}:{ToButtonString(playerInput.keyUp)}");
+                }
+            }
+            else
+            {
+                if (GlobalController.currentCharacterID == 1)
+                {
+                    sb.Append($"{specialText_c001}:{ToButtonString(playerInput.gamepadButtonDict["Special"])}\n{specialText_c001_cond}");
+                }
+                else if (GlobalController.currentCharacterID == 3)
+                {
+
+                    sb.Append($"{specialText_c003}{ToButtonString(playerInput.gamepadButtonDict["Attack"])}\n{specialText_c003_cond}");
+                }
+                else if (GlobalController.currentCharacterID == 6)
+                {
+                    sb.Append($"{specialText_c006}:{ToButtonString(playerInput.gamepadButtonDict["Special"])}");
+                }
+                else if (GlobalController.currentCharacterID == 7)
+                {
+                    sb.Append($"{specialText_c007}:{ToButtonString(playerInput.gamepadButtonDict["Special"])}");
+                }
+                else if (GlobalController.currentCharacterID == 10)
+                {
+                    sb.Append($"{specialText_c010}:{ToButtonString(playerInput.gamepadButtonDict["Special"])}");
+                }
+            }
             
-
-            sb.Append($"{attackText}:{ToButtonString(playerInput.keyAttack)}\n");
-            sb.Append($"{jumpText}:{ToButtonString(playerInput.keyJump)}\n");
-            sb.Append($"{rollText}:{ToButtonString(playerInput.keyRoll)}\n");
-        
             
-            if (GlobalController.currentCharacterID == 1)
-            {
-
-                sb.Append($"{specialText_c001}:{ToButtonString(playerInput.keyUp)}\n{specialText_c001_cond}");
-            }
-            if (GlobalController.currentCharacterID == 3)
-            {
-
-                sb.Append($"{specialText_c003}{ToButtonString(playerInput.keyAttack)}\n{specialText_c003_cond}");
-            }
-            
-            if (GlobalController.currentCharacterID == 6)
-            {
-                sb.Append($"{specialText_c006}:{ToButtonString(playerInput.keyUp)}");
-            }
-
-            if (GlobalController.currentCharacterID == 10)
-            {
-                sb.Append($"{specialText_c010}:{ToButtonString(playerInput.keyUp)}");
-            }
 
             return sb.ToString();
         }
@@ -490,6 +601,14 @@ namespace GameMechanics
                     return ("Defense +{0}%");
                 case BattleCondition.DefDebuff:
                     return ("Defense -{0}%");
+                case BattleCondition.MaxHPBuff:
+                    return ("HP +{0}%");
+                case BattleCondition.BuffTimeExtend:
+                    return ("Buff Time +{0}%");
+                case BattleCondition.DebuffTimeExtend:
+                    return ("Debuff Time +{0}%");
+                
+                
                 case BattleCondition.HealOverTime:
                     return ("HP Regen");
                 case BattleCondition.CritRateBuff:
@@ -579,12 +698,20 @@ namespace GameMechanics
                     return ("Stormlash Res -{0}%");
                 case BattleCondition.PoisonResDown:
                     return ("Poison Res -{0}%");
+                case BattleCondition.StunResDown:
+                    return ("Stun Res -{0}%");
+                
+                
                 case BattleCondition.BurnRateUp:
                     return ("Burn Infliction Rate +{0}%");
                 case BattleCondition.FlashburnRateUp:
                     return ("Flashburn Infliction Rate +{0}%");
                 case BattleCondition.ScorchrendRateUp:
-                    return ("Flashburn Infliction Rate +{0}%");
+                    return ("Scorchrend Infliction Rate +{0}%");
+                case BattleCondition.ShadowblightRateUp:
+                    return ("Shadowblight Infliction Rate +{0}%");
+                case BattleCondition.ParalysisRateUp:
+                    return ("Paralysis Infliction Rate+{0}%");
                 
                 case BattleCondition.Energy:
                     return ("Energy Level +{0}");
@@ -659,7 +786,22 @@ namespace GameMechanics
                     return ("Scorching Energy {0}");
                 case BattleCondition.AlmightyRage:
                     return ("Almighty Rage");
-                
+                case BattleCondition.VampireMaiden:
+                    return ("Vampire Maiden");
+                case BattleCondition.ProtocolPreserve:
+                    return ("Perserve Protocol");
+                case BattleCondition.ProtocolRestore:
+                    return ("Restore Protocol");
+                case BattleCondition.ProtocolPurify:
+                    return ("Purify Protocol");
+                case BattleCondition.MoveSpeedUp:
+                    return ("Movement Speed +{0}%");
+                case BattleCondition.PowerOfPrayer:
+                    return ("Power of Prayer");
+                case BattleCondition.DemonSealReleased:
+                    return ("Seal Released");
+                case BattleCondition.AlteredStrikeCleo:
+                    return ("Altered Strike");
                     
     
                 //Special debuffs:
@@ -669,6 +811,9 @@ namespace GameMechanics
                     return ("Energy Overloaded");
                 case BattleCondition.LockedSigil:
                     return ("Locked Sigil");
+                case BattleCondition.DemonSeal:
+                    return ("Demon's Seal");
+                
                 
                 case BattleCondition.Corrosion:
                     return ("Corrosion");
@@ -706,6 +851,16 @@ namespace GameMechanics
                     return ("Stormlash");
                 case BattleCondition.Cursed:
                     return ("Cursed");
+                
+                
+                case BattleCondition.StandardAttackShield:
+                    return ("Standard Attack Res");
+                case BattleCondition.DashForceShield:
+                    return ("Dash & Force Strike Res");
+                case BattleCondition.SkillShield:
+                    return ("Skill Res");
+                case BattleCondition.OtherShield:
+                    return ("Other Attack Res");
     
     
                 default:
@@ -730,6 +885,14 @@ namespace GameMechanics
                     return ("防御力下降{0}%");
                 case BattleCondition.HealOverTime:
                     return ("HP持续回复");
+                case BattleCondition.MaxHPBuff:
+                    return ("HP提升{0}%");
+                case BattleCondition.BuffTimeExtend:
+                    return ("增益时间延长{0}%");
+                case BattleCondition.DebuffTimeExtend:
+                    return ("减益时间延长{0}%");
+                
+                
                 case BattleCondition.CritRateBuff:
                     return ("暴击率提升{0}%");
                 case BattleCondition.CritRateDebuff:
@@ -820,12 +983,21 @@ namespace GameMechanics
                     return ("裂风抗性下降{0}%");
                 case BattleCondition.PoisonResDown:
                     return ("中毒抗性下降{0}%");
+                case BattleCondition.StunResDown:
+                    return ("昏迷抗性下降{0}%");
+                
+                
+                
                 case BattleCondition.BurnRateUp:
                     return ("造成烧伤成功率提升{0}%");
                 case BattleCondition.FlashburnRateUp:
                     return ("造成闪热成功率提升{0}%");
                 case BattleCondition.ScorchrendRateUp:
                     return ("造成劫火成功率提升{0}%");
+                case BattleCondition.ShadowblightRateUp:
+                    return ("造成暗殇成功率提升{0}%");
+                case BattleCondition.ParalysisRateUp:
+                    return ("造成麻痹成功率提升{0}%");
 
 
 
@@ -902,6 +1074,23 @@ namespace GameMechanics
                     return ("灼热炽焰{0}");
                 case BattleCondition.AlmightyRage:
                     return ("神击之咆哮");
+                case BattleCondition.VampireMaiden:
+                    return ("吸血鬼少女");
+                case BattleCondition.ProtocolPreserve:
+                    return ("防御系统");
+                case BattleCondition.ProtocolRestore:
+                    return ("回复系统");
+                case BattleCondition.ProtocolPurify:
+                    return ("净化系统");
+                case BattleCondition.MoveSpeedUp:
+                    return ("移动速度提升{0}%");
+                case BattleCondition.PowerOfPrayer:
+                    return ("祈愿之力");
+                case BattleCondition.DemonSealReleased:
+                    return ("冰狱");
+                case BattleCondition.AlteredStrikeCleo:
+                    return ("变则爆发");
+                
     
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
@@ -910,6 +1099,8 @@ namespace GameMechanics
                     return ("魔力过载");
                 case BattleCondition.LockedSigil:
                     return ("圣痕枷锁");
+                case BattleCondition.DemonSeal:
+                    return ("撒旦枷锁");
                 
                 case BattleCondition.Corrosion:
                     return ("侵蚀");
@@ -947,6 +1138,16 @@ namespace GameMechanics
                     return ("裂风");
                 case BattleCondition.Cursed:
                     return ("诅咒");
+                
+                
+                case BattleCondition.StandardAttackShield:
+                    return ("普通攻击抗性");
+                case BattleCondition.DashForceShield:
+                    return ("冲刺&爆发攻击抗性");
+                case BattleCondition.SkillShield:
+                    return ("技能抗性");
+                case BattleCondition.OtherShield:
+                    return ("其他攻击抗性");
     
     
                 default:
@@ -960,6 +1161,8 @@ namespace GameMechanics
     
         
     
+        
+        
     
         public static float BattleConditionLimit(int id)
         {
@@ -1045,7 +1248,7 @@ namespace GameMechanics
         }
     
         public static int CalculateDamageGeneral(StatusManager sourceStat, StatusManager targetStat, float modifier,
-            AttackBase atkStat, ref bool isCrit)
+            AttackBase atkStat, ref bool isCrit,ref int extraDamageConstant)
         {
             //Source
 
@@ -1055,13 +1258,22 @@ namespace GameMechanics
             if (atkStat.conditionalAttackEffects.Count > 0)
             {
                 var extraModifier = 0f;
-                
+
                 foreach (var caf in atkStat.conditionalAttackEffects)
                 {
-                    extraModifier += caf.GetExtraModifiers(targetStat,sourceStat);
-                    extraCritRate += caf.GetExtraCritRate(targetStat,sourceStat);
+                    if (caf.extraEffect == ConditionalAttackEffect.ExtraEffect.Custom)
+                    {
+                        extraDamageConstant += 
+                            caf.InvokeCustomExtraEffect(targetStat, sourceStat, atkStat);
+                    }
+                    else
+                    {
+                        extraModifier += caf.GetExtraModifiers(targetStat,sourceStat);
+                        extraCritRate += caf.GetExtraCritRate(targetStat,sourceStat);
+                    }
                 }
                 newModifier *= (1 + extraModifier);
+                //atkStat.conditionalAttackEffects = unfinishedCaf;
                 Debug.Log("Extra modifier: " + extraModifier);
             }
 
@@ -1190,7 +1402,10 @@ namespace GameMechanics
                 {
                     //破防特效
                     defendTarget *= specialTarget.breakDefRate;
-                    attackSource *= (1 + sourceStat.breakPunisher);
+                    var punisherAbility2 = AbilityCalculation
+                        .GetAbilityAmountInfo
+                            (sourceStat, targetStat, atkStat, AbilityCalculation.ProductArea.BKPUNISHER).Item1;
+                    attackSource *= (1 + sourceStat.breakPunisher + punisherAbility);
                 }
             }
 
@@ -1352,10 +1567,14 @@ namespace GameMechanics
             var hp = targetStat.maxHP;
             var potencybuff = targetStat.recoveryPotencyBuff;
             potencybuff += CheckSpecialRecoveryBuff(targetStat).Item1;
+            var potencyAbility = 0f;
+            potencyAbility = AbilityCalculation
+                .GetAbilityAmountInfo(targetStat, null, null, AbilityCalculation.ProductArea.RCV).Item1;
+
     
-            var damagePart1 = (0.16 * hp + 0.06 * atk) * modifier * (1 + potencybuff) * 0.012f;
+            var damagePart1 = (0.16 * hp + 0.06 * atk) * modifier * (1 + potencybuff + potencyAbility) * 0.012f;
     
-            var damagePart2 = hp * percentageModifier * 0.01 * (1 + potencybuff);
+            var damagePart2 = hp * percentageModifier * 0.01 * (1 + potencybuff + potencyAbility);
             
             //Debug.Log("atk:"+atk);
     
@@ -1574,7 +1793,7 @@ namespace GameMechanics
             return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
         }
 
-        /// <summary>
+        /*/// <summary>
         /// 对【目标】的减伤进行判定。
         /// </summary>
         public static Tuple<float,float,float> CheckSpecialDamageCutEffect(StatusManager sourceStat, StatusManager targetStat,
@@ -1623,7 +1842,7 @@ namespace GameMechanics
             
 
             return new Tuple<float, float, float>(buffModifier-debuffModifier,buffModifier,debuffModifier);
-        }
+        }*/
 
         public static Tuple<int, int, int> CheckSpecialDebuffRateEffect(StatusManager sourceStat,
             StatusManager targetStat, AttackBase attackStat)
@@ -1716,10 +1935,19 @@ namespace GameMechanics
             
         }
 
+        /// <summary>
+        /// 弃用
+        /// </summary>
+        /// <returns></returns>
         public static float CheckSpecialODAccerleratorEffect(StatusManager sourceStat, StatusManager targetStat,
             AttackBase attackStat)
         {
             float totalODAccerlerator = 0;
+
+            if (sourceStat.GetAbility(10064))
+            {
+                totalODAccerlerator += 0.4f;
+            }
 
             if (sourceStat.GetAbility(80009))
             {
@@ -1736,22 +1964,7 @@ namespace GameMechanics
             return totalODAccerlerator;
         }
 
-        public static Tuple<float, float, float> CheckSpecialSkillRateEffect(StatusManager sourceStat,
-            AttackBase attackStat)
-        {
-            float buffModifier = 0;
-            float debuffModifier = 0;
-
-            if (sourceStat.GetAbility(10058) && sourceStat.currentHp > sourceStat.maxHP * 0.7f)
-            {
-                buffModifier += 0.1f;
-            }
-
-
-
-
-            return new Tuple<float, float, float>(buffModifier - debuffModifier, buffModifier, debuffModifier);
-        }
+        
 
 
         #endregion
@@ -1799,9 +2012,19 @@ namespace GameMechanics
             return totalDef;
             
         }
-        
-        
 
+        public static TimerBuff ApplyBuffTime(this TimerBuff condition, StatusManager statusManager)
+        {
+            float modifier = 1;
+            if (StatusManager.IsBuff(condition.buffID))
+            {
+                modifier += CheckBuffExtensionAbility(statusManager);
+                condition.SetDuration(condition.duration * modifier);
+            }
+            //todo: IF IS DEBUFF
+
+            return condition;
+        }
 
         private static float CheckTotalPunisher(StatusManager targetStat, StatusManager sourceStat)
         {
@@ -1894,18 +2117,42 @@ namespace GameMechanics
 
         }
 
+        private static float CheckBuffExtensionAbility(StatusManager statusManager)
+        {
+            float buff = 0;
+
+            buff += 
+                0.01f*
+                    statusManager.GetConditionTotalValue
+                        ((int)(BattleCondition.BuffTimeExtend));
+            
+            
+            if (statusManager.GetAbility(10064) && statusManager.comboHitCount >= 10)
+            {
+                buff += 0.3f;
+            }
+            else if (statusManager.GetAbility(10071))
+            {
+                buff += 0.3f;
+            }
+
+
+
+            if (buff > 5)
+                return 5;
+            
+            
+            return buff;
+        }
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
         public enum KnockBackType
         {
            None = 0, //No Knockback Distance
@@ -2109,7 +2356,9 @@ namespace GameMechanics
             var selfCollider = _groundSensor.GetSelfCollider();
             try
             {
-                myGround = _groundSensor.GetCurrentAttachedGroundInfo();
+                myGround = target.RaycastedPlatform().gameObject;
+                //Debug.Log(myGround.name);
+                //myGround = _groundSensor.GetCurrentAttachedGroundInfo();
             }
             catch
             {
@@ -2222,6 +2471,8 @@ namespace GameMechanics
             }
             return intersectionPoints; 
         }
+
+        
 
         public static List<Vector2> GetIntersectionOfCircleCollider(Vector2 pointA,Vector2 pointB, CircleCollider2D collider)
         {
@@ -2443,6 +2694,96 @@ namespace GameMechanics
 
     public static class ActorExtensions
     {
+
+        public static GameObject InstantiateRangedObject(this Component me, GameObject prefab,
+            Vector3 position, GameObject container,int facedir, int rotateMode = 1, Component src = null)
+        {
+            var prefabInstance = GameObject.Instantiate
+                (prefab, position, Quaternion.identity, container.transform);
+            if(facedir == -1)
+            {
+                if (rotateMode == 0)
+                {
+                    prefabInstance.transform.eulerAngles = new Vector3(0, 180, 0);
+                }
+                else
+                {
+                    var initScale = prefabInstance.transform.localScale;
+                    prefabInstance.transform.localScale = new Vector3(-initScale.x, initScale.y, initScale.z);
+                }
+            }
+
+            var atk = prefabInstance.GetComponent<AttackBase>();
+
+            if (!atk)
+                return prefabInstance;
+
+            if (atk is AttackFromPlayer)
+            {
+                (atk as AttackFromPlayer).playerpos = src == null?me.transform:src.transform;
+                atk.firedir = facedir;
+            }else if (atk is AttackFromEnemy)
+            {
+                (atk as AttackFromEnemy).enemySource = src == null?me.gameObject:src.gameObject;
+                atk.firedir = facedir;
+            }
+            
+            return prefabInstance;
+        }
+        
+        public static void SpeedUp(this PlayerStatusManager stat, float rate, float duration,bool eff = true)
+        {
+            var speedUpBuff = new TimerBuff((int)BasicCalculation.BattleCondition.MoveSpeedUp,
+                rate, duration, 1,-1);
+
+
+            var spdRate = stat.GetConditionTotalValue
+                ((int)BasicCalculation.BattleCondition.MoveSpeedUp);
+            
+            StatusManager.TestDelegate eventHandler = null;
+
+            if (spdRate <= 0)
+            {
+                eventHandler = (buff) =>
+                {
+                    if (buff.buffID != speedUpBuff.buffID)
+                    {
+                        return;
+                    }
+                    var buffAmount = stat.GetConditionTotalValue
+                        ((int)BasicCalculation.BattleCondition.MoveSpeedUp);
+                    
+                    buffAmount = Mathf.Clamp(buffAmount, 0, 50);
+                    
+                    var ac = stat.GetComponent<ActorBase>();
+                    ac.SetMoveSpeed((1f+buffAmount*0.01f)*stat.movespeed);
+
+                    if (buffAmount <= 0)
+                    {
+                        stat.OnBuffEventDelegate -= eventHandler;
+                        stat.OnBuffExpiredEventDelegate -= eventHandler;
+                        stat.OnBuffDispelledEventDelegate -= eventHandler;
+                    }
+
+                };
+                
+                stat.OnBuffEventDelegate += eventHandler;
+                stat.OnBuffExpiredEventDelegate += eventHandler;
+                stat.OnBuffDispelledEventDelegate += eventHandler;
+            }
+            else
+            {
+                
+                
+            }
+
+            stat.ObtainTimerBuff(speedUpBuff,eff);
+            
+
+
+
+        }
+
         public static void GiveTimerBuff(this ActorBase actor, TimerBuff buff, bool eff = true)
         {
             var statusManager = actor.GetComponent<StatusManager>();
@@ -2544,6 +2885,46 @@ namespace GameMechanics
         public static Vector3 SafePosition(this Vector3 position, Vector2 offset)
         {
             return BattleStageManager.Instance.OutOfRangeCheck(position + (Vector3)offset);
+        }
+
+        public static List<GameObject> GetMultipleTargetDistributionList
+            (this List<Transform> targets, int projectileNum)
+        {
+
+            if (targets.Count == 0)
+                return null;
+            
+            var projectileList = new List<GameObject>();
+            for (int i = 0; i < projectileNum; i++)
+            {
+                projectileList.Add(targets[i % targets.Count].gameObject);
+                //projectileList[i].SetContactTarget(targets[i % targets.Count].gameObject);
+            }
+
+            return projectileList;
+        }
+
+        public static float ParseInvariantFloat(string str)
+        {
+            return float.Parse(str, CultureInfo.InvariantCulture);
+        }
+
+        public static void ResetParameters(this Animator animator)
+        {
+            foreach (var parameter in animator.parameters)
+            {
+                if (parameter.type == AnimatorControllerParameterType.Int)
+                {
+                    animator.SetInteger(parameter.name, parameter.defaultInt);
+                }else if (parameter.type == AnimatorControllerParameterType.Float)
+                {
+                    animator.SetFloat(parameter.name, parameter.defaultFloat);
+                }
+                else
+                {
+                    animator.SetBool(parameter.name,parameter.defaultBool);
+                }
+            }
         }
     }
 

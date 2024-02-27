@@ -43,7 +43,7 @@ public class ActorController_c010 : ActorControllerDagger
     protected override void Update()
     {
         base.Update();
-        CheckAirRoll();
+        //CheckAirRoll();
     }
 
     private void OnDestroy()
@@ -51,17 +51,7 @@ public class ActorController_c010 : ActorControllerDagger
         _statusManager.OnComboConnect -= GainDPEvery20ComboHit;
     }
 
-    public void CheckAirRoll()
-    {
-        if (pi.roll)
-        {
-            if ((pi.rollEnabled || !grounded) && !pi.hurt)
-            {
-                anim.Play("roll");
-            }
-        }
-
-    }
+    
 
     protected override void CheckShapeShifting()
     {

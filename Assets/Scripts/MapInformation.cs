@@ -60,7 +60,7 @@ public class MapInformation : MonoBehaviour
     {
         foreach (var VARIABLE in mapSpotInfoList)
         {
-            print(VARIABLE.mapSpotID);
+            //print(VARIABLE.mapSpotID);
             if (VARIABLE.mapSpotID == id)
             {
                 return VARIABLE;

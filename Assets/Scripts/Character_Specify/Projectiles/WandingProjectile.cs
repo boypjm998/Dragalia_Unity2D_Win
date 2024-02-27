@@ -79,7 +79,9 @@ namespace CharacterSpecificProjectiles
             {
                 firedir = 1;
                 attackBase.firedir = 1;
-                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                if(flip)
+                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                
             }
 
 

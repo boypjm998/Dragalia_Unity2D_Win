@@ -93,12 +93,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayedName: "\u6CFD\u5A1C"
   dialogIconID: 1003
-  maxBaseHP: 175613
+  maxBaseHP: 228296
   baseDef: 8
   baseAtk: 1400
   critRate: 0
-  maxHP: 175613
-  currentHp: 175613
+  maxHP: 228296
+  currentHp: 228296
   comboConnectMaxInterval: 4
   comboHitCount: 0
   knockbackRes: 0
@@ -144,6 +144,7 @@ MonoBehaviour:
   displayHPBar: 0
   HPBarOffset: {x: 0, y: 0}
   hurt: 0
+  _groundSensor: {fileID: 0}
   counterOn: 0
   flashBody: {fileID: 1937144555932017329}
   minimapIcon: {fileID: 7589771821436361658}
@@ -159,7 +160,6 @@ MonoBehaviour:
   moveEnable: 1
   tar: {fileID: 0}
   _defaultgravityscale: 4
-  _groundSensor: {fileID: 0}
 --- !u!50 &6133123882682155446
 Rigidbody2D:
   serializedVersion: 4
@@ -595,6 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &5072748283469620636
 GameObject:
   m_ObjectHideFlags: 0

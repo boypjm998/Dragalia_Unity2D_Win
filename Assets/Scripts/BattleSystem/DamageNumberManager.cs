@@ -25,6 +25,7 @@ public class DamageNumberManager : MonoBehaviour
     private Transform totalDamageLayer;
 
     public static DamageNumberManager Instance { get; private set; }
+    
 
     private void Awake()
     {

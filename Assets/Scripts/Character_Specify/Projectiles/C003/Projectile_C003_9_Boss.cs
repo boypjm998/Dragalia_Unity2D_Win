@@ -30,6 +30,16 @@ namespace CharacterSpecificProjectiles
          Invoke(nameof(SummonMinon2),6f);
          Invoke(nameof(SummonMinon3),15f);
          Invoke(nameof(SummonMinon4),20f);
+
+         if (_parentController.GetComponent<DragaliaEnemyBehavior>().difficulty == 5)
+         {
+             minon1.GetComponent<StatusManager>().maxBaseHP *= 3;
+             minon2.GetComponent<StatusManager>().maxBaseHP *= 3;
+             minon3.GetComponent<StatusManager>().maxBaseHP *= 3;
+             minon4.GetComponent<StatusManager>().maxBaseHP *= 3;
+         }
+         
+         
      }
  
      private void Update()
@@ -48,11 +58,16 @@ namespace CharacterSpecificProjectiles
      // Start is called before the first frame update
      private void OnTriggerEnter2D(Collider2D col)
      {
-         if (col.GetComponentsInParent<E2002_BehaviorTree>() != null)
+         if (col.GetComponentInParent<E2002_BehaviorTree>() != null)
          {
              var stat = col.GetComponentInParent<EnemyMoveController_E2002>();
-             if(stat == null)
+             if (stat == null)
+             {
+                 print("stat is null");
                  return;
+             }
+
+             
              if (!stat.touched)
              {
                  stat.touched = true;
@@ -63,7 +78,8 @@ namespace CharacterSpecificProjectiles
  
      void SummonMinon1()
      {
-         Instantiate(minon1,new Vector3(-22,-1,0),Quaternion.identity,enemyLayer.transform);
+         var enemy = Instantiate(minon1,
+             new Vector3(-22,-1,0),Quaternion.identity,enemyLayer.transform);
      }
  
      void SummonMinon2()

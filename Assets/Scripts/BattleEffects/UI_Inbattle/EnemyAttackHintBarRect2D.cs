@@ -18,6 +18,13 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
 
     [SerializeField] private RectFillType fillType;
     
+    public void SetFillAxis(int axis)
+    {
+        fillType = (RectFillType) axis;
+    }
+
+    
+
     protected override IEnumerator Start()
     {
         yield return base.Start();

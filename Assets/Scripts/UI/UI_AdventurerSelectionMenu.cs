@@ -27,6 +27,9 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     private string[] skillPath;
     private TextMeshProUGUI[] abilityName;
     private string[] abPath;
+    private Image[] upgradableSkillIcons;
+    
+    
     private TextMeshProUGUI MaxHPValue;
     private TextMeshProUGUI AttackValue;
 
@@ -35,6 +38,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     private Sprite[] iconSprites2;
 
     private GameObject resistanceParent;
+    private TextMeshProUGUI voiceActorInfo;
 
     private GameObject detailedInfoMenu;
     private Image iconInDetailedInfoMenu;
@@ -74,6 +78,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         Portrait = transform.Find("Portrait").GetComponent<Image>();
         characterName = transform.Find("Banner").GetComponentInChildren<TextMeshProUGUI>();
         resistanceParent = transform.Find("Resistances").gameObject;
+        voiceActorInfo = transform.Find("VA").GetComponent<TextMeshProUGUI>();
         
         
         skillIcons = new Image[4];
@@ -83,11 +88,13 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         abilityIcons = new Image[2];
         abilityName = new TextMeshProUGUI[2];
         descriptionString = new string[6];
+        upgradableSkillIcons = new Image[4];
         
         for (int i = 0; i < 4; i++)
         {
             skillIcons[i] = transform.Find("SkillInfo").GetChild(i).Find("Icon").GetComponent<Image>();
             skillName[i] = transform.Find("SkillInfo").GetChild(i).GetComponentInChildren<TextMeshProUGUI>();
+            upgradableSkillIcons[i] = transform.Find("SkillInfo").GetChild(i).GetChild(2).GetComponent<Image>();
         }
         for (int i = 0; i < 2; i++)
         {
@@ -152,7 +159,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
                 iconBundle = ab;
         }
         
-        print(iconBundle);
+        //print(iconBundle);
         
         this.iconBundle =
             _globalController.GetBundle
@@ -243,8 +250,29 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         
         for (int i = 0; i < 4; i++)
         {
-            skillPath[i] = 
-                CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["SK"+(i+1)].ToString();
+            var upgradeInfo = CheckSkillUpgradable(currentSelectedCharaID, i);
+            if (upgradeInfo == 1)
+            {
+                upgradableSkillIcons[i].color = Color.grey;
+                upgradableSkillIcons[i].gameObject.SetActive(true);
+                skillPath[i] = 
+                    CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["SK"+(i+1)].ToString();
+            }else if(upgradeInfo == 2)
+            {
+                upgradableSkillIcons[i].color = new Color(1f,0.5f,0);
+                upgradableSkillIcons[i].gameObject.SetActive(true);
+                skillPath[i] = 
+                    CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["SK"+(i+1)+"_LV2"].ToString();
+            }
+            else
+            {
+                upgradableSkillIcons[i].gameObject.SetActive(false);
+                skillPath[i] = 
+                    CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["SK"+(i+1)].ToString();
+            }
+            
+            
+            
             //print(skillIcons[i]);
             foreach (var vSprite in iconSprites1)
             {
@@ -271,6 +299,8 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             //    item => item.name == CharacterSkillInfo[skillPath[i]]["ICON_PATH"].ToString());
             skillName[i].text = CharacterSkillInfo[skillPath[i]]["NAME"].ToString();
             descriptionString[i] = CharacterSkillInfo[skillPath[i]]["DESCRIPTION"].ToString();
+            
+            
         }
         
         //var abPath = new string[2];
@@ -304,6 +334,18 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             }
         }
 
+        if (GlobalController.Instance.GameLanguage != GlobalController.Language.EN)
+        {
+            voiceActorInfo.text = 
+                "CV:" + 
+                CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["VA"].ToString();
+        }
+        else
+        {
+            voiceActorInfo.text = 
+                "VA:" + 
+                CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["VA"].ToString();
+        }
 
 
     }
@@ -371,6 +413,54 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
 
     }
+
+    public static int CheckSkillUpgradable(int charaID, int sid)
+    {
+        if (charaID == 1 && sid == 2)
+        {
+            //var questSaveList = GlobalController.Instance.GetQuestInfo();
+            if (GlobalController.Instance.CheckQuestClear("01033"))
+            {
+                return 2;
+            }else return 1;
+        }
+        else if (charaID == 3 && sid == 2)
+        {
+            //var questSaveList = GlobalController.Instance.GetQuestInfo();
+            if (GlobalController.Instance.CheckQuestClear("01024"))
+            {
+                return 2;
+            }else return 1;
+        }
+        else if (charaID == 5 && sid == 2)
+        {
+            //var questSaveList = GlobalController.Instance.GetQuestInfo();
+            if (GlobalController.Instance.CheckQuestClear("01014"))
+            {
+                return 2;
+            }else return 1;
+        }
+        else if (charaID == 6 && sid == 1)
+        {
+            //var questSaveList = GlobalController.Instance.GetQuestInfo();
+            if (GlobalController.Instance.CheckQuestClear("01043"))
+            {
+                return 2;
+            }else return 1;
+        }
+        else if (charaID == 10 && sid == 3)
+        {
+            //var questSaveList = GlobalController.Instance.GetQuestInfo();
+            if (GlobalController.Instance.CheckQuestClear("02013"))
+            {
+                return 2;
+            }else return 1;
+        }
+
+        return -1;
+    }
+
+    
 
     private void OnDestroy()
     {

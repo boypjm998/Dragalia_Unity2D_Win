@@ -36,6 +36,9 @@ public class AttackFromEnemy : AttackBase
     public float hitShakeIntensity = 3;
 
     public float damageAutoReset = 0; //自动刷新
+    public bool autoResetCondition = false;
+
+    protected EnemyController ac;
     
     public enum AvoidableProperty
     {
@@ -54,9 +57,9 @@ public class AttackFromEnemy : AttackBase
         //withConditions = new List<BattleCondition>();
         //withConditionNum = new List<int>();
         hitFlags = SearchPlayerList();
-        //withConditionFlags = SearchPlayerList();
-        battleStageManager = BattleStageManager.Instance;
         
+        battleStageManager = BattleStageManager.Instance;
+        BattleStageManager.Instance.OnAttackAwake?.Invoke(this);
         
 
     }
@@ -77,7 +80,7 @@ public class AttackFromEnemy : AttackBase
 
     // Update is called once per frame
     
-
+    
 
     protected List<int> SearchPlayerList()
     {
@@ -167,8 +170,12 @@ public class AttackFromEnemy : AttackBase
     public void CauseDamage(Collider2D collision)
     {
         
-        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle ||
+           BattleStageManager.Instance.PlayerViewEnable == false)
             return;
+        
+        
+        
         hitFlags.Remove(collision.transform.parent.GetInstanceID());
         
 
@@ -255,8 +262,13 @@ public class AttackFromEnemy : AttackBase
             attackInfo.RemoveAt(0);
         }
         
-
         ResetFlags();
+
+        if (autoResetCondition)
+        {
+            ResetWithConditionFlags();
+        }
+        
     }
     
     public override void ResetWithConditionFlags()
@@ -268,7 +280,7 @@ public class AttackFromEnemy : AttackBase
         //     withConditionFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
 
         var container = GetComponentInParent<AttackContainer>();
-        container.conditionCheckDone.Clear();
+        container.checkedConditions?.Clear();
     }
 
     public AvoidableProperty GetAvoidableProperty()
@@ -311,6 +323,31 @@ public class AttackFromEnemy : AttackBase
                 
             }
     }
-    
-    
+
+    public override Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType, GameObject target)
+    {
+        var kbdirtemp = attackInfo[0].knockbackDirection;
+        switch (knockBackType)
+        {
+            case BasicCalculation.KnockBackType.FaceDirection:
+                if(firedir!=0 && ac)
+                    firedir = ac.facedir;
+                kbdirtemp = new Vector2(firedir * kbdirtemp.x,kbdirtemp.y);
+                break;
+
+            case BasicCalculation.KnockBackType.FromCenterRay:
+                kbdirtemp = transform.InverseTransformPoint(target.transform.position);
+                break;
+            case BasicCalculation.KnockBackType.FromCenterFixed:
+                kbdirtemp = transform.position.x > target.transform.position.x
+                    ? new Vector2(-attackInfo[0].knockbackDirection.x, attackInfo[0].knockbackDirection.y)
+                    : attackInfo[0].knockbackDirection;
+                break;
+            case BasicCalculation.KnockBackType.None:
+                kbdirtemp = Vector2.zero;
+                break;
+        }
+
+        return kbdirtemp;
+    }
 }

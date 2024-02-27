@@ -27,9 +27,12 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject stormlashFXPrefab;
     [SerializeField] private GameObject paralysisFXPrefab;
     [SerializeField] private GameObject frostbiteFXPrefab;
+    [SerializeField] private GameObject shadowblightFXPrefab;
     
     [SerializeField] private GameObject stunFXPrefab;
     [SerializeField] private GameObject freezeFXPrefab;
+    [SerializeField] private GameObject sleepFXPrefab;
+    [SerializeField] private GameObject bogFXPrefab;
 
     [Header("Basic Effect")]
     [SerializeField] private GameObject healFXPrefab;
@@ -67,9 +70,13 @@ public class BattleEffectManager : MonoBehaviour
     public AudioSource sharedVoiceSource;
     protected AudioSource bgmVoiceSource;
     public bool BGMHasSet { get => bgmVoiceSource.clip != null; }
+    public AudioClip BGMClip { get => bgmVoiceSource.clip; }
+
+    public event Action<AudioClip,float> OnBGMClipPlay;
+    public event Action<AudioSource> OnSourceChanged; 
 
 
-    
+
 
 
     private void Awake()
@@ -91,6 +98,7 @@ public class BattleEffectManager : MonoBehaviour
         if(SceneManager.GetActiveScene().name=="BattleScenePrologue" || SceneManager.GetActiveScene().name=="BattleScenePrologue_EN")
             yield break;
         bgmVoiceSource.Play();
+        OnBGMClipPlay?.Invoke(bgmVoiceSource.clip,bgmVoiceSource.time);
         //var soundbundle = GlobalController.Instance.GetBundle("soundeffect/soundeffect_common");
         //SEClips = soundbundle.LoadAllAssets<AudioClip>().ToList();
     }
@@ -120,7 +128,7 @@ public class BattleEffectManager : MonoBehaviour
             return;
         }
 
-        if ((int)cond <= 200)
+        if (StatusManager.IsBuff((int)cond))
         {
             SpawnAnimation(target,buffFXPrefab);
         }
@@ -169,6 +177,9 @@ public class BattleEffectManager : MonoBehaviour
                 case BasicCalculation.BattleCondition.Frostbite:
                     SpawnAnimation(target, frostbiteFXPrefab);
                     break;
+                case BasicCalculation.BattleCondition.ShadowBlight:
+                    SpawnAnimation(target, shadowblightFXPrefab);
+                    break;
                 
                 
                 case BasicCalculation.BattleCondition.Stun:
@@ -181,6 +192,16 @@ public class BattleEffectManager : MonoBehaviour
                     SpawnAnimation(target,freezeFXPrefab);
                     break;
                 }
+                case BasicCalculation.BattleCondition.Sleep:
+                {
+                    SpawnAnimation(target,sleepFXPrefab);
+                    break;
+                }
+                case BasicCalculation.BattleCondition.Bog:
+                {
+                    SpawnAnimation(target,bogFXPrefab);
+                    break;
+                }
             }
         }
         else
@@ -189,6 +210,25 @@ public class BattleEffectManager : MonoBehaviour
         }
     }
 
+    public Vector3 GetScaleFactor(GameObject target)
+    {
+        var hitsensor = target.GetComponent<ActorBase>().HitSensor;
+        if (hitsensor == null)
+        {
+            return Vector3.one;
+        }
+
+        var width = hitsensor.bounds.size.x;
+        var height = hitsensor.bounds.size.y;
+        var scaleFactor = Mathf.Min(width, height);
+        if (scaleFactor > 2f)
+        {
+            return new Vector3(1, 1, 1) * (scaleFactor*0.5f);
+        }
+        
+        return Vector3.one;
+        
+    }
 
     private void SpawnAnimation(GameObject target, GameObject prefab)
     {
@@ -407,15 +447,40 @@ public class BattleEffectManager : MonoBehaviour
         bgmVoiceSource.clip = clip;
     }
 
+    public void SetLoop(bool flag)
+    {
+        bgmVoiceSource.loop = flag;
+    }
+
     public void PlayBGM(bool flag = true)
     {
-        if(flag)
+        if (flag)
+        {
             bgmVoiceSource.Play();
+            
+            OnBGMClipPlay?.Invoke(bgmVoiceSource.clip,bgmVoiceSource.time);
+        }
         else
         {
             bgmVoiceSource.Stop();
         }
     }
+
+    public void SetOtherBGMSource(AudioSource src)
+    {
+        bgmVoiceSource.Stop();
+        src.volume = bgmVoiceSource.volume;
+        bgmVoiceSource = src;
+        OnSourceChanged?.Invoke(bgmVoiceSource);
+    }
+
+    public void ResetBGMSource()
+    {
+        bgmVoiceSource = GetComponent<AudioSource>();
+        OnSourceChanged?.Invoke(bgmVoiceSource);
+    }
+
+
 
     protected void SoundEffectLimitRoutine()
     {

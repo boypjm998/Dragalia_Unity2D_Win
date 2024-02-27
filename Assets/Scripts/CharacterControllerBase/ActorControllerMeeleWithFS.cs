@@ -79,26 +79,9 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
     {
         if(pi.allowForceStrike && forceLevel>=0)
             return;
-          
-        if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-        {
-            UseSkill(1);
-        }
-
-        if (pi.skill[1] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-        {
-            UseSkill(2);
-        }
-          
-        if (pi.skill[2] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill)
-        {
-            UseSkill(3);
-        }
-
-        if (pi.skill[3] && !pi.hurt && !pi.isSkill)
-        {
-            UseSkill(4);
-        }
+        
+        base.CheckSkill();
+        
           
           
     }
@@ -510,13 +493,114 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
 
                     break;
                }
+               case 8:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 9f, 1f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 9f, 1f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
+
+                    break;
+               }
+               case 9:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 7f, 2f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 7f, 2f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
+
+                    break;
+               }
           }
+     }
+
+     public void GeneralHorizontalMovement(float distance, float duration, Ease easeType = Ease.OutSine)
+     {
+          var bogModifier = isBog ? 0.5f : 1;
+          
+          var targetPosition = (transform.position + new Vector3(facedir * distance * bogModifier, 0)).
+               SafePosition(Vector2.zero);
+          
+          var rayCastedPlatform = gameObject.RaycastedPlatform();
+
+          var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
+               rayCastedPlatform.bounds.max.x);
+          
+          _tweener = rigid.DOMoveX
+               (endPos, duration * Mathf.Abs(transform.position.x - endPos) / distance).
+               SetEase(easeType);
+          
+     }
+
+     public void GeneralHorizontalMovementWithEnemyCheck(float moveDistance, float reachDistance, float height,
+          float duration, Ease easeType = Ease.OutSine)
+     {
+          var bogModifier = isBog ? 0.5f : 1;
+          
+          //向前方4格内Enemies层的敌人发一道射线
+          // var hit = Physics2D.OverlapArea(transform.position + new Vector3(0, height, 0),
+          //      transform.position + new Vector3(reachDistance, -height, 0), LayerMask.GetMask("Enemies"));
+        
+          var hitInfo = Physics2D.Raycast(transform.position, 
+               Vector2.right * facedir, reachDistance + moveDistance,
+               LayerMask.GetMask("Enemies"));
+        
+          //如果射线击中的敌人不为空且和自身距离小于1.5,return
+          float targetPos;
+
+          if (hitInfo.collider != null)
+          {
+               //玩家距离目标的距离
+               var distance = Mathf.Abs(hitInfo.point.x - transform.position.x);
+               //如果玩家距离目标过近，则不移动
+               if (distance <= reachDistance)
+                    return;
+
+               var moveableDistance = distance - reachDistance;
+
+               if (moveableDistance < moveDistance)
+               { 
+                    targetPos = hitInfo.point.x - facedir * reachDistance;
+               }
+               else
+               {
+                    targetPos = transform.position.x + facedir * bogModifier * moveDistance;
+               }
+               
+          }
+          else
+               targetPos = transform.position.x + facedir * moveDistance * bogModifier;
+
+          targetPos = BattleStageManager.Instance.OutOfRangeCheck(new Vector2(targetPos, transform.position.y)).x;
+          
+          targetPos = BattleStageManager.Instance.OutOfPlatformBoundsCheck(gameObject,targetPos);
+
+
+
+          _tweener = rigid.DOMoveX(targetPos, 
+               duration * Mathf.Abs(transform.position.x - targetPos) / moveDistance);
+
+          
      }
 
 
      public void BladeForceStrikeMove()
      {
-          var targetPosition = (transform.position + new Vector3(facedir * 8, 0)).SafePosition(Vector2.zero);
+          var bogModifier = isBog ? 0.5f : 1;
+          
+          var targetPosition = (transform.position + new Vector3(facedir * 8 * bogModifier, 0)).SafePosition(Vector2.zero);
 
           var rayCastedPlatform = gameObject.RaycastedPlatform();
 
@@ -529,6 +613,66 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
 
           // StartCoroutine(HorizontalMoveFixedTime(endPos,
           //      0.1f * Mathf.Abs(transform.position.x - endPos) / 6f, "force_attack", Ease.OutSine));
+
+     }
+
+     public void BladeBackStep()
+     {
+          var targetPosition = (transform.position + new Vector3(facedir * -1, 0)).SafePosition(Vector2.zero);
+
+          var rayCastedPlatform = gameObject.RaycastedPlatform();
+
+          var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
+               rayCastedPlatform.bounds.max.x);
+          
+          _tweener = rigid.DOMoveX(endPos, 0.15f).SetEase(Ease.OutSine);
+          
+     }
+     
+     public void BladeForwardStep()
+     {
+          var targetPosition = (transform.position + new Vector3(facedir * 2f, 0)).SafePosition(Vector2.zero);
+
+          var rayCastedPlatform = gameObject.RaycastedPlatform();
+
+          var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
+               rayCastedPlatform.bounds.max.x);
+          
+          _tweener = rigid.DOMoveX(endPos, 0.2f).SetEase(Ease.OutSine);
+          
+     }
+
+     public void LanceForceStrikeMove()
+     {
+          var bogModifier = isBog ? 0.5f : 1;
+          
+          var targetPosition = (transform.position + new Vector3(facedir * 8 * bogModifier, 0)).SafePosition(Vector2.zero);
+
+          var enemyReached = 
+               ta.GetNearestTargetInRangeDirection
+                    (facedir, 8, 1, LayerMask.GetMask("Enemies"));
+
+          if (enemyReached != null)
+          {
+               if (Mathf.Abs(enemyReached.position.x - transform.position.x) > 2)
+               {
+                    targetPosition.x = enemyReached.position.x - facedir * 2;
+               }
+               else
+               {
+                    targetPosition.x = transform.position.x;
+               }
+          }
+
+          var rayCastedPlatform = gameObject.RaycastedPlatform();
+
+          var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
+               rayCastedPlatform.bounds.max.x);
+          
+          print(endPos);
+
+          _tweener = rigid.DOMoveX(endPos, 0.5f * Mathf.Abs(transform.position.x - endPos) / 8f).SetEase(Ease.OutSine);
+          
 
      }
 

@@ -70,10 +70,17 @@ public class UI_DPS_PauseMenu : UI_PauseMenu
 
     private void RefreshStatistic()
     {
-        var dmgData = dmgSource.GetDPSData();
+        var dmgData = dmgSource?.GetDPSData();
+        
+        if (dmgSource == null)
+        {
+            dmgData = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        }
         
         var dmgText = GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN ? damageText[0] : damageText[1];
         var timeTextInfo = GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN ? this.timeTextInfo[0] : this.timeTextInfo[1];
+
+        
         
         
         var totalDmg = dmgData[0] + dmgData[1] + dmgData[2] +
@@ -86,7 +93,11 @@ public class UI_DPS_PauseMenu : UI_PauseMenu
             this.totalDmg = 1;
         }
 
-        var totalTime = dmgSource.GetTime();
+        var totalTime = dmgSource?.GetTime();
+        if (dmgSource == null)
+        {
+            totalTime = 1f;
+        }
 
         if (totalDmg == 0)
         {
@@ -170,7 +181,11 @@ public class UI_DPS_PauseMenu : UI_PauseMenu
         var catagoryName = GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN
             ? catagoryName_ZHCN
             : catagoryName_EN;
-        
+
+        if (dmgSource == null)
+        {
+            return;
+        }
         
         
         switch (id)

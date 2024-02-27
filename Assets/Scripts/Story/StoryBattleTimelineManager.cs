@@ -14,8 +14,12 @@ public abstract class StoryBattleTimelineManager : MonoBehaviour
     [SerializeField] protected List<GameObject> prefabList = new();
     [SerializeField] protected List<GameObject> enemyList = new();
     [SerializeField] protected List<GameObject> npcList = new();
+    [SerializeField] protected bool fadeStartScreen = true;
+    
+    
     protected Coroutine currentCutSceneCoroutine;
     protected GameObject UIElements;
+    private CanvasGroup CharacterCanvasGroup;
     private CanvasGroup CharacterIconCanvasGroup;
     private UI_AdventurerStatusInfo adventurerStatusInfo;
     private CanvasGroup Skill1CanvasGroup;
@@ -68,9 +72,10 @@ public abstract class StoryBattleTimelineManager : MonoBehaviour
     public abstract void InitializeScene();
     public abstract void StartQuest();
 
-    public void ActiveStartScreen()
+    public bool ActiveStartScreen(bool force = false)
     {
-        UIElements.transform.Find("StartScreen").gameObject.SetActive(true);
+        UIElements.transform.Find("StartScreen").gameObject.SetActive(fadeStartScreen || force);
+        return fadeStartScreen;
     }
 
     public void SetVisibilityOfSkipButton(bool visibility)
@@ -233,6 +238,7 @@ public abstract class StoryBattleTimelineManager : MonoBehaviour
         Skill2CanvasGroup = UIElements.transform.Find("CharacterInfo/Skill02").GetComponent<CanvasGroup>();
         Skill3CanvasGroup = UIElements.transform.Find("CharacterInfo/Skill03").GetComponent<CanvasGroup>();
         Skill4CanvasGroup = UIElements.transform.Find("CharacterInfo/Skill04").GetComponent<CanvasGroup>();
+        CharacterCanvasGroup = UIElements.transform.Find("CharacterInfo").GetComponent<CanvasGroup>();
     }
 
     protected void SetCharacterIconFacialExpression(int ID)
@@ -243,6 +249,11 @@ public abstract class StoryBattleTimelineManager : MonoBehaviour
     protected void SetCharacterIconFacialExpression(Sprite sprite)
     {
         adventurerStatusInfo.SetImage(sprite);
+    }
+    
+    protected void SetCharacterUIAlpha(float alpha)
+    {
+        CharacterCanvasGroup.alpha = alpha;
     }
 
     protected void SetCharacterIconAlpha(float alpha)
@@ -308,6 +319,7 @@ public abstract class StoryBattleTimelineManager : MonoBehaviour
 
         if (summon)
         {
+            prefab.GetComponent<EnemyController>().SetSummoned(true);
             return go;
         }
         

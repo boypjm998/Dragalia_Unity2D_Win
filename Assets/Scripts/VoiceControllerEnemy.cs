@@ -20,9 +20,11 @@ public class VoiceControllerEnemy : AudioManagerGeneral
     
     public List<VoiceGroup> voiceGroups = new();
     
+    public int groupOfIntro = -1;
     public int groupOfDialogWhenHPBelow70 = -1;
     public int groupOfDialogWhenHPBelow40 = -1;
     public int groupOfDialogWhenHPBelow0 = -1;
+    
 
     protected override void DistributeMyVoice(AudioClip[] clips)
     {
@@ -37,6 +39,7 @@ public class VoiceControllerEnemy : AudioManagerGeneral
         statusManager = GetComponentInParent<StatusManager>();
         _dialogDisplayer = FindObjectOfType<UI_DialogDisplayer>();
         voice = gameObject.GetComponent<AudioSource>();
+        BattleStageManager.Instance.OnGameStart += PlayIntroVoice;
         
         CheckVoiceVolume();
         
@@ -45,10 +48,23 @@ public class VoiceControllerEnemy : AudioManagerGeneral
         
     }
 
+    private void PlayIntroVoice()
+    {
+        if (groupOfIntro == -1)
+        {
+            BattleStageManager.Instance.OnGameStart -= PlayIntroVoice;
+            return;
+        }
+        BroadCastMyVoice(groupOfIntro);
+        BattleStageManager.Instance.OnGameStart -= PlayIntroVoice;
+    }
+
     private void Update()
     {
         if(statusManager == null)
             return;
+        
+        
         if (statusManager.currentHp <= statusManager.maxHP * 0.7f && groupOfDialogWhenHPBelow70 != -1)
         {
             BroadCastMyVoice(groupOfDialogWhenHPBelow70);
@@ -89,8 +105,13 @@ public class VoiceControllerEnemy : AudioManagerGeneral
 
     public override void BroadCastMyVoice(int voiceGroupID)
     {
-        // if (voiceCDRoutine != null)
-        //     return;
+        if (voiceGroupID > voiceGroups.Count)
+        {
+            Debug.LogWarning("VoiceGroupID is out of range.");
+            return;
+        }
+
+        
 
         var voiceGroup = voiceGroups[voiceGroupID];
         

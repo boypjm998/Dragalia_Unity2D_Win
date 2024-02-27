@@ -230,6 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdbdfa6d15620d4e885a73f2722a361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformSensor: {fileID: 0}
 --- !u!1 &3470178656649306527
 GameObject:
   m_ObjectHideFlags: 0
@@ -20191,6 +20192,7 @@ GameObject:
   - component: {fileID: 6465394470316820315}
   - component: {fileID: 2527446760088184370}
   - component: {fileID: 5044050161229502483}
+  - component: {fileID: -2283224995899828431}
   m_Layer: 11
   m_Name: e_db_2011_m1
   m_TagString: Untagged
@@ -20289,6 +20291,7 @@ MonoBehaviour:
   displayHPBar: 0
   HPBarOffset: {x: 0, y: 0}
   hurt: 0
+  _groundSensor: {fileID: 0}
   counterOn: 0
   flashBody: {fileID: 3582659124383900415}
   minimapIcon: {fileID: 0}
@@ -20319,6 +20322,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &-2283224995899828431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3582659124590648313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bcfa68a7acc37408dd226ea922a0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalDModeGain: 3
+  sensitivity: 1
 --- !u!1 &5254485740206939444
 GameObject:
   m_ObjectHideFlags: 0

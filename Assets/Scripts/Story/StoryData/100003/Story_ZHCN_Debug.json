@@ -1,0 +1,479 @@
+﻿{
+    "content": 
+    {
+        "command_list": 
+        [
+            {
+                "command": "SET_BACKGROUND",
+                "args": [ "sty_bg_08", -128 ],
+                "end": 1
+            },
+            {
+                "command": "BUTTON_VISIBILITY",
+                "args": [ "1" ],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "8004",
+                    "0",
+                    "0"
+                ],
+                "end": 1
+            },
+            {
+                "command": "SET_BACKGROUND",
+                "args": [ "sty_bg_08", -128 ],
+                "end": 1
+            },
+            {
+                "command": "BLACKOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "看守牢房的教会骑士"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_103",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "唉，真没辙……\n\n是这个吗？",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "103302",
+                    "0",
+                    "5",
+                    "0","-108.0","1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "奎茵"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_104",
+                    "1",
+                    "5",
+                    "6"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "嗯，麻烦你了。我会记住你的恩情……\n\n第二手准备有了。",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "8004",
+                    "0",
+                    "0"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "看守牢房的教会骑士"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_105",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "没事了吧？\n\n那就赶紧给我回牢——",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "EFFECTS",
+                "args": [ "8" ],
+                "end": 1
+            },
+            {
+                "command": "WAIT",
+                "args": [ 0.2 ],
+                "end": 1
+            },
+            {
+                "command": "PORTRAIT_MOVE",
+                "args": [ "SHAKE", "15", "0.5"],
+                "end": 1
+            },
+            {
+                "command": "WAIT",
+                "args": [ 0.8 ],
+                "end": 1
+            },
+            {
+                "command": "PORTRAIT_MOVE",
+                "args": [ "MOVE","0","-450","0.7" ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_SE",
+                "args": [ "STORY_COMMON_0060", "1" ],
+                "end": 1
+            },
+            {
+                "command": "ADD_CHARA",
+                "args": [ "8004B","100","-108","0","0","8004",1 ],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA_SIBLING",
+                "args": [ "8004", -1 ],
+                "end": 1
+            },
+            {
+                "command": "CHARA_FADE_ANIM",
+                "args": [ "8004B","IN","1", 0 ],
+                "end": 1
+            },
+            {
+                "command": "WAIT",
+                "args": [ 0.5 ],
+                "end": 1
+            },
+            {
+                "command": "CHARA_FADE_ANIM",
+                "args": [ "8004B","OUT","1", 0 ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_BGM",
+                "args": [ "BGM_STY_0201"],
+                "end": 1
+            },
+            {
+                "command": "FADE_BGM",
+                "args": [ 1 , 1 ],
+                "end": 1
+            },
+            {
+                "command": "WAIT",
+                "args": [ 1 ],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "103302",
+                    "17",
+                    "0"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "奎茵"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_106",
+                    "1",
+                    "0",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "唔！？你是……\n\n这是要干什么？",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "8004B",
+                    "0",
+                    "0",
+                    "0","-108.0","0"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "古拉特的部下"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_107",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "你辜负了巫女大人的一片恩情，弄昏卫兵企图逃跑……\n\n这便是你将背负的罪状。",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "103302",
+                    "0",
+                    "0"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "奎茵"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_108",
+                    "1",
+                    "0",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "要杀人灭口吗……\n\n是古拉特下的令？",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "8004",
+                    "0",
+                    "0"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "古拉特的部下"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_109",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "你不需要知道。\n\n为了教会的繁荣，乖乖受死吧。",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "103302",
+                    "0",
+                    "5"
+                ],
+                "end": 1
+            },
+            {
+                "command": "WAIT",
+                "args": [ 1 ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_SE",
+                "args": [ "STORY_COMMON_0012", "1" ],
+                "end": 1
+            },
+            {
+                "command": "SET_CHARA",
+                "args": [
+                    "103303",
+                    "0",
+                    "5",
+                    "0","-108.0","1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEIN",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "SET_SPEAKER",
+                "args": [
+                    "奎茵"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PLAY_VOICE",
+                "args": [
+                    "VO_STY_100003_110",
+                    "1",
+                    "5",
+                    "6"
+                ],
+                "end": 1
+            },
+            {
+                "command": "PRINT_DIALOG",
+                "args": [
+                    "哼，正好来热热身。\n\n来……想成为我刀下亡魂的家伙就尽管放马过来吧。",
+                    "1"
+                ],
+                "end": 1
+            },
+            {
+                "command": "DIALOG_FADEOUT",
+                "args": [],
+                "end": 1
+            },
+            {
+                "command": "BUTTON_VISIBILITY",
+                "args": [ "0" ],
+                "end": 1
+            },
+            {
+                "command": "BLACKIN",
+                "args": [],
+                "end": 1
+            }
+        ],
+        "content": "奈文一行人击退伪恶魔后与哈尔交换了情报，并为了通报新的情况而出发前往格拉姆斯。\n另一方面，入狱后的奎茵托狱卒传话，得到了与巫女奥莉加见面的机会。\n但古拉特得知奥莉加和奎茵实为姐妹，遂命部下暗杀奎茵。",
+        "jump_action": "battle",
+        "jump_arg": 100003,
+        "resources": []
+    }
+}
+    

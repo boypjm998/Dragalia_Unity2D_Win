@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using GameMechanics;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class DragonAttackManager_D010 : AttackManager
     public VoiceController_C010 _voiceController;
     public DragonControllerSpecial_D010 dc;
     private AttackContainer skill2Container;
+
+    private bool skill3Boosted = false;
     
 
     protected override void Awake()
@@ -18,6 +21,7 @@ public class DragonAttackManager_D010 : AttackManager
         MeeleAttackFXLayer = ac.transform.Find("MeeleAttackFX").gameObject;
         BuffFXLayer = ac.transform.Find("BuffLayer").gameObject;
         dc = GetComponent<DragonControllerSpecial_D010>();
+        skill3Boosted = UI_AdventurerSelectionMenu.CheckSkillUpgradable(10, 3) == 2;
     }
 
     protected override void Start()
@@ -109,8 +113,26 @@ public class DragonAttackManager_D010 : AttackManager
 
     }
 
+    protected void Skill1_Smash()
+    {
+        var landPos = ac.gameObject.RaycastedPosition();
+        var desendDistance = ac.transform.position.y - landPos.y - 1.3f;
+        desendDistance = Mathf.Clamp(desendDistance, 0, 10);
+        print(desendDistance);
+
+        var tween = ac.transform.DOMoveY(ac.transform.position.y - desendDistance,
+            0.15f).SetEase(Ease.OutSine);
+
+    }
+
     protected void Skill1(int eventID)
     {
+        
+        if (skill3Boosted)
+        {
+            (ac as ActorController)._statusManager.FillSP(3,10);
+        }
+        
         var container = Instantiate(attackContainer,
             ac.transform.position, Quaternion.identity, RangedAttackFXLayer.transform);
         
@@ -145,8 +167,12 @@ public class DragonAttackManager_D010 : AttackManager
     {
         if (eventID == 1)
         {
-            var container = Instantiate(attackContainer,
-                ac.transform.position, Quaternion.identity, MeeleAttackFXLayer.transform);
+            if (skill3Boosted)
+            {
+                (ac as ActorController_c010)._statusManager.FillSP(3,10);
+            }
+            
+            var container = Instantiate(attackContainer, ac.transform.position, Quaternion.identity, MeeleAttackFXLayer.transform);
             
             skill2Container = container.GetComponent<AttackContainer>();
             

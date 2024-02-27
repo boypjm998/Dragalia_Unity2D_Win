@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -43,30 +44,30 @@ public class HumanRanged_BehaviorTree : EnemyBehaviorManager
         
         print("Doing: "+action_name);
         
-        DragaliaBossActionTypes.HECommon actionType = 
-            (DragaliaBossActionTypes.HECommon) Enum.Parse(typeof(DragaliaBossActionTypes.HECommon), action_name);
+        DragaliaEnemyActionTypes.HECommon actionType = 
+            (DragaliaEnemyActionTypes.HECommon) Enum.Parse(typeof(DragaliaEnemyActionTypes.HECommon), action_name);
 
         switch (actionType)
         {
-            case DragaliaBossActionTypes.HECommon.rod_1:
+            case DragaliaEnemyActionTypes.HECommon.rod_1:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 int element = 0;
                 if(_currentActionStage.args.Length > 1)
                     element = Convert.ToInt32(_currentActionStage.args[1]);
                 currentAction = StartCoroutine(ACT_ROD_CMB_01(interval,element));
                 break;
             }
-            case DragaliaBossActionTypes.HECommon.rod_2:
+            case DragaliaEnemyActionTypes.HECommon.rod_2:
             {
-                float interval = float.Parse(_currentActionStage.args[0]);
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 int element = 0;
                 if(_currentActionStage.args.Length > 1)
                     element = Convert.ToInt32(_currentActionStage.args[1]);
                 currentAction = StartCoroutine(ACT_ROD_FS(interval,element));
                 break;
             }
-            case DragaliaBossActionTypes.HECommon.fx_wroth:
+            case DragaliaEnemyActionTypes.HECommon.fx_wroth:
             {
                 string fx_name = _currentActionStage.args[0];
                 enemyAttackManager.FX_Wroth();
@@ -84,6 +85,17 @@ public class HumanRanged_BehaviorTree : EnemyBehaviorManager
     {
         ActionStart();
         SetTarget(ClosestTarget);
+
+        var myPlatfrom = gameObject.RaycastedPlatform();
+        var targetPlatfrom = targetPlayer.RaycastedPlatform();
+        if(targetPlatfrom.bounds.min.x - myPlatfrom.bounds.max.x > 15 ||
+           myPlatfrom.bounds.min.x - targetPlatfrom.bounds.max.x > 15 ||
+           Mathf.Abs(myPlatfrom.bounds.max.y - targetPlatfrom.bounds.max.y) > 1)
+        {
+            ActionEnd();
+            yield return new WaitForSeconds(interval/2);
+            yield break;
+        }
 
         currentMoveAction =
             StartCoroutine

@@ -20,7 +20,8 @@ public class EnemyOneWayPlatformEffector : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rigid.velocity.y == 0 && !groundSensor.currentPlatform && !groundSensor.currentGround)
+        if (rigid.velocity.y == 0 && rigid.gravityScale > 0 &&
+            !groundSensor.currentPlatform && !groundSensor.currentGround)
         {
             bugFix++;
         }

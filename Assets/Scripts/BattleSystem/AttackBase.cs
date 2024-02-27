@@ -84,12 +84,16 @@ public abstract class AttackBase : MonoBehaviour
         return 0;
     }
 
-    public Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType, GameObject target)
+    public virtual Vector2 GetKBDirection(BasicCalculation.KnockBackType knockBackType, GameObject target)
     {
         var kbdirtemp = attackInfo[0].knockbackDirection;
         switch (knockBackType)
         {
             case BasicCalculation.KnockBackType.FaceDirection:
+                // if (firedir != 0)
+                // {
+                //     firedir = transform.lossyScale.x > 0 ? firedir : -firedir;
+                // }
                 kbdirtemp = new Vector2(firedir * kbdirtemp.x,kbdirtemp.y);
                 break;
 
@@ -200,6 +204,13 @@ public class AttackInfo
         constDmg = new List<float>();
         withConditions = new List<ConditionWithAttackInfo>();
     }
+    
+    public AttackInfo(List<float> dmgModifier)
+    {
+        this.dmgModifier = dmgModifier;
+        constDmg = new List<float>();
+        withConditions = new List<ConditionWithAttackInfo>();
+    }
 
     public void AddWithCondition(BattleCondition condition, int chance = 100, int identifier = 0)
     {
@@ -244,11 +255,9 @@ public class ConditionalAttackEffect
 
     public enum ExtraEffect
     {
-        ExtraConditionToTarget,
+        Custom,
         ExtraConditionToSelf,
         ExtraCritRate,
-        RemoveConditionFromTarget,
-        RemoveConditionFromSelf,
         ChangeDmgModifier,
         CrisisModifier
         
@@ -270,6 +279,7 @@ public class ConditionalAttackEffect
     private List<BasicCalculation.BattleCondition> needCheckTargetConditionsList = new();
     private List<BasicCalculation.BattleCondition> needCheckSelfConditionsList = new();
     private Func<StatusManager,StatusManager,bool> customConditionFunc;
+    private Func<(StatusManager sourceStat,StatusManager targetStat),AttackBase,int> customEffectFunction;
 
     // private Tuple<BattleCondition,int> needAppendSelfCondition;
     // private Tuple<BattleCondition,int> needAppendTargetCondition;
@@ -305,6 +315,8 @@ public class ConditionalAttackEffect
         ParseArguments();
     }
     
+    
+    
     public ConditionalAttackEffect(Func<StatusManager,StatusManager,bool> condition,
         ExtraEffect extraEffect, string[] args1, string[] args2)
     {
@@ -317,6 +329,18 @@ public class ConditionalAttackEffect
     }
 
 
+    public ConditionalAttackEffect SetEffectFunction(Func<(StatusManager sourceStat,StatusManager targetStat),AttackBase,int> func)
+    {
+        customEffectFunction = func;
+        return this;
+    }
+
+    public ConditionalAttackEffect SetConidtionalFunction(
+        Func<StatusManager, StatusManager, bool> func)
+    {
+        customConditionFunc = func;
+        return this;
+    }
 
     public float GetExtraModifiers(StatusManager targetStat, StatusManager sourceStat)
     {
@@ -350,9 +374,25 @@ public class ConditionalAttackEffect
         }
     }
 
+    /// <summary>
+    /// 返回：附加伤害
+    /// </summary>
+    /// <returns></returns>
+    public int InvokeCustomExtraEffect(StatusManager targetStat, StatusManager sourceStat, AttackBase attackStat)
+    {
+        if (CheckConditional(targetStat, sourceStat))
+        {
+            var res = customEffectFunction((sourceStat,targetStat),attackStat);
+            return res;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
     private bool CheckConditional(StatusManager targetStat, StatusManager sourceStat)
     {
-        
         if (conditionType == ConditionType.TargetHasCondition)
         {
             foreach (var con in needCheckTargetConditionsList)
@@ -365,9 +405,6 @@ public class ConditionalAttackEffect
             var result = customConditionFunc(sourceStat, targetStat);
             return result;
         }
-
-
-
         return true;
     }
 
@@ -391,7 +428,7 @@ public class ConditionalAttackEffect
         //parse effect
         if (extraEffect == ExtraEffect.ChangeDmgModifier)
         {
-            extraModifier = float.Parse(args2[0]);
+            extraModifier = ObjectExtensions.ParseInvariantFloat(args2[0]);
         }else if (extraEffect == ExtraEffect.ExtraCritRate)
         {
             extraCritRate = int.Parse(args2[0]);

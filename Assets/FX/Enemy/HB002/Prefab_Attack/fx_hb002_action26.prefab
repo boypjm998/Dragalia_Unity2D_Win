@@ -82,9 +82,9 @@ MonoBehaviour:
     - 0
     constDmg:
     - 1000
-    knockbackPower: 200
+    knockbackPower: 0
     knockbackForce: 0
-    knockbackTime: 0.5
+    knockbackTime: 0
     knockbackDirection: {x: 0, y: 0}
     KBType: 0
     firedir: 0
@@ -92,12 +92,15 @@ MonoBehaviour:
   attackType: 4
   hitSoundEffect: {fileID: 8300000, guid: 9c40c20744e27e841b76838e3ef5060e, type: 3}
   attackSE: []
+  extraODModifier: 0
+  conditionalAttackEffects: []
   enemySource: {fileID: 0}
   isMeele: 0
   hitFlags: 
   hitConnectEffect: {fileID: 921802484063846552, guid: 4d38095f8377aa146a80d299c82cd89d, type: 3}
   attackCollider: {fileID: 0}
   selfpos: {fileID: 0}
+  forcedShake: 0
   hitShakeIntensity: 5
   damageAutoReset: 0
   Avoidable: 1

@@ -46,7 +46,8 @@ namespace CharacterSpecificProjectiles
                     return;
                 if (ac.hurt || !ac.grounded)
                 {
-                    return;
+                    if(ac is not EnemyControllerFlying)
+                        return;
                 }
 
                 var enemyStat = col.GetComponentInParent<StatusManager>();
@@ -68,7 +69,7 @@ namespace CharacterSpecificProjectiles
                 var ac = col.GetComponentInParent<ActorController>();
                 if(ac==null)
                     return;
-                if (ac.dodging || ac.hurt || !ac.grounded)
+                if (ac.dodging || ac.hurt || (!ac.grounded && !ac.DModeIsOn))
                 {
                     return;
                 }
@@ -80,9 +81,9 @@ namespace CharacterSpecificProjectiles
                     playerStat.ObtainTimerBuff((int)BasicCalculation.BattleCondition.ManaOverloaded,
                         -1,30,1,-1);
                 }
-                else
+                else if(!playerStat.HasBuff((int)BasicCalculation.BattleCondition.ManaOverloaded))
                 {
-                    playerStat.ObtainTimerBuff(buff);
+                    playerStat.ObtainTimerBuff(buff,true,false);
                 }
                 effect.SetActive(true);
                 Destroy(gameObject,0.8f);

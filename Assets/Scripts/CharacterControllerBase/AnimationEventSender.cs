@@ -27,122 +27,122 @@ public class AnimationEventSender : MonoBehaviour
 
     #region Messages Process Moudles
     
-    protected void TurnToMiddle()
-    {
-        //transform.rotation = Quaternion.Euler(0, 120, 0);
-        if((ActorController as ActorBase)?.facedir ==1)
-            transform.rotation = Quaternion.Euler(0, 120, 0);
-        else if((ActorController as ActorBase)?.facedir ==-1)
-        {
-            transform.rotation = Quaternion.Euler(0, -120, 0);
-        }
-    }
-
-    protected void TurnToSide()
-    {
-        //transform.rotation = Quaternion.Euler(0, 102, 0);
-        if((ActorController as ActorBase)?.facedir ==1)
-            transform.rotation = Quaternion.Euler(0, 102, 0);
-        else if((ActorController as ActorBase)?.facedir ==-1)
-        {
-            transform.rotation = Quaternion.Euler(0, -102, 0);
-        }
-    }
-    
-    public void onJumpEnter()
-    {
-        ActorController.onJumpEnter();
-    }
-
-    public void onDoubleJumpEnter()
-    {
-        ActorController.onDoubleJumpEnter();
-    }
-    public void onJumpExit()
-    {
-        ActorController.onJumpExit();
-    }
-    public void IsGround()
-    {
-        ActorController.IsGround();
-    }
-    public void isNotGround()
-    {
-        ActorController.isNotGround();
-    }
-
-    public virtual void onRollEnter()
-    {
-        //ActorController.onRollEnter();
-    }
-
-    public virtual void onRollExit()
-    {
-        //ActorController.onRollExit();
-        //Debug.Log("ExitRoll");
-    }
-    public void OnFall()
-    {
-        ActorController.OnFall();
-    }
-
-
-    public virtual void OnDashEnter()
-    {
-        
-        ActorController.OnDashEnter();
-        //Debug.Log("OndashEnter");
-    }
-    public virtual void OnDashExit()
-    {
-        ActorController.OnDashExit();
-    }
-
-
-    public virtual void OnStandardAttackEnter()
-    {
-        //ActorController.OnStandardAttackEnter();
-
-    }
-    public virtual void OnStandardAttackExit()
-    {
-        //ActorController.OnStandardAttackExit();
-    }
-
-    
-
-    // public virtual void OnSkillEnter()
+    // protected void TurnToMiddle()
     // {
-    //     ActorController.OnSkillEnter();
-    //     
+    //     //transform.rotation = Quaternion.Euler(0, 120, 0);
+    //     if((ActorController as ActorBase)?.facedir ==1)
+    //         transform.rotation = Quaternion.Euler(0, 120, 0);
+    //     else if((ActorController as ActorBase)?.facedir ==-1)
+    //     {
+    //         transform.rotation = Quaternion.Euler(0, -120, 0);
+    //     }
     // }
     //
-    // public virtual void OnSkillExit()
+    // protected void TurnToSide()
     // {
-    //     ActorController.OnSkillExit();
+    //     //transform.rotation = Quaternion.Euler(0, 102, 0);
+    //     if((ActorController as ActorBase)?.facedir ==1)
+    //         transform.rotation = Quaternion.Euler(0, 102, 0);
+    //     else if((ActorController as ActorBase)?.facedir ==-1)
+    //     {
+    //         transform.rotation = Quaternion.Euler(0, -102, 0);
+    //     }
     // }
-
-    public virtual void OnGravityWeaken()
-    {
-        
-        ActorController.OnGravityWeaken();
-    }
     
-    public virtual void OnGravityRecover()
-    {
-        ActorController.OnGravityRecover();
-    }
-
-    protected void OnHurtEnter()
-    {
-        ActorController?.OnHurtEnter();
-
-    }
-    
-    protected void OnHurtExit()
-    {
-        ActorController?.OnHurtExit();
-    }
+    // public void onJumpEnter()
+    // {
+    //     ActorController.onJumpEnter();
+    // }
+    //
+    // public void onDoubleJumpEnter()
+    // {
+    //     ActorController.onDoubleJumpEnter();
+    // }
+    // public void onJumpExit()
+    // {
+    //     ActorController.onJumpExit();
+    // }
+    // public void IsGround()
+    // {
+    //     ActorController.IsGround();
+    // }
+    // public void isNotGround()
+    // {
+    //     ActorController.isNotGround();
+    // }
+    //
+    // public virtual void onRollEnter()
+    // {
+    //     //ActorController.onRollEnter();
+    // }
+    //
+    // public virtual void onRollExit()
+    // {
+    //     //ActorController.onRollExit();
+    //     //Debug.Log("ExitRoll");
+    // }
+    // public void OnFall()
+    // {
+    //     ActorController.OnFall();
+    // }
+    //
+    //
+    // public virtual void OnDashEnter()
+    // {
+    //     
+    //     ActorController.OnDashEnter();
+    //     //Debug.Log("OndashEnter");
+    // }
+    // public virtual void OnDashExit()
+    // {
+    //     ActorController.OnDashExit();
+    // }
+    //
+    //
+    // public virtual void OnStandardAttackEnter()
+    // {
+    //     //ActorController.OnStandardAttackEnter();
+    //
+    // }
+    // public virtual void OnStandardAttackExit()
+    // {
+    //     //ActorController.OnStandardAttackExit();
+    // }
+    //
+    //
+    //
+    // // public virtual void OnSkillEnter()
+    // // {
+    // //     ActorController.OnSkillEnter();
+    // //     
+    // // }
+    // //
+    // // public virtual void OnSkillExit()
+    // // {
+    // //     ActorController.OnSkillExit();
+    // // }
+    //
+    // public virtual void OnGravityWeaken()
+    // {
+    //     
+    //     ActorController.OnGravityWeaken();
+    // }
+    //
+    // public virtual void OnGravityRecover()
+    // {
+    //     ActorController.OnGravityRecover();
+    // }
+    //
+    // protected void OnHurtEnter()
+    // {
+    //     ActorController?.OnHurtEnter();
+    //
+    // }
+    //
+    // protected void OnHurtExit()
+    // {
+    //     ActorController?.OnHurtExit();
+    // }
     
     #endregion
 
@@ -267,7 +267,7 @@ public class AnimationEventSender : MonoBehaviour
         (ActorController as ActorController)?.SkillCancelFrame();
     }
 
-    protected void DoShapeShifting(int type)
+    protected virtual void DoShapeShifting(int type)
     {
         _attackManager.ShapeShiftingAttackWave(type);
         (ActorController as ActorController).InvokeShapeShifting();

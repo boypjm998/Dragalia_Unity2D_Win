@@ -30,8 +30,5 @@ public class UI_BossConditionBar : UI_ConditionBar
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }
