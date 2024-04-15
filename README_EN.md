@@ -2,6 +2,123 @@
 
 [中文版](./README.md)
 
+## v0.3.6
+
+**New Features**
+
+1. New quest: Origa's Trial (Master, Expert)
+2. New affliction: Bog
+
+**Bug Fixes**
+
+1. When opening the game for the first time, the achievement was not initialized, resulting in the crash when completing the quest.
+2. Notte could not attacked by enemy attacks when they "can forcibly purge shapeshifting" under certain circumstances.
+3. When adventurers are hit by attacks that would inflict blindness, their sleep resistacen are mistakenly used to determine its infliction chance.
+
+---
+
+## v0.3.5
+
+**Adjustments**
+
+1. Increases the difficulty in Primal Midgardsormr's Trial and Ilia's Trial
+
+**Bug Fixes**
+
+1. Stormlash & Shadowblight Resistances does not work.
+2. Some texts displayed incorrectly in English version.
+
+---
+
+## v0.3.4
+
+**New Features**
+
+1. Some new achievements.
+
+**Adjustments**
+
+1. Slightly reduced the difficulty of quest Zethia's Trial: Legend.
+
+**Bug Fixes**
+
+1. Notte can't gain buff from "Glorious Sanctuary" in quest"Zena's Trial: Legend" when in Metamorphosis.
+
+---
+
+## v0.3.3
+
+**New Features**
+
+1. New skill upgrade: Notte(Emergency Treatment)
+
+**Adjustments**
+
+1. Optimized the visual effects in prologue quest.
+2. Added special thank list.
+
+---
+
+## v0.3.2
+
+**New Features**
+
+1. New skill upgrade: Zena(Twilight Crown), Sheila(Blazing Blitz).
+2. Added DPS statistic in training mode.
+
+---
+
+## v0.3.1
+
+**New Features**
+
+1. New quest: Zena's Trial: Legend + (Extremely high difficulty)
+2. New skill upgrade: Zethia(Blade)'s second skill.
+3. Added more nodes to the ability tree.
+
+**Adjustments**
+
+1. Optimize the UI display when using gamepad.
+
+**Bug Fixes**
+
+1. Some bosses behave abnormally when inflicted by Freeze, Stun or Sleep.
+2. Camera offset doesn't work when following enemies.
+
+---
+
+## v0.3.0
+
+**New Features**
+
+1. New quest: Zethia's Trial: Legend
+2. New adventurer: Zethia(Bondforged)
+3. New feature: Ability Tree. (Boost all adventurers.)
+4. Support Gamepad(Game Controller) Input
+
+**Bug Fixes**
+
+1. Sheila will fall from the platforms when using her 4th and 7th combo in some situation.
+
+---
+
+## v0.2.9
+
+**New Features**
+
+1. New quest: To Claim Happiness
+2. New quest: Sheila's Trial: Legend + (Extremely high difficulty)
+3. New feature: Skill upgrade. Now Ilia can upgrade her skill3 after clearing specific quest.
+
+**Adjustments**
+
+1. Modified Ezelith's first ability: Reduced Defense Punisher -> Reduced Defense & Break Punisher.
+
+**Bug Fixes**
+
+1. Pinon won't remove her Gabriel's blessing buff on being attacked even if she is not in the zone that created by her 3rd skill.
+
+---
 
 ## v0.2.8
 
