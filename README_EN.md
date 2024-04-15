@@ -2,6 +2,35 @@
 
 [中文版](./README.md)
 
+
+## v0.2.8
+
+**New Features**
+
+1. New quest: The Demon's False Love (Expert, Standard)
+2. New adventurer: Regina
+
+**Adjustments**
+
+1. Modified the action pattern of Zethia(Enemy) in quest "Zethia's Trial: Master".
+2. Zethia(Adventurer)'s summon gauge will charge 30% on quest starts.
+
+---
+
+## v0.2.7
+
+**New Features**
+
+1. Achievement system
+2. New adventurer: Elisanne(Halloween)
+
+**Bug Fixes**
+
+1. Fixed the issue that Sheila will fall from the platforms when using skill "Carmine Rush" or "Bright Carmine Rush".
+2. Increase enemies' strength and HP in quest "Sheila's Trial: Legend".
+
+---
+
 ## v0.2.6
 
 **New Features**
