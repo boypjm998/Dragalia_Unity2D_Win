@@ -1,6 +1,10 @@
-# DL_2D_Win (Not Realeased) (2023/11/15）
+# DL_2D_Win (Not Realeased) (2024/4/1）
 
 [English Version](./README_EN.md)
+
+##
+
+由于本人工作原因，2024年4月开始，后续基本不会什么有空闲时间去开发新内容了。
 
 ## v0.4.0
 
