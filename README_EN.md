@@ -4,7 +4,7 @@
 
 ## v0.4.0
 
-**New Features**
+**New Contents**
 
 1. New quest: Ilia's Trial: Legend
 2. New quest: Zethia's Trial: Legend +
@@ -20,7 +20,7 @@
 
 ## v0.3.9
 
-**New Features**
+**New Contents**
 
 1. New quest: Primal Jupiter's Trial
 2. New quest: Fallen Angle of Conflict
@@ -32,7 +32,7 @@
 
 ## v0.3.8
 
-**New Features**
+**New Contents**
 
 1. New adventurer: Summer Elisanne
 2. New quest: Fallen Angle of Solitude
@@ -47,7 +47,7 @@
 
 ## v0.3.7
 
-**New Features**
+**New Contents**
 
 1. New adventurer: Origa
 2. New adventurer: Gala Cleo
@@ -63,7 +63,7 @@
 
 ## v0.3.6
 
-**New Features**
+**New Contents**
 
 1. New quest: Origa's Trial (Master, Expert)
 2. New affliction: Bog
@@ -91,7 +91,7 @@
 
 ## v0.3.4
 
-**New Features**
+**New Contents**
 
 1. Some new achievements.
 
@@ -107,7 +107,7 @@
 
 ## v0.3.3
 
-**New Features**
+**New Contents**
 
 1. New skill upgrade: Notte(Emergency Treatment)
 
@@ -120,7 +120,7 @@
 
 ## v0.3.2
 
-**New Features**
+**New Contents**
 
 1. New skill upgrade: Zena(Twilight Crown), Sheila(Blazing Blitz).
 2. Added DPS statistic in training mode.
@@ -129,7 +129,7 @@
 
 ## v0.3.1
 
-**New Features**
+**New Contents**
 
 1. New quest: Zena's Trial: Legend + (Extremely high difficulty)
 2. New skill upgrade: Gala Zethia's second skill.
@@ -148,7 +148,7 @@
 
 ## v0.3.0
 
-**New Features**
+**New Contents**
 
 1. New quest: Zethia's Trial: Legend
 2. New adventurer: Zethia(Bondforged)
@@ -163,7 +163,7 @@
 
 ## v0.2.9
 
-**New Features**
+**New Contents**
 
 1. New quest: To Claim Happiness
 2. New quest: Sheila's Trial: Legend + (Extremely high difficulty)
@@ -181,7 +181,7 @@
 
 ## v0.2.8
 
-**New Features**
+**New Contents**
 
 1. New quest: The Demon's False Love (Expert, Standard)
 2. New adventurer: Regina
@@ -195,7 +195,7 @@
 
 ## v0.2.7
 
-**New Features**
+**New Contents**
 
 1. Achievement system
 2. New adventurer: Elisanne(Halloween)
@@ -209,7 +209,7 @@
 
 ## v0.2.6
 
-**New Features**
+**New Contents**
 
 1. New quest: Zethia's Trial (Expert, Master)
 2. New adventurer: Gala Zethia (Blade)
@@ -227,7 +227,7 @@
 
 ## v0.2.5
 
-**New Features**
+**New Contents**
 
 1. New story quest: Demon's Footprints
 
@@ -240,7 +240,7 @@
 
 ## v0.2.4
 
-**New Features**
+**New Contents**
 
 1. New adventurer: Pinon
 2. New adventurer: Fleur
@@ -254,7 +254,7 @@
 
 ## v0.2.3
 
-**New Features**
+**New Contents**
 
 1. New adventurer: Notte
 
