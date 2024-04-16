@@ -1,6 +1,65 @@
-# DL_2D_Win (Not Realeased) (2023/11/15）
+# DL_2D_Win (Not Realeased) (2024/4/1）
 
 [中文版](./README.md)
+
+## v0.4.0
+
+**New Features**
+
+1. New quest: Ilia's Trial: Legend
+2. New quest: Zethia's Trial: Legend +
+3. Added a dedicated "Up Key". Now Notte(Metamorphosis) can use Up Key to fly upward instead of Jump Key.
+
+**Adjustments**
+
+1. Adventurer's gravity scale will slightly decrease when they use dash attack in the air.
+2. Sheila can cancel her warp movement by pressing direction keys when using her 7th standard attack combo.
+3. Increases the attack range of Sheila's some standard attacks.
+4. When targets are afflicted with Bog, they will take 30% extra damage, instead of 50% now.
+5. Slightly increases the stadnard attack rate of adventurers who wield lance.
+
+## v0.3.9
+
+**New Features**
+
+1. New quest: Primal Jupiter's Trial
+2. New quest: Fallen Angle of Conflict
+
+**Adjustments**
+
+1. Optimized Gala Zethia's movement of her 3rd combo.
+2. Increases the strength up effect of Bondforged Zethia's 4th skill. (15%->30%)
+
+## v0.3.8
+
+**New Features**
+
+1. New adventurer: Summer Elisanne
+2. New quest: Fallen Angle of Solitude
+
+**Bug Fixes**
+
+1. In Sinister of Domination quests, music may plays incorrectly.
+2. In quest Zena's Trial: Legend, adventurers can gain buffs from Glorious Sanctuary even if they're afflicted with "Energy Overloaded" debuff.
+3. When adventurers gain buffs from targets other than themselves, their Buff Time +X% abilities still take effect.
+
+---
+
+## v0.3.7
+
+**New Features**
+
+1. New adventurer: Origa
+2. New adventurer: Gala Cleo
+
+**Bug Fixes**
+
+1. Ilia's visual effect animations may lost when using specific attacks.
+2. In quest Ilia's Trial, enemies may behave abnormally under certain circumstances.
+3. In quest Zena's Trial: Legend, when adventures are defeated while afflicted with "Energy Overloaded", their HP are reset to 1 after reviving.
+4. In quest Zethia's Trial: Legend, boss probably stops all actions after afflicted with "Nihility" under certain circumstances.
+
+---
 
 ## v0.3.6
 
@@ -73,7 +132,7 @@
 **New Features**
 
 1. New quest: Zena's Trial: Legend + (Extremely high difficulty)
-2. New skill upgrade: Zethia(Blade)'s second skill.
+2. New skill upgrade: Gala Zethia's second skill.
 3. Added more nodes to the ability tree.
 
 **Adjustments**
@@ -82,7 +141,7 @@
 
 **Bug Fixes**
 
-1. Some bosses behave abnormally when inflicted by Freeze, Stun or Sleep.
+1. Some bosses behave abnormally when afflicted by Freeze, Stun or Sleep.
 2. Camera offset doesn't work when following enemies.
 
 ---
@@ -153,7 +212,7 @@
 **New Features**
 
 1. New quest: Zethia's Trial (Expert, Master)
-2. New adventurer: Zethia (Blade)
+2. New adventurer: Gala Zethia (Blade)
 
 **Adjustments**
 
