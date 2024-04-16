@@ -367,7 +367,7 @@ public class AttackManager_C019_PL : AttackManager
 
         var remainBuff = Mathf.Min(30 - currentBuffAmount, 15);
         
-        _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.AtkBuff), 15,
+        _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.AtkBuff), 30,
             60,1,101902);
 
         if (remainBuff > 0)
@@ -381,6 +381,8 @@ public class AttackManager_C019_PL : AttackManager
             _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.CritRateBuff), 13,
                 30);
         }
+        
+        
         _statusManager.HPRegenImmediatelyWithoutRandomDirectly(_statusManager,
             (Mathf.CeilToInt(_statusManager.maxHP * 0.15f)));
 

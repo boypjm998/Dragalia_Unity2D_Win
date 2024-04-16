@@ -49,12 +49,12 @@ public class UI_DialogDisplayer : MonoBehaviour
         if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
         {
             questDialogInfoData = 
-                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfo_EN.json");
+                BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfo_EN.json");
         }
         else
         {
             questDialogInfoData = 
-                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfo.json");
+                BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfo.json");
         }
 
         
@@ -86,12 +86,12 @@ public class UI_DialogDisplayer : MonoBehaviour
         if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
         {
             questDialogInfoDataBasic = 
-                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoBasic_EN.json");
+                BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfoBasic_EN.json");
         }
         else
         {
             questDialogInfoDataBasic = 
-                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoBasic.json");
+                BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfoBasic.json");
         }
     }
     

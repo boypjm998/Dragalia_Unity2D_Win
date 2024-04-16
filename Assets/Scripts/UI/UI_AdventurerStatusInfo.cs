@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -39,6 +40,8 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
 
     private GameObject DModeUI;
 
+    private TimerBuff _currentLifeShield = null;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,7 +50,7 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
         var characterID = GlobalController.currentCharacterID;
         statusManager = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
         _slider = transform.Find("HPbar").GetComponent<Slider>();
-        //_shieldSlider = transform.Find("Shield").GetComponent<Slider>();
+        
         
         statusImage = transform.Find("CharacterIcon").GetComponent<Image>();
         HPText = GetComponentInChildren<TextMeshProUGUI>();
@@ -63,7 +66,13 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
             statusManager.OnShapeshiftingEnter += ActiveDModeStatusUI;
             statusManager.OnShapeshiftingExit += DeactiveDModeStatusUI;
         }
-
+        
+        
+        _shieldSlider = transform.Find("Shield").GetComponent<Slider>();
+        
+        statusManager.OnBuffEventDelegate += UpdateShield;
+        statusManager.OnBuffDispelledEventDelegate += UpdateShield;
+        statusManager.OnBuffExpiredEventDelegate += UpdateShield;
     }
 
     // Update is called once per frame
@@ -75,7 +84,33 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
             currentHP = statusManager.currentHp;
             maxHP = statusManager.maxHP;
         }
+
+        if (_currentLifeShield != null)
+        {
+            _shieldSlider.gameObject.SetActive(true);
+
+            var shieldPercentage = _currentLifeShield.effect / statusManager.maxHP;
+            _shieldSlider.value = Mathf.Clamp(shieldPercentage, 0, 1);
+
+        }
+        else
+        {
+            _shieldSlider.gameObject.SetActive(false);
+        }
     }
+
+    private void UpdateShield(BattleCondition condition)
+    {
+        var lifeShield = statusManager.GetConditionOfTypeWithMaxEffect((int)
+            BasicCalculation.BattleCondition.LifeShield);
+
+        if (lifeShield != null)
+        {
+            _currentLifeShield = lifeShield as TimerBuff;
+        }else _currentLifeShield = null;
+        
+    }
+    
 
     private void GetHPValue()
     {

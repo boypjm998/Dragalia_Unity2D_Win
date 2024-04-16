@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LitJson;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_LevelEnterButton : MonoBehaviour
 {
@@ -83,4 +84,40 @@ public class UI_LevelEnterButton : MonoBehaviour
         GetComponentInParent<UISortingGroup>().ToUIState(2010);
         
     }
+
+    public List<string> GetActiveLevelCount()
+    {
+        int cnt = 0;
+        List<string> res = new();
+        foreach (Transform child in transform)
+        {
+            //如果子物体下子物体数大于2
+            if (child.childCount > 2)
+            {
+                if(child.GetComponent<Button>().enabled == false)
+                    continue;
+                
+                var locked = false;
+                var locks = child.GetComponents<LevelBannerLock>();
+                print(child.name);
+                //print(locks.Length);
+                foreach (var lockBannerLock in locks)
+                {
+                    if (lockBannerLock.IsLocked)
+                    {
+                        locked = true;
+                        break;
+                    }
+                }
+                if(locked)
+                    continue;
+                
+                cnt++;
+                res.Add(child.name);
+            }
+
+        }
+        return res;
+    }
+    
 }

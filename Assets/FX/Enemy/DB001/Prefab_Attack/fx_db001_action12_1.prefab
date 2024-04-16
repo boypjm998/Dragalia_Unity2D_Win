@@ -82,6 +82,8 @@ MonoBehaviour:
   attackType: 1
   hitSoundEffect: {fileID: 8300000, guid: 9c40c20744e27e841b76838e3ef5060e, type: 3}
   attackSE: []
+  extraODModifier: 0
+  conditionalAttackEffects: []
   enemySource: {fileID: 0}
   isMeele: 0
   hitFlags: 
@@ -91,6 +93,7 @@ MonoBehaviour:
   forcedShake: 0
   hitShakeIntensity: 3
   damageAutoReset: 1
+  autoResetCondition: 0
   Avoidable: 0
 --- !u!114 &7696814195283545536
 MonoBehaviour:
@@ -111,6 +114,8 @@ MonoBehaviour:
   targetObject: {fileID: 0}
   EaseType: 1
   waitTime: 0
+  useRigid: 0
+  isCalled: 0
 --- !u!114 &1892065168202844918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +154,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1390734739424980357}
     m_Modifications:
+    - target: {fileID: 189350381542950363, guid: a54f44cf531487147bb6ccaf7d5c0ca1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5689827657775935613, guid: a54f44cf531487147bb6ccaf7d5c0ca1, type: 3}
       propertyPath: m_SortingLayer
       value: 5

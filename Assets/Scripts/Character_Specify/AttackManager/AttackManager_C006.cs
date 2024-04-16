@@ -224,11 +224,17 @@ public class AttackManager_C006 : AttackManagerMeeleWithFS
         var hit = Physics2D.Raycast(transform.position,
             new Vector2(ac.facedir, 0), 10,
             LayerMask.GetMask("Enemies"));
+
+        float distance = 10;
         
         if (hit.collider != null)
         {
-            if(Mathf.Abs(targetpos.x - transform.position.x) > 2.5f)
+            if (Mathf.Abs(targetpos.x - transform.position.x) > 2.5f)
+            {
                 targetpos = hit.point - 2.5f * new Vector2(ac.facedir,0);
+                
+            }
+                
             
         }
         
@@ -251,10 +257,14 @@ public class AttackManager_C006 : AttackManagerMeeleWithFS
         else if(targetpos.x < gameObject.RaycastedPlatform().bounds.min.x)
             targetpos.x = currentCollider.bounds.min.x;
         
+        distance = Mathf.Abs(targetpos.x - transform.position.x);
+        
+        var tweenTime = 0.01f + 0.24f * distance / 10;
+        
         
         StartCoroutine((ac as ActorController).HorizontalMoveFixedTime(
             targetpos.x,
-            0.25f,"combo3"));
+            tweenTime,"combo3"));
         
         
     }

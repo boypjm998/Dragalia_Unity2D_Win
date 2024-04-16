@@ -9,14 +9,14 @@ public class TrailCollider : MonoBehaviour
     [SerializeField]
     [Tooltip("为了让碰撞效果和实际效果分开的同时提高性能," + 
              "可以将这个碰撞器设置为透明的，并减少其顶点数。")]
-    private TrailRenderer trail;
+    protected TrailRenderer trail;
     
-    [SerializeField][Range(0,5f)] private float edgeRadius = 0.1f;
+    [SerializeField][Range(0,5f)] protected float edgeRadius = 0.1f;
     
     [SerializeField][Range(0.1f,1f)]
     [Tooltip("这个值表示从轨迹的起点开始，到轨迹的百分之多少的位置，这个碰撞器才会开始生效。")]
     
-    private float trailPercent = 0.5f;
+    protected float trailPercent = 0.5f;
     
 
     public float EdgeRadius
@@ -25,7 +25,7 @@ public class TrailCollider : MonoBehaviour
         set => _edgeCollider2D.edgeRadius = value;
     }
 
-    private EdgeCollider2D _edgeCollider2D;
+    protected EdgeCollider2D _edgeCollider2D;
 
     private void Awake()
     {
@@ -38,7 +38,7 @@ public class TrailCollider : MonoBehaviour
         SetColliderPoints();
     }
 
-    private void SetColliderPoints()
+    protected virtual void SetColliderPoints()
     {
         List<Vector2> points = new();
 

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class UI_ResultPageSpecial : UI_ResultPage
 {
+    [SerializeField] private GameObject tutorialAfterPrologue;
     // Start is called before the first frame update
     private static string zhcn_levelname1 = "终焉与伊始";
     private static string zhcn_levelname2 = "起始之“人”";
@@ -154,7 +155,11 @@ public class UI_ResultPageSpecial : UI_ResultPage
 
         yield return new WaitForSeconds(backspaceInterval);
         levelName.text = levelNameText2;
-        
+
+        var ui = Instantiate(tutorialAfterPrologue, transform);
+        ui.GetComponent<UI_TutorialMenuAfterPrologue>().SetPanelActive();
+
+        yield return null;
         
         returnButton.transform.DOLocalMoveX(-600, 0.5f).
             OnComplete(SetButtonEnabled);

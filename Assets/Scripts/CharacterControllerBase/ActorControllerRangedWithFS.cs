@@ -2,6 +2,7 @@
 using System.Net;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityCharacterController;
 using DG.Tweening;
+using GameMechanics;
 using UnityEngine;
 
 
@@ -37,6 +38,9 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
      {
           base.Awake();
           voiceController = GetComponentInChildren<AudioManagerPlayer>();
+          
+          pi.buttonAttack.delayingDuration = delayingTime;
+          
      }
 
      protected override void Update()
@@ -46,6 +50,8 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
           CheckRollWhenAttack();
           
           CheckSkill();
+          
+          CheckForceStrike();
      }
 
      protected void CheckRollWhenAttack()
@@ -70,9 +76,15 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
      {
           //TODO: 如果暮光之月增益存在的判定！！！
         
-          //print(pi.buttonUp.isExtending?"正在Extending":"没有Extending");
+          if (silence)
+          {
+               forceLevel = -1;
+               forcingTime = 0;
+               print("Silence");
+               return;
+          }
         
-          print((!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled)?"正在蓄力":"没有蓄力");
+          //print((!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled)?"正在蓄力":"没有蓄力");
         
           if(!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled && !dodging
              && !pi.hurt && grounded && !pi.isSkill && !anim.GetCurrentAnimatorStateInfo(0).IsName("walk"))

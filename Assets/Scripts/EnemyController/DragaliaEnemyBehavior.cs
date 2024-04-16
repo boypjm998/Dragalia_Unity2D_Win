@@ -198,6 +198,8 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         
         else return viewerPlayer;
     }
+    
+    
 
     public void SetState(int state, int substate = 0)
     {

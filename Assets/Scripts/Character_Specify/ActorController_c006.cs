@@ -34,7 +34,7 @@ public class ActorController_c006 : ActorControllerMeeleWithFS
     {
         base.CheckShapeShifting();
         
-        if (pi.buttonUp.OnPressed)
+        if (pi.buttonSpecial.OnPressed)
         {
 
             if(_statusManager.shapeshiftingCDTimer > 0)

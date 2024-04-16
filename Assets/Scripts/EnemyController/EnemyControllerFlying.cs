@@ -177,6 +177,33 @@ public class EnemyControllerFlying : EnemyController
         yield return new WaitUntil(() => !tweenerCore.IsPlaying());
     }
 
+
+    public IEnumerator MoveTowardTargetWithoutFlying(GameObject target, float maxFollowTime,
+        float arriveDistanceX, float startFollowDistance)
+    {
+        var time = 0f;
+        while (time < maxFollowTime)
+        {
+            time += Time.fixedDeltaTime;
+            TurnMove(target);
+            if (CheckTargetDistance(target, arriveDistanceX, 9999))
+            {
+                isMove = 0;
+                OnMoveFinished?.Invoke(true);
+                anim.SetFloat("forward", 0);
+                yield break;
+            }
+            isMove = 1;
+            transform.position += new Vector3(moveSpeed * facedir * isMove * (isBog?0.8f:1), 0) * Time.fixedDeltaTime;
+            anim.SetFloat("forward",1);
+            yield return new WaitForFixedUpdate();
+        }
+        isMove = 0;
+        OnMoveFinished?.Invoke(false);
+        anim.SetFloat("forward", 0);
+    }
+    
+
     public override void StartBreak()
     {
         var spStatus = _statusManager as SpecialStatusManager;

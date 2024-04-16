@@ -208,6 +208,11 @@ public class AchievementManager : MonoBehaviour
                 RegisterOnQuestClearEvent(achievement.id,"01014");
                 break;
             }
+            case 3:
+            {
+                RegisterOnQuestClearEvent(achievement.id,"01034");
+                break;
+            }
             case 4:
             {
                 RegisterOnQuestClearEvent(achievement.id,"01044");

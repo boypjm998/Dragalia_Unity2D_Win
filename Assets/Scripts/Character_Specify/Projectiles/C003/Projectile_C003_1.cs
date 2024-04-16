@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,10 @@ namespace CharacterSpecificProjectiles
 {
     public class Projectile_C003_1 : MonoBehaviour
     {
+        public Projectile_C003_1 Instance { get; private set; }
+
+        public GameObject contactGround;
+        
         protected bool isActive = false;
         private bool isUsed = false;
         [FormerlySerializedAs("BossGameObject")] public GameObject playerGameObject;
@@ -23,6 +28,8 @@ namespace CharacterSpecificProjectiles
                     Destroy(other.gameObject);
                 }
             }
+
+            Instance = this;
         }
         
         public void InitPotencyInfo(StatusManager statusManager)
@@ -38,7 +45,18 @@ namespace CharacterSpecificProjectiles
             snappedStatusManager.enabled = false;
             ac = playerGameObject.GetComponent<ActorController>();
         }
-        
+
+        private void Update()
+        {
+            if(contactGround == null)
+                Destroy(gameObject);
+            
+            if(contactGround.activeInHierarchy == false)
+                Destroy(gameObject);
+            
+            
+        }
+
         private void OnTriggerStay2D(Collider2D col)
         {
             if(isActive == false || isUsed == true)

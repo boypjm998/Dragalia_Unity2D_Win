@@ -32,6 +32,7 @@ public class BattleStageManager : MonoBehaviour
     public int crownTimeLimit = 300;//得到第二颗星所需的时间
     public int clearConditionType;//0:击倒BOSS，1:无
     public int loseControllTime { get; set; } = 0;
+    private float _currentTimeScale = 1;
 
 
     //private DamageNumberManager damageNumberManager;
@@ -58,6 +59,16 @@ public class BattleStageManager : MonoBehaviour
     public float mapBorderR { get; private set; }
     public float mapBorderT { get; private set; }
     public float mapBorderB { get; private set; }
+
+    private GameObject _mapBorderLGO;
+    private GameObject _mapBorderRGO;
+    private GameObject _mapBorderTGO;
+    private GameObject _mapBorderBGO;
+    
+    
+    
+    
+    
     
     protected PolygonCollider2D cameraRange;
 
@@ -93,6 +104,7 @@ public class BattleStageManager : MonoBehaviour
     public event OnMouseOverDelegate OnPointerExit;
     
     public bool PlayerViewEnable { get; set; } = true;
+    public bool DragonBlock { get; set; } = false;
     
     public List<int> EnemyList { get; private set; } = new();
 
@@ -288,6 +300,11 @@ public class BattleStageManager : MonoBehaviour
         var borderInfoT = GameObject.Find("BorderTop");
         var borderInfoB = GameObject.FindGameObjectWithTag("Ground");
 
+        _mapBorderBGO = borderInfoB;
+        _mapBorderLGO = borderInfoL;
+        _mapBorderRGO = borderInfoR;
+        _mapBorderTGO = borderInfoT;
+
         mapBorderL = borderInfoL.GetComponent<BoxCollider2D>().offset.x +
                      borderInfoL.GetComponent<BoxCollider2D>().size.x * 0.5f + borderInfoL.transform.position.x;
         mapBorderR = borderInfoR.GetComponent<BoxCollider2D>().offset.x -
@@ -299,7 +316,8 @@ public class BattleStageManager : MonoBehaviour
 
     public void SetLeftBorder(float value, bool refreshEnemyBehavior = false)
     {
-        var borderInfoL = GameObject.Find("BorderLeft");
+        var borderInfoL = _mapBorderLGO != null ? _mapBorderLGO :
+            GameObject.Find("BorderLeft");
         
             // 获取BoxCollider2D组件
         BoxCollider2D boxCollider = borderInfoL.GetComponent<BoxCollider2D>();
@@ -324,7 +342,8 @@ public class BattleStageManager : MonoBehaviour
     
     public void SetRightBorder(float value, bool refreshEnemyBehavior = false)
     {
-        var borderInfoR = GameObject.Find("BorderRight");
+        var borderInfoR = _mapBorderRGO != null ? _mapBorderRGO :
+            GameObject.Find("BorderRight");
         
         // 获取BoxCollider2D组件
         BoxCollider2D boxCollider = borderInfoR.GetComponent<BoxCollider2D>();
@@ -344,6 +363,32 @@ public class BattleStageManager : MonoBehaviour
         }
         
         mapBorderR = value;
+    }
+
+    public void SetTopBorder(float value, bool refreshEnemyBehavior = false)
+    {
+        var borderInfoT = _mapBorderTGO != null ? _mapBorderTGO :
+            GameObject.Find("BorderTop");
+        
+        BoxCollider2D boxCollider = borderInfoT.GetComponent<BoxCollider2D>();
+
+        // 计算BoxCollider2D的高度
+        float height = boxCollider.size.y * transform.localScale.y;
+
+        // 计算新的位置
+        float newY
+            = value + height / 2 - boxCollider.offset.y * transform.localScale.y;
+
+        // 设置新的位置
+        borderInfoT.transform.position = new Vector3(borderInfoT.transform.position.x,newY,
+            borderInfoT.transform.position.z);
+
+        if (refreshEnemyBehavior)
+        {
+            OnMapInfoRefresh?.Invoke();
+        }
+        
+        mapBorderT = value;
     }
 
     public void SetCameraLeftBorder(float value)
@@ -418,12 +463,6 @@ public class BattleStageManager : MonoBehaviour
         points[index1].x = value;
         points[index2].x = value;
         polygonCollider.points = points;
-    }
-
-
-    public void SetCameraBorder()
-    {
-        
     }
 
     public void RefreshCameraBorder()
@@ -540,7 +579,8 @@ public class BattleStageManager : MonoBehaviour
 
         //2、自充sp
 
-        for (var i = 0; i < playerStatusManager.maxSkillNum; i++) playerStatusManager.SpGainInStatus(i, spGain);
+        for (var i = 0; i < playerStatusManager.maxSkillNum; i++) 
+            playerStatusManager.SpGainInStatus(i, spGain);
     }
 
     public void SpCharge(GameObject playerHandle, float sp, int skillID)
@@ -601,6 +641,7 @@ public class BattleStageManager : MonoBehaviour
         }
 
         var shield = targetStat.GetConditionOfTypeWithMaxEffect((int)BasicCalculation.BattleCondition.Shield);
+        var lifeShield = targetStat.GetConditionOfTypeWithMaxEffect((int)BasicCalculation.BattleCondition.LifeShield);
 
         //2-4 : Calculate the damage in a loop.
         for (var i = 0; i < attackStat.GetHitCountInfo(); i++)
@@ -646,6 +687,21 @@ public class BattleStageManager : MonoBehaviour
                 }
             }
 
+            if (lifeShield != null)
+            {
+                if (damageM[i] <= lifeShield.effect)
+                {
+                    lifeShield.SetEffect(lifeShield.effect - damageM[i]);
+                    damageM[i] = 0;
+                }
+                else
+                {
+                    damageM[i] -= (int)lifeShield.effect;
+                    targetStat.RemoveTimerBuff((int)BasicCalculation.BattleCondition.LifeShield);
+                    lifeShield = null;
+                }
+            }
+
 
             targetStat.OnTakeDirectDamage?.Invoke(targetStat);
             targetStat.OnTakeDirectDamageFrom?.Invoke(targetStat,playerstat,attackStat,damageM[i]);
@@ -657,9 +713,9 @@ public class BattleStageManager : MonoBehaviour
             if (attackType == 0)
             {
                 if (isCrit)
-                    dnm.DamagePopEnemy(target.transform, damageM[i], 2);
+                    dnm.DamagePopEnemy(target.transform, damageM[i], 2,1,targetStat.height);
                 else
-                    dnm.DamagePopEnemy(target.transform, damageM[i], 1);
+                    dnm.DamagePopEnemy(target.transform, damageM[i], 1,1,targetStat.height);
             }
             else if(attackType == 1)
             {
@@ -671,9 +727,9 @@ public class BattleStageManager : MonoBehaviour
             else
             {
                 if (isCrit)
-                    dnm.DamagePopEnemy(target.transform, damageM[i], 2,0.5f);
+                    dnm.DamagePopEnemy(target.transform, damageM[i], 2,0.5f,targetStat.height);
                 else
-                    dnm.DamagePopEnemy(target.transform, damageM[i], 1,0.5f);
+                    dnm.DamagePopEnemy(target.transform, damageM[i], 1,0.5f,targetStat.height);
             }
             
 
@@ -771,8 +827,12 @@ public class BattleStageManager : MonoBehaviour
                         
                             continue;//检查异常抗性！不一定是异常！
                         }
+                        
+                        playerstat.OnAfflictionInflict?.Invoke(withCondition.condition);
+                        
                         if(StatusManager.IsAffliction(withCondition.condition.buffID))
                         {
+                            
                             if(attackType!=1)
                                 targetStat.IncreaseAfflictionResistance(withCondition.condition.buffID);
                         }
@@ -798,6 +858,10 @@ public class BattleStageManager : MonoBehaviour
                             //failed
                             continue;
                         }
+                        else
+                        {
+                            playerstat.OnConditionInflict?.Invoke(withCondition.condition);
+                        }
                     }
 
 
@@ -821,7 +885,8 @@ public class BattleStageManager : MonoBehaviour
                             newEffect,
                             withCondition.condition.duration,
                             withCondition.condition.maxStackNum,
-                            withCondition.condition.specialID);
+                            withCondition.condition.specialID,
+                            withCondition.condition.dispellable);
                     }
                     else
                     {
@@ -878,6 +943,7 @@ public class BattleStageManager : MonoBehaviour
             if (!container.spGained)
             {
                 SpChargeAll(playerstat as PlayerStatusManager, ((AttackFromPlayer)attackStat).GetSpGain());
+                (playerstat as PlayerStatusManager).OnAttackGainSP?.Invoke(attackStat,((AttackFromPlayer)attackStat).GetSpGain());
                 container.spGained = true;
             }
         }
@@ -894,7 +960,7 @@ public class BattleStageManager : MonoBehaviour
             var targetSpecialStat = (SpecialStatusManager) targetStat;
             if (targetSpecialStat.baseBreak > 0)
             {
-                float ODModifier = attackStat.extraODModifier;
+                float ODModifier = Mathf.Clamp(attackStat.extraODModifier, -0.5f,100);
                 if (container.IfODCounter)
                 {
                     ODModifier += (0.8f + 0.02f * Mathf.Sqrt(Mathf.Abs(attackStat.attackInfo[0].knockbackPower-100)));
@@ -938,6 +1004,23 @@ public class BattleStageManager : MonoBehaviour
         {
             damageM = (int)Mathf.Ceil(damage * Random.Range(0.95f, 1.05f));
         }
+
+        var lifeShield = stat.GetConditionOfTypeWithMaxEffect((int)BasicCalculation.BattleCondition.LifeShield);
+        
+        if (lifeShield != null)
+        {
+            if (damageM <= lifeShield.effect)
+            {
+                lifeShield.SetEffect(lifeShield.effect - damageM);
+                damageM = 0;
+            }
+            else
+            {
+                damageM -= (int)lifeShield.effect;
+                stat.RemoveTimerBuff((int)BasicCalculation.BattleCondition.LifeShield);
+                lifeShield = null;
+            }
+        }
         
         
         if (stat.currentHp <= damageM && !causeDeath)
@@ -948,6 +1031,8 @@ public class BattleStageManager : MonoBehaviour
         dnm.IndirectDamagePop(damageM,stat.transform);
         
         stat.currentHp -= damageM;
+        
+        stat.OnTakeIndirectDamage?.Invoke(damageM);
         
         if(damageM > 0)
             stat.OnHPChange?.Invoke();
@@ -1280,11 +1365,16 @@ public class BattleStageManager : MonoBehaviour
 
 
 
+    public void SetTimeScale(float scale = 1)
+    {
+        _currentTimeScale = Mathf.Clamp(scale, 0.1f, 1.5f);
+        Time.timeScale = _currentTimeScale;
+    }
 
     public void SetGamePause(bool flag)
     {
         isGamePaused = flag;
-        Time.timeScale = flag ? 0 : 1;
+        Time.timeScale = flag ? 0 : _currentTimeScale;
         var voices1 = GameObject.FindGameObjectsWithTag("Voice");
         foreach (var voice in voices1)
         {
@@ -1525,7 +1615,7 @@ public class BattleStageManager : MonoBehaviour
 
         //print(newQuestState.best_clear_time);
         
-        string path = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        string path = Application.persistentDataPath + "/testSaveData.json";
         StreamReader sr = new StreamReader(path);
         var str = sr.ReadToEnd();
         sr.Close();
@@ -1596,7 +1686,7 @@ public class BattleStageManager : MonoBehaviour
         
         
         string jsonStr = JsonMapper.ToJson(datalist);
-        string filePath = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        string filePath = Application.persistentDataPath + "/testSaveData.json";
         StreamWriter sw = new StreamWriter(filePath);
         sw.Write(jsonStr);
         sw.Close();

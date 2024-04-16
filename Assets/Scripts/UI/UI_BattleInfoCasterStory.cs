@@ -33,7 +33,7 @@ public class UI_BattleInfoCasterStory : UI_BattleInfoCaster
     {
         _globalController = GlobalController.Instance;
         
-        BossSkillNameData = BasicCalculation.ReadJsonData("LevelInformation/QuestSkillInfoStory.json");
+        BossSkillNameData = BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestSkillInfoStory.json");
         
 
 

@@ -25,6 +25,9 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
     protected bool debuffRelived = false;
     public bool summoned = true;
 
+    [SerializeField] private GameObject p2_boss;
+    [SerializeField] private AudioClip p2_bgm;
+
     protected int catridgeCount =>
         status.GetConditionStackNumber((int)BasicCalculation.BattleCondition.AlchemicCatridge);
     
@@ -39,6 +42,22 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
         enemyController.OnBeingCountered += CounterPunish;
         counterPunish = 0;
         GetBehavior();
+        
+        if (difficulty == 4)
+        {
+            status.OnHPBelow0 += () =>
+            {
+                status.ResetAllStatusForced();
+                enemyController.StopAllCoroutines();
+        
+                ResetHumanActionsBeforeTransform();
+        
+                currentAction = StartCoroutine(ChangePhaseAnimationRoutine());
+                
+                status.OnHPBelow0 = null;
+            };
+            
+        }
 
     }
 
@@ -52,16 +71,14 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
 
         if (debuffRelived == false && status.currentHp < status.maxHP * (0.45f + (difficulty==2?0:0.05f)))
         {
-            if (status.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Stun) > 0)
+            if(difficulty >= 4)
+                return;
+            if (status.HasControlAffliction())
             {
                 status.ReliefAllAfflication();
                 debuffRelived = true;
             }
         }
-        
-        print(currentAttackAction == null?"currentAttackAction is null":"currentAttackAction is not null");
-        print(currentMoveAction == null?"currentMoveAction is null":"currentMoveAction is not null");
-        print(currentAction == null?"currentAction is null":"currentAction is not null");
 
     }
 
@@ -91,7 +108,7 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
                 substate = 0;
             }
         }
-        else
+        else if(difficulty == 3)
         {
             if (status.currentHp < status.maxHP * 0.9 && state==0)
             {
@@ -115,6 +132,10 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
                 skill2CD = 0;
                 substate = 0;
             }
+        }
+        else if(difficulty == 4)
+        {
+            
         }
 
 
@@ -871,6 +892,57 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
         status.ObtainTimerBuff((int)BasicCalculation.BattleCondition.Stun,
             -1,6+Random.Range(0f,3f),1,-1);
         counterPunish = counterPunishCD;
+    }
+    
+    protected IEnumerator ChangePhaseAnimationRoutine()
+    {
+        ActionStart();
+        print("startPhaseChange");
+        
+        
+        
+        
+        currentMoveAction = 
+            StartCoroutine(enemyAttackManager.HB03_Action14());
+        yield return new WaitUntil(()=>currentMoveAction == null);
+
+        UI_MultiBossManager.Instance.GetBossStatus(0);
+
+        yield return null;
+        
+        UI_MultiBossManager.Instance.RemoveBoss(1);
+
+        GameObject p2_prefab = this.p2_boss;
+        
+        
+        
+        var p2_boss = Instantiate(p2_prefab,transform.position,Quaternion.identity,transform.parent);
+        p2_boss.GetComponent<EnemyController>().TurnMove(targetPlayer);
+        
+        
+        UI_MultiBossManager.Instance.GetBossStatus(0).RedirectBoss(p2_boss,2);
+        
+        
+        //BattleEffectManager.Instance.PlayBGM(false);
+        ActionEnd();
+
+        yield return null;
+        
+        p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
+
+        p2_boss.transform.position = new Vector3(0, 5);
+        BattleStageManager.Instance.SetCameraTopBorder(32);
+        BattleStageManager.Instance.RefreshCameraBorder();
+        // BattleStageManager.Instance.RemoveFieldAbility(20081);
+        BattleStageManager.Instance.RemoveFieldAbility(20181);
+        BattleEffectManager.Instance.SetBGM(p2_bgm);
+        BattleEffectManager.Instance.PlayBGM(true);
+        
+        
+        
+        yield return null;
+
+        Destroy(gameObject);
     }
 
 }

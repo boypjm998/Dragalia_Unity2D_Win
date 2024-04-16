@@ -69,7 +69,6 @@ public class DragaliaEnemyActionTypes
         GenesisCrownSingle
 
     }
-
     public enum HB1003
     {
         free,
@@ -77,6 +76,22 @@ public class DragaliaEnemyActionTypes
         summon,
         force,
         gate
+    }
+
+    public enum HB1003L
+    {
+        AlchemicEnhancement,
+        AlchemicShield,
+        Arrow,
+        AstralStream,
+        AstralSurge,
+        DoomTempest,
+        DriveBuster,
+        Minion,
+        OtherworldGate,
+        VerticalArrow,
+        SetWorld,
+        StormShield
     }
 
     public enum HB1003M1
@@ -153,6 +168,50 @@ public class DragaliaEnemyActionTypes
         gale,
         meene
     }
+    
+    /// <summary>
+    /// Primal Jupiter
+    /// </summary>
+    public enum DB2004
+    {
+        around,
+        blast,
+        bolt,
+        claw,
+        dash,
+        dual,
+        memory1,
+        memory2,
+        memory3,
+        memory4,
+        random,
+        shells,
+        summon1,
+        summon2,
+        summon3,
+        summon4,
+        summon5,
+        summon6,
+        sweep,
+        sweep_double,
+        twist
+    }
+    
+    /// <summary>
+    /// Primal Zodiark
+    /// </summary>
+    public enum DB2005
+    {
+        Around,
+        Chaser,
+        Claw,
+        CursedFlame,
+        PoisonSide,
+        PoisonFront,
+        Spit,
+        Sprint,
+        Tail,
+    }
 
     /// <summary>
     /// 堕天使加百列
@@ -170,6 +229,28 @@ public class DragaliaEnemyActionTypes
         target_pillar,
         platform_splash
     }
+    
+    /// <summary>
+    /// 堕天使拉斐尔
+    /// </summary>
+    public enum DB2013
+    {
+        combo,
+        free,
+        ground,
+        infight,
+        mine,
+        nihil,
+        straight,
+        orbs,
+        orbs_tut,
+        weak_point
+
+    }
+    
+    
+    
+    
     /// <summary>
     /// 堕天使乌列
     /// </summary>

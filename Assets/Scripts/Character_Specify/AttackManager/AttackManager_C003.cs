@@ -360,6 +360,7 @@ public class AttackManager_C003 : AttackManagerRanged
             RangedAttackFXLayer.transform);
 
         var controller = proj.GetComponent<Projectile_C003_1>();
+        controller.contactGround = gameObject.RaycastedPlatform().gameObject;
         controller.playerGameObject = gameObject;
         controller.InitPotencyInfo(_statusManager);
         

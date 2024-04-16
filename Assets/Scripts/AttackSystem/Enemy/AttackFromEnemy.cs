@@ -26,7 +26,7 @@ public class AttackFromEnemy : AttackBase
 
 
     public GameObject hitConnectEffect;
-    [HideInInspector]public Collider2D attackCollider;
+    public Collider2D attackCollider;
     [HideInInspector]public Transform selfpos;
     
     //static int DEFAULT_GRAVITY = 4;

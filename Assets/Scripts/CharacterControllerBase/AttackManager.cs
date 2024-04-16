@@ -186,14 +186,30 @@ public class AttackManager : MonoBehaviour
 
     protected void LifeSteal(StatusManager statusManager, int damage, int fraction, int maxHealPercentage)
     {
+        if(_statusManager.LifeStealBlock)
+            return;
+
         float maxHealHP = statusManager.maxHP * 0.01f * maxHealPercentage;
 
         float healHP = Mathf.Min(damage * fraction * 0.01f,maxHealHP);
         
         statusManager.HPRegenImmediatelyWithoutRandomDirectly(statusManager,(int)healHP);
-
-
     }
+    
+    protected int LifeStealWithReturn(StatusManager statusManager, int damage, int fraction, int maxHealPercentage, int clampCap = 9999)
+    {
+        if(_statusManager.LifeStealBlock)
+            return 0;
+
+        float maxHealHP = statusManager.maxHP * 0.01f * maxHealPercentage;
+
+        float healHP = Mathf.Min(damage * fraction * 0.01f,maxHealHP,clampCap);
+        
+        statusManager.HPRegenImmediatelyWithoutRandomDirectly(statusManager,(int)healHP);
+
+        return (int)healHP;
+    }
+    
 
     protected void AddParticleSystemSpeedModifier(GameObject fx)
     {

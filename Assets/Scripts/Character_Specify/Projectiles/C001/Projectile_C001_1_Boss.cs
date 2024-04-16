@@ -9,6 +9,7 @@ namespace CharacterSpecificProjectiles
     {
         public GameObject enemySource;
         public Collider2D contactTargetCol;
+        public Vector2 velocity => new(horizontalVelocity, verticalVelocity);
 
         public void SetContactPlatform(Collider2D col)
         {

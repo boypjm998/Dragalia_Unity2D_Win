@@ -66,6 +66,8 @@ public class PlayerStatusManager : StatusManager
 
     public event StatusManagerVoidDelegate OnShapeshiftingEnter;
     public event StatusManagerVoidDelegate OnShapeshiftingExit;
+    
+    public Action<AttackBase,float> OnAttackGainSP;
 
     [HideInInspector] public ComboIndicatorUI _comboIndicator;
     private ActorController ac;

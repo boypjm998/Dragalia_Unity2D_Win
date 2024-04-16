@@ -13,6 +13,8 @@ public class StatusManager : MonoBehaviour
 
     public string displayedName;
     public int dialogIconID;
+    /// 显示伤害数字的高度
+    public float height;
 
     [Header("Basic Attributes")] public int maxBaseHP;
     [Range(1, 1024)] public int baseDef = 10;
@@ -48,6 +50,8 @@ public class StatusManager : MonoBehaviour
     public bool ImmuneToAllDotAffliction { get; set; } = false;
 
     public bool ImmuneToAllOtherAffliction { get; set; } = false;
+
+    public bool LifeStealBlock { get; set; } = false;
     public int DebuffResistance { get; set; } = 0;
 
     
@@ -123,6 +127,14 @@ public class StatusManager : MonoBehaviour
     /// 当主动施加异常状态遭到抵抗时触发
     /// </summary>
     public TestDelegate OnAfflictionResist;
+    /// <summary>
+    /// 当主动施加异常状态成功时触发
+    /// </summary>
+    public TestDelegate OnAfflictionInflict;
+    /// <summary>
+    /// 当主动施加增益减益状态成功时触发
+    /// </summary>
+    public TestDelegate OnConditionInflict;
 
     /// <summary>
     /// 当抵抗了受到异常状态时触发
@@ -161,6 +173,7 @@ public class StatusManager : MonoBehaviour
     /// 当受到直接伤害时触发
     /// </summary>
     public StatusManagerDelegate OnTakeDirectDamage;
+    public Action<int> OnTakeIndirectDamage;
     /// <summary>
     /// arg1:自身 arg2:攻击者
     /// </summary>
@@ -563,8 +576,7 @@ public class StatusManager : MonoBehaviour
     {
         get
         {
-            return (int)(blindnessRes +
-                         GetConditionTotalValue((int)BasicCalculation.BattleCondition.BlindnessRes));
+            return (int)(blindnessRes + GetBlindnessResistanceBuff());
             //+GetConditionTotalValue((int)BasicCalculation.BattleCondition.SleepResDown));
         }
         set => blindnessRes = value;
@@ -956,7 +968,7 @@ public class StatusManager : MonoBehaviour
             else if (condition.buffID == (int)BasicCalculation.BattleCondition.Bog)
             {
                 //totalbuff -= condition.effect;
-                debuff += 50;
+                debuff += 30;
             }
             else
             {
@@ -1779,7 +1791,39 @@ public class StatusManager : MonoBehaviour
         return buff - debuff;
     }
 
+    protected int GetBlindnessResistanceBuff(int type = 0)
+    {
+        int totalbuff = 0;
+        int buff = 0, debuff = 0;
+        foreach (var condition in conditionList)
+        {
+            if (condition.buffID == (int)BasicCalculation.BattleCondition.BlindnessRes)
+            {
+                buff += (int)condition.effect;
+            }
 
+            if (condition.buffID == (int)BasicCalculation.BattleCondition.BlindnessResDown)
+            {
+                debuff += (int)condition.effect;
+            }
+        }
+        
+        if (buff > 500)
+            buff = 500;
+        if (debuff > 200)
+            debuff = 200;
+        
+        if (type == 1)
+        {
+            return buff;
+        }
+        else if (type == 2)
+        {
+            return debuff;
+        }
+        
+        return buff - debuff;
+    }
 
     #endregion
     
@@ -2247,7 +2291,7 @@ public class StatusManager : MonoBehaviour
     /// <para>关于sp_id:角色特化以1+角色id+2位序号作为标识符。如（1003）01/关卡特化以8+关卡id+2位序号作为标识符。
     /// 如泽娜的试炼绝级为8(1024)01</para>
     public virtual TimerBuff ObtainTimerBuff(int buffID, float effect, float duration,
-        int maxStack, int spID)
+        int maxStack, int spID, bool dispellable = true)
     {
         //检测虚无状态
         if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
@@ -2265,6 +2309,11 @@ public class StatusManager : MonoBehaviour
             return null;
         
         var buff = new TimerBuff(buffID, effect, duration, maxStack, spID);
+
+        if (dispellable == false)
+        {
+            buff.dispellable = false;
+        }
         
         buff.ApplyBuffTime(this);
 
@@ -2654,6 +2703,28 @@ public class StatusManager : MonoBehaviour
         
     }
 
+    public void AddLifeShield(int maxShield, int amount)
+    {
+        var lifeShield = GetConditionOfTypeWithMaxEffect((int)BasicCalculation.BattleCondition.LifeShield);
+
+        if (lifeShield == null)
+        {
+            lifeShield = new TimerBuff((int)BasicCalculation.BattleCondition.LifeShield, 
+                amount, -1, 1,-1);
+            ObtainTimerBuff(lifeShield);
+        }
+        else
+        {
+            if (lifeShield.effect < maxShield)
+            {
+                lifeShield.SetEffect(Mathf.Min(maxShield,lifeShield.effect + amount));
+            }
+
+            OnBuffEventDelegate?.Invoke(lifeShield);
+        }
+        
+        
+    }
 
     public virtual void EnergyLevelUp(int level,bool dispellable = true)
     {
@@ -2870,6 +2941,21 @@ public class StatusManager : MonoBehaviour
 
         return false;
     }
+    
+    public bool ReliefOneDoTAffliction()
+    {
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (IsDotAffliction(conditionList[i].buffID))
+            {
+                //OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
+                RemoveConditionWithLog(conditionList[i]);
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public void ReliefDebuffExceptNilAndCorrosion()
     {
@@ -2977,7 +3063,19 @@ public class StatusManager : MonoBehaviour
     }
 
 
-    public bool HasBuff(int buffID)
+    public bool HasBuffWithSPID(int spID)
+    {
+        bool found = false;
+        foreach (BattleCondition condition in conditionList)
+        {
+            if (condition.specialID == spID)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool HasCondition(int buffID)
     {
         bool found = false;
         foreach (BattleCondition condition in conditionList)
@@ -2988,6 +3086,12 @@ public class StatusManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public bool HasDispellableBuff()
+    {
+        //返回是否有dispellable为true且IsBuff为true的condition
+        return conditionList.Any(condition => condition.dispellable && IsBuff(condition.buffID));
     }
     
     /// <summary>
@@ -3067,6 +3171,10 @@ public class StatusManager : MonoBehaviour
     {
         for (int i = 0; i < conditionList.Count; i++)
         {
+            if (conditionList[i].TickInterval > 0)
+            {
+                conditionList[i].Tick(Time.deltaTime,this);
+            }
             if (conditionList[i].duration > 0)
             {
                 conditionList[i].lastTime -= Time.deltaTime;
@@ -3131,10 +3239,12 @@ public class StatusManager : MonoBehaviour
         for (int i = conditionList.Count-1; i >= 0; i--)
         {
             //print(i+"个BUFF");
-            if (conditionList[i].dispellable == false || (conditionList[i].buffID > 100 && conditionList[i].buffID < 200 && conditionList[i].dispellable == true))
+            if (conditionList[i].dispellable == false ||
+                (conditionList[i].buffID > 100 && conditionList[i].buffID < 200 && conditionList[i].dispellable == true))
             {
                 continue;
             }
+            print($"解除了{(BasicCalculation.BattleCondition)conditionList[i].buffID},它的Dispellable为：{conditionList[i].dispellable}");
             RemoveCondition(conditionList[i]);
         }
         OnSpecialBuffDelegate?.Invoke(UI_BuffLogPopManager.SpecialConditionType.Reset.ToString());
@@ -3323,7 +3433,7 @@ public class StatusManager : MonoBehaviour
     /// <summary>
     ///   <para>目标立即回复生命值（float 回复倍率，float 百分比回复倍率）</para>
     /// </summary>
-    public void HPRegenImmediately(float potency,float potency2,bool checkEnergy = false)
+    public int HPRegenImmediately(float potency,float potency2,bool checkEnergy = false)
     {
         if (checkEnergy)
         {
@@ -3335,8 +3445,8 @@ public class StatusManager : MonoBehaviour
             }
         }
 
-        _battleStageManager.TargetHeal(gameObject,potency, potency2,true);
-        
+        var healAmount = _battleStageManager.TargetHeal(gameObject,potency, potency2,true);
+        return healAmount;
     }
 
     public void HPRegenImmediately(StatusManager statusManager, float potency, float potency2)
@@ -3553,12 +3663,17 @@ public class StatusManager : MonoBehaviour
         print(GlobalController.Instance.GameLanguage);
         if (GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
         {
+            Vector2 newPosition = buffLayer.position;
             var buffTextGameObject = buffLayer.GetComponentInChildren<UI_BuffLogPopManager>();
-            if(buffTextGameObject!=null)
+            if (buffTextGameObject != null)
+            {
+                newPosition = buffTextGameObject.transform.position;
                 Destroy(buffTextGameObject.gameObject);
+            }
+                
             //Instanciate Assets/Resources/UI/InBattle/BuffLogText/BuffText_EN.prefab
             var newBuffTextPrefab = Resources.Load<GameObject>("UI/InBattle/BuffLogText/BuffText_EN");
-            var newBuffText = Instantiate(newBuffTextPrefab, transform.position + new Vector3(0,2,0),
+            var newBuffText = Instantiate(newBuffTextPrefab, newPosition,
                 Quaternion.identity,buffLayer);
         }
     }

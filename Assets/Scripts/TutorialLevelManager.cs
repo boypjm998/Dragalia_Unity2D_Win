@@ -39,6 +39,7 @@ public class TutorialLevelManager : MonoBehaviour
     public KeyCode keySkill4 = KeyCode.None;
     public KeyCode keySpecial = KeyCode.None;
     public KeyCode keyEsc = KeyCode.Escape;
+    public KeyCode keyUp = KeyCode.None;
     private bool moveNext = false;
     
     [Header("Debug")]
@@ -120,6 +121,7 @@ public class TutorialLevelManager : MonoBehaviour
         keySkill4 = GlobalController.keySkill4;
         keySpecial = GlobalController.keySpecial;
         keyDown = GlobalController.keyDown;
+        
         LoadDialogAsset();
         UIElements = GameObject.Find("UI");
         sharedVoice = BattleStageManager.Instance.transform.Find("SharedVoice").GetComponent<AudioSource>();
@@ -186,9 +188,11 @@ public class TutorialLevelManager : MonoBehaviour
         keyLeft = KeyCode.A;
         keyRight = KeyCode.D;
         keySpecial = KeyCode.Space;
+        
         if (defaultSettingGroupID == 1)
         {
             keyJump = KeyCode.W;
+            keyUp = KeyCode.None;
             keyAttack = KeyCode.H;
             keyRoll = KeyCode.LeftShift;
             keySkill1 = KeyCode.J;
@@ -198,6 +202,7 @@ public class TutorialLevelManager : MonoBehaviour
         }
         else
         {
+            keyUp = KeyCode.W;
             keyJump = KeyCode.K;
             keyAttack = KeyCode.J;
             keyRoll = KeyCode.L;
@@ -225,6 +230,7 @@ public class TutorialLevelManager : MonoBehaviour
         GlobalController.keyDown = keyDown;
         GlobalController.keyRoll = keyRoll;
         GlobalController.keyJump = keyJump;
+        GlobalController.keyUpNew = keyUp;
         
         GlobalController.Instance.WritePlayerSettingsToFile();
         
@@ -318,7 +324,7 @@ public class TutorialLevelManager : MonoBehaviour
 
     private void LoadDialogAsset()
     {
-        voiceData = BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoStory.json");
+        voiceData = BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfoStory.json");
     }
 
     public void PlayStoryVoiceWithDialog(int id, int speakerID, AudioSource source)
@@ -358,7 +364,7 @@ public class TutorialLevelManager : MonoBehaviour
         player.keyJump = KeyCode.None;
         player.keyRoll = KeyCode.None;
         player.keyDown = KeyCode.None;
-        player.keyUp = KeyCode.None;
+        player.keySp = KeyCode.None;
         //player.enabled = true;
 
         yield return new WaitForSeconds(1f);
@@ -547,7 +553,7 @@ public class TutorialLevelManager : MonoBehaviour
         UIElements.transform.Find("CharacterInfo/AlchemicGauge").gameObject.SetActive(true);
         var alchemicGauge = alchemicGaugeObj.GetComponent<AlchemicGauge>();
         playerAlchemicGauge = alchemicGauge;
-        alchemicGauge.Reset();
+        alchemicGauge.ResetGauge();
         alchemicGauge.ChargeTo(33,3);
         cm.Follow = _playerInput.transform;
         var cmConfiner = cm.GetComponent<CinemachineConfiner2D>();
@@ -661,7 +667,7 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitUntil(()=>playerStat.GetConditionStackNumber(300) > 0);
         OpenTutorialHintPauseMenuAndTurnToNewestPage();//解锁技能3
         _playerInput.keySkill3 = keySkill3;
-        _playerInput.keyUp = keySpecial;
+        _playerInput.keySp = keySpecial;
         GlobalController.gamepadMap.FindAction("Skill3").Enable();
         GlobalController.gamepadMap.FindAction("Special").Enable();
         
@@ -1123,7 +1129,8 @@ public class TutorialLevelManager : MonoBehaviour
         var clearTime = (double)Mathf.Round((float)BattleStageManager.Instance.currentTime*10f) / 10f;
         var newQuestState = new QuestSave("100001", 
             clearTime, 1, 1, 1);
-        string path = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        string path = Application.persistentDataPath + "/testSaveData.json";
+        //string path = Application.streamingAssetsPath + "/savedata/testSaveData.json";
         StreamReader sr = new StreamReader(path);
         var str = sr.ReadToEnd();
         sr.Close();
@@ -1150,7 +1157,12 @@ public class TutorialLevelManager : MonoBehaviour
         }
         
         string jsonStr = JsonMapper.ToJson(datalist);
-        string filePath = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        
+        //string filePath = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        
+        string filePath = Application.persistentDataPath + "/testSaveData.json";
+        
+        
         StreamWriter sw = new StreamWriter(filePath);
         sw.Write(jsonStr);
         sw.Close();

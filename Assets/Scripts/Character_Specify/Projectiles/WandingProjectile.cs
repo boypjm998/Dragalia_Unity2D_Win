@@ -20,6 +20,12 @@ namespace CharacterSpecificProjectiles
             wandingPlatform = platform;
             SetEdges();
         }
+
+        public void SetWandingEdges(float leftEdge, float rightEdge)
+        {
+            this.leftEdge = leftEdge;
+            this.rightEdge = rightEdge;
+        }
         
         public void SetWandingPlatform(string name)
         {

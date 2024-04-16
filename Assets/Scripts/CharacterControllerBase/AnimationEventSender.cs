@@ -244,6 +244,18 @@ public class AnimationEventSender : MonoBehaviour
         _attackManager.AirDashAttack();
     }
 
+    protected void SetGravityScale(int scale)
+    {
+        var ac = (ActorController as ActorController);
+        ac.SetGravityScale(scale);
+        ac.rigid.velocity = new Vector2(ac.rigid.velocity.x, Mathf.Max(ac.rigid.velocity.y,0));
+    }
+    
+    protected void ResetGravityScale()
+    {
+        (ActorController as ActorController).ResetGravityScale();
+    }
+    
     protected void EventRoll()
     {
         ActorController.EventRoll();

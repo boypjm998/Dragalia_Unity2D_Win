@@ -172,7 +172,7 @@ public class ActorController_c007 : ActorControllerWand
         _statusManager.ChargeDP(10*Time.deltaTime,true);
 
 
-        if (pi.buttonUp.OnPressed)
+        if (pi.buttonSpecial.OnPressed)
         {
             
             if (!dc || !dc.CheckTransformCondition())

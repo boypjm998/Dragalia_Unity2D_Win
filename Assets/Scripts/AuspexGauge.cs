@@ -36,7 +36,7 @@ public class AuspexGauge : MonoBehaviour,ICharacterSpecialGauge
             ChargeTo(ac.auspexGauge);
         }else if(ac.auspexGauge == 0 && frontGaugeSlider.value != 0)
         {
-            Reset();
+            ResetGauge();
         }
 
         if (ac.auspexGauge >= 3)
@@ -86,7 +86,7 @@ public class AuspexGauge : MonoBehaviour,ICharacterSpecialGauge
         });
     }
 
-    public void Reset()
+    public void ResetGauge()
     {
         if(currentRoutineID == 2)
             return;

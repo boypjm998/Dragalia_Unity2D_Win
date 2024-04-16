@@ -23,14 +23,12 @@ public class AnimationEventSender_C018 : AnimationEventSender
     {
         if (eventID == 0)
         {
+            _actorControllerSP.ta.FaceDirectionAutofixWithMarking();
             _playerInput.LockDirection(1);
             var angle = _actorControllerSP.GetNearestTargetBeforeBowJumpShot();
             _actorControllerSP.BowJumpShoot(1,angle);
             _attackManagerSP.BowJumpShootAttack(angle);
         }
-        
-
-
 
     }
 

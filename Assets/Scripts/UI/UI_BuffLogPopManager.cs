@@ -39,7 +39,8 @@ public class UI_BuffLogPopManager : MonoBehaviour
         AutoChargeRateUp,
         DragondriveCharge,
         DragondrivePurged,
-        BuffCount
+        BuffCount,
+        SkillChain
     }
 
     private void Awake()
@@ -195,7 +196,7 @@ public class UI_BuffLogPopManager : MonoBehaviour
         
         
         
-        if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value)
+        if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Value || condition.DisplayType == BattleCondition.buffEffectDisplayType.ExactValue)
         {
             var formatStr = String.Format
                 (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),condition.effect);
@@ -360,11 +361,15 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("强袭解除");
                 ConditionStrInfo.Enqueue(new(1013,0));
                 break;
-            
             case SpecialConditionType.BuffCount:
                 EnqueueNewCondition($"增强效果×{extraMsg}");
                 ConditionStrInfo.Enqueue(new(1014,0));
                 break;
+            case SpecialConditionType.SkillChain:
+                EnqueueNewCondition("技能链");
+                ConditionStrInfo.Enqueue(new(1015,0));
+                break;
+            
             
             default:
                 EnqueueNewCondition("未知状态");
@@ -479,6 +484,10 @@ public class UI_BuffLogPopManager : MonoBehaviour
             case SpecialConditionType.BuffCount:
                 EnqueueNewCondition($"Skill Boost × {extraMsg}");
                 ConditionStrInfo.Enqueue(new(1014,0));
+                break;
+            case SpecialConditionType.SkillChain:
+                EnqueueNewCondition("Skill Chain");
+                ConditionStrInfo.Enqueue(new(1015,0));
                 break;
             
             

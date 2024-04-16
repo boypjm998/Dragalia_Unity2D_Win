@@ -14,6 +14,10 @@ public abstract class ProjectileControllerTest : MonoBehaviour
     protected int firedir = 1;
     [SerializeField] protected float lifeTime = 10f;
     
+    public Vector2 velocity
+    {
+        get => new Vector2(horizontalVelocity, verticalVelocity);
+    }
     
 
     protected virtual void Start()

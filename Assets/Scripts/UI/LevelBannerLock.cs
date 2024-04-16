@@ -15,6 +15,11 @@ public class LevelBannerLock : MonoBehaviour
     private Button enterButton;
     private TextMeshProUGUI unlockText;
     private GlobalController.Language currentLanguage;
+    private bool _locked = false;
+
+    public string PreID => prequisiteLevelID;
+
+    public bool IsLocked => !CheckUnLock();
     
     private void Awake()
     {
@@ -52,8 +57,9 @@ public class LevelBannerLock : MonoBehaviour
     
     private void SetElementsToLocked()
     {
+        
         bannerImage.color = Color.gray;
-        enterButton.interactable = false;
+        enterButton.enabled = false;
 
         var questData = GlobalController.Instance.QuestData;
         var needClearQuestName = questData[$"QUEST_{prequisiteLevelID}"]["name"].ToString();
@@ -74,13 +80,40 @@ public class LevelBannerLock : MonoBehaviour
     
     private bool CheckUnLock()
     {
+        if (questSaveList == null)
+        {
+            questSaveList = GlobalController.Instance.GetQuestInfo();
+        }
+        
+        
         if (questSaveList.Exists(x => x.quest_id == prequisiteLevelID))
         {
+            _locked = false;
             return true;
         }
         else
         {
+            _locked = true;
+            print("锁住"+prequisiteLevelID);
             return false;
+        }
+    }
+
+    private bool CheckLock()
+    {
+        if (questSaveList == null)
+        {
+            questSaveList = GlobalController.Instance.GetQuestInfo();
+        }
+        
+        
+        if (questSaveList.Exists(x => x.quest_id == prequisiteLevelID))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 

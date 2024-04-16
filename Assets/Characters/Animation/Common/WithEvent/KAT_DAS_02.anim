@@ -26587,6 +26587,13 @@ AnimationClip:
     intParameter: 1
     messageOptions: 0
   - time: 0.016666668
+    functionName: SetGravityScale
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.016666668
     functionName: SetWeaponVisibility
     data: 
     objectReferenceParameter: {fileID: 0}
@@ -26614,6 +26621,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.16666667
+    functionName: ResetGravityScale
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.41666666
     functionName: LockDirection
     data: 
@@ -26629,15 +26643,22 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.46666667
-    functionName: SetMoveEnabled
-    data: 
+    functionName: ClearFloatSignal
+    data: forward
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.46666667
-    functionName: ClearFloatSignal
-    data: forward
+    functionName: ClearBoolSignal
+    data: attack
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.46666667
+    functionName: SetMoveEnabled
+    data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

@@ -16,6 +16,17 @@ namespace GameMechanics
 {
     public static class BasicCalculation
     {
+        public static float AimTargetAngleZ(Transform self, Transform target)
+        {
+            var angle = Vector2.Angle(target.transform.position-self.position,Vector2.right);
+
+            if (self.position.y > target.transform.position.y)
+            {
+                angle *= -1;
+            }
+
+            return angle;
+        }
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection)
         {
             //随机打乱一个序列
@@ -33,6 +44,19 @@ namespace GameMechanics
             
             return list;
         }
+        
+        public static Vector2 CalculateBezierPoint(float t, Vector2 p0, Vector2 p1, Vector2 p2)
+        {
+            float u = 1 - t;
+            float tt = t * t;
+            float uu = u * u;
+
+            Vector2 p = uu * p0;
+            p += 2 * u * t * p1;
+            p += tt * p2;
+
+            return p;
+        }
         public static int RandInt(int minInclusive, int maxInclusive)
         {
             float randFloat = Random.Range(0f,1f);
@@ -45,6 +69,26 @@ namespace GameMechanics
             
             return randInt;
 
+        }
+        
+        public static float RandomNormalDistribution(float mean = 0.0f, float stdDev = 1.0f)
+        {
+            // 使用Box-Muller变换来生成服从正态分布的随机数
+            float u1 = Random.value; // 这些是均匀(0,1)随机数
+            float u2 = Random.value;
+            float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2); // 随机标准正态分布
+            float randNormal = mean + stdDev * randStdNormal; // 随机正态分布
+
+            return randNormal;
+        }
+        public static float[] RandomNormalDistribution(int n, float mean = 0.0f, float stdDev = 1.0f)
+        {
+            float[] values = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                values[i] = RandomNormalDistribution(mean, stdDev);
+            }
+            return values;
         }
 
         /// <summary>
@@ -97,12 +141,12 @@ namespace GameMechanics
 
         public static int[] conditionsDisplayedByStacknum = new int[]
         {
-            5, 13, 14, 15, 40, 57,
+            5, 14, 15, 40, 57,
             101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 114, 115, 116, 117, 118, 120,
-            121, 122,
+            121, 122, 123,
             
             213, 214, 299, 300,
-            301, 302, 303, 304,
+            301, 302, 303, 304, 305, 306,
             401, 402, 403, 404, 405, 406, 407, 408, 411, 412, 413, 414, 415, 416,
             501, 502, 503, 504
         };
@@ -113,7 +157,7 @@ namespace GameMechanics
 
         public static int[] conditionDisplayedByExactValue = new int[]
         {
-            11,
+            11, 13,
             298
         };
 
@@ -263,7 +307,7 @@ namespace GameMechanics
             PowerOfPrayer = 120,
             DemonSealReleased = 121,
             AlteredStrikeCleo = 122,
-            
+            DoubleJumpWing = 123,
     
             //Basic Debuff
             AtkDebuff = 201,
@@ -291,6 +335,7 @@ namespace GameMechanics
             
             StunResDown = 231,
             
+            BlindnessResDown = 235,
             
             Corrosion = 298,
             Taunt = 299,
@@ -300,6 +345,8 @@ namespace GameMechanics
             ManaOverloaded = 302,
             LockedSigil = 303,
             DemonSeal = 304,
+            Silence = 305,
+            Spite = 306,
     
             //Dot Affliction
             Burn = 401,
@@ -328,6 +375,7 @@ namespace GameMechanics
             DashForceShield = 502,
             SkillShield = 503,
             OtherShield = 504,
+            DashAttackVunerable = 505,
 
             Dispell = 999
             
@@ -396,7 +444,7 @@ namespace GameMechanics
             {
                 if (GlobalController.currentCharacterID == 1)
                 {
-                    sb.Append($"{specialText_c001}:{ToButtonString(playerInput.keyUp)}\n{specialText_c001_cond}");
+                    sb.Append($"{specialText_c001}:{ToButtonString(playerInput.keySp)}\n{specialText_c001_cond}");
                 }
                 else if (GlobalController.currentCharacterID == 3)
                 {
@@ -405,15 +453,15 @@ namespace GameMechanics
                 }
                 else if (GlobalController.currentCharacterID == 6)
                 {
-                    sb.Append($"{specialText_c006}:{ToButtonString(playerInput.keyUp)}");
+                    sb.Append($"{specialText_c006}:{ToButtonString(playerInput.keySp)}");
                 }
                 else if (GlobalController.currentCharacterID == 7)
                 {
-                    sb.Append($"{specialText_c007}:{ToButtonString(playerInput.keyUp)}");
+                    sb.Append($"{specialText_c007}:{ToButtonString(playerInput.keySp)}");
                 }
                 else if (GlobalController.currentCharacterID == 10)
                 {
-                    sb.Append($"{specialText_c010}:{ToButtonString(playerInput.keyUp)}");
+                    sb.Append($"{specialText_c010}:{ToButtonString(playerInput.keySp)}");
                 }
             }
             else
@@ -701,6 +749,9 @@ namespace GameMechanics
                 case BattleCondition.StunResDown:
                     return ("Stun Res -{0}%");
                 
+                case BattleCondition.BlindnessResDown:
+                    return ("Blindness Res -{0}%");
+                
                 
                 case BattleCondition.BurnRateUp:
                     return ("Burn Infliction Rate +{0}%");
@@ -802,7 +853,9 @@ namespace GameMechanics
                     return ("Seal Released");
                 case BattleCondition.AlteredStrikeCleo:
                     return ("Altered Strike");
-                    
+                case BattleCondition.DoubleJumpWing:
+                    return ("Double Jump Boost");
+                
     
                 //Special debuffs:
                 case BattleCondition.EvilsBane:
@@ -813,10 +866,14 @@ namespace GameMechanics
                     return ("Locked Sigil");
                 case BattleCondition.DemonSeal:
                     return ("Demon's Seal");
+                case BattleCondition.Silence:
+                    return ("Silence");
+                case BattleCondition.Spite:
+                    return ("Spite");
                 
                 
                 case BattleCondition.Corrosion:
-                    return ("Corrosion");
+                    return ("Creeping Corrosion");
                 case BattleCondition.Taunt:
                     return ("Marked");
                 case BattleCondition.Nihility:
@@ -861,6 +918,8 @@ namespace GameMechanics
                     return ("Skill Res");
                 case BattleCondition.OtherShield:
                     return ("Other Attack Res");
+                case BattleCondition.DashAttackVunerable:
+                    return ("Dash Attack Res -{0}%");
     
     
                 default:
@@ -986,6 +1045,8 @@ namespace GameMechanics
                 case BattleCondition.StunResDown:
                     return ("昏迷抗性下降{0}%");
                 
+                case BattleCondition.BlindnessResDown:
+                    return ("黑暗抗性下降{0}%");
                 
                 
                 case BattleCondition.BurnRateUp:
@@ -1090,6 +1151,8 @@ namespace GameMechanics
                     return ("冰狱");
                 case BattleCondition.AlteredStrikeCleo:
                     return ("变则爆发");
+                case BattleCondition.DoubleJumpWing:
+                    return ("二段跳强化");
                 
     
                 //Special debuffs:
@@ -1101,6 +1164,11 @@ namespace GameMechanics
                     return ("圣痕枷锁");
                 case BattleCondition.DemonSeal:
                     return ("撒旦枷锁");
+                case BattleCondition.Silence:
+                    return ("沉默");
+                case BattleCondition.Spite:
+                    return ("咒怨");
+                
                 
                 case BattleCondition.Corrosion:
                     return ("侵蚀");
@@ -1148,6 +1216,8 @@ namespace GameMechanics
                     return ("技能抗性");
                 case BattleCondition.OtherShield:
                     return ("其他攻击抗性");
+                case BattleCondition.DashAttackVunerable:
+                    return ("冲刺攻击易伤{0}%");
     
     
                 default:
@@ -1192,7 +1262,7 @@ namespace GameMechanics
                 case 12:
                     return 200;
                 case 13:
-                    return 99999;
+                    return 1000000;
                 case 14:
                     return 99999;
                 
@@ -1258,6 +1328,7 @@ namespace GameMechanics
             if (atkStat.conditionalAttackEffects.Count > 0)
             {
                 var extraModifier = 0f;
+                ConditionalAttackEffect crisis = null;
 
                 foreach (var caf in atkStat.conditionalAttackEffects)
                 {
@@ -1265,6 +1336,9 @@ namespace GameMechanics
                     {
                         extraDamageConstant += 
                             caf.InvokeCustomExtraEffect(targetStat, sourceStat, atkStat);
+                    }else if (caf.extraEffect == ConditionalAttackEffect.ExtraEffect.CrisisModifier)
+                    {
+                        crisis = caf;
                     }
                     else
                     {
@@ -1273,6 +1347,16 @@ namespace GameMechanics
                     }
                 }
                 newModifier *= (1 + extraModifier);
+
+                if (crisis != null)
+                {
+                    var crisisModifier = crisis.GetCrisisModifier(sourceStat);
+                    newModifier *= crisisModifier;
+                    Debug.Log("背水系数：" + crisisModifier);
+                }
+                    
+                
+                
                 //atkStat.conditionalAttackEffects = unfinishedCaf;
                 Debug.Log("Extra modifier: " + extraModifier);
             }
@@ -2030,67 +2114,67 @@ namespace GameMechanics
         {
             int totalAffliction = 0;
             float totalBuff = 0;
-            if (targetStat.GetConditionStackNumber((int)BattleCondition.Burn) > 0)
+            if (targetStat.HasCondition((int)BattleCondition.Burn))
             {
                 totalBuff += sourceStat.burnPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Poison) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Poison))
             {
                 totalBuff += sourceStat.poisonPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Freeze) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Freeze))
             {
                 totalBuff += sourceStat.freezePunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Flashburn) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Flashburn))
             {
                 totalBuff += sourceStat.flashburnPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.ShadowBlight) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.ShadowBlight))
             {
                 totalBuff += sourceStat.shadowblightPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Blindness) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Blindness))
             {
                 totalBuff += sourceStat.blindnessPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Frostbite) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Frostbite))
             {
                 totalBuff += sourceStat.frostbitePunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Scorchrend) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Scorchrend))
             {
                 totalBuff += sourceStat.scorchrendPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Paralysis) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Paralysis))
             {
                 totalBuff += sourceStat.paralysisPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Stormlash) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Stormlash))
             {
                 totalBuff += sourceStat.stormlashPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Bog) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Bog))
             {
                 totalBuff += sourceStat.bogPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.Stun) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.Stun))
             {
                 totalBuff += sourceStat.stunPunisher;
                 totalAffliction++;
             }
-            if(targetStat.GetConditionStackNumber((int)BattleCondition.SleepPunisher) > 0)
+            if(targetStat.HasCondition((int)BattleCondition.SleepPunisher))
             {
                 totalBuff += sourceStat.sleepPunisher;
                 totalAffliction++;
@@ -2274,9 +2358,18 @@ namespace GameMechanics
         /// </summary>
         /// <param name="name">Path in StreamingAsset</param>
         /// <returns></returns>
-        public static JsonData ReadJsonData(string name)
+        public static JsonData ReadJsonDataFromStreamingAssets(string name)
         {
             string path = Application.streamingAssetsPath + "/"+ name;
+            StreamReader sr = new StreamReader(path);
+            var str = sr.ReadToEnd();
+            sr.Close();
+            return JsonMapper.ToObject(str);
+        }
+        
+        public static JsonData ReadJsonDataFromPersistentAssets(string name)
+        {
+            string path = Application.persistentDataPath + "/"+ name;
             StreamReader sr = new StreamReader(path);
             var str = sr.ReadToEnd();
             sr.Close();
@@ -2694,7 +2787,12 @@ namespace GameMechanics
 
     public static class ActorExtensions
     {
-
+        public static AttackContainer InstantiateContainer(Transform parent, bool enemy = true)
+        {
+            return GameObject.Instantiate(
+                enemy ? BattleStageManager.Instance.attackContainerEnemy : BattleStageManager.Instance.attackContainer,
+                parent).GetComponent<AttackContainer>();
+        }
         public static GameObject InstantiateRangedObject(this Component me, GameObject prefab,
             Vector3 position, GameObject container,int facedir, int rotateMode = 1, Component src = null)
         {
@@ -2730,6 +2828,41 @@ namespace GameMechanics
             
             return prefabInstance;
         }
+        
+        public static GameObject InstantiateDirectionalRangedObject(this Component me, GameObject prefab,
+            Vector3 position, GameObject container,int facedir, float angleZ, Component src = null)
+        {
+            var prefabInstance = GameObject.Instantiate
+                (prefab, position, Quaternion.identity, container.transform);
+            
+            prefabInstance.transform.eulerAngles = new Vector3(0, 0, angleZ);
+            //用TryGetComponent来尝试获取DoTweenSimpleController组件，如果有就设置朝向
+            if (prefabInstance.TryGetComponent(out DOTweenSimpleController controller))
+            {
+                var magnitude = controller.moveDirection.magnitude;
+                controller.moveDirection = 
+                    new Vector2(magnitude * facedir * Mathf.Cos(angleZ*Mathf.Deg2Rad),
+                        magnitude * Mathf.Sin(angleZ*Mathf.Deg2Rad) * facedir);
+            }
+
+            var atk = prefabInstance.GetComponent<AttackBase>();
+
+            if (!atk)
+                return prefabInstance;
+
+            if (atk is AttackFromPlayer)
+            {
+                (atk as AttackFromPlayer).playerpos = src == null?me.transform:src.transform;
+                atk.firedir = facedir;
+            }else if (atk is AttackFromEnemy)
+            {
+                (atk as AttackFromEnemy).enemySource = src == null?me.gameObject:src.gameObject;
+                atk.firedir = facedir;
+            }
+            
+            return prefabInstance;
+        }
+        
         
         public static void SpeedUp(this PlayerStatusManager stat, float rate, float duration,bool eff = true)
         {
@@ -2784,6 +2917,9 @@ namespace GameMechanics
 
         }
 
+        
+        
+        
         public static void GiveTimerBuff(this ActorBase actor, TimerBuff buff, bool eff = true)
         {
             var statusManager = actor.GetComponent<StatusManager>();

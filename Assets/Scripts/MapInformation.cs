@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MapInformation : MonoBehaviour
 {
+    private GameObject _mapView;
+    
     List<QuestSave> questSaveList = new();
     [Serializable] public class MapSpotInfo
     {
@@ -24,16 +27,21 @@ public class MapInformation : MonoBehaviour
     {
         GlobalController.lastQuestSpot = panelID;
         //GameObject.Find("MapView").GetComponent<UISortingGroup>().clicked("OpenMapSpot", panelID);
-        var mapView = GameObject.Find("MapView");
-        mapView.GetComponent<UISortingGroup>().ToUIState(1010);
-        mapView.GetComponent<UI_WorldMap>().InformPanelReload(panelID);
+        if (_mapView == null)
+        {
+            _mapView = GameObject.Find("MapView");
+        }
+
+        _mapView.GetComponent<UISortingGroup>().ToUIState(1010);
+        _mapView.GetComponent<UI_WorldMap>().InformPanelReload(panelID);
         
     }
 
     // Start is called before the first frame update
-    void Awake()
+    protected void Awake()
     {
         questSaveList = GlobalController.Instance.GetQuestInfo();
+        GlobalController.Instance.OnMapInfoRefresh += ReloadDotsOf;
         //如果questSaveList里面有元素的quest_id等于100001,令除了第一个子物体以外的子物体不可用
         if (questSaveList.Exists(x => x.quest_id == "100001"))
         {
@@ -54,6 +62,59 @@ public class MapInformation : MonoBehaviour
 
             tutorialCleared = false;
         }
+    }
+
+    private void OnEnable()
+    {
+        ReloadAllDots();
+    }
+
+    private void OnDestroy()
+    {
+        GlobalController.Instance.OnMapInfoRefresh -= ReloadDotsOf;
+    }
+
+    public void ReloadAllDots()
+    {
+        if(tutorialCleared == false)
+            return;
+        print("Reloaded Dots");
+        for (int i = 0; i < mapSpotInfoList.Count; i++)
+        {
+            var dot = transform.Find($"{mapSpotInfoList[i].mapSpotName}/Dot");
+            var tmp = dot.GetComponentInChildren<TextMeshProUGUI>();
+            var info = UI_LevelSelection.Instance.GetDotCountInfo(mapSpotInfoList[i].mapSpotID);
+            
+            tmp.text = info.ToString();
+            print($"{mapSpotInfoList[i].mapSpotName}:{info}");
+            if(info == 0)
+                dot.gameObject.SetActive(false);
+            else dot.gameObject.SetActive(true);
+        }
+    }
+
+    public void ReloadDotsOf(int mapID)
+    {
+        var map = mapSpotInfoList.Find(x => x.mapSpotID == mapID);
+
+        if (map == null)
+        {
+            print("MAPISNULL");return;
+        }
+            
+        
+        var dot = transform.Find($"{map.mapSpotName}/Dot");
+        var tmp = dot.GetComponentInChildren<TextMeshProUGUI>();
+        var info = UI_LevelSelection.Instance.GetDotCountInfo(map.mapSpotID);
+        
+            
+        tmp.text = info.ToString();
+        //Debug.LogWarning($"{map.mapSpotName}:{info}");
+        if(info == 0)
+            dot.gameObject.SetActive(false);
+        else dot.gameObject.SetActive(true);
+        
+        
     }
 
     public MapSpotInfo GetSpot(int id)

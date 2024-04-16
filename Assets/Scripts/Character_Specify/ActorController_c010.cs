@@ -56,7 +56,12 @@ public class ActorController_c010 : ActorControllerDagger
     protected override void CheckShapeShifting()
     {
         base.CheckShapeShifting();
-        if (pi.buttonUp.OnPressed)
+        
+        if(BattleStageManager.Instance.DragonBlock)
+            return;
+        
+        
+        if (pi.buttonSpecial.OnPressed)
         {
             
             if (!dc || !dc.CheckTransformCondition())

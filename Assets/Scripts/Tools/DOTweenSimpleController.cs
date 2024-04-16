@@ -138,6 +138,11 @@ public class DOTweenSimpleController : MonoBehaviour
         _tweener.SetEase(EaseType);
     }
 
+    public void KillTween()
+    {
+        _tweener?.Kill();
+    }
+
     private void OnDestroy()
     {
         try

@@ -119,7 +119,10 @@ public class ActorController_c001 : ActorController
 
     protected void CheckTransport()
     {
-        if (pi.buttonUp.OnPressed)
+        if(silence)
+            return;
+        
+        if (pi.buttonSpecial.OnPressed)
         {
             
             string[] canTransformStates = { "idle", "walk", "fall", "jump", "jump2", "roll" };

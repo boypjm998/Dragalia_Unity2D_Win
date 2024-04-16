@@ -27,7 +27,7 @@ public class DB14_BehaviorTree : EnemyBehaviorManager
         ParseAction(state, substate);
     }
 
-    protected void ParseAction(int state, int substate)
+    protected override void ParseAction(int state, int substate)
     {
         _currentPhase = _pattern.phasePattern[state];
         _currentActionStage = _currentPhase.action_list[substate];

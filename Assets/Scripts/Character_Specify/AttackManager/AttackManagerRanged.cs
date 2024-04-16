@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using GameMechanics;
 using UnityEngine;
 
@@ -17,12 +19,22 @@ public class AttackManagerRanged : AttackManager
     public GameObject[] skill4FX;
     public GameObject[] ForceFX;
     protected TargetAimer ta;
+
+    private UI_ForceStrikeAimerArrow forceStrikeIndicator;
     
     protected GameObject Shotpoints;
 
     [SerializeField] protected BasicCalculation.RangedWeaponType weaponType;
     
+    private AttackContainer _tempAttackContainer1;
+    private AttackContainer _tempAttackContainer2;
+    private AttackContainer _tempAttackContainer3;
     
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
 
     protected override void Start()
     {
@@ -31,6 +43,40 @@ public class AttackManagerRanged : AttackManager
         Shotpoints = transform.Find("Shotpoints").gameObject;
     }
 
+    public void BowJumpShootAttack(float angle)
+    {
+        angle = Mathf.Round(angle);
+        if (angle > 40)
+        {
+            angle = 40;
+        }
+        if (angle < -40)
+        {
+            angle = -40;
+        }
+
+        var container = Instantiate(attackContainer, transform.position, Quaternion.identity,
+            RangedAttackFXLayer.gameObject.transform);
+        
+        var shotPoint = 
+            new Vector2
+            (transform.position.x + 2.5f * ac.facedir * Mathf.Cos(angle*Mathf.Deg2Rad),
+                transform.position.y + 2f * Mathf.Sin(angle*Mathf.Deg2Rad));
+        
+        
+        var atk = InstantiateDirectionalRanged(dashFX[1],shotPoint,container,ac.facedir,angle*ac.facedir);
+        var atk2 = InstantiateDirectionalRanged(dashFX[2],shotPoint,container,ac.facedir,(angle+3)*ac.facedir);
+        var atk3 = InstantiateDirectionalRanged(dashFX[2],shotPoint,container,ac.facedir,(angle+6)*ac.facedir);
+        var atk4 = InstantiateDirectionalRanged(dashFX[2],shotPoint,container,ac.facedir,(angle-6)*ac.facedir);
+        var atk5 = InstantiateDirectionalRanged(dashFX[2],shotPoint,container,ac.facedir,(angle-3)*ac.facedir);
+
+        
+
+        
+        
+        
+        
+    }
     public virtual void ComboAttack1()
     {
         switch (weaponType)
@@ -38,6 +84,11 @@ public class AttackManagerRanged : AttackManager
             case BasicCalculation.RangedWeaponType.Wand:
             {
                 WandCombo1();
+                break;
+            }
+            case BasicCalculation.RangedWeaponType.Staff:
+            {
+                StaffCombo1();
                 break;
             }
         }
@@ -51,6 +102,11 @@ public class AttackManagerRanged : AttackManager
                 WandCombo2();
                 break;
             }
+            case BasicCalculation.RangedWeaponType.Staff:
+            {
+                StaffCombo2();
+                break;
+            }
         }
     }
     public virtual void ComboAttack3()
@@ -60,6 +116,11 @@ public class AttackManagerRanged : AttackManager
             case BasicCalculation.RangedWeaponType.Wand:
             {
                 WandCombo3();
+                break;
+            }
+            case BasicCalculation.RangedWeaponType.Staff:
+            {
+                StaffCombo3();
                 break;
             }
         }
@@ -73,6 +134,11 @@ public class AttackManagerRanged : AttackManager
                 WandCombo4();
                 break;
             }
+            case BasicCalculation.RangedWeaponType.Staff:
+            {
+                StaffCombo4();
+                break;
+            }
         }
     }
     public virtual void ComboAttack5()
@@ -84,6 +150,11 @@ public class AttackManagerRanged : AttackManager
                 WandCombo5();
                 break;
             }
+            case BasicCalculation.RangedWeaponType.Staff:
+            {
+                StaffCombo5();
+                break;
+            }
         }
     }
     
@@ -91,6 +162,35 @@ public class AttackManagerRanged : AttackManager
     {
         var container = Instantiate(attackContainer,transform.position, Quaternion.identity,MeeleAttackFXLayer.transform);
         InstantiateMeele(dashFX[0],transform.position,container);
+        (ac as ActorController)?.PlayAttackVoice(0);
+    }
+    
+    public void ForceStrikeCharging()
+    {
+        if (forceStrikeIndicator == null)
+        {
+            var prefabIndicator = Instantiate(ForceFX[0], transform.position, Quaternion.identity,
+                BuffFXLayer.gameObject.transform);
+            forceStrikeIndicator = prefabIndicator.GetComponent<UI_ForceStrikeAimerArrow>();
+            prefabIndicator.name = "ForceStrikeIndicator";
+            forceStrikeIndicator.SetActorController(ac as ActorControllerRangedWithFS);
+
+            forceStrikeIndicator.SetMaxForceInfo(new float[] {(ac as ActorControllerRangedWithFS).forcingRequireTime}.ToList());
+            if ((ac as ActorControllerRangedWithFS).maxForceLevel > 1)
+            {
+                List<float> forceInfo = new();
+                for (int i = 0; i < (ac as ActorControllerMeeleWithFS).maxForceLevel; i++)
+                {
+                    forceInfo.Add((ac as ActorControllerMeeleWithFS).forcingRequireTime);
+                }
+                forceStrikeIndicator.SetMaxForceInfo(forceInfo);
+            }
+        }
+        else
+        {
+            forceStrikeIndicator.gameObject.SetActive(true);
+        }
+
     }
     
     public virtual void Skill1(int eventID)
@@ -129,9 +229,112 @@ public class AttackManagerRanged : AttackManager
     
     public virtual void ForceStrikeRelease(int forcelevel = 0)
     {
+        if(forcelevel <= 0)
+            return;
         
+        if (weaponType == BasicCalculation.RangedWeaponType.Bow)
+        {
+            
+            
+            var container = InitContainer(false);
+
+            //var shotPoint = FindShotpointInChildren("StandardAttack");
+        
+            var atk = InstantiateDirectionalRanged(ForceFX[1],
+                transform.position + new Vector3(ac.facedir *1f,0),
+                container,ac.facedir,0);
+            
+            (ac as ActorController)?.PlayAttackVoice(9);
+        }
 
     }
+
+    public void BowCombo1()
+    {
+        var container = InitContainer(false);
+
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+
+        var atk1 = InstantiateDirectionalRanged(combo1FX[0],shotPoint.position,container,ac.facedir,0);
+        var atk2 = InstantiateDirectionalRanged(combo1FX[1],shotPoint.position,container,ac.facedir,3);
+        var atk3 = InstantiateDirectionalRanged(combo1FX[1],shotPoint.position,container,ac.facedir,-3);
+    }
+    
+    public void BowCombo2_1()
+    {
+        
+        var container = InitContainer(false);
+        _tempAttackContainer1 = container.GetComponent<AttackContainer>();
+        
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+        
+        var atk = InstantiateDirectionalRanged(combo2FX[0],shotPoint.position,
+            _tempAttackContainer1.gameObject,ac.facedir,0);
+
+    }
+    
+    public void BowCombo2_2()
+    {
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+        
+        var atk = InstantiateDirectionalRanged(combo2FX[0],shotPoint.position,
+            _tempAttackContainer1.gameObject,ac.facedir,0);
+    }
+    
+    public void BowCombo3()
+    {
+        var container = InitContainer(false);
+
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+
+        var atk1 = InstantiateDirectionalRanged(combo3FX[0],shotPoint.position,container,ac.facedir,0);
+        var atk2 = InstantiateDirectionalRanged(combo3FX[1],shotPoint.position,container,ac.facedir,3);
+        var atk3 = InstantiateDirectionalRanged(combo3FX[1],shotPoint.position,container,ac.facedir,-3);
+
+    }
+    
+    public void BowCombo4_1()
+    {
+        
+        var container = InitContainer(false);
+        _tempAttackContainer2 = container.GetComponent<AttackContainer>();
+        
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+        
+        var atk = InstantiateDirectionalRanged(combo4FX[0],shotPoint.position,
+            _tempAttackContainer2.gameObject,ac.facedir,0);
+
+    }
+    
+    public void BowCombo4_2()
+    {
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+        
+        var atk = InstantiateDirectionalRanged(combo4FX[0],shotPoint.position,
+            _tempAttackContainer2.gameObject,ac.facedir,0);
+    }
+
+    public void BowCombo5()
+    {
+        var container = InitContainer(false);
+
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+
+        var atk1 = InstantiateDirectionalRanged(combo5FX[0],shotPoint.position,container,ac.facedir,0);
+        var atk2 = InstantiateDirectionalRanged(combo5FX[1],shotPoint.position,container,ac.facedir,2);
+        var atk3 = InstantiateDirectionalRanged(combo5FX[1],shotPoint.position,container,ac.facedir,-2);
+        var atk4 = InstantiateDirectionalRanged(combo5FX[1],shotPoint.position,container,ac.facedir,4);
+        var atk5 = InstantiateDirectionalRanged(combo5FX[1],shotPoint.position,container,ac.facedir,-4);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /// <summary>
     /// 魔杖的Combo，要求：Muzzle放在Combo1[1]位置，否则重写
@@ -276,4 +479,47 @@ public class AttackManagerRanged : AttackManager
       
     }
 
+    protected void StaffCombo1()
+    {
+        var proj = InstantiateRanged(combo1FX[0], transform.position+ new Vector3(ac.facedir, 0),
+            InitContainer(false),ac.facedir);
+        proj.GetComponent<DOTweenSimpleController>().moveDirection.x *= ac.facedir;
+    }
+    
+    protected void StaffCombo2()
+    {
+        var proj = InstantiateRanged(combo2FX[0], transform.position+ new Vector3(ac.facedir, 0),
+            InitContainer(false),ac.facedir);
+        proj.GetComponent<DOTweenSimpleController>().moveDirection.x *= ac.facedir;
+    }
+    
+    protected void StaffCombo3()
+    {
+        var container = InitContainer(false,2);
+        var proj1 = InstantiateRanged(combo3FX[0], transform.position+ new Vector3(ac.facedir, 0),
+            container,ac.facedir);
+        proj1.GetComponent<DOTweenSimpleController>().moveDirection.x *= ac.facedir;
+        DOVirtual.DelayedCall(0.2f, () =>
+        {
+            InstantiateRanged(combo3FX[0], transform.position+ new Vector3(ac.facedir, 0),
+                container, ac.facedir).GetComponent<DOTweenSimpleController>().moveDirection.x *= ac.facedir;;
+        },false);
+    }
+    
+    protected void StaffCombo4()
+    {
+        var proj = InstantiateRanged(combo4FX[0], transform.position+ new Vector3(ac.facedir, 0),
+            InitContainer(false),ac.facedir);
+        proj.GetComponent<DOTweenSimpleController>().moveDirection.x *= ac.facedir;
+    }
+    
+    protected void StaffCombo5()
+    {
+        var proj = InstantiateRanged(combo5FX[0], transform.position+ new Vector3(ac.facedir, 0),
+            InitContainer(false),ac.facedir);
+        proj.GetComponent<DOTweenSimpleController>().moveDirection.x *= ac.facedir;
+    }
+    
+    
+    
 }

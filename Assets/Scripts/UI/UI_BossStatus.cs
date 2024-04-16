@@ -76,7 +76,9 @@ public class UI_BossStatus : MonoBehaviour
         {
             var odBar = transform.Find("ODBar").gameObject;
             odBar.SetActive(true);
-            odBar.GetComponent<UI_BossODBar>().bossStat = bossStat as SpecialStatusManager;
+            var odBarComponent = odBar.GetComponent<UI_BossODBar>();
+            odBarComponent.bossStat = bossStat as SpecialStatusManager;
+            UI_BossODBar.Instance = odBarComponent;
         }
 
 
@@ -89,11 +91,11 @@ public class UI_BossStatus : MonoBehaviour
         {
             case GlobalController.Language.ZHCN:
                 bossAbilityDetailData = BasicCalculation.
-                    ReadJsonData("/LevelInformation/BossAbilityDetail_ZH.json");
+                    ReadJsonDataFromStreamingAssets("/LevelInformation/BossAbilityDetail_ZH.json");
                 break;
             case GlobalController.Language.EN:
                 bossAbilityDetailData = BasicCalculation.
-                    ReadJsonData("/LevelInformation/BossAbilityDetail_EN.json");
+                    ReadJsonDataFromStreamingAssets("/LevelInformation/BossAbilityDetail_EN.json");
                 break;
             default:
                 Debug.LogError("No such language");

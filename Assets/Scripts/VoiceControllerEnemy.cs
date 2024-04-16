@@ -118,22 +118,13 @@ public class VoiceControllerEnemy : AudioManagerGeneral
         var randomIndex = Random.Range(0, voiceGroup.clipTextID.Count);
         
         var moveID = voiceGroup.clipIndexID[randomIndex];
-        
-        // if (myClips[moveID] != null)
-        // {
-        //     
-        //     if (voiceCDRoutine == null)
-        //     {
-        //         voice.clip = myClips[moveID];
-        //         voice.Play();
-        //         voiceCDRoutine = StartCoroutine(WaitForVoiceCooldown());
-        //     }
-        // }
+
+        var clip = moveID >= 0 ? myClips[moveID] : null;
 
         if (voiceGroup.clipTextID[randomIndex] >= 0)
         {
             _dialogDisplayer.EnqueueDialog
-                        (speakerID, voiceGroup.clipTextID[randomIndex],voice, myClips[moveID]);
+                        (speakerID, voiceGroup.clipTextID[randomIndex],voice, clip);
         }
 
         
@@ -143,12 +134,16 @@ public class VoiceControllerEnemy : AudioManagerGeneral
     {
         if (voiceCDRoutine != null)
             return;
+        
 
         var voiceGroup = voiceGroups[voiceGroupID];
         
         var randomIndex = Random.Range(0, voiceGroup.clipTextID.Count);
         
         var moveID = voiceGroup.clipIndexID[randomIndex];
+        
+        if(myClips.Length == 0)
+            return;
         
         if (myClips[moveID] != null)
         {

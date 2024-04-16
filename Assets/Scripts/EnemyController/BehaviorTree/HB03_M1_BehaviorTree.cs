@@ -194,7 +194,17 @@ public class HB03_M1_BehaviorTree : DragaliaEnemyBehavior
 
     public void GrantTaunt()
     {
-        status.ObtainTimerBuff((int)BasicCalculation.BattleCondition.Taunt, -1f,-1f,1,-1);
+        var iliaBehavior = BattleStageManager.Instance.EnemyLayer.GetComponentInChildren<HB03_BehaviorTree>();
+        
+        if (iliaBehavior.difficulty < 4)
+        {
+            status.ObtainTimerBuff((int)BasicCalculation.BattleCondition.Taunt, -1f,-1f,1,-1);
+        }
+        else
+        {
+            status.ObtainTimerBuff((int)BasicCalculation.BattleCondition.Taunt, -1f,90f,1,-1);
+        }
+        
         attackManager.PlayVoice(1);
     }
 

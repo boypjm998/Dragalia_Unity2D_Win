@@ -229,6 +229,7 @@ public class AttackInfo
         return total;
     }
 
+    [Serializable]
     public class ConditionWithAttackInfo
     {
         public BattleCondition condition;
@@ -248,8 +249,8 @@ public class ConditionalAttackEffect
     public enum ConditionType
     {
         TargetHasCondition,
-        DependOnTargetHP,
-        DependOnSelfHP,
+        //DependOnTargetHP,
+        CrisisModifier,
         Custom
     }
 
@@ -328,6 +329,22 @@ public class ConditionalAttackEffect
         ParseArguments();
     }
 
+    public ConditionalAttackEffect(float crisisFactor, float curveFactor = 0.5f, float maxBound = 1,
+        float minBound = 0)
+    {
+        conditionType = ConditionType.CrisisModifier;
+        extraEffect = ExtraEffect.CrisisModifier;
+        
+        crisisFactor = Mathf.Clamp(crisisFactor, 0.1f, 2);
+        curveFactor = Mathf.Clamp(curveFactor, 0.25f, 4);
+        maxBound = Mathf.Clamp(maxBound, 0.1f, 1);
+        minBound = Mathf.Clamp(minBound, 0, maxBound - 0.01f);
+        
+        
+        
+        args1 = new[] {crisisFactor.ToString(), curveFactor.ToString(), maxBound.ToString(), minBound.ToString()};
+    }
+
 
     public ConditionalAttackEffect SetEffectFunction(Func<(StatusManager sourceStat,StatusManager targetStat),AttackBase,int> func)
     {
@@ -341,6 +358,11 @@ public class ConditionalAttackEffect
         customConditionFunc = func;
         return this;
     }
+
+    // public float GetCrisisModifier(StatusManager sourceStat)
+    // {
+    //     
+    // }
 
     public float GetExtraModifiers(StatusManager targetStat, StatusManager sourceStat)
     {
@@ -372,6 +394,89 @@ public class ConditionalAttackEffect
 
             return 0;
         }
+    }
+
+    /// <summary>
+    /// 注意 只能添加一个
+    /// </summary>
+    /// <param name="statusManager"></param>
+    /// <returns></returns>
+    public float GetCrisisModifier(StatusManager statusManager)
+    {
+        //背水系数（该项越大，随着生命值的下降，伤害越高，小于1代表生命值越高伤害越高）
+            //最大HP时的背水系数，正常的背水时，该项的值应该小于最小HP时的背水系数，正常情况下为1。
+            
+            //假如某角色背水系数为1.5,最少生命值为0，最大生命值为1
+            //那么代表当角色生命值为0%时，造成的伤害为150%，当角色生命值为100%时，造成的伤害为100%。
+            
+            //假如某角色背水系数为0.5,最少生命值为0，最大生命值为1
+            //那么代表当角色生命值为0%时，造成的伤害为100%，当角色生命值为100%时，造成的伤害为200%。
+            float crisisFactor = ObjectExtensions.ParseInvariantFloat(args1[0]);
+            
+            //背水函数曲线系数，该项为背水曲线的次方，代表背水曲线的次方。背水函数曲线越大，血量减少带来的伤害影响逐渐增大，反之则相反。
+            //当背水曲线为1时，代表背水曲线为线性函数：
+            //假设某角色背水系数为1.5，最少生命值为0，最大生命值为1，背水曲线为1
+            //那么当角色生命值为50%时，造成的伤害为(1.5-1)*50%+100% = 125%
+            
+            //假设同一个角色背水系数为0.5，最少生命值为0，最大生命值为1，背水曲线为0.5
+            //那么当角色生命值为50%时，造成的伤害为0.5 + 0.5 * HP^(1/2) = 0.5 + 0.5 * 0.707 = 0.854
+            
+            //假设同一个角色背水系数为1.5，最少生命值为0，最大生命值为1，背水曲线为0.5
+            //那么当角色生命值为50%时，造成的伤害为1.5 - 0.5 * HP^(1/2) = 1.5 - 0.5 * 0.707 = 1.146 
+            
+            //假设同一个角色背水系数为0.5，最少生命值为0，最大生命值为1，背水曲线为2
+            //那么当角色生命值为50%时，造成的伤害为0.5 + 0.5 * HP^(1/0.5) = 0.5 + 0.5 * 1.414 = 0.707
+            
+            //假设同一个角色背水系数为1.5，最少生命值为0，最大生命值为1，背水曲线为2
+            //那么当角色生命值为50%时，造成的伤害为1.5 - 0.5 * HP^(1/0.5) = 1.5 - 0.5 * 1.414 = 1.293
+            
+            
+            float curveFactor = ObjectExtensions.ParseInvariantFloat(args1[1]);
+            
+            float minBound = ObjectExtensions.ParseInvariantFloat(args1[3]); //背水最小生命值(背水系数大于1时，代表生命越低伤害越高）
+            //背水最大生命值(背水系数小于1时，代表生命越高伤害越高）
+            float maxBound = ObjectExtensions.ParseInvariantFloat(args1[2]);
+
+            float hpFraction = 0; // X（HP）值，自变量
+            
+            
+            
+            hpFraction = (float)statusManager.currentHp / (float)statusManager.maxHP;
+            Debug.Log("hpFraction: " + hpFraction);
+            
+
+            float result = 1;
+            
+            //根据公式计算背水系数，自变量为HpFraction
+            if (hpFraction < minBound)
+            {
+                return crisisFactor;
+            }
+            else if (hpFraction > maxBound)
+            {
+                return 1;
+            }
+            
+            if (crisisFactor == 1)
+            {
+                return 1;
+            }
+
+            float hpFractionNormalized = (hpFraction - minBound) / (maxBound - minBound);
+
+            // 计算结果
+            
+            if (crisisFactor > 1)
+            {
+                result = crisisFactor - (crisisFactor - 1) * Mathf.Pow(hpFractionNormalized, 1 / curveFactor);
+            }
+            else
+            {
+                result = crisisFactor + (1 - crisisFactor) * Mathf.Pow(hpFractionNormalized, 1 / curveFactor);
+            }
+
+            
+            return (result);
     }
 
     /// <summary>
@@ -422,6 +527,7 @@ public class ConditionalAttackEffect
             }
             index += conditionNum;
         }
+
         
         
         

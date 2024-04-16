@@ -7,11 +7,13 @@ using DG.Tweening;
 using GameMechanics;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
 public class EnemyMoveController_HB03 : EnemyMoveManager
 {
+
 
     [SerializeField] protected GameObject Helper_Zethia;
     
@@ -46,7 +48,8 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
         OtherworldGate = 9,
         BlessingOfGale = 10,
         SummonZethia = 11,
-        Defeated = 12
+        Defeated = 12,
+        ChangePhase = 13
 
     }
 
@@ -968,7 +971,7 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
 
         var zethia = SummonZethia();
         var dmgCutBuff = new TimerBuff((int)(BasicCalculation.BattleCondition.DamageCut),
-            50, -1, 1,8103301);
+            _behavior.difficulty == 4?20:50, -1, 1,8103301);
         dmgCutBuff.dispellable = false;
         _statusManager.ObtainTimerBuff(dmgCutBuff);
         
@@ -978,6 +981,20 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
         StageCameraController.SwitchMainCameraFollowObject(zethia);
         yield return null;
         var zethia_status = zethia.GetComponent<StatusManager>();
+        if (_behavior.difficulty > 3)
+        {
+            var flashburnPunisher = new TimerBuff((int)BasicCalculation.BattleCondition.FlashburnPunisher, 50, -1,
+                1, 8103301);
+            var blindnessPunisher = new TimerBuff((int)BasicCalculation.BattleCondition.BlindnessPunisher, 50, -1,
+                1, 8103301);
+            flashburnPunisher.dispellable = false;
+            blindnessPunisher.dispellable = false;
+            zethia_status.ObtainTimerBuff(flashburnPunisher);
+            zethia_status.ObtainTimerBuff(blindnessPunisher);
+            zethia_status.maxBaseHP *= 2;
+            zethia_status.GetMaxHP();
+            zethia_status.currentHp = zethia_status.maxHP;
+        }
         zethia_status.OnHPBelow0 += () =>
         {
             _statusManager.RemoveSpecificTimerbuff((int)(BasicCalculation.BattleCondition.DamageCut),
@@ -1044,6 +1061,181 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
         QuitAttack();
     }
 
+    /// <summary>
+    /// 创世圣冠
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator HB03_Action14()
+    {
+        ac.SetGravityScale(0);
+        ac.rigid.velocity = Vector2.zero;
+        ac.rigid.drag = 0;
+        //SetGroundCollider(false);
+        
+        ac.SetHitSensor(false);
+        ac.SwapWeaponVisibility(false);
+        var zethia = BattleStageManager.Instance.EnemyLayer.GetComponentInChildren<HB03_M1_BehaviorTree>();
+
+
+        if (zethia != null)
+        {
+            Instantiate(GetProjectileOfFormatName("action14_1"), zethia.transform.position,
+                Quaternion.identity, RangedAttackFXLayer.transform);
+            zethia.gameObject.SetActive((false));
+            //UI_MultiBossManager.Instance.RemoveDeadBoss();
+            Destroy(zethia.gameObject,0.1f);
+        }
+        
+        _statusManager.OnHPDecrease = null;
+        
+        ac.rigid.velocity = Vector2.zero;
+        //StageCameraController.SwitchMainCamera();
+        yield return new WaitForSeconds(0.25f);
+        
+        WarpEffect();
+        
+        yield return new WaitForSeconds(0.25f);
+        
+        DisappearRenderer();
+        ac.SetActionUnable(false);
+        ac.SetGravityScale(0);
+        transform.position = new Vector2(0, 1);
+        ac.TurnMove(_behavior.targetPlayer);
+        while (!UI_DialogDisplayer.Instance.IsEmpty)
+        {
+            yield return null;
+            print("wait for voice");
+        }
+        
+        yield return new WaitForSeconds(0.5f);
+        
+        voice?.BroadCastSpecificVoice((int)VoiceGroup.ChangePhase,0);
+        CineMachineOperator.Instance.CamaraShake(8,10f);
+        
+        yield return new WaitForSeconds(4f);
+        yield return new WaitUntil(()=>voice.voice.isPlaying == false);
+        voice?.BroadCastSpecificVoice((int)VoiceGroup.ChangePhase,1);
+        
+        StageCameraController.SwitchMainCameraFollowObject(gameObject);
+        
+        WarpEffect();
+        
+        yield return new WaitForSeconds(0.25f);
+        
+        anim.Play("float");
+        //ac.SwapWeaponVisibility(true);
+        
+        ac.TurnMove(_behavior.targetPlayer);
+        AppearRenderer();
+        _tweener = transform.DOMoveY(transform.position.y + 8f, 9f).SetEase((Ease.InSine));
+
+        var biggestFX = Instantiate(GetProjectileOfFormatName("action14_2"),
+            new Vector3(0, -3), Quaternion.identity, RangedAttackFXLayer.transform);
+        
+        yield return new WaitForSeconds(6f);
+        
+        bossBanner?.PrintSkillName("HB03_Action14");
+
+        yield return new WaitForSeconds(1);
+        
+        yield return new WaitUntil(()=>voice.voice.isPlaying == false);
+        voice?.BroadCastSpecificVoice((int)VoiceGroup.ChangePhase,2);
+        
+        
+        var windFX = Instantiate(GetProjectileOfFormatName("action14_4"),
+            new Vector3(0, -1), Quaternion.identity, RangedAttackFXLayer.transform);
+        
+        var background1 = 
+            BattleEnvironmentManager.Instance.
+                GetEnvironmentSpriteRenderer("Background1") as SpriteRenderer;
+        var tweener = background1.transform.DOMoveY(background1.transform.position.y + 6, 5f);
+        
+        yield return new WaitForSeconds(2f);
+        
+        anim.Play("float_buff");
+        
+        CineMachineOperator.Instance.StopCameraShake();
+        yield return null;
+        CineMachineOperator.Instance.CamaraShake(15,4f);
+        
+        yield return new WaitForSeconds(0.75f);
+        
+        var environmentRenderers = 
+            BattleEnvironmentManager.Instance.GetAllEnvironmentRenderer();
+        
+        var blastFX = InstantiateRanged(GetProjectileOfFormatName("action14_3"),
+            new Vector3(0, 0), InitContainer(false),1);
+
+        yield return new WaitForSeconds(0.2f);
+        
+        foreach (var renderer in environmentRenderers)
+        {
+            if (renderer.name == "Background2")
+            {
+                
+            }else if (renderer.name == "Background1")
+            {
+
+            }else if (renderer.name.StartsWith("Eff"))
+            {
+                
+            }
+            else
+            {
+                renderer.gameObject.SetActive(false);
+            }
+        }
+
+        var blackhole = RangedAttackFXLayer.GetComponentInChildren<Projectile_C001_4_Boss>();
+
+        if (blackhole != null)
+        {
+            Destroy(blackhole);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        
+        var whiteScreenImage = GameObject.Find("FullScreenEffect").transform.Find("BlackIn").GetComponent<Image>();
+        whiteScreenImage.color = new Color(1, 1, 1, 0);
+
+        whiteScreenImage.DOFade(1, 0.5f);
+        
+        yield return new WaitForSeconds(1.5f);
+
+        
+
+        foreach (var renderer in environmentRenderers)
+        {
+            if (renderer.name == "Background1")
+            {
+                //tweener?.Kill(true);
+                //(renderer as SpriteRenderer).color = new Color(1, 1, 1, 0);
+                background1.transform.position -= new Vector3(0, 6);
+            }else if (renderer.name == "Background2")
+            {
+                (renderer as SpriteRenderer).color = new Color(1, 1, 1, 1);
+                
+            }else if (renderer.name.StartsWith("Eff"))
+            {
+                renderer.gameObject.SetActive(true);
+            }
+        }
+        
+        //yield return new WaitForSeconds(0.5f);
+        
+        whiteScreenImage.DOFade(0, 1f);
+        
+        Destroy(biggestFX);
+        
+        StageCameraController.SwitchMainCameraFollowObject(_behavior.viewerPlayer);
+        CineMachineOperator.Instance.StopCameraShake();
+
+        yield return null;
+        
+        QuitAttack();
+        _behavior.currentMoveAction = null;
+
+    }
 
 
 
@@ -1053,6 +1245,11 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
 
 
 
+    private void WarpEffect()
+    {
+        var fx = Instantiate(projectilePoolEX[3], transform.position, Quaternion.identity,
+            RangedAttackFXLayer.transform);
+    }
 
     protected float GetLockAngle(float angle)
     {
@@ -1304,9 +1501,11 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
         {
             Destroy(container);
             _statusManager.OnReceiveControlAffliction -= handler;
+            _statusManager.OnHPBelow0 -= handler;
         };
 
         _statusManager.OnReceiveControlAffliction += handler;
+        _statusManager.OnHPBelow0 += handler;
 
     var sealedContainer = container.GetComponent<EnemySealedContainer>();
         sealedContainer.SetEnemySource(gameObject);
@@ -1496,6 +1695,18 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
 
         proj.GetComponentInChildren<AttackFromEnemy>().BeforeAttackHit += PurgedShapeShiftingOfTarget;
 
+        if (_behavior.difficulty >= 4)
+        {
+            var blindResDownDebuff =
+                new TimerBuff((int)BasicCalculation.BattleCondition.BlindnessResDown, 100, 60, 1, 8103401);
+            var flashburnResDownDebuff =
+                new TimerBuff((int)BasicCalculation.BattleCondition.FlashburnResDown, 100, 60, 1, 8103401);
+            _behavior.targetPlayer.GetComponent<StatusManager>().
+                ObtainTimerBuff(flashburnResDownDebuff, false,false);
+            _behavior.targetPlayer.GetComponent<StatusManager>().
+                ObtainTimerBuff(blindResDownDebuff, false,false);
+        }
+
     }
 
     protected void BlessingOfGale()
@@ -1508,24 +1719,44 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
         var kbimmuneBuff = new TimerBuff((int)BasicCalculation.BattleCondition.KnockBackImmune,
             -1, 30, 1);
         
+        // var invincinble = new TimerBuff((int)BasicCalculation.BattleCondition.Invincible,
+        //     -1, 15, 1);
+        
         var defBuff = new TimerBuff((int)BasicCalculation.BattleCondition.DefBuff,
-            difficulty>2?200:100, 30,100);
+            difficulty==3?200:100, 30,100);
         
         var flashburnPunisher = new TimerBuff((int)BasicCalculation.BattleCondition.FlashburnPunisher,
             difficulty>2?200:50, 30,100);
+        
+        var blindnessPunisher = new TimerBuff((int)BasicCalculation.BattleCondition.BlindnessPunisher,
+            50, 30,100);
         
         var critBuff = new TimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff,
             10, -1,100);
         
         defBuff.dispellable = false;
         flashburnPunisher.dispellable = false;
+        blindnessPunisher.dispellable = false;
         kbimmuneBuff.dispellable = false;
+
+        if (difficulty >= 4)
+        {
+            _statusManager.ObtainTimerBuff(flashburnPunisher);
+            _statusManager.ObtainTimerBuff(defBuff,false);
+            _statusManager.ObtainTimerBuff(blindnessPunisher,false);
+            _statusManager.ObtainTimerBuff(critBuff,false);
+            _statusManager.ObtainTimerBuffs((int)BasicCalculation.BattleCondition.AlchemicCatridge,-1,3,3,-1);
+        }
+        else
+        {
+            _statusManager.ObtainTimerBuff(flashburnPunisher);
+            _statusManager.ObtainTimerBuff(defBuff,false);
+            _statusManager.ObtainTimerBuff(kbimmuneBuff,false);
+            _statusManager.ObtainTimerBuff(critBuff,false);
+            _statusManager.ObtainTimerBuffs((int)BasicCalculation.BattleCondition.AlchemicCatridge,-1,3,3,-1);
+        }
         
-        _statusManager.ObtainTimerBuff(flashburnPunisher);
-        _statusManager.ObtainTimerBuff(defBuff,false);
-        _statusManager.ObtainTimerBuff(kbimmuneBuff,false);
-        _statusManager.ObtainTimerBuff(critBuff,false);
-        _statusManager.ObtainTimerBuffs((int)BasicCalculation.BattleCondition.AlchemicCatridge,-1,3,3,-1);
+        
         
         
     }
@@ -1553,6 +1784,14 @@ public class EnemyMoveController_HB03 : EnemyMoveManager
             new TimerBuff((int)BasicCalculation.BattleCondition.Blindness,-1,7.5f,1),
             100);
         blackHole.transform.Find("Around").gameObject.SetActive(true);
+        
+        if (_behavior.difficulty >= 4)
+        {
+            var defDebuff =
+                new TimerBuff((int)BasicCalculation.BattleCondition.DefDebuff, 10, 
+                    30, 1, 8103401);
+            _behavior.targetPlayer.GetComponent<StatusManager>().ObtainTimerBuff(defDebuff, false,false);
+        }
 
     }
 

@@ -1,0 +1,354 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "dual",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "bolt",
+          "args": [1, 1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "blast",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "twist",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "random",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [0, 1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "sweep",
+          "args": [0, 4],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 1,
+      "loopStartPoint": 0,
+      "args": [ 85, 7 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "blast",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "bolt",
+          "args": [1, 1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "shells",
+          "args": [0, 6],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "memory3",
+          "args": [5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dual",
+          "args": [2],
+          "jump_action": "random+",
+          "jump_args": [1,2]
+        },
+        {
+          "action_name": "summon5",
+          "args": [2],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "summon4",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dual",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [0, 2],
+          "jump_action": "random+",
+          "jump_args": [1,2,3]
+        },
+        {
+          "action_name": "summon1",
+          "args": [3],
+          "jump_action": "to+",
+          "jump_args": [3]
+        },
+        {
+          "action_name": "summon2",
+          "args": [3],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "summon3",
+          "args": [1],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "blast",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [2],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 1,
+      "loopStartPoint": 2,
+      "args": [40, 9]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "blast",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon1",
+          "args": [ 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "sweep_double",
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "bolt",
+          "args": [1, 1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon6",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dual",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "memory4",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "random",
+          "args": [2],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "summon5",
+          "args": [4],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "memory2",
+          "args": [5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [0, 2],
+          "jump_action": "random+",
+          "jump_args": [1,2]
+        },
+        {
+          "action_name": "shells",
+          "args": [1, 5],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "shells",
+          "args": [-1, 5],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dual",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "memory4",
+          "args": [4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon4",
+          "args": [4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "memory3",
+          "args": [4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dual",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [1, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "claw",
+          "args": [0, 2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "blast",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "sweep_double",
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "shells",
+          "args": [0, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon6",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "dash",
+          "args": [2],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 0,
+      "loopStartPoint": 5,
+      "args": []
+    }
+  ]
+  
+  
+}

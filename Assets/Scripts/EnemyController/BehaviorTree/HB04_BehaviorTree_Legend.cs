@@ -448,6 +448,8 @@ public class HB04_BehaviorTree_Legend : HB04_BehaviorTree
     {
         ActionStart();
         
+        breakable = false;
+        
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
 
         enemyController.SetKBRes(999);
@@ -456,6 +458,7 @@ public class HB04_BehaviorTree_Legend : HB04_BehaviorTree
         yield return _attackIsNull;
         
         enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
 
         yield return new WaitForSeconds(interval);
 

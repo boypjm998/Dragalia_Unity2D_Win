@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSpecificProjectiles;
+using DG.Tweening;
 using GameMechanics;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -83,6 +84,16 @@ namespace GameMechanics
                     self.SpecialPunisherEffectFunc += Ability_Punisher_10022;
                     break;
                 }
+                case 10023://中毒特攻
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10023;
+                    break;
+                }
+                case 10024://
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10004;
+                    break;
+                }
                 case 10057://芙露露：麻痹特攻
                 {
                     self.SpecialPunisherEffectFunc += Ability_Punisher_10057;
@@ -116,7 +127,17 @@ namespace GameMechanics
                     self.SpecialODAcceralatorEffectFunc += Ability_ODAccelerator_10071;
                     break;
                 }
+                case 10078://HP全满 技能伤害
+                {
+                    self.SpecialSkillDamageEffectFunc += Ability_SkillDamage_10078;
+                    break;
+                }
 
+                case 10085: //od特效
+                {
+                    self.SpecialPunisherEffectFunc += Ability_Punisher_10085;
+                    break;
+                }
 
 
                 case 20011://席菈的试炼 闪狼战技
@@ -351,7 +372,7 @@ namespace GameMechanics
         StatusManager targetStat)
     {
         if (atkStat.skill_id == 2 &&
-            targetStat.GetConditionStackNumber((int)BasicCalculation.BattleCondition.EvilsBane) > 0)
+            targetStat.HasCondition((int)BasicCalculation.BattleCondition.EvilsBane))
         {
             return new Tuple<float, float>(999,0);
         }
@@ -462,6 +483,18 @@ namespace GameMechanics
         StatusManager targetStat)
     {
         return Ability_SkillDamage_20121(sourceStat,atkStat,targetStat);
+    }
+    
+    private static Tuple<float,float> Ability_SkillDamage_10078(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (sourceStat.currentHp >= sourceStat.maxHP)
+        {
+            return new Tuple<float, float>(0.45f,0);
+        }
+        
+        return new Tuple<float, float>(0,0);
+        
     }
     
     #endregion
@@ -597,6 +630,47 @@ namespace GameMechanics
         }
         
         return new Tuple<float, float>(buffModifier,0);
+    }
+    
+    /// <summary>
+    /// 光天魔Buff
+    /// </summary>
+    /// <returns></returns>
+    public static Tuple<float, float> DrasticForceEffect(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (DrasticForce.Instance == null)
+            return new Tuple<float, float>(0, 0);
+
+        return new Tuple<float, float>(0, DrasticForce.Instance.StackCount * 0.3f);
+
+    }
+    
+    /// <summary>
+    /// 罗汉珠：冲刺攻击易伤
+    /// </summary>
+    /// <param name="sourceStat"></param>
+    /// <param name="atkStat"></param>
+    /// <param name="targetStat"></param>
+    /// <returns></returns>
+    public static Tuple<float, float> DashAttackEffectExtraAttack(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+
+        var dmgModifier = 5f;
+
+        if (DrasticForce.Instance != null)
+        {
+            dmgModifier *= (1 + DrasticForce.Instance.StackCount * 0.3f);
+        }
+        
+        
+        if(atkStat.attackType == BasicCalculation.AttackType.DASH)
+            return new Tuple<float, float>(0, dmgModifier);
+        else if (atkStat.attackType == BasicCalculation.AttackType.SKILL ||
+                 atkStat.attackType == BasicCalculation.AttackType.DSKILL)
+            return new Tuple<float, float>(0.5f, 0);
+        else return new Tuple<float, float>(0, 0);
     }
 
     #endregion
@@ -758,6 +832,41 @@ namespace GameMechanics
 
     }
     
+    /// <summary>
+    /// 中毒特攻35%
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10023(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        if (targetStat.HasCondition((int)BasicCalculation.BattleCondition.Poison))
+        {
+            return new Tuple<float, float>(0.30f, 0);
+        }
+
+        return new Tuple<float, float>(0, 0);
+
+    }
+    
+    /// <summary>
+    /// 降防特攻35%
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10024(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+        if (targetStat.HasCondition((int)BasicCalculation.BattleCondition.DefDebuff))
+        {
+            buffModifier += 0.3f;
+            if (targetStat is not SpecialStatusManager)
+            {
+                buffModifier += 0.1f;
+            }
+        }
+        
+        return new Tuple<float, float>(buffModifier,0);
+
+    }
+    
     
     /// <summary>
     /// 芙露露：麻痹、减益特攻
@@ -852,10 +961,32 @@ namespace GameMechanics
         StatusManager targetStat)
     {
         float buffModifier = 0;
-        if (targetStat.HasBuff((int)BasicCalculation.BattleCondition.Scorchrend) ||
-            targetStat.HasBuff((int)BasicCalculation.BattleCondition.ShadowBlight))
+        if (targetStat.HasCondition((int)BasicCalculation.BattleCondition.Scorchrend) ||
+            targetStat.HasCondition((int)BasicCalculation.BattleCondition.ShadowBlight))
         {
             buffModifier = 0.15f;
+        }
+        return new Tuple<float, float>(buffModifier,0);
+    }
+    
+    /// <summary>
+    /// overdrive特效15%
+    /// </summary>
+    private static Tuple<float, float> Ability_Punisher_10085(StatusManager sourceStat, AttackBase atkStat,
+        StatusManager targetStat)
+    {
+        float buffModifier = 0;
+        if (targetStat is SpecialStatusManager)
+        {
+            var targetSpecial = targetStat as SpecialStatusManager;
+            if (targetSpecial.broken)
+            {
+                buffModifier = 0f;
+            }
+            else
+            {
+                buffModifier = 0.15f;
+            }
         }
         return new Tuple<float, float>(buffModifier,0);
     }
@@ -1066,12 +1197,12 @@ namespace GameMechanics
         //Units
         private static int[] swordUnits = new int[] { 8, 12, 36 };
         private static int[] bladeUnits = new int[] { 6, 33 };
-        private static int[] axeUnits = new int[] { 11 };
+        private static int[] axeUnits = new int[] { 11, 43 };
         private static int[] daggerUnits = new int[] { 2, 4, 5, 10, 29 };
         private static int[] lanceUnits = new int[] { 13, 32 };
-        private static int[] bowUnits = new int[] { 18 };
+        private static int[] bowUnits = new int[] { 17, 18 };
         private static int[] wandUnits = new int[] { 7, 9, 19 };
-        private static int[] staffUnits = new int[] { 3 };
+        private static int[] staffUnits = new int[] { 3, 39 };
         private static int[] gunUnits = new int[] { 1 };
 
         private static Dictionary<int, BasicCalculation.GeneralWeaponType> _weaponTypeDict = new();
@@ -1255,6 +1386,10 @@ namespace GameMechanics
                 }
                 case BasicCalculation.GeneralWeaponType.Axe:
                 {
+                    if (skillTreeNodes[16] == 1)
+                    {
+                        statusManager.SpecialCritDamageEffectFunc += Ability.AbilityTree_CritDamage_I;
+                    }
                     break;
                 }
                 case BasicCalculation.GeneralWeaponType.Dagger:
@@ -1341,6 +1476,8 @@ namespace GameMechanics
                     
                     break;
                 }
+                default:
+                    break;
             }
         }
 
@@ -1596,7 +1733,34 @@ namespace GameMechanics
 
     }
 
-    
+    public class AbilityClock
+    {
+        private float cd;
+        private Tween _tween;
+        private bool _available = true;
+
+        public bool Available => _available;
+
+        public void SetClockCD(float cd)
+        {
+            this.cd = cd;
+        }
+
+        public void StartTick()
+        {
+            _available = false;
+            _tween = DOVirtual.DelayedCall(cd, () => _available = true, false);
+        }
+        
+        public AbilityClock(float cd)
+        {
+            this.cd = cd;
+        }
+        
+        
+        
+        
+    }
     
     
     

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameMechanics;
 using UnityEngine;
 
 public class AdventurerSpecial_Portal : MonoBehaviour
@@ -23,7 +24,7 @@ public class AdventurerSpecial_Portal : MonoBehaviour
         var eff2 = Instantiate(transportationEffect, transform.position, Quaternion.identity);
         eff2.GetComponent<AdventurerSpecial_PortalTrail>().InitAnim(origin);
         
-        origin.transform.position = this.transform.position;
+        origin.transform.position = transform.position.SafePosition(Vector2.zero);
         
         eff.GetComponent<AdventurerSpecial_PortalTrail>().InitAnim(transform);
         

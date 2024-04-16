@@ -63,8 +63,8 @@ public class UI_GameOption : MonoBehaviour
 
     private void Awake()
     {
-        keySettingButton = new Button[12];
-        keyText = new TextMeshProUGUI[12];
+        keySettingButton = new Button[13];
+        keyText = new TextMeshProUGUI[13];
 
         var keyBoardSetting = transform.Find("KeyboardSettings");
         keySettingCanvasGroup = keyBoardSetting.GetComponent<CanvasGroup>();
@@ -79,8 +79,8 @@ public class UI_GameOption : MonoBehaviour
 
         var gamePadSetting = transform.Find("GamepadSettings");
         gamepadSettingCanvasGroup = gamePadSetting.GetComponent<CanvasGroup>();
-        gamepadSettingButton = new Button[12];
-        gamepadText = new TextMeshProUGUI[12];
+        gamepadSettingButton = new Button[13];
+        gamepadText = new TextMeshProUGUI[13];
         i = 0;
         foreach (Transform item in gamePadSetting)
         {
@@ -190,7 +190,7 @@ public class UI_GameOption : MonoBehaviour
 
     private void ResetPanels()
     {
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
             
             keySettingButton[i].image.color = Color.white;
@@ -198,7 +198,7 @@ public class UI_GameOption : MonoBehaviour
             keySettingButton[i].interactable = true;
 
         }
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
             
             gamepadSettingButton[i].image.color = Color.white;
@@ -211,7 +211,7 @@ public class UI_GameOption : MonoBehaviour
     {
         isSettingKey = true;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
 
             keySettingButton[i].interactable = false;
@@ -247,7 +247,7 @@ public class UI_GameOption : MonoBehaviour
 
         keyText[keyID].text = newKey;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
             if (keyID != i && keyText[i].text == newKey)
             {
@@ -255,7 +255,7 @@ public class UI_GameOption : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
             if (keyID == i)
             {
@@ -300,16 +300,18 @@ public class UI_GameOption : MonoBehaviour
         var skill3 = actions[8].bindings[0];
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
+        
+        var moveU = actions[11].bindings[0];
 
         var actionBindings = new List<InputBinding>()
         {
-            moveL, moveR, moveD, attack, jump, roll, special, skill1, skill2, skill3, skill4, escape
+            moveL, moveR, moveD, attack, jump, roll, special, skill1, skill2, skill3, skill4, escape, moveU
         };
         
         isSettingKey = true;
         string newPath = "";
         
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
 
             gamepadSettingButton[i].interactable = false;
@@ -401,7 +403,7 @@ public class UI_GameOption : MonoBehaviour
         ReloadInputActionAssetData(newJsonData);
         
         
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 13; i++)
         {
             if (keyID == i)
             {
@@ -464,6 +466,7 @@ public class UI_GameOption : MonoBehaviour
         GlobalController.keySkill3 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[9].text==""? "None":keyText[9].text);
         GlobalController.keySkill4 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[10].text==""? "None":keyText[10].text);
         GlobalController.keyEscape = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[11].text==""? "None":keyText[11].text);
+        GlobalController.keyUpNew = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[12].text==""? "None":keyText[12].text);
         
         
         GlobalController.Instance.WritePlayerSettingsToFile();
@@ -628,6 +631,7 @@ public class UI_GameOption : MonoBehaviour
         keyText[9].text = GlobalController.keySkill3.ToString();
         keyText[10].text = GlobalController.keySkill4.ToString();
         keyText[11].text = GlobalController.keyEscape.ToString();
+        keyText[12].text = GlobalController.keyUpNew.ToString();
     }
 
     private void DisplayGamepadSettingText()
@@ -659,6 +663,7 @@ public class UI_GameOption : MonoBehaviour
         var skill3 = actions[8].bindings[0];
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
+        var moveU = actions[11].bindings[0];
         
         
         gamepadText[0].text = SimplifyInputActionName(moveL.path);
@@ -673,8 +678,8 @@ public class UI_GameOption : MonoBehaviour
         gamepadText[9].text = SimplifyInputActionName(skill3.path);
         gamepadText[10].text = SimplifyInputActionName(skill4.path);
         gamepadText[11].text = SimplifyInputActionName(escape.path);
+        gamepadText[12].text = SimplifyInputActionName(moveU.path);
 
-        
 
     }
 
@@ -790,7 +795,7 @@ public class UI_GameOption : MonoBehaviour
 
     private string TestLoadInputActionAssetData(int keyID, string newpath)
     {
-        var path = Application.streamingAssetsPath + "/savedata/GamepadSettings.json";
+        var path = Application.persistentDataPath + "/GamepadSettings.json";
         StreamReader sr = new StreamReader(path);
         var str = sr.ReadToEnd();
         sr.Close();
@@ -802,7 +807,7 @@ public class UI_GameOption : MonoBehaviour
         
         inputActionAssetData.maps[0].bindings[keyID+1].path = newpath;
         
-        var outputPath = Application.streamingAssetsPath + "/savedata/GamepadSettings.json";
+        var outputPath = Application.persistentDataPath + "/GamepadSettings.json";
         StreamWriter sw = new StreamWriter(outputPath);
         var newStr = JsonUtility.ToJson(inputActionAssetData,true);
         sw.Write(newStr);

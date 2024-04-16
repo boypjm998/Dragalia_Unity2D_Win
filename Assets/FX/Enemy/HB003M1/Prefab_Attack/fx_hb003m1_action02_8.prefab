@@ -66,6 +66,8 @@ MonoBehaviour:
   attackType: 1
   hitSoundEffect: {fileID: 8300000, guid: a484075c187436a40ac21504cecddfac, type: 3}
   attackSE: []
+  extraODModifier: 0
+  conditionalAttackEffects: []
   enemySource: {fileID: 0}
   isMeele: 1
   hitFlags: 
@@ -75,6 +77,7 @@ MonoBehaviour:
   forcedShake: 0
   hitShakeIntensity: 3
   damageAutoReset: 0
+  autoResetCondition: 0
   Avoidable: 0
 --- !u!114 &1781247760291626372
 MonoBehaviour:
@@ -99,6 +102,7 @@ MonoBehaviour:
   targetCollider: {fileID: 0}
   destroyTime: 1.5
   sleepAfterAnimStopped: 0
+  _attackFromEnemy: {fileID: 0}
 --- !u!95 &2175182362748188807
 Animator:
   serializedVersion: 4
@@ -309,6 +313,10 @@ PrefabInstance:
     - target: {fileID: 9167195872980415741, guid: c02d2a1f82abf2748957613cb1734cfb, type: 3}
       propertyPath: lengthInSec
       value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 9167195872980415741, guid: c02d2a1f82abf2748957613cb1734cfb, type: 3}
+      propertyPath: scalingMode
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c02d2a1f82abf2748957613cb1734cfb, type: 3}

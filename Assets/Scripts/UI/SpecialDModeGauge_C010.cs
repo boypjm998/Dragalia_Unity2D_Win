@@ -38,6 +38,11 @@ public class SpecialDModeGauge_C010 : UI_DModeGauge
         {
             dragonImageIcon.sprite = DModeNormalImageSprite;
         }
+
+        if (BattleStageManager.Instance.DragonBlock)
+            dragonImageIcon.sprite = DModeBWImageSprite;
+
+
     }
     
     

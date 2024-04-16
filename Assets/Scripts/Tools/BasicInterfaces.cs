@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ICharacterSpecialGauge
 {
-    public void Reset();
+    public void ResetGauge();
     public void Charge(int cp);
     public void ChargeTo(int cp, int level = 0);
 }

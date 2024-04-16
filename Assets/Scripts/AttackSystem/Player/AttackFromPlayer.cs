@@ -379,7 +379,7 @@ public class AttackFromPlayer : AttackBase
         if (hitConnectEffect != null)
         {
             Instantiate(hitConnectEffect,
-                collision.ClosestPoint(collision.transform.position),
+                new Vector3(collision.ClosestPoint(collision.transform.position).x,transform.position.y),
                 Quaternion.identity);
         }
 

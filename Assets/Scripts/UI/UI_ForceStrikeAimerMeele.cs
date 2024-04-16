@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class UI_ForceStrikeAimerMeele : MonoBehaviour
 {
-    private List<float> forceTimeRequired = new();
+    protected List<float> forceTimeRequired = new();
     private float currentForceTime = 0;
-    int currentFSLV = 0;
+    protected int currentFSLV = 0;
 
-    private Transform fillMask;
-    private float maxFillWidth;
-    private MuzzleSESender _SEsender;
+    protected Transform fillMask;
+    protected float maxFillWidth;
+    protected MuzzleSESender _SEsender;
     
     public ActorControllerMeeleWithFS ac;
     protected AttackManagerMeeleWithFS _attackManager;
@@ -19,7 +19,7 @@ public class UI_ForceStrikeAimerMeele : MonoBehaviour
     protected SpriteRenderer innerGaugeSprite;
     protected Color originColor;
 
-    private Transform fx;
+    protected Transform fx;
 
     public int forceDirection { get; private set; }
 

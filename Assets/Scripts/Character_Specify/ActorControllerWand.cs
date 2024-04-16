@@ -11,6 +11,11 @@ public class ActorControllerWand : ActorController
     }
     protected Coroutine comboStageResetRoutine = null;
 
+    protected override void Awake()
+    {
+         base.Awake();
+         voiceController = GetComponentInChildren<VoiceControllerPlayer>();
+    }
 
     protected override void Update()
     {
@@ -90,7 +95,7 @@ public class ActorControllerWand : ActorController
           pi.inputAttackEnabled = true;
           pi.inputRollEnabled = true;
           pi.rollEnabled = true;
-          print("ExitStandardAttack");
+          //print("ExitStandardAttack");
 
           //SetWeaponVisibility(true);
      }

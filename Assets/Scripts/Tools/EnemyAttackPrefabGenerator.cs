@@ -10,13 +10,23 @@ public class EnemyAttackPrefabGenerator : MonoBehaviour
     private AttackPrefabInfo info;
     private static Color borderRed = new Color(0.5f, 0f, 0f, 1f);
     private static Color borderPurple = new Color(0.35f, 0f, 0.5f, 1f);
+
+    private static GameObject circBarPrefab;
+    private static GameObject rectBarPrefab;
     
     public static GameObject GenerateRectEnemyHintBar(ActorBase actor, Vector3 position, Transform parent, Vector2 size, Vector2 offset, bool avoidable,
         int fillAxis, float fillTime, float rotateAngle, float atkLastTime = 0.5f,bool autoDestroy = true,
         bool interupptable = true, bool addShine = true, float shineTime = 0.15f)
     {
-        GameObject instance = Instantiate(Resources.Load<GameObject>
-            ("UI/InBattle/BattleHint/RectTemplate"),position,Quaternion.identity,parent);
+        if (rectBarPrefab == null)
+        {
+            rectBarPrefab = Resources.Load<GameObject>("UI/InBattle/BattleHint/RectTemplate");
+        }
+        // GameObject instance = Instantiate(Resources.Load<GameObject>
+        //     ("UI/InBattle/BattleHint/RectTemplate"),position,Quaternion.identity,parent);
+        
+        
+        GameObject instance = Instantiate(rectBarPrefab,position,Quaternion.identity,parent);
         
         instance.transform.localRotation = Quaternion.Euler(0, 0, rotateAngle);
         
@@ -105,11 +115,17 @@ public class EnemyAttackPrefabGenerator : MonoBehaviour
         float fillTime, float edgeWidth = 0.1f, float atkLastTime = 0.5f, bool autoDestroy = true,
         bool interupptable = true, bool addShine = true, float shineTime = 0.15f)
     {
+
+        if (circBarPrefab == null)
+        {
+            circBarPrefab = Resources.Load<GameObject>
+                ("UI/InBattle/BattleHint/CircleTemplate");
+        }
+        
         
         edgeWidth = Mathf.Clamp(edgeWidth, 0.05f, 0.5f);
         
-        GameObject instance = Instantiate(Resources.Load<GameObject>
-            ("UI/InBattle/BattleHint/CircleTemplate"),position,Quaternion.identity,parent);
+        GameObject instance = Instantiate(circBarPrefab,position,Quaternion.identity,parent);
         
         SpriteRenderer back = instance.transform.Find("Back").GetComponent<SpriteRenderer>();
         SpriteRenderer fill = instance.transform.Find("Fill").GetComponent<SpriteRenderer>();

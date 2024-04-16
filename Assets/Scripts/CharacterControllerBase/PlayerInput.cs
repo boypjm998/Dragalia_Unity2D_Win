@@ -6,6 +6,7 @@ using GameMechanics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using TouchPhase = UnityEngine.TouchPhase;
 
 public class PlayerInput : MonoBehaviour
@@ -13,6 +14,7 @@ public class PlayerInput : MonoBehaviour
     public delegate void OnPressSignal();
     public static event OnPressSignal OnPressAttack;
     
+    // Start is called before the first frame update
     // Start is called before the first frame update
     //variables
     private PlayerStatusManager stat;
@@ -28,7 +30,7 @@ public class PlayerInput : MonoBehaviour
     public KeyCode keyRight = KeyCode.D;
     public KeyCode keyLeft = KeyCode.A;
     public KeyCode keyDown = KeyCode.S;
-    public KeyCode keyUp = KeyCode.Space;
+    [FormerlySerializedAs("keyUp")] public KeyCode keySp = KeyCode.Space;
     public KeyCode keyAttack = KeyCode.J;
     public KeyCode keyJump = KeyCode.K;
     public KeyCode keyRoll = KeyCode.L;
@@ -37,12 +39,15 @@ public class PlayerInput : MonoBehaviour
     public KeyCode keySkill3 = KeyCode.O;
     public KeyCode keySkill4 = KeyCode.H;
     public KeyCode keyEsc = KeyCode.Escape;
+    public KeyCode keyUpNew = KeyCode.W;
+    
+    
     public Dictionary<string, InputBinding> gamepadButtonDict = new();
 
     public MyInputMoudle buttonRight = new MyInputMoudle();
     public MyInputMoudle buttonLeft = new MyInputMoudle();
     public MyInputMoudle buttonDown = new MyInputMoudle();
-    public MyInputMoudle buttonUp = new MyInputMoudle();
+    public MyInputMoudle buttonSpecial = new MyInputMoudle();
     public MyInputMoudle buttonAttack = new MyInputMoudle();
     public MyInputMoudle buttonJump = new MyInputMoudle();
     public MyInputMoudle buttonRoll = new MyInputMoudle();
@@ -51,6 +56,9 @@ public class PlayerInput : MonoBehaviour
     public MyInputMoudle buttonSkill3 = new MyInputMoudle();
     public MyInputMoudle buttonSkill4 = new MyInputMoudle();
     public MyInputMoudle buttonEsc = new MyInputMoudle();
+    
+    //新添加：
+    public MyInputMoudle buttonUpNew = new MyInputMoudle();
 
 
     [Header("Output Signal")]
@@ -173,9 +181,9 @@ public class PlayerInput : MonoBehaviour
         {
             buttonDown.Tick(Input.GetKey(keyDown) || GamePadInput.GetButton("Down"));
         }
-        if (keyUp != KeyCode.None)
+        if (keySp != KeyCode.None)
         {
-            buttonUp.Tick(Input.GetKey(keyUp) || GamePadInput.GetButton("Special"));
+            buttonSpecial.Tick(Input.GetKey(keySp) || GamePadInput.GetButton("Special"));
         }
         if (keySkill1 != KeyCode.None)
         {
@@ -194,10 +202,13 @@ public class PlayerInput : MonoBehaviour
             buttonSkill4.Tick(Input.GetKey(keySkill4)|| GamePadInput.GetButton("Skill4"));
         }
 
-        //print(buttonSkill4.OnPressed);
-        
-        
-        
+        if (keyUpNew != KeyCode.None)
+        {
+            buttonUpNew.Tick(Input.GetKey(keyUpNew) || GamePadInput.GetButton("Up"));
+        }
+
+
+
 
         //print(buttonDown.IsPressing && buttonDown.isExtending);
 
@@ -209,7 +220,7 @@ public class PlayerInput : MonoBehaviour
         checkStdAttack();
         
         //PlayerInput.CheckSkill() -> ActorController.CheckSkill() -> ActorController.UseSkill(id)
-        CheckSpecialMove();
+        //CheckSpecialMove();
         CheckSkill1();
         CheckSkill2();
         CheckSkill3();
@@ -228,7 +239,7 @@ public class PlayerInput : MonoBehaviour
 
 
         targetDRight = (buttonRight.IsPressing ? 1.0f : 0) - (buttonLeft.IsPressing ? 1.0f : 0);
-        targetDUp = (buttonJump.IsPressing ? 1.0f : 0) - (buttonDown.IsPressing ? 1.0f : 0);
+        targetDUp = (buttonUpNew.IsPressing ? 1.0f : 0) - (buttonDown.IsPressing ? 1.0f : 0);
         //DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, accTime);
         DRight = Mathf.SmoothDamp(DRight, targetDRight, ref velocityDRight, accTime);
         DUp = Mathf.SmoothDamp(DUp, targetDUp, ref velocityDUp, accTime);
@@ -297,7 +308,14 @@ public class PlayerInput : MonoBehaviour
             roll = false;
             return false;
         }
+        
+        if(ac.silence)
+            return false;
+        
+        
+        
         roll = buttonRoll.IsPressing;
+        
 
         return roll;
     }
@@ -309,6 +327,13 @@ public class PlayerInput : MonoBehaviour
             stdAtk = false;
             return false;
         }
+
+        if (ac.silence)
+        {
+            stdAtk = false;
+            return false;
+        }
+            
 
         if (standardAttackContinious)
         {
@@ -326,20 +351,19 @@ public class PlayerInput : MonoBehaviour
             //stdAtk = buttonAttack.OnReleased;
         }
 
+        
+
 
         return stdAtk;
     }
 
-    void CheckSpecialMove()
-    {
-        
-    }
+    
 
     void CheckSkill1()
     {
         
 
-        if (stat.CheckSkillSPEnough(0) && buttonSkill1.OnPressed)
+        if (stat.CheckSkillSPEnough(0) && buttonSkill1.OnPressed && ac.silence == false)
         {
             skill[0] = true;
         }
@@ -354,7 +378,7 @@ public class PlayerInput : MonoBehaviour
     {
 
 
-        if (stat.CheckSkillSPEnough(1) && buttonSkill2.OnPressed)
+        if (stat.CheckSkillSPEnough(1) && buttonSkill2.OnPressed && ac.silence == false)
         {
             skill[1] = true;
         }
@@ -370,7 +394,7 @@ public class PlayerInput : MonoBehaviour
     {
 
 
-        if (stat.CheckSkillSPEnough(2) && buttonSkill3.OnPressed)
+        if (stat.CheckSkillSPEnough(2) && buttonSkill3.OnPressed && ac.silence == false)
         {
             skill[2] = true;
             
@@ -387,7 +411,7 @@ public class PlayerInput : MonoBehaviour
     {
 
 
-        if (stat.CheckSkillSPEnough(3) && buttonSkill4.OnPressed)
+        if (stat.CheckSkillSPEnough(3) && buttonSkill4.OnPressed && ac.silence == false)
         {
             skill[3] = true;
             
@@ -594,10 +618,11 @@ public class PlayerInput : MonoBehaviour
         keySkill4 = GlobalController.keySkill4;
         keyLeft = GlobalController.keyLeft;
         keyRight = GlobalController.keyRight;
-        keyUp = GlobalController.keySpecial;
+        keySp = GlobalController.keySpecial;
         keyDown = GlobalController.keyDown;
         keyRoll = GlobalController.keyRoll;
         keyJump = GlobalController.keyJump;
+        keyUpNew = GlobalController.keyUpNew;
         
         if(Input.GetJoystickNames().Length == 0)
             return;
@@ -621,6 +646,7 @@ public class PlayerInput : MonoBehaviour
         var skill3 = actions[8].bindings[0];
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
+        var moveU = actions[11].bindings[0];
         
         gamepadButtonDict = new()
         {
@@ -629,7 +655,8 @@ public class PlayerInput : MonoBehaviour
             {"MoveD",moveD},
             {"Attack",attack},{"Jump",jump},{"Dodge",roll},{"Special",special},
             {"Skill1",skill1},{"Skill2",skill2},{"Skill3",skill3},{"Skill4",skill4},
-            {"Escape",escape}
+            {"Escape",escape},
+            {"MoveU",moveU}
         };
 
         
@@ -641,7 +668,7 @@ public class PlayerInput : MonoBehaviour
     /// <param name="keys">0:Attack / 1-4:Skills / 5:Left / 6:Right / 7:Special / 8:Down / 9:Roll / 10:Jump</param>
     public void SetKeySetting(KeyCode[] keys)
     {
-        if(keys.Length != 12)
+        if(keys.Length != 13)
         {
             return;
         }
@@ -653,7 +680,7 @@ public class PlayerInput : MonoBehaviour
         keySkill4 = keys[4];
         keyLeft = keys[5];
         keyRight = keys[6];
-        keyUp = keys[7]; //special
+        keySp = keys[7]; //special
         keyDown = keys[8];
         keyRoll =  keys[9];
         keyJump =  keys[10];
@@ -724,6 +751,7 @@ public class PlayerInput : MonoBehaviour
         var skill3 = actions[8].bindings[0];
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
+        var moveU = actions[11].bindings[0];
         
         Dictionary<string,InputBinding> gamepadButtonDict = new()
         {
@@ -732,12 +760,64 @@ public class PlayerInput : MonoBehaviour
             {"MoveD",moveD},
             {"Attack",attack},{"Jump",jump},{"Dodge",roll},{"Special",special},
             {"Skill1",skill1},{"Skill2",skill2},{"Skill3",skill3},{"Skill4",skill4},
-            {"Escape",escape}
+            {"Escape",escape},
+            {"MoveU",moveU}
         };
         var binding = gamepadButtonDict[name];
 
         return UI_GameOption.SimplifyInputActionName(binding.path);
 
+    }
+
+    public static string GetInputKeyPath(string name)
+    {
+        string res = "";
+        
+        if (GlobalController.Instance.gameOptions.gamepadSettings[0] == 0 &&
+            Input.GetJoystickNames().Length > 0)
+        {
+            return GetGamepadInputKeyPath(name);
+        }
+        else
+        {
+            switch (name)
+            {
+                case "MoveL":
+                    return GlobalController.keyLeft.ToString();
+                case "MoveR":
+                    return GlobalController.keyRight.ToString();
+                case "MoveU":
+                    return GlobalController.keyUpNew.ToString();
+                case "MoveD":
+                    return GlobalController.keyDown.ToString();
+                
+                case "Attack":
+                    return GlobalController.keyAttack.ToString();
+                case "Jump":
+                    return GlobalController.keyJump.ToString();
+                case "Dodge":
+                    return GlobalController.keyRoll.ToString();
+                case "Special":
+                    return GlobalController.keySpecial.ToString();
+                
+                case "Skill1":
+                    return GlobalController.keySkill1.ToString();
+                case "Skill2":
+                    return GlobalController.keySkill2.ToString();
+                case "Skill3":
+                    return GlobalController.keySkill3.ToString();
+                case "Skill4":
+                    return GlobalController.keySkill4.ToString();
+                
+                case "Escape":
+                    return GlobalController.keyEscape.ToString();
+                
+                default: return "";
+
+            }
+        }
+        
+        
     }
 
 

@@ -9,6 +9,7 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
 {
     private Vector2 maxFillSize;
     private SpriteRenderer fillRenderer;
+    [SerializeField] private bool doScale = false;
     
     private enum RectFillType
     {
@@ -23,7 +24,20 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
         fillType = (RectFillType) axis;
     }
 
-    
+    private void Awake()
+    {
+        if (doScale)
+        {
+            if (fillType == RectFillType.X)
+            {
+                transform.localScale = new Vector3(transform.localScale.x * 0.1f, transform.localScale.y, transform.localScale.z);
+            }else if (fillType == RectFillType.Y)
+            {
+                transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * 0.1f, transform.localScale.z);
+            }
+        }
+    }
+
 
     protected override IEnumerator Start()
     {
@@ -46,6 +60,11 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
         _tweener = DOTween.To(() => fillRenderer.size,
             x => fillRenderer.size = x,
             maxFillSize, warningTime);
+
+        if (doScale)
+        {
+            transform.DOScale(1,Mathf.Max(warningTime / 10f,0.1f));
+        }
 
         
     }

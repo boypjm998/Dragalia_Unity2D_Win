@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Cinemachine;
+using DG.Tweening;
 using LitJson;
 using TMPro;
 using GameMechanics;
@@ -46,6 +47,7 @@ public class GlobalController : MonoBehaviour
     public delegate void OnGlobalControllerAwake();
     public static OnGlobalControllerAwake onGlobalControllerAwake;
     public event OnGlobalControllerAwake OnLoadFinish;
+    public event Action<int> OnMapInfoRefresh;
 
     #region GameOption
 
@@ -78,11 +80,12 @@ public class GlobalController : MonoBehaviour
     public static KeyCode keySkill3 = KeyCode.O;
     public static KeyCode keySkill4 = KeyCode.H;
     public static KeyCode keyEscape = KeyCode.Escape;
+    public static KeyCode keyUpNew = KeyCode.W;
     
     public InputActionAsset inputActionAsset;
     public bool gamepadEnable = false;
     public static InputActionMap gamepadMap;
-    public static string[] gamepadButtonStr = new string[12];
+    //public static string[] gamepadButtonStr = new string[12];
     
 
     #endregion
@@ -120,21 +123,24 @@ public class GlobalController : MonoBehaviour
     protected void Awake()
     {
         //Read files
+        DOTween.SetTweensCapacity(256,128);
         Debug.Log("Current Culture:" + CultureInfo.CurrentCulture.Name);
         if (GameLanguage == Language.ZHCN)
         {
-            QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo.json");
+            QuestInfo = BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestInfo.json");
         }else if (GameLanguage == Language.EN)
         {
-            QuestInfo = BasicCalculation.ReadJsonData("LevelInformation/QuestInfo_EN.json");
+            QuestInfo = BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestInfo_EN.json");
         }
         else
         {
             Debug.LogError("Language not supported");
         }
 
+        CheckSaveDataFile();
         
-        SettingsInfo = BasicCalculation.ReadJsonData("savedata/PlayerSettings.json");
+        
+        SettingsInfo = BasicCalculation.ReadJsonDataFromPersistentAssets("PlayerSettings.json");
         
         var other = FindObjectsOfType<GlobalController>();
         if (other.Length > 1)
@@ -193,6 +199,7 @@ public class GlobalController : MonoBehaviour
         currentGameState = GameState.Outbattle;
         onGlobalControllerAwake?.Invoke();
         UpdateQuestSaveData();
+        
         
         
     }
@@ -1266,13 +1273,26 @@ public class GlobalController : MonoBehaviour
         
     }
 
-    public static void UpdateQuestSaveData()
+    public void UpdateQuestSaveData()
     {
-        string path = Application.streamingAssetsPath + "/savedata/testSaveData.json";
+        string path = Application.persistentDataPath + "/testSaveData.json";
         StreamReader sr = new StreamReader(path);
         var str = sr.ReadToEnd();
         sr.Close();
         questSaveDataString = str;
+        
+        var allID = GetAllClearedQuestID();
+
+        if (gameOptions.visitedQuest.Count == 0)
+        {
+            gameOptions.visitedQuest = allID;
+            InvokeRefreshMapSpotInfo();
+        }else if (allID.Count > 0)
+        {
+            gameOptions.visitedQuest = gameOptions.visitedQuest.Union(GetAllClearedQuestID()).ToList();
+            InvokeRefreshMapSpotInfo();
+        }
+            
     }
 
     public void LoadPlayerSettings()
@@ -1325,8 +1345,9 @@ public class GlobalController : MonoBehaviour
         SettingsInfo["key_settings"]["keyRoll"] = keyRoll.ToString();
         SettingsInfo["key_settings"]["keyDown"] = keyDown.ToString();
         SettingsInfo["key_settings"]["keyEscape"] = keyEscape.ToString();
+        SettingsInfo["key_settings"]["keyUp"] = keyUpNew.ToString();
         
-        var path = Application.streamingAssetsPath + "/savedata/PlayerSettings.json";
+        var path = Application.persistentDataPath + "/PlayerSettings.json";
         print(keySpecial);
 
         var newSettings = new JsonData();
@@ -1343,6 +1364,7 @@ public class GlobalController : MonoBehaviour
         newSettings["key_settings"]["keyRoll"] = keyRoll.ToString();
         newSettings["key_settings"]["keyDown"] = keyDown.ToString();
         newSettings["key_settings"]["keyEscape"] = keyEscape.ToString();
+        newSettings["key_settings"]["keyUp"] = keyUpNew.ToString();
         print(newSettings);
         
         var jsonStr = JsonMapper.ToJson(newSettings);
@@ -1413,6 +1435,7 @@ public class GlobalController : MonoBehaviour
     public List<QuestSave> GetQuestInfo()
     {
         //print(questSaveDataString);
+        print(questSaveDataString);
         var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
         return questSaveDataList.quest_info;
     }
@@ -1431,6 +1454,22 @@ public class GlobalController : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public List<string> GetAllClearedQuestID()
+    {
+        List<string> clearedQid = new();
+        if (questSaveDataString == null)
+            return clearedQid;
+        
+        var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
+
+        foreach (var info in questSaveDataList.quest_info)
+        {
+            clearedQid.Add(info.quest_id);
+        }
+
+        return clearedQid;
     }
 
     public int GetTotalCrownCount()
@@ -1465,7 +1504,7 @@ public class GlobalController : MonoBehaviour
     private void LoadGameOptionsFromFile()
     {
         //Load GameOptions from file, Use JsonUtility.FromJson<GameOptions>
-        var path = Application.streamingAssetsPath + "/savedata/GameOptions.json";
+        var path = Application.persistentDataPath + "/GameOptions.json";
         StreamReader sr = new StreamReader(path);
         var str = sr.ReadToEnd();
         sr.Close();
@@ -1474,6 +1513,7 @@ public class GlobalController : MonoBehaviour
         {
             //gameOptions = JsonUtility.FromJson<GameOptions>(str);
             gameOptions = JsonConvert.DeserializeObject<GameOptions>(str);
+            
         }
         catch
         {
@@ -1487,7 +1527,7 @@ public class GlobalController : MonoBehaviour
     
     public void LoadGamepadOption()
     {
-        var path = Application.streamingAssetsPath + "/savedata/GamepadSettings.json";
+        var path = Application.persistentDataPath + "/GamepadSettings.json";
         StreamReader sr = new StreamReader(path);
         var str = sr.ReadToEnd();
         sr.Close();
@@ -1522,6 +1562,33 @@ public class GlobalController : MonoBehaviour
         
             
         
+    }
+
+    protected void CheckSaveDataFile()
+    {
+        var saveDataFilePaths = new string[]
+        {
+            Path.Combine(Application.persistentDataPath, "testSaveData.json"),
+            Path.Combine(Application.persistentDataPath, "PlayerSettings.json"),
+            Path.Combine(Application.persistentDataPath, "GamepadSettings.json"),
+            Path.Combine(Application.persistentDataPath, "GameOptions.json")
+        };
+
+        var initialSavedataPaths = new string[]
+        {
+            Path.Combine(Application.streamingAssetsPath, "savedata/testSaveData.json"),
+            Path.Combine(Application.streamingAssetsPath, "savedata/PlayerSettings.json"),
+            Path.Combine(Application.streamingAssetsPath, "savedata/GamepadSettings.json"),
+            Path.Combine(Application.streamingAssetsPath, "savedata/GameOptions.json")
+        };
+
+        for (int i = 0; i < saveDataFilePaths.Length; i++)
+        {
+            if (!File.Exists(saveDataFilePaths[i]))
+            {
+                File.Copy(initialSavedataPaths[i],saveDataFilePaths[i]);
+            }
+        }
     }
 
     private List<String> GetExtraCharacterAssets(int charaID)
@@ -1614,7 +1681,7 @@ public class GlobalController : MonoBehaviour
     {
         //Write GameOptions to file of path, Use JsonUtility.ToJson
         
-        var path = Application.streamingAssetsPath + "/savedata/GameOptions.json";
+        var path = Application.persistentDataPath + "/GameOptions.json";
         
         
         //var jsonStr = JsonUtility.ToJson(gameOptions);
@@ -1642,6 +1709,12 @@ public class GlobalController : MonoBehaviour
             
         }
         
+    }
+
+    public void InvokeRefreshMapSpotInfo()
+    {
+        if(lastQuestSpot > 0)
+            OnMapInfoRefresh?.Invoke(lastQuestSpot);
     }
 
     private void OnApplicationQuit()
@@ -1683,4 +1756,7 @@ public class GameOptions
 
 
     public List<AchievementInfo> achievementList = new();
+
+    public List<string> visitedQuest = new();
 }
+

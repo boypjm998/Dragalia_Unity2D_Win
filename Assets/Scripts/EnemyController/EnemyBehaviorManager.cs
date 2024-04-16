@@ -134,6 +134,11 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
         
     }
 
+    protected virtual void ParseAction(int state, int substate)
+    {
+        
+    }
+
     public void SetBehavior(TextAsset behaviorTextAsset)
     {
         this.behaviorTextAsset = behaviorTextAsset;
@@ -172,7 +177,7 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
 
     public override void ActionEnd(bool substateIncrement = true)
     {
-        print("调用一次ActionEnd "+substateIncrement);
+        //print("调用一次ActionEnd "+substateIncrement);
         
         if (substateIncrement == false && ((_currentActionStage.unbreakable)||controllAfflictionProtect))
         {

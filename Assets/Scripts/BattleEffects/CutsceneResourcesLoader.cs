@@ -9,6 +9,8 @@ public class CutsceneResourcesLoader : MonoBehaviour
     public string cutsceneName = "HB02";
 
     private static CutsceneResourcesLoader _instance;
+
+    [SerializeField] private Vector3 offset = Vector3.zero;
     
     public static CutsceneResourcesLoader Instance
     {
@@ -55,7 +57,7 @@ public class CutsceneResourcesLoader : MonoBehaviour
         }
         
         var rt = Resources.Load<GameObject>($"Timeline/{cutsceneName}_RT");
-        var rtclone = Instantiate(rt, new Vector3(0,65,0), Quaternion.identity,transform);
+        var rtclone = Instantiate(rt, new Vector3(0,65,0) + offset, Quaternion.identity,transform);
         rtclone.name = "RT";
 
 

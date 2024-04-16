@@ -79,27 +79,27 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
     public override IEnumerator MeeleTimeStop(float time)
     {
         
-        Animator animAttack = GetComponentInParent<Animator>();
-        if (animAttack == null)
-        {
-            //print("animAttack is null");
-            ConnectCoroutine = null;
-            yield break;
-        }
-        
-        Rigidbody2D rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
-        Animator anim = playerpos.gameObject.GetComponentInParent<ActorController>().anim;
-        //Debug.Log(parent);
-        animAttack.speed = 0.5f;
-        anim.speed = 0;
-        float gravity = rigid.gravityScale;
-        //print(gravity);
-        rigid.gravityScale = 0;
-        yield return new WaitForSeconds(time);
+        // Animator animAttack = GetComponentInParent<Animator>();
+        // if (animAttack == null)
+        // {
+        //     //print("animAttack is null");
+        //     ConnectCoroutine = null;
+        //     yield break;
+        // }
+        //
+        // Rigidbody2D rigid = playerpos.gameObject.GetComponentInParent<Rigidbody2D>();
+        // Animator anim = playerpos.gameObject.GetComponentInParent<ActorController>().anim;
+        // //Debug.Log(parent);
+        // animAttack.speed = 0.5f;
+        // anim.speed = 0;
+        // float gravity = rigid.gravityScale;
+        // //print(gravity);
+        // rigid.gravityScale = 0;
+        // yield return new WaitForSeconds(time);
+        //
+        // RecoverFromMeeleTimeStop(defaultGravity);
+        yield break;
 
-        RecoverFromMeeleTimeStop(defaultGravity);
-
-       
     }
 
     protected override void OnDestroy()

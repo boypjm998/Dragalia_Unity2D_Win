@@ -122,7 +122,7 @@ public class DragonController : MonoBehaviour
     protected virtual void CheckShapeShifting()
     {
         
-        if (pi.buttonUp.OnPressed)
+        if (pi.buttonSpecial.OnPressed)
         {
             if (pi.hurt == false && pi.isSkill == false && pi.attackEnabled &&
                 dAnim.GetCurrentAnimatorStateInfo(0).IsName("transform")==false)

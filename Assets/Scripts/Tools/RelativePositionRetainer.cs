@@ -13,6 +13,11 @@ public class RelativePositionRetainer : MonoBehaviour
         _relativePosition = transform.position - _parent.position;
     }
 
+    public Transform GetParent()
+    {
+        return _parent;
+    }
+
     
 
     // Update is called once per frame

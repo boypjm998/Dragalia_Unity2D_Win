@@ -20,9 +20,11 @@ public class UI_WorldMap : MonoBehaviour
     public static UI_WorldMap Instance { get; private set; }
 
     // Start is called before the first frame update
-    private void Awake()
+    protected void Awake()
     {
         Instance = this;
+        
+        
         content = transform.Find("Viewport/Content").gameObject;
         startPosition = content.transform.localPosition;
         _scrollRect = GetComponent<ScrollRect>();
@@ -135,8 +137,7 @@ public class UI_WorldMap : MonoBehaviour
             return false;
         }
     }
-
-
+    
 
 
 

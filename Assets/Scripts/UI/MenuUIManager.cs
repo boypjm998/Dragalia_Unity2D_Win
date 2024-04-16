@@ -20,6 +20,7 @@ public class MenuUIManager : MonoBehaviour
     public static MenuUIManager Instance { get;private set; }
 
     public int currentQuestInfoPageID;
+    public MapInformation map;
 
     public enum UIState
     {
@@ -40,7 +41,8 @@ public class MenuUIManager : MonoBehaviour
     {
         
         _globalController = FindObjectOfType<GlobalController>();
-        
+        //map = FindObjectOfType<MapInformation>();
+
     }
 
     public void InitAllChildrenElements()

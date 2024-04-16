@@ -1,0 +1,348 @@
+{
+    "phasePattern": [
+        {
+            "action_list": [
+                {
+                    "action_name": "buff",
+                    "state": 0,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": true,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "summon",
+                    "state": 1,
+                    "args": [
+                        "0.5"
+                    ],
+                    "lock_phase": true,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "gate",
+                    "state": 2,
+                    "args": [
+                        "-1",
+                        "0"
+                    ],
+                    "lock_phase": true,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "gate",
+                    "state": 3,
+                    "args": [
+                        "1",
+                        "0"
+                    ],
+                    "lock_phase": true,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 4,
+                    "args": [
+                        "1",
+                        "3",
+                        "0.1"
+                    ],
+                    "lock_phase": true,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "force",
+                    "state": 5,
+                    "args": [
+                        "0"
+                    ],
+                    "lock_phase": true,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 6,
+                    "args": [
+                        "2",
+                        "2",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 7,
+                    "args": [
+                        "1",
+                        "3",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 8,
+                    "args": [
+                        "3",
+                        "3",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 9,
+                    "args": [
+                        "0",
+                        "3",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 10,
+                    "args": [
+                        "2",
+                        "2",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 11,
+                    "args": [
+                        "1",
+                        "3",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 12,
+                    "args": [
+                        "0",
+                        "3",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 13,
+                    "args": [
+                        "3",
+                        "2",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 14,
+                    "args": [
+                        "2",
+                        "3",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 15,
+                    "args": [
+                        "9",
+                        "0.1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "has_catridge",
+                        "17",
+                        "16"
+                    ]
+                },
+                {
+                    "action_name": "free",
+                    "state": 16,
+                    "args": [
+                        "2",
+                        "0.1",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "gate",
+                    "state": 17,
+                    "args": [
+                        "1",
+                        "2.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "conditional",
+                    "jump_args": [
+                        "gate_exist",
+                        "18",
+                        "19"
+                    ]
+                },
+                {
+                    "action_name": "force",
+                    "state": 18,
+                    "args": [
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 19,
+                    "args": [
+                        "2",
+                        "4",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 20,
+                    "args": [
+                        "1",
+                        "4",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 21,
+                    "args": [
+                        "0",
+                        "5",
+                        "1.5"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 22,
+                    "args": [
+                        "3",
+                        "4",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 23,
+                    "args": [
+                        "0",
+                        "5",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 24,
+                    "args": [
+                        "0",
+                        "5",
+                        "2"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "next",
+                    "jump_args": []
+                },
+                {
+                    "action_name": "free",
+                    "state": 25,
+                    "args": [
+                        "3",
+                        "3",
+                        "1"
+                    ],
+                    "lock_phase": false,
+                    "unbreakable": false,
+                    "jump_action": "loop",
+                    "jump_args": []
+                }
+            ],
+            "jumpOutCondition": 0,
+            "jump_condition": "",
+            "loopStartPoint": 16,
+            "loopCount": 0,
+            "args": []
+        }
+    ]
+}

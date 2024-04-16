@@ -9,10 +9,7 @@ namespace CharacterSpecificProjectiles
 {
     public class ReflectionProjectile : ProjectileControllerTest
     {
-        public Vector2 velocity
-        {
-            get => new Vector2(horizontalVelocity, verticalVelocity);
-        }
+        
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private bool useRigid = false;
         [SerializeField] private LayerMask contactLayerMasks;

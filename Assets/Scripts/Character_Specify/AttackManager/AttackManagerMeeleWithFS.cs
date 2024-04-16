@@ -23,6 +23,7 @@ public class AttackManagerMeeleWithFS : AttackManager
     {
         var container = Instantiate(attackContainer,transform.position, Quaternion.identity,MeeleAttackFXLayer.transform);
         InstantiateMeele(dashFX[0],transform.position,container);
+        (ac as ActorController)?.PlayAttackVoice(0);
     }
 
 
@@ -55,6 +56,12 @@ public class AttackManagerMeeleWithFS : AttackManager
     public void Combo5_Ranged()
     {
         InstantiateRanged(comboFX[4], transform.position, InitContainer(false),ac.facedir);
+    }
+
+    public virtual void ForceStrike_Axe()
+    {
+        (ac as ActorControllerMeeleWithFS).PlayAttackVoice(9);
+        InstantiateMeele(forceFX[0], transform.position, InitContainer(true));
     }
 
 
@@ -174,7 +181,8 @@ public class AttackManagerMeeleWithFS : AttackManager
 
     protected void OnStandardAttackEnter()
     {
-        if (weaponType == BasicCalculation.MeeleWeaponType.Lance)
+        if (weaponType == BasicCalculation.MeeleWeaponType.Lance ||
+            weaponType == BasicCalculation.MeeleWeaponType.Axe)
         {
             _statusManager.knockbackRes = 99;
         }
@@ -188,7 +196,8 @@ public class AttackManagerMeeleWithFS : AttackManager
     protected void OnStandardAttackExit()
     {
         if (weaponType == BasicCalculation.MeeleWeaponType.Lance ||
-            weaponType == BasicCalculation.MeeleWeaponType.Sword)
+            weaponType == BasicCalculation.MeeleWeaponType.Sword ||
+            weaponType == BasicCalculation.MeeleWeaponType.Axe)
         {
             _statusManager.ResetKBRes();
         }

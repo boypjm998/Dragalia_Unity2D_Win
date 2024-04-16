@@ -110,11 +110,7 @@ public class EnemyController : ActorBase
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        //anim = GetComponent<Animator>();
-        
-    }
+    
     
     protected virtual void CheckFaceDir()
     {
@@ -618,6 +614,8 @@ public class EnemyController : ActorBase
     public void SetKBRes(int value)
     {
         currentKBRes = value;
+        if(value >= 200 && _statusManager.HasControlAffliction() == false)
+            SetActionUnable(false);
     }
 
     public void ResetKBRes()

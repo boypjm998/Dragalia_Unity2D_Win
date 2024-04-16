@@ -22,6 +22,12 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public float rollspeed = 9.0f;
     public float jumpforce = 20.0f;
     public Action<AttackBase, GameObject> OnDodgeSuccessed;
+    /// <summary>
+    /// Triggered after jump
+    /// </summary>
+    public Action<ActorController, int> OnJump;
+    
+    public Action<ActorController, int> BeforeJump;
 
     public GameObject weaponGameObject;
 
@@ -31,6 +37,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public bool canTransform = false;
     public bool DModeIsOn = false;
+    public bool silence = false;
     public DragonController dc;
     
     
@@ -149,25 +156,25 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         {
             case 1:
                 pi.isSkill = true;
-                anim.Play("s1");
+                anim.Play("s1",0,0);
                 _statusManager.currentSP[0] = 0;
                 break;
 
             case 2:
                 pi.isSkill = true;
-                anim.Play("s2");
+                anim.Play("s2",0,0);
                 _statusManager.currentSP[1] = 0;
                 break;
 
             case 3:
                 pi.isSkill = true;
-                anim.Play("s3");
+                anim.Play("s3",0,0);
                 _statusManager.currentSP[2] = 0;
                 break;
 
             case 4:
                 pi.isSkill = true;
-                anim.Play("s4");
+                anim.Play("s4",0,0);
                 _statusManager.currentSP[3] = 0;
                 break;
 
@@ -279,6 +286,14 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
         if(!canTransform)
             return;
+        
+        if(BattleStageManager.Instance.DragonBlock)
+            return;
+        
+        if(silence)
+            return;
+        
+        
     }
     
     public virtual void CheckAirRoll()
@@ -415,6 +430,11 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public override void SetMoveSpeed(float speed)
     {
         movespeed = speed;
+    }
+
+    public void ResetMoveSpeed()
+    {
+        movespeed = _statusManager.movespeed;
     }
 
     public IEnumerator HorizontalMoveInteria(float time, float groundSpeed, float airSpeed)
@@ -658,18 +678,18 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public void onJumpEnter()
     {
-        //print("onJump"); 
+        BeforeJump?.Invoke(this,1);
         rigid.velocity = new Vector2(rigid.velocity.x, jumpforce * (isBog?0.75f:1f));
-        //pi.rollEnabled = false;
+        OnJump?.Invoke(this,1);
         anim.SetBool("jump", false);
     }
 
     public void onDoubleJumpEnter()
     {
-        //print("onDoubleJump");
+        BeforeJump?.Invoke(this,2);
         rigid.velocity = new Vector2(rigid.velocity.x, jumpforce * (isBog?0.75f:1f));
         anim.SetBool("wjump", false);
-        //pi.rollEnabled = false;
+        OnJump?.Invoke(this,2);
     }
 
     public void onJumpExit()
@@ -772,6 +792,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     public virtual void OnStandardAttackEnter()
     {
         ta.FaceDirectionAutofixWithMarking();
+        ta.TargetSwapByAttack();
         speedModifier = 1;
         SetAttackRateToAnimator();
     }
@@ -1276,6 +1297,19 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         rigid.gravityScale = value;
     }
 
+    public override void SetDefaultGravityScale(float value, bool reset = true)
+    {
+        rigid.gravityScale = value;
+        defaultGravity = (int)value;
+
+        if (reset)
+        {
+            rigid.velocity = Vector2.zero;
+        }
+        
+        
+    }
+
     public void SetGroundCollision(bool flag)
     {
         var pltformCol = transform.Find("Platform Sensor").GetComponentInChildren<BoxCollider2D>();
@@ -1290,9 +1324,15 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         groundSensor.enabled = flag;
     }
 
+    
     public override void ResetGravityScale()
     {
         rigid.gravityScale = defaultGravity;
+    }
+
+    public void ResetJumpForce()
+    {
+        jumpforce = _statusManager.jumpforce;
     }
 
     public virtual void ResetCombo()

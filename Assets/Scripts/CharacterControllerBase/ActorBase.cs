@@ -107,6 +107,12 @@ public abstract class ActorBase : MonoBehaviour
     {
         
     }
+    
+    public virtual void SetDefaultGravityScale(float value,bool reset = true)
+    {
+        rigid.gravityScale = value;
+        
+    }
 
     public virtual void ResetGravityScale()
     {
@@ -132,6 +138,10 @@ public abstract class ActorBase : MonoBehaviour
         //transform.localScale = new Vector3(facedir, 1, 1);
     }
 
+    public void SetTweener(Tweener tweener)
+    {
+        _tweener = tweener;
+    }
 
     protected virtual void CheckBog(BattleCondition condition)
     {

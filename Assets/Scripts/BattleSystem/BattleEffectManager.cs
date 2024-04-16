@@ -85,6 +85,7 @@ public class BattleEffectManager : MonoBehaviour
         soundEffectSource = transform.GetChild(0).gameObject.GetComponent<AudioSource>();
         sharedVoiceSource = transform.GetChild(1).gameObject.GetComponent<AudioSource>();
         bgmVoiceSource = GetComponent<AudioSource>();
+        Debug.Log(Application.persistentDataPath);
     }
 
     private IEnumerator Start()
@@ -127,7 +128,6 @@ public class BattleEffectManager : MonoBehaviour
         {
             return;
         }
-
         if (StatusManager.IsBuff((int)cond))
         {
             SpawnAnimation(target,buffFXPrefab);
@@ -313,12 +313,23 @@ public class BattleEffectManager : MonoBehaviour
         fx.GetComponent<ObjectInvokeDestroy>().destroyTime = lastTime;
     }
 
-    public void SpawnExclamation(GameObject target, Vector3 position)
+    public void SpawnExclamation(GameObject target, Vector3 position, bool overlay = false)
     {
         var layer = target.transform.Find("BuffLayer");
         var fx =
             Instantiate(exclamationPrefab, position-new Vector3(0,0,10), Quaternion.identity, layer.transform);
+        if (overlay)
+        {
+            fx.GetComponent<SpriteRenderer>().sortingLayerName = "AttackFX";
+        }
         
+    }
+
+    public GameObject GetWeakPointIndicator()
+    {
+        var prefab = Resources.Load<GameObject>("UI/InBattle/BattleHint/WeakPoint");
+
+        return prefab;
     }
 
     public void PlayBreakEffect()

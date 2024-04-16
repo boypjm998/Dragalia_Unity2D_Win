@@ -33,7 +33,7 @@ public class DragonController_C007 : DragonController
 
     protected override void CheckShapeShifting()
     {
-        if (pi.buttonUp.OnPressed)
+        if (pi.buttonSpecial.OnPressed)
         {
             if (pi.hurt == false && pi.isSkill == false && pi.attackEnabled &&
                 ac.anim.GetCurrentAnimatorStateInfo(0).IsName("transform")==false)

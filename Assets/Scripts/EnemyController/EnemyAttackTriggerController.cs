@@ -27,7 +27,7 @@ public class EnemyAttackTriggerController : MonoBehaviour
     [SerializeField] private bool sleepAfterAnimStopped;
     private Animation anim;
 
-    private AttackFromEnemy _attackFromEnemy;
+    [SerializeField]private AttackFromEnemy _attackFromEnemy;
     
     [Serializable]
     public class AttackProperty
@@ -40,9 +40,8 @@ public class EnemyAttackTriggerController : MonoBehaviour
 
     private void Awake()
     {
-        
-
-        _attackFromEnemy = GetComponent<AttackFromEnemy>();
+        if(_attackFromEnemy == null)
+            _attackFromEnemy = GetComponent<AttackFromEnemy>();
     }
 
 

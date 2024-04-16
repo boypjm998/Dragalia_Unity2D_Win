@@ -43,7 +43,7 @@ public class UI_PositionModifierWithLayoutGroup : MonoBehaviour
 
     private void Update()
     {
-        print(parentRectSize.sizeDelta);
+        //print(parentRectSize.sizeDelta);
     }
 
     private void SetPosition()

@@ -245,6 +245,9 @@ public class ActorController_c005 : ActorControllerDagger
         if(pi.isSkill)
             return;
         
+        if(silence)
+            return;
+        
         
         if (pi.buttonDown.IsPressing && grounded == false && pi.hurt == false && rigid.velocity.y <= -1)
         {
@@ -499,7 +502,7 @@ public class ActorController_c005 : ActorControllerDagger
         
         var col = lastPlatformBeforeCombo4;
 
-        if (warpCheckGO != null)
+        if (warpCheckGO != null && (!pi.buttonLeft.IsPressing) && (!pi.buttonRight.IsPressing))
         {
             if (Mathf.Abs(warpCheckGO.transform.position.x - transform.position.x) > 4 &&
                 Mathf.Abs(warpCheckGO.transform.position.x - transform.position.x) < 12)
@@ -585,9 +588,16 @@ public class ActorController_c005 : ActorControllerDagger
         
         if (lastPositionAfterCombo6 != Vector2.zero)
         {
-            Instantiate(warpFX, transform.position, Quaternion.identity,
-                BattleStageManager.Instance.RangedAttackFXLayer.transform);
-            transform.position = lastPositionAfterCombo6;
+            if (pi.buttonLeft.IsPressing || pi.buttonRight.IsPressing)
+            {
+                
+            }
+            else
+            {
+                Instantiate(warpFX, transform.position, Quaternion.identity,
+                    BattleStageManager.Instance.RangedAttackFXLayer.transform);
+                transform.position = lastPositionAfterCombo6;
+            }
             
         }
         

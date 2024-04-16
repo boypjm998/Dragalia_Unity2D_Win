@@ -81,7 +81,7 @@ namespace CharacterSpecificProjectiles
                     playerStat.ObtainTimerBuff((int)BasicCalculation.BattleCondition.ManaOverloaded,
                         -1,30,1,-1);
                 }
-                else if(!playerStat.HasBuff((int)BasicCalculation.BattleCondition.ManaOverloaded))
+                else if(!playerStat.HasCondition((int)BasicCalculation.BattleCondition.ManaOverloaded))
                 {
                     playerStat.ObtainTimerBuff(buff,true,false);
                 }

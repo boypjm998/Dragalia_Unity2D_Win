@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1148514126446372421}
   - component: {fileID: 2668838596060132175}
   - component: {fileID: 3190013788828391392}
+  - component: {fileID: 2507626905055268940}
   m_Layer: 5
   m_Name: 01034
   m_TagString: Untagged
@@ -50,7 +51,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 475039391315997644}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -86,7 +87,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4529775219315496086}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1509970128326926071}
+        m_TargetAssemblyTypeName: UI_LevelEnterButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1034
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &1148514126446372421
 Animator:
   serializedVersion: 4
@@ -145,6 +158,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2507626905055268940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475039391315997644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9346a614869203640a7af740ed8a6330, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prequisiteLevelID: 01033
+  hideIfLocked: 0
 --- !u!1 &885471989664991909
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,7 +1348,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u4F0A\u8389\u96C5\u7684\u8BD5\u70BC \u7EDD\u7EA7\n       <size=18>\u656C\u8BF7\u671F\u5F85"
+  m_text: "\u4F0A\u8389\u96C5\u7684\u8BD5\u70BC \u7EDD\u7EA7\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0f371689b72231449b4af96eca013b88, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: a45e1daca39a89e4f86b9541178c17d9, type: 2}
@@ -1330,8 +1357,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4286611584
-  m_fontColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2123,14 +2150,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7c1940c594a302a44aebfc7e8999a48b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9dbe99841e8ad5d43a7e9be6b711be5a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

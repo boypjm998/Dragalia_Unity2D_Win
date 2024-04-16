@@ -80,7 +80,7 @@ public class DamageNumberManager : MonoBehaviour
         GenerateIndirectDmgNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent);
     }
 
-    public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType, float sizeModifier = 1f)
+    public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType, float sizeModifier = 1f, float heightModifier = 0f)
     {
         
         //Vector3 newPosition = new Vector3(enemyPos.position.x + Random.Range(-1f, 1f), enemyPos.position.y + Random.Range(-0.5f, 0.5f) + 3f, enemyPos.position.z);
@@ -88,7 +88,7 @@ public class DamageNumberManager : MonoBehaviour
         int dmgNumPos = SelectDamageNumberPosition(enemyPos); 
         //默认是0，代表伤害数字产生的位置（子物体）的ID
 
-        Transform dmgNumParent = GetComponent<Transform>().GetChild(dmgNumPos);
+        Transform dmgNumParent = transform.GetChild(dmgNumPos);
         //搜寻上一步找到的子物体的Transform。
 
         Vector3 newDmgNumPosVec = PositionSelectByChild(enemyPos, dmgNumPos);
@@ -96,11 +96,11 @@ public class DamageNumberManager : MonoBehaviour
 
         if (dmgType == 1)
         {
-            GenerateNormalDamageNumber(dmg, newDmgNumPosVec+ transform.localPosition, enemyPos, dmgNumParent, sizeModifier);
+            GenerateNormalDamageNumber(dmg, newDmgNumPosVec+ transform.localPosition+new Vector3(0,heightModifier), enemyPos, dmgNumParent, sizeModifier);
         }
         else if (dmgType == 2)
         {
-            GenerateCriticalDamageNumber(dmg, newDmgNumPosVec+ transform.localPosition, enemyPos, dmgNumParent, sizeModifier);
+            GenerateCriticalDamageNumber(dmg, newDmgNumPosVec+ transform.localPosition+new Vector3(0,heightModifier), enemyPos, dmgNumParent, sizeModifier);
         }
         
     }

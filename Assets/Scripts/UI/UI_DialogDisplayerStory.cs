@@ -18,12 +18,12 @@ public class UI_DialogDisplayerStory : UI_DialogDisplayer
         if (GlobalController.Instance.GameLanguage == GlobalController.Language.ZHCN)
         {
             questDialogInfoData = 
-                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoStory.json");
+                BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfoStory.json");
         }
         else if(GlobalController.Instance.GameLanguage == GlobalController.Language.EN)
         {
             questDialogInfoData = 
-                BasicCalculation.ReadJsonData("LevelInformation/QuestDialogInfoStory_EN.json");
+                BasicCalculation.ReadJsonDataFromStreamingAssets("LevelInformation/QuestDialogInfoStory_EN.json");
         }
 
 

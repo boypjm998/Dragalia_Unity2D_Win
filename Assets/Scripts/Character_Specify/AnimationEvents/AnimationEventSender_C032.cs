@@ -26,7 +26,6 @@ public class AnimationEventSender_C032 : AnimationEventSenderNew
             case 103:
                 _attackManagerMeeleWithFs.Combo3();
                 break;
-            
             case 104:
                 _attackManagerMeeleWithFs.Combo4();
                 break;

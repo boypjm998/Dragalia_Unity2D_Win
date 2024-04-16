@@ -46,7 +46,8 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected IEnumerator _canAction;
     protected IEnumerator _canActionOnGround;
     protected IEnumerator _canActionOnFlyingGround;
-    
+    protected IEnumerator _animFinished;
+
     public event Action<int> OnUseSkill;
     
     protected void InvokeOnUseSkill(int skillID)
@@ -63,6 +64,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
     {
         bossBanner = GameObject.Find("BattleInfoCaster")?.GetComponent<UI_BattleInfoCaster>();
         ac = GetComponent<EnemyController>();
+        _animFinished = new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
         _canAction = new WaitUntil(()=>ac.hurt == false);
         _canActionOnGround = new WaitUntil(()=>ac.hurt == false && ac.grounded);
         _canActionOnFlyingGround = new WaitUntil(()=>ac.hurt == false && (ac as EnemyControllerFlyingHigh).flyingGrounded);
@@ -88,6 +90,11 @@ public abstract class EnemyMoveManager : MonoBehaviour
     protected void GetAllAnchors()
     {
         _navigateAnchorSensors = FindObjectsOfType<NPCNavigateAnchorSensor>().ToList();
+    }
+
+    public GameObject GetAnchor(int index)
+    {
+        return _navigateAnchorSensors[index].gameObject;
     }
 
 
@@ -264,6 +271,14 @@ public abstract class EnemyMoveManager : MonoBehaviour
         return prefabInstance;
     }
 
+    /// <summary>
+    /// 当对象没有IEnemySealedContainer时调用
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="position"></param>
+    /// <param name="isMeele"></param>
+    /// <param name="facedir"></param>
+    /// <returns></returns>
     protected GameObject InstantiateSealedContainer(GameObject prefab, Vector3 position, bool isMeele, int facedir = 1)
     {
         Transform layer = isMeele ? MeeleAttackFXLayer.transform : RangedAttackFXLayer.transform;
@@ -545,14 +560,15 @@ public abstract class EnemyMoveManager : MonoBehaviour
 
     }
 
-    protected GameObject SpawnEnemyMinon(GameObject prefab, Vector3 position, int maxHP, int attack,int facedir = 1, bool isSummon = true)
+    protected GameObject SpawnEnemyMinon(GameObject prefab, Vector3 position, int maxHP, int attack = 0,int facedir = 1, bool isSummon = true)
     {
         var go = Instantiate(prefab, position, Quaternion.identity, BattleStageManager.Instance.EnemyLayer.transform);
         var enemy = go.GetComponent<EnemyController>();
         var statusManager = go.GetComponent<StatusManager>();
         statusManager.maxBaseHP = maxHP;
         statusManager.maxHP = maxHP;
-        statusManager.baseAtk = attack;
+        if(attack > 0)
+            statusManager.baseAtk = attack;
         enemy.SetSummoned(isSummon);
         enemy.SetFaceDir(facedir);
         var behavior = go.GetComponent<DragaliaEnemyBehavior>();

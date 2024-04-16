@@ -1,6 +1,8 @@
 ﻿
+using System;
 using System.Collections.Generic;
 
+[Serializable]
 public class QuestSave
 {
     public string quest_id;

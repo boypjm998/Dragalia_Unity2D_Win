@@ -21,6 +21,12 @@ public class UI_BossODBar : MonoBehaviour
         ODBar = GetComponentInChildren<Slider>();
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     private void Start()
     {
         var statUI = GetComponentInParent<UI_BossStatus>();
@@ -67,6 +73,11 @@ public class UI_BossODBar : MonoBehaviour
 
     public void ODBarRecharge()
     {
+        print(ODBar);
+        print(ODBar.value);
+        print(bossStat);
+        print(bossStat.currentBreak);
+        
         var twc = DOTween.To(() => ODBar.value,
             x => ODBar.value = x,
             bossStat.currentBreak / bossStat.baseBreak, 1f);

@@ -368,7 +368,7 @@ public class AlchemicGauge : MonoBehaviour, ICharacterSpecialGauge
         }
     }
 
-    public void Reset()
+    public void ResetGauge()
     {
         cp = 0;
         catridgeCount = 0;

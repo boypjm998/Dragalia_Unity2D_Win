@@ -120,7 +120,9 @@ public class AttackManager_C036 : AttackManagerMeeleWithFS
             ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier, new string[] {},
             new string[] { (dmgUp).ToString() });
         slashAttack.AddConditionalAttackEffect(caf);
-        _statusManager.OnSpecialBuffDelegate?.Invoke($"BuffCount_{buffCountWhenUsingSkill2}");
+        
+        if(buffCountWhenUsingSkill2 > 0)
+            _statusManager.OnSpecialBuffDelegate?.Invoke($"BuffCount_{buffCountWhenUsingSkill2}");
 
         ActorBase.OnHurt eventHandler = null;
         

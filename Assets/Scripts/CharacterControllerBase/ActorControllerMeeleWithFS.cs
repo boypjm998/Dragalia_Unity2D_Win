@@ -235,9 +235,11 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
      
      
 
-     public void OnForcingMoveable()
+     public virtual void OnForcingMoveable()
      {
-         
+          pi.moveEnabled = true;
+          speedModifier = 0.5f;
+          
      }
 
      public virtual void OnForceEnter()
@@ -317,6 +319,14 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
                forceLevel = -1;
                forcingTime = 0;
                print("Blocked");
+               return;
+          }
+
+          if (silence)
+          {
+               forceLevel = -1;
+               forcingTime = 0;
+               print("Silence");
                return;
           }
 
@@ -521,6 +531,20 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
                          SetFaceDir(-facedir);
                     }
 
+                    break;
+               }
+               case 10:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 12f, 2f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 12f, 2f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
                     break;
                }
           }

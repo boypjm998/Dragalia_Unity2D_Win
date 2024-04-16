@@ -77,7 +77,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         _groundSensor.IsGround -= GroundCheck;
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
         if (hurt)
         {
@@ -101,7 +101,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         Move();
     }
 
-    void Move()
+    protected virtual void Move()
     {
         if(!moveEnable)
             return;
@@ -128,10 +128,21 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             
         }
     }
-    
 
 
+    public override void DisappearRenderer()
+    {
+        rendererObject.SetActive(false);
+        shadowCaster?.gameObject.SetActive(false);
+        minimapIcon?.gameObject.SetActive(false);
+    }
 
+    public override void AppearRenderer()
+    {
+        rendererObject.SetActive(true);
+        shadowCaster?.gameObject.SetActive(true);
+        minimapIcon?.gameObject.SetActive(true);
+    }
 
 
     /// <summary>
@@ -1621,6 +1632,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         SetCounter(false);
         //print((_statusManager as SpecialStatusManager).breakTime);
         UI_BossODBar.Instance?.ODBarClear();
+        
         breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
         
     }
@@ -1676,6 +1688,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
             
             spStatus.broken = true;
             SetKBRes(999);
+            
             anim.SetBool("break",true);
             anim.Play("break_enter");
         }
@@ -1688,26 +1701,9 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         yield return new WaitForSeconds(time - 1.67f);
         anim.Play("break_exit");
         yield return new WaitForSeconds(1.67f);
-        
-        // var _statusManagerS = _statusManager as SpecialStatusManager;
-        // if (!_statusManagerS.ODLock)
-        // {
-        //     _statusManagerS.ODLock = true;
-        //     _behavior.breakable = false;
-        //     _statusManagerS.currentBreak = 1f;
-        //     var twc = DOTween.To(() => _statusManagerS.currentBreak,
-        //         x => _statusManagerS.currentBreak = x,
-        //         _statusManagerS.baseBreak, 1f);
-        //     twc.OnComplete(() =>
-        //         {
-        //             _statusManagerS.ODLock = false;
-        //             _behavior.breakable = true;
-        //         }
-        //     );
-        // }
 
-        
-        
+
+
         breakRoutine = null;
         anim.SetBool("break",false);
     }
@@ -1723,7 +1719,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         StartCoroutine(DeathRoutine());
     }
 
-    IEnumerator DeathRoutine()
+    protected virtual IEnumerator DeathRoutine()
     {
         SetKBRes(999);
         _effectManager.DisplayCounterIcon(gameObject,false);

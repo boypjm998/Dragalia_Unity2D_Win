@@ -14,17 +14,25 @@ public abstract class BattleCondition
     public bool dispellable = true;
     public float effect { get; protected set; }
     public buffEffectDisplayType DisplayType { get; protected set; }
-    public bool displayInBar { get; protected set; } = true; //是否显示在buff栏中
+    public bool displayInBar { get; protected set; } = true; //是否显示在buff栏中，已经废弃
 
     public int specialID = -1;
 
     /// <summary>
-    /// obsoleted
+    /// 累计值
     /// </summary>
-    public bool canStack { get; protected set; } = true;
+    protected float tickTime = 0;
 
+    public float TickInterval { get; protected set; } = -1;
+
+    /// <summary>
+    /// 状态的剩余时间
+    /// </summary>
     public float lastTime { set; get; }
 
+    /// <summary>
+    /// 状态的总持续时间
+    /// </summary>
     public float duration { protected set; get; } //duration is -1 means no time limit.
 
     
@@ -44,7 +52,7 @@ public abstract class BattleCondition
 
     public void SetUniqueBuffInfo(int spID)
     {
-        this.canStack = false;
+        //this.canStack = false;
         this.specialID = spID;
     }
 
@@ -64,11 +72,27 @@ public abstract class BattleCondition
         duration = value;
         lastTime += diff;
     }
+    
+    public void SetTickInterval(float value = 2.9f)
+    {
+        tickTime = value;
+    }
 
-
-
+    
     public Action<StatusManager> OnBuffStart;
     public Action<StatusManager> OnBuffRemove;
+    public event Action<StatusManager> OnBuffUpdate;
+    
+    
+    public void Tick(float deltaTime, StatusManager statusManager)
+    {
+        tickTime += deltaTime;
+        if (tickTime >= TickInterval)
+        {
+            tickTime -= TickInterval;
+            OnBuffUpdate?.Invoke(statusManager);
+        }
+    }
 
     public abstract void BuffDispell();
 

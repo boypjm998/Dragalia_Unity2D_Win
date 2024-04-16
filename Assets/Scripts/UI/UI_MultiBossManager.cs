@@ -38,6 +38,25 @@ public class UI_MultiBossManager : MonoBehaviour
         }
     }
 
+    public UI_BossStatus GetBossStatus(int index)
+    {
+        for (int i = 0; i < _bossStatusList.Count; i++)
+        {
+            if (index == i)
+            {
+                _bossStatusList[i].visible = true;
+            }
+            else
+            {
+                _bossStatusList[i].visible = false;
+            }
+        }
+        
+        print(_bossStatusList[index]);
+
+        return _bossStatusList[index];
+    }
+
     public void AddNewBoss(GameObject bossObject,int bossIndex = 0)
     {
         string languageCheck = "";
@@ -59,10 +78,28 @@ public class UI_MultiBossManager : MonoBehaviour
 
     }
 
+    public void RemoveBoss(int index)
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if(i != index)
+                continue;
+            Destroy(transform.GetChild(i).gameObject);
+        }
+    }
+
     public void RemoveDeadBoss()
     {
         for(int i = _bossStatusList.Count-1; i >= 0; i--)
         {
+            if (_bossStatusList[i].bossStat == null)
+            {
+                RemoveBossStatusBar(_bossStatusList[i]);
+                print("REMOVE"+i);
+                break;
+            }
+            print(_bossStatusList[i].bossStat.gameObject);
+            
             if (_bossStatusList[i].bossStat.currentHp <= 0 && _bossStatusList.Count>1)
             {
                 _bossStatusList[i].bossStat.OnTakeDirectDamage = null;
@@ -80,7 +117,7 @@ public class UI_MultiBossManager : MonoBehaviour
         _bossStatusList.Remove(bossStatus);
         if(_shiftingBossStatusCoroutine != null)
             StopCoroutine(_shiftingBossStatusCoroutine);
-        Destroy(bossStatus.gameObject);
+        //Destroy(bossStatus.gameObject);
     }
 
     public void CheckBossNumber()

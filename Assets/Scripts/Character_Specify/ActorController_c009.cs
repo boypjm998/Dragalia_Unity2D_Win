@@ -24,7 +24,7 @@ public class ActorController_c009 : ActorControllerRangedWithFS
     protected override void Update()
     {
         base.Update();
-        CheckForceStrike();
+        //CheckForceStrike();
     }
 
     private void ReflectionDamage(StatusManager myStat, StatusManager targetStat, AttackBase atk, float dmg)

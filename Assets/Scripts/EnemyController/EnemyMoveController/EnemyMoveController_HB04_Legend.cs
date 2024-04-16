@@ -26,6 +26,8 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
 
     public bool WorldReset => controllers[0].IsActive ? false: true;
 
+    private TimerBuff _legendPBuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 5, -1, 20, 810444);
+
     protected override void OnInit()
     {
         var bg = BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Background1");
@@ -183,6 +185,8 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
             1,-1,1,810441);
         _resistanceOth.extra_iconID = (int)BasicCalculation.BattleCondition.DamageCut;
         _resistanceOth.dispellable = false;
+
+        _legendPBuff.dispellable = false;
 
         //_statusManager.SpecialDamageCutEffectFunc += SpecialDamageCutBuffTemporaryEvent;
 
@@ -548,7 +552,15 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         ac.TurnMove(_behavior.targetPlayer);
         bossBanner?.PrintSkillName("HB04_Action22");
 
-        GenerateWarningPrefab("action22",transform.position,Quaternion.identity, RangedAttackFXLayer.transform);
+        if (_behavior.difficulty >= 5)
+        {
+            GenerateWarningPrefab("action22P",transform.position,Quaternion.identity, RangedAttackFXLayer.transform);
+        }
+        else
+        {
+            GenerateWarningPrefab("action22",transform.position,Quaternion.identity, RangedAttackFXLayer.transform);
+        }
+        
         
         yield return new WaitForSeconds(1.8f);
         
@@ -766,6 +778,11 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
 
         fxController.StartRainbowTween();
 
+        if (_behavior.difficulty >= 5)
+        {
+            _statusManager.ObtainTimerBuff(new TimerBuff(_legendPBuff));
+        }
+
         Tween _tween = null;
         int stack = 0;
         
@@ -938,7 +955,14 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         
         yield return new WaitUntil(()=>anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.65f);
         
-        _statusManager.HPRegenImmediately(0,10,false);
+        if(_behavior.difficulty < 5)
+            _statusManager.HPRegenImmediately(0,10,false);
+        else
+        {
+            _statusManager.HPRegenImmediately(0,5,false);
+        }
+        
+        
         Instantiate(GetProjectileOfName("fx_ability_recover_c019"),transform.position,Quaternion.identity,
             RangedAttackFXLayer.transform);
         
@@ -989,9 +1013,10 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
 
         try
         {
-            _statusManager.RemoveConditionWithLog(
-                _statusManager.GetExactConditionsOfType(
-                    (int)BasicCalculation.BattleCondition.DamageUp, 810443)[0]);
+            _statusManager.RemoveAllConditionWithSpecialID(810443);
+            // _statusManager.RemoveConditionWithLog(
+            //     _statusManager.GetExactConditionsOfType(
+            //         (int)BasicCalculation.BattleCondition.DamageUp, 810443)[0]);
         }
         catch
         {
@@ -1122,7 +1147,7 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         }
     }
     
-    private void HolyRing()
+    private void HolyRing(bool isAttached = false)
     {
         var proj = InstantiateRanged
         (GetProjectileOfFormatName("action22_1", true),
@@ -1136,7 +1161,13 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         dt_controller.moveDirection = 
             ((Vector2)(_behavior.targetPlayer.transform.position - transform.position)).normalized * 20;
 
-
+        if (_behavior.difficulty > 4 && isAttached == false)
+        {
+            proj.GetComponent<AttackFromEnemy>().ChangeAvoidability(AttackFromEnemy.AvoidableProperty.Purple);
+        }
+        
+        
+        
     }
 
     private void AttachedSkill_HolyRing()
@@ -1145,7 +1176,7 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         
         GenerateWarningPrefab("action22",transform.position,Quaternion.identity, RangedAttackFXLayer.transform);
         
-        DOVirtual.DelayedCall(2.3f,HolyRing,false);
+        DOVirtual.DelayedCall(2.3f,()=>HolyRing(true),false);
     }
 
     private void AttachedSkill_SquaredAttack()
@@ -1155,7 +1186,7 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         //BattleEffectManager.Instance.SpawnTargetLockIndicator(_behavior.targetPlayer,4f);
         
         var controller = InstantiateSealedContainer(GetProjectileOfFormatName("action23", true),
-            transform.position + new Vector3(2,0), RangedAttackFXLayer.transform, 1).
+            transform.position + new Vector3(2,-2), RangedAttackFXLayer.transform, 1).
             GetComponent<Projectile_C019_7_Boss>();
 
         controller.hint = true;
@@ -1191,6 +1222,11 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         var controller = container.GetComponent<IEnemySealedContainer>();
         
         controller.SetEnemySource(gameObject);
+        
+        if (_behavior.difficulty >= 5)
+        {
+            _statusManager.ObtainTimerBuff(new TimerBuff(_legendPBuff));
+        }
 
 
     }
@@ -1340,6 +1376,11 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
             var attackContainer = container.GetComponent<ContributoryAttackContainer>();
             
             attackContainer.SetEnemySource(gameObject);
+
+            if (_behavior.difficulty > 4)
+            {
+                attackContainer.GetComponentInChildren<ForcedAttackFromEnemy>().attackInfo[0].dmgModifier[0] *= 0.67f;
+            }
 
             Action<StatusManager> handler = null;
             bool isComplete = false;

@@ -38,7 +38,7 @@ public class ActorController_c018 : ActorControllerRangedWithFS
     protected override void Update()
     {
         base.Update();
-        CheckForceStrike();
+        //CheckForceStrike();
     }
 
     private void GrantSigilLocked()
@@ -118,7 +118,13 @@ public class ActorController_c018 : ActorControllerRangedWithFS
 
     protected override void CheckForceStrike()
     {
-        
+        if (silence)
+        {
+            forceLevel = -1;
+            forcingTime = 0;
+            print("Silence");
+            return;
+        }
         
         
         if(!pi.buttonAttack.isDelaying && pi.buttonAttack.IsPressing && pi.attackEnabled

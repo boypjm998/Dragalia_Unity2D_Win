@@ -17,6 +17,7 @@ public class SkillUIBase : MonoBehaviour
     protected GameObject unableIcon;
     
     protected PlayerStatusManager sm;
+    protected ActorController ac;
 
     protected float spGaugeCDValue;
 
@@ -31,6 +32,7 @@ public class SkillUIBase : MonoBehaviour
     {
         //yield return new WaitUntil(()=>GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         sm = GameObject.Find("PlayerHandle").GetComponent<PlayerStatusManager>();
+        ac = sm.GetComponent<ActorController>();
         cooldownGauge = transform.Find("CD").GetComponent<Slider>();
         skillIcon = transform.Find("IconBody").Find("Mask").GetChild(0).gameObject;
         unableIcon = transform.Find("IconBody").Find("UnableIcon").gameObject;
@@ -185,8 +187,15 @@ public class SkillUIBase : MonoBehaviour
         }
         cooldownGauge.value = spGaugeCDValue;
 
+        
+        DisplaySkillCD();
+        
+        
+        
+    }
 
-
+    protected void DisplaySkillCD()
+    {
         if (spGaugeCDValue > 0 && !unableIcon.activeSelf)
         {
             skillIcon.transform.GetChild(1).gameObject.SetActive(true);
@@ -196,6 +205,12 @@ public class SkillUIBase : MonoBehaviour
         {
             skillIcon.transform.GetChild(1).gameObject.SetActive(false);
             keyHint.SetActive(true);
+        }
+
+        if (ac.silence && !unableIcon.activeSelf)
+        {
+            skillIcon.transform.GetChild(1).gameObject.SetActive(true);
+            keyHint.SetActive(false);
         }
     }
 

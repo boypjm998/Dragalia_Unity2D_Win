@@ -1,4 +1,5 @@
-﻿using GameMechanics;
+﻿using System;
+using GameMechanics;
 using UnityEngine;
 
 
@@ -17,16 +18,21 @@ public class ActorController_c003 : ActorControllerRangedWithFS
     protected override void Awake()
     {
         base.Awake();
-        pi.buttonAttack.delayingDuration = forcingCheckTime;
+        
         
         FindObjectOfType<AuspexGauge>().ac = this;
         
     }
 
+    private void Start()
+    {
+        pi.buttonAttack.delayingDuration = forcingCheckTime;
+    }
+
     protected override void Update()
     {
         base.Update();
-        CheckForceStrike();
+        //CheckForceStrike();
         
     }
 
@@ -35,6 +41,7 @@ public class ActorController_c003 : ActorControllerRangedWithFS
         if(_statusManager.GetConditionStackNumber((int)BasicCalculation.BattleCondition.TwilightMoon)<=0)
             return;
         base.CheckForceStrike();
+        //print("forcingTime: "+forcingTime+" Last: "+Time.deltaTime);
     }
 
 

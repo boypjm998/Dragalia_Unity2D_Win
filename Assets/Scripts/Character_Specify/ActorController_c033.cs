@@ -34,6 +34,8 @@ public class ActorController_c033 : ActorControllerMeeleWithFS
         InitModeBuffs();
         yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.Inbattle);
         GrantSigilLocked();
+        Debug.Log(GlobalController.Instance.GetBundle("animation/anim_common") != null);
+        Debug.Log(anim.GetCurrentAnimatorStateInfo(0).length);
     }
 
     public void SetTrap(bool flag)
