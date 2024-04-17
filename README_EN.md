@@ -101,7 +101,7 @@
 
 **Bug Fixes**
 
-1. Notte can't gain buff from "Glorious Sanctuary" in quest"Zena's Trial: Legend" when in Metamorphosis.
+1. When Bondforged Zethia(adventurer) uses In quest Zena's Trial: Legend
 
 ---
 
@@ -115,6 +115,10 @@
 
 1. Optimized the visual effects in prologue quest.
 2. Added special thank list.
+
+**Bug Fixes**
+
+1. Notte can't gain buff from "Glorious Sanctuary" in quest"Zena's Trial: Legend" when in Metamorphosis.
 
 ---
 
