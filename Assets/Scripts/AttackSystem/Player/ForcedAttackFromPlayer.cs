@@ -18,6 +18,12 @@ public class ForcedAttackFromPlayer : AttackFromPlayer
         {
             ac.OnAttackInterrupt += DestroyContainer;
         }
+        
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         Invoke("CauseDamageInstantly", triggerTime);
     }
 

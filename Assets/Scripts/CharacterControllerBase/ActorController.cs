@@ -29,6 +29,10 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     
     public Action<ActorController, int> BeforeJump;
 
+    public Action<ActorController> OnRoll;
+
+    public Func<int, bool> SkillConditionCheck = null;
+
     public GameObject weaponGameObject;
 
 
@@ -139,7 +143,6 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     public virtual void UseSkill(int id)
     {
-        
         voiceController?.PlaySkillVoice(id);
         
         if (isAttackSkill[id - 1])
@@ -217,6 +220,8 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
     {
 
         anim.SetBool(varname, false);
+        if(varname == "attack")
+            pi.stdAtk = false;
 
     }
 
@@ -246,12 +251,15 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         ta = gameObject.transform.parent.GetComponentInChildren<TargetAimer>();
 
         _statusManager = GetComponent<PlayerStatusManager>();
+
+        _statusManager.movespeed += 0.5f;
+
+
         jumpforce = _statusManager.jumpforce;
         movespeed = _statusManager.movespeed;
         rollspeed = _statusManager.rollspeed;
 
         _statusManager.OnHPBelow0 += CheckLife;
-        
         _statusManager.OnBuffEventDelegate += CheckBog;
         _statusManager.OnBuffDispelledEventDelegate += CheckBog;
         _statusManager.OnBuffExpiredEventDelegate += CheckBog;
@@ -310,26 +318,42 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
     }
 
+    /// <summary>
+    /// SID: Skill ID From 0 to 3
+    /// </summary>
+    /// <param name="sid"></param>
+    /// <returns></returns>
+    protected virtual bool SpecialConditionCheck(int sid)
+    {
+        if (SkillConditionCheck == null)
+            return true;
+        else return SkillConditionCheck(sid);
+    }
+
     protected virtual void CheckSkill()
     {
         if (pi.skill[0] && (anim.GetBool("isGround") || canPerformInAir[0]) && !pi.hurt && !pi.isSkill)
         {
-            UseSkill(1);
+            if(SpecialConditionCheck(0))
+                UseSkill(1);
         }
 
         if (pi.skill[1] && (anim.GetBool("isGround") || canPerformInAir[1]) && !pi.hurt && !pi.isSkill)
         {
-            UseSkill(2);
+            if(SpecialConditionCheck(1))
+                UseSkill(2);
         }
 
         if (pi.skill[2] && (anim.GetBool("isGround") || canPerformInAir[2]) && !pi.hurt && !pi.isSkill)
         {
-            UseSkill(3);
+            if(SpecialConditionCheck(2))
+                UseSkill(3);
         }
 
         if (pi.skill[3] && (anim.GetBool("isGround") || canPerformInAir[3]) && !pi.hurt && !pi.isSkill)
         {
-            UseSkill(4);
+            if(SpecialConditionCheck(3))
+                UseSkill(4);
         }
 
 
@@ -641,7 +665,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         var hitsensor = transform.Find("HitSensor").GetComponent<Collider2D>();
         //renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.5f);
         hitsensor.enabled = false;
-        _statusManager.HPRegenImmediatelyWithoutRandom(0, 100);
+        _statusManager.HPRegenImmediatelyWithoutRandom(0, 100,true);
         _statusManager.currentHp = _statusManager.maxHP;
         SetActionUnable(false);
 
@@ -737,6 +761,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.roll = false;
         pi.stdAtk = false;
         anim.SetBool("roll", false);
+        ResetGravityScale();
 
         dodging = true;
     }
@@ -751,8 +776,9 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
 
         anim.SetBool("roll", false);
         pi.SetInputEnabled("move");
-        //pi.directionLock = false;
-        //Debug.Log("ExitRoll");
+        
+        OnRoll?.Invoke(this);
+        
     }
 
     public void OnFall()
@@ -815,6 +841,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         SetAttackRateToAnimator();
         pi.isSkill = true;
         pi.rollEnabled = false;
+        pi.inputAttackEnabled = true;
         pi.inputRollEnabled = false;
         pi.directionLock = false;
         dodging = true;
@@ -900,13 +927,6 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         //SetVelocity(rigid.velocity.x,0);
         anim.speed = 1;
         var meeles = transform.Find("MeeleAttackFX");
-        // for (int i = 0; i < meeles.childCount; i++)
-        // {
-        //     var meele = meeles.GetChild(i);
-        //     
-        //     
-        //     meeles.GetChild(i).GetComponent<AttackContainer>()?.DestroyInvoke();
-        // }
 
         voiceController?.PlayHurtVoice(_statusManager);
         transform.GetChild(0).GetComponentInChildren<AnimationEventSender>()?.ChangeFaceExpression(0.75f);
@@ -920,7 +940,7 @@ public class ActorController : ActorBase, IKnockbackable, IHumanActor
         pi.SetInputEnabled("attack");
         pi.SetInputEnabled("move");
         pi.directionLock = false;
-        rigid.gravityScale = defaultGravity;
+        ResetGravityScale();
         ActionEnable((int)PlayerActionType.MOVE);
         ActionEnable((int)PlayerActionType.JUMP);
         ActionEnable((int)PlayerActionType.ROLL);

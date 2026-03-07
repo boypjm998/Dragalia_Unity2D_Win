@@ -1,0 +1,390 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "Chaser",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CursedFlame",
+          "args": [4, -1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [2,-1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Spit",
+          "args": [3, -1],
+          "jump_action": "random+",
+          "jump_args": [1,2]
+        },
+        {
+          "action_name": "PoisonFront",
+          "args": [1,3],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "PoisonFront",
+          "args": [-1,3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [0],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Summon",
+          "args": [3, 4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [2, -1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Memories",
+          "args": [1, 4],
+          "jump_action": "next"
+        }
+      ],
+      "jumpOutCondition": 0,
+      "loopStartPoint": 0,
+      "args": [ 0 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "Memories",
+          "args": [2, 5],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "Tail",
+          "args": [5],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "CursedFlame",
+          "args": [5, -1],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "Blast",
+          "args": [5],
+          "jump_action": "random+",
+          "jump_args": [1, 2],
+          "lock_phase": true
+        },
+        {
+          "action_name": "PoisonFront",
+          "args": [-1, 5],
+          "jump_action": "to+",
+          "jump_args": [2],
+          "lock_phase": true
+        },
+        {
+          "action_name": "PoisonFront",
+          "args": [1, 5],
+          "jump_action": "to+",
+          "jump_args": [1],
+          "lock_phase": true
+        },
+        {
+          "action_name": "GroundFire",
+          "args": [5],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "Sprint",
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Spit",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Summon",
+          "args": [6, 5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [2, -1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Memories",
+          "args": [5, 4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Around",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [2, -1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [2],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 1,
+      "loopStartPoint": 8,
+      "args": [ 50, 11 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "Chaser",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Memories",
+          "args": [3, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Blast",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Summon",
+          "args": [6, 5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [3],
+          "jump_action": "random+",
+          "jump_args": [1, 2]
+        },
+        {
+          "action_name": "PoisonFront",
+          "args": [-1, 3],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "PoisonFront",
+          "args": [1, 3],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "CursedFlame",
+          "args": [7, -1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [0.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [2.5],
+          "jump_action": "random+",
+          "jump_args": [1,2]
+        },
+        {
+          "action_name": "Summon",
+          "args": [4, 4],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "Summon",
+          "args": [5, 4],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "GroundFire",
+          "args": [4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Spit",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Memories",
+          "args": [5, 4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [3, -1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Summon",
+          "args": [2, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Memories",
+          "args": [1, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Blast",
+          "args": [5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Summon",
+          "args": [6, 4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Memories",
+          "args": [2, 3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Sprint",
+          "args": [1],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [3],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CursedFlame",
+          "args": [5, -1],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "Summon",
+          "args": [1, 4],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "Spit",
+          "args": [5],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "PoisonSide",
+          "args": [3, -1],
+          "jump_action": "next",
+          "lock_phase": true
+        },
+        {
+          "action_name": "Around",
+          "args": [2],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GroundFire",
+          "args": [4],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Tail",
+          "args": [3],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 0,
+      "loopStartPoint": 17,
+      "args": [ ]
+    }
+  ]
+  
+  
+}

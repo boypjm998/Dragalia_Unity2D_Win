@@ -35,7 +35,7 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
         ac.OnAttackEnter(999);
         ac.TurnMove(_behavior.targetPlayer);
 
-        bossBanner?.PrintSkillName("DB15_Action03");
+        bossBanner?.PrintSkillName("DB13_Action01");
         yield return new WaitForSeconds(0.5f);
         
         anim.Play("buff_enter");
@@ -296,13 +296,16 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
 
         var enemy = SpawnEnemyMinon(GetProjectileOfFormatName("action07"),
             transform.position + new Vector3(ac.facedir * 2f, 0.5f), maxHp, 9999, 1);
+
+        var enemyStat = enemy.GetComponent<StatusManager>();
+        AddDrasticForceEffectToStatusManager(enemyStat);
         
         var uiRingSlider = 
             SpawnCountDownUI(prefab, 
                 transform.position + new Vector3(0, 5.5f), 
                 20, 1);
         var uiMinionCount = uiRingSlider.GetComponent<UI_CountdownMinon>();
-        uiMinionCount.AddNewStatusManager(enemy.GetComponent<StatusManager>());
+        uiMinionCount.AddNewStatusManager(enemyStat);
 
         var enemyGeneratorTween = GenerateOrbsRandomly(_behavior.difficulty * 1000 + 2000);
         
@@ -391,7 +394,65 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
 
     }
     
-    
+    public IEnumerator DB13_Action10()
+    {
+        yield return null;
+        
+        anim.Play("knockdown_enter");
+
+        DestoryAllOrbs();
+
+        yield return new WaitForSeconds(1);
+        
+        var warpFXPrefab = GetProjectileOfFormatName("action10_1");
+        
+        var fx1 = Instantiate(warpFXPrefab,
+            transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
+
+        yield return new WaitForSeconds(0.1f);
+        
+        DisappearRenderer();
+        yield return null;
+        ac.SetGroundCollision(true);
+        transform.position = new Vector3(0,BattleStageManager.Instance.mapBorderB + 1.5f);
+
+        yield return new WaitUntil(()=>_voiceControllerEnemy.voice.isPlaying == false);
+        yield return new WaitForSeconds(0.9f);
+        
+        
+        var fx2 = Instantiate(warpFXPrefab,
+            transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
+        
+        StageCameraController.SwitchOverallCamera();
+        //StageCameraController.SwitchMainCameraFollowObject(gameObject);
+
+        yield return new WaitForSeconds(0.1f);
+        
+        AppearRenderer();
+
+        yield return new WaitForSeconds(1);
+        
+        var transformFx = Instantiate(GetProjectileOfFormatName("action10_2"),
+           new Vector3(0,7),Quaternion.identity,RangedAttackFXLayer.transform);
+        
+        CineMachineOperator.Instance.CamaraShake(8f,2f);
+        
+        //todo: 改变场景
+        (BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Background1") as SpriteRenderer).DOColor(
+            Color.clear, 1.5f);
+
+        yield return new WaitForSeconds(0.8f);
+        DOVirtual.DelayedCall(1.35f,()=>
+            StageCameraController.SwitchMainCamera(),false);
+        
+        yield return null;
+        
+        QuitAttack();
+        _behavior.currentMoveAction = null;
+
+
+
+    }
     
     
     protected void NihilAOE()
@@ -403,7 +464,6 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
         var nihilDebuff = new TimerBuff((int)BasicCalculation.BattleCondition.Nihility,
             -1, 30, 1);
         proj.GetComponent<AttackFromEnemy>().AddWithConditionAll(nihilDebuff,100);
-        
         
     }
 
@@ -507,8 +567,8 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
 
     public void AddDrasticForceEffectToStatusManager(StatusManager statusManager)
     {
-        statusManager.SpecialDamageCutEffectFunc += Ability.DrasticForceEffect;
-
+        statusManager.AddEffectFunction(Ability.DrasticForceEffect,AbilityCalculation.ProductArea.DMGCUT);
+        //statusManager.SpecialDamageCutEffectFunc += Ability.DrasticForceEffect;
     }
 
     protected void PillarInvocation()
@@ -561,8 +621,9 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
         {
             instance.GetComponent<Projectile_DB013_EnlightmentOrb>().SetProtectionFXOn();
             
-            
-            instance.GetComponent<StatusManager>().SpecialDamageCutEffectFunc += Ability.DashAttackEffectExtraAttack;
+            instance.GetComponent<StatusManager>().AddEffectFunction
+                (Ability.DashAttackEffectExtraAttack,AbilityCalculation.ProductArea.DMGCUT);
+            //instance.GetComponent<StatusManager>().SpecialDamageCutEffectFunc += Ability.DashAttackEffectExtraAttack;
             
             
         }
@@ -634,6 +695,9 @@ public class EnemyMoveController_DB13 : EnemyMoveManager
 
         tween = DOVirtual.DelayedCall(delay, () =>
         {
+            if(_statusManager.currentHp <= 0)
+                tween.Kill();
+
             var hintTime = Random.Range(delay, delay + rng);
             var size = Random.Range(0.6f, 1.2f);
 

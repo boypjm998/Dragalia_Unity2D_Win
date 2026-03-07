@@ -14,9 +14,29 @@ public class EnemyAttackPrefabGenerator : MonoBehaviour
     private static GameObject circBarPrefab;
     private static GameObject rectBarPrefab;
     
+    /// <summary>
+    /// 生成一个矩形的敌人攻击提示条，包含背景、动态填充条、边框装饰，并可配置警告时长、颜色主题、填充方向、闪光特效等属性。
+    /// </summary>
+    /// <param name="actor">关联的敌人角色基类。</param>
+    /// <param name="position">提示条根物体的世界坐标位置。</param>
+    /// <param name="parent">提示条根物体的父级Transform。</param>
+    /// <param name="size">提示条背景的整体尺寸。</param>
+    /// <param name="offset">提示条内部元素相对于根物体的本地坐标偏移。
+    /// 用于微调提示条内部的布局，仅影响子物体位置，不改变提示条根物体的世界坐标。</param>
+    /// <param name="avoidable">该攻击是否可躲避。true 显示红色，false 显示紫色。</param>
+    /// <param name="fillAxis">填充动画的轴向。0 为水平（X轴）填充，1 为垂直（Y轴）填充。</param>
+    /// <param name="fillTime">警告填充的持续时间（即提示条从出现到攻击生效的时间）。</param>
+    /// <param name="rotateAngle">提示条根物体的 Z 轴旋转角度（度）。</param>
+    /// <param name="atkLastTime">提示条充满后继续存在的时间，默认为 0.5f。</param>
+    /// <param name="autoDestroy">攻击结束后是否自动销毁提示条，默认为 true。</param>
+    /// <param name="interupptable">提示条是否可被敌人的状态中断（如异常状态、Break状态或死亡），默认为 true。</param>
+    /// <param name="addShine">是否添加闪光效果组件，默认为 true。</param>
+    /// <param name="shineTime">闪光效果的持续时间，当前代码未完全启用。</param>
+    /// <param name="overlay">是否将提示条渲染在 "BattleHintsOverlay" 层级（覆盖层），默认为 false。</param>
+    /// <returns>生成的提示条 GameObject 实例。</returns>
     public static GameObject GenerateRectEnemyHintBar(ActorBase actor, Vector3 position, Transform parent, Vector2 size, Vector2 offset, bool avoidable,
         int fillAxis, float fillTime, float rotateAngle, float atkLastTime = 0.5f,bool autoDestroy = true,
-        bool interupptable = true, bool addShine = true, float shineTime = 0.15f)
+        bool interupptable = true, bool addShine = true, float shineTime = 0.15f, bool overlay = false)
     {
         if (rectBarPrefab == null)
         {
@@ -105,15 +125,46 @@ public class EnemyAttackPrefabGenerator : MonoBehaviour
             borderL.color = borderPurple;
             borderR.color = borderPurple;
         }
+
+        if (overlay)
+        {
+            back.sortingLayerName = "BattleHintsOverlay";
+            fill.sortingLayerName = "BattleHintsOverlay";
+            borderB.sortingLayerName = "BattleHintsOverlay";
+            borderT.sortingLayerName = "BattleHintsOverlay";
+            borderL.sortingLayerName = "BattleHintsOverlay";
+            borderR.sortingLayerName = "BattleHintsOverlay";
+        }
         
         return instance;
 
     }
 
+    
+    /// <summary>
+    /// 生成一个圆形的敌人攻击提示条，包含背景、动态填充圆、边框装饰，并可配置警告时长、颜色主题、缩放动画、闪光特效等属性。
+    /// </summary>
+    /// <param name="actor">关联的敌人角色基类。</param>
+    /// <param name="position">提示条根物体的世界坐标位置。</param>
+    /// <param name="parent">提示条根物体的父级Transform。</param>
+    /// <param name="radius">提示条的半径，决定背景和边框的整体大小。</param>
+    /// <param name="offset">提示条内部元素（背景、填充条、边框父物体）相对于根物体的本地坐标偏移。
+    /// 用于微调提示条内部的布局，仅影响子物体位置，不改变提示条根物体的世界坐标。</param>
+    /// <param name="avoidable">该攻击是否可躲避。true 显示红色，false 显示紫色。</param>
+    /// <param name="doscale">是否启用初始缩放动画（从极小放大到目标大小）。</param>
+    /// <param name="fillTime">警告填充的持续时间（即提示条从出现到攻击生效的时间）。</param>
+    /// <param name="edgeWidth">圆形边框的宽度，范围限制在 0.05f 到 0.5f 之间。</param>
+    /// <param name="atkLastTime">提示条充满后继续存在的时间，默认为 0.5f。</param>
+    /// <param name="autoDestroy">攻击结束后是否自动销毁提示条，默认为 true。</param>
+    /// <param name="interupptable">提示条是否可被敌人的状态中断（如异常状态、Break状态或死亡），默认为 true。</param>
+    /// <param name="addShine">是否添加闪光效果组件，默认为 true。</param>
+    /// <param name="shineTime">闪光效果的持续时间，当前代码未完全启用。</param>
+    /// <param name="overlay">是否将提示条渲染在 "BattleHintsOverlay" 层级（覆盖层），默认为 false。</param>
+    /// <returns>生成的提示条 GameObject 实例。</returns>
     public static GameObject GenerateCircEnemyHintBar(ActorBase actor, Vector3 position, Transform parent, float radius,
         Vector2 offset, bool avoidable, bool doscale,
         float fillTime, float edgeWidth = 0.1f, float atkLastTime = 0.5f, bool autoDestroy = true,
-        bool interupptable = true, bool addShine = true, float shineTime = 0.15f)
+        bool interupptable = true, bool addShine = true, float shineTime = 0.15f, bool overlay = false)
     {
 
         if (circBarPrefab == null)
@@ -181,6 +232,16 @@ public class EnemyAttackPrefabGenerator : MonoBehaviour
             back.color = new Color(0.4f, 0.2f, 0.6f,back.color.a);
             fill.color = new Color(0.4f, 0.2f, 0.6f,fill.color.a);
             borderRenderer.color = borderPurple;
+        }
+
+        if (overlay)
+        {
+            back.sortingLayerName = "BattleHintsOverlay";
+            fill.sortingLayerName = "BattleHintsOverlay";
+            borderRenderer.sortingLayerName = "BattleHintsOverlay";
+            
+            instance.GetComponentInChildren<SpriteMask>().frontSortingLayerID = SortingLayer.NameToID("BattleHintsOverlay");
+            
         }
         
         return instance;

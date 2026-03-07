@@ -49,7 +49,7 @@ public class UI_BattleInfoCasterStory : UI_BattleInfoCaster
         {
             _banner.color = EnemyColor;
         }
-        base.PrintSkillName(actionName);
+        base.PrintSkillName(actionName, isEnemy?1:2);
     }
 
 }

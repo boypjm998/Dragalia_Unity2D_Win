@@ -71,7 +71,7 @@ namespace CharacterSpecificProjectiles
                 // BahamutAttackPillar(new Vector2(-24,raycastedPositionY),container,true);
                 // BahamutAttackPillar(new Vector2(24,raycastedPositionY),container,true);
 
-                yield return new WaitForSeconds(0.75f);
+                yield return new WaitForSeconds(0.9f);
             
                 container = Instantiate(BattleStageManager.Instance.attackContainerEnemy, Vector3.zero,
                     Quaternion.identity, BattleStageManager.Instance.RangedAttackFXLayer.transform);
@@ -98,7 +98,7 @@ namespace CharacterSpecificProjectiles
                 BahamutAttackPillar(new Vector2(-26,raycastedPositionY),container,true);
                 BahamutAttackPillar(new Vector2(26,raycastedPositionY),container,true);
                 
-                yield return new WaitForSeconds(0.6f);
+                yield return new WaitForSeconds(0.9f);
             
                 container = Instantiate(BattleStageManager.Instance.attackContainerEnemy, Vector3.zero,
                     Quaternion.identity, BattleStageManager.Instance.RangedAttackFXLayer.transform);

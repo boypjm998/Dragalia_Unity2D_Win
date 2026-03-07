@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_AdventurerSelectionMenu2 : MonoBehaviour
 {
     [SerializeField] private UI_AdventurerSelectionMenu upperMenu;
 
     private Transform ContentTransform;
+    private Transform _currentChild;
+    private ScrollRect _scrollRect;
 
     private void Awake()
     {
@@ -17,24 +20,28 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
             upperMenu = GameObject.Find("UI").transform.Find("CharacterInfoMenu").GetComponent<UI_AdventurerSelectionMenu>();
         }
         ContentTransform = transform.Find("Scroll View/Viewport/Content");
+        _scrollRect = GetComponentInChildren<ScrollRect>();
     }
 
     private void Start()
     {
+        //RedirectSelectionArrow(GlobalController.currentCharacterID);
+    }
+
+    private void OnEnable()
+    {
+        
         RedirectSelectionArrow(GlobalController.currentCharacterID);
-    }
-
-    // Start is called before the first frame update
-    /*void Start()
-    {
         
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
         
-    }*/
+        if (_currentChild != null)
+        {
+            var index = _currentChild.GetSiblingIndex();
+            print(index);
+            _scrollRect.horizontalNormalizedPosition = 
+                Mathf.Clamp(((float)index / (ContentTransform.childCount - 1)), 0, 1);
+        }
+    }
 
     public void ChooseCharacter(int id)
     {
@@ -59,6 +66,18 @@ public class UI_AdventurerSelectionMenu2 : MonoBehaviour
             {
                 print(child.Find("Light").gameObject);
                 child.Find("Light").gameObject.SetActive(true);
+                _currentChild = child;
+                try
+                {
+                    
+                    UnityEngine.EventSystems.EventSystem.current?.
+                            SetSelectedGameObject(_currentChild.gameObject);
+                    
+                }
+                catch(Exception e)
+                {
+                    print(e);
+                }
             }
             else
             {

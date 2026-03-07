@@ -20,7 +20,7 @@ public class AttackManagerRanged : AttackManager
     public GameObject[] ForceFX;
     protected TargetAimer ta;
 
-    private UI_ForceStrikeAimerArrow forceStrikeIndicator;
+    protected UI_ForceStrikeAimerArrow specialForceStrikeIndicator;
     
     protected GameObject Shotpoints;
 
@@ -89,6 +89,11 @@ public class AttackManagerRanged : AttackManager
             case BasicCalculation.RangedWeaponType.Staff:
             {
                 StaffCombo1();
+                break;
+            }
+            case BasicCalculation.RangedWeaponType.ManacasterShort:
+            {
+                ManacasterShortCombo1();
                 break;
             }
         }
@@ -167,15 +172,15 @@ public class AttackManagerRanged : AttackManager
     
     public void ForceStrikeCharging()
     {
-        if (forceStrikeIndicator == null)
+        if (specialForceStrikeIndicator == null)
         {
             var prefabIndicator = Instantiate(ForceFX[0], transform.position, Quaternion.identity,
                 BuffFXLayer.gameObject.transform);
-            forceStrikeIndicator = prefabIndicator.GetComponent<UI_ForceStrikeAimerArrow>();
+            specialForceStrikeIndicator = prefabIndicator.GetComponent<UI_ForceStrikeAimerArrow>();
             prefabIndicator.name = "ForceStrikeIndicator";
-            forceStrikeIndicator.SetActorController(ac as ActorControllerRangedWithFS);
+            specialForceStrikeIndicator.SetActorController(ac as ActorControllerRangedWithFS);
 
-            forceStrikeIndicator.SetMaxForceInfo(new float[] {(ac as ActorControllerRangedWithFS).forcingRequireTime}.ToList());
+            specialForceStrikeIndicator.SetMaxForceInfo(new float[] {(ac as ActorControllerRangedWithFS).forcingRequireTime}.ToList());
             if ((ac as ActorControllerRangedWithFS).maxForceLevel > 1)
             {
                 List<float> forceInfo = new();
@@ -183,12 +188,12 @@ public class AttackManagerRanged : AttackManager
                 {
                     forceInfo.Add((ac as ActorControllerMeeleWithFS).forcingRequireTime);
                 }
-                forceStrikeIndicator.SetMaxForceInfo(forceInfo);
+                specialForceStrikeIndicator.SetMaxForceInfo(forceInfo);
             }
         }
         else
         {
-            forceStrikeIndicator.gameObject.SetActive(true);
+            specialForceStrikeIndicator.gameObject.SetActive(true);
         }
 
     }
@@ -332,7 +337,14 @@ public class AttackManagerRanged : AttackManager
     
     
     
-    
+    protected void ManacasterShortCombo1()
+    {
+        var container = InitContainer(false);
+
+        var shotPoint = FindShotpointInChildren("StandardAttack");
+        
+        var atk = InstantiateRanged(combo1FX[0],shotPoint.position,container,ac.facedir);
+    }
     
     
 
@@ -363,14 +375,14 @@ public class AttackManagerRanged : AttackManager
 
         proj1.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, -0.03f).normalized;
         proj1.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
       
         var proj2 = InstantiateRanged(combo2FX[0], transform.position + new Vector3(0, -0.3f),
             InitContainer(false),1);
 
         proj2.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, 0.03f).normalized;
         proj2.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
     }
 
     protected void WandCombo3()
@@ -383,21 +395,21 @@ public class AttackManagerRanged : AttackManager
 
         proj1.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, -0.03f).normalized;
         proj1.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
       
         var proj2 = InstantiateRanged(combo3FX[0], transform.position + new Vector3(0, 0f),
             InitContainer(false),1);
 
         proj2.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, 0).normalized;
         proj2.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
       
         var proj3 = InstantiateRanged(combo3FX[0], transform.position + new Vector3(0, -0.5f),
             InitContainer(false),1);
 
         proj3.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, 0.03f).normalized;
         proj3.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
     }
 
     protected void WandCombo4()
@@ -410,14 +422,14 @@ public class AttackManagerRanged : AttackManager
 
         proj1.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, -0.025f).normalized;
         proj1.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
       
         var proj2 = InstantiateRanged(combo4FX[0], transform.position + new Vector3(0, -0.4f),
             InitContainer(false),1);
 
         proj2.GetComponent<HomingAttackWithoutRotate>().angle = new Vector2(ac.facedir, 0.025f).normalized;
         proj2.GetComponent<HomingAttackWithoutRotate>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
     }
     
     protected void WandCombo5()
@@ -433,7 +445,7 @@ public class AttackManagerRanged : AttackManager
 
         proj1.GetComponent<HomingAttack>().angle = new Vector2(ac.facedir, 0).normalized;
         proj1.GetComponent<HomingAttack>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 21, 3,
-            LayerMask.GetMask("Enemies"));
+            LayerMask.GetMask("Enemies"),1);
 
         var dir = ac.facedir;
       
@@ -472,7 +484,7 @@ public class AttackManagerRanged : AttackManager
             proj.GetComponent<HomingAttack>().angle = new Vector2(ac.facedir,0);
             //proj.transform.rotation = Quaternion.Euler(0,0,angleZ[i]);
             proj.GetComponent<HomingAttack>().target = ta.GetNearestTargetInRangeDirection(ac.facedir, 22, 3,
-                LayerMask.GetMask("Enemies"));
+                LayerMask.GetMask("Enemies"),1);
         }
 
 

@@ -34,7 +34,12 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     public List<GameObject> playerList = new();
     protected IEnumerator _moveIsNull;
     protected IEnumerator _attackIsNull;
-    protected event Action OnBehaviorStart; 
+    
+    protected event Action OnBehaviorStart;
+
+    public event Action<GameObject, int> OnPartAdded;
+    public event Action<GameObject, int> OnPartRemoved;
+    public event Action<GameObject, int> OnPartBroken;
 
     protected virtual void UpdateAttack()
     {
@@ -129,9 +134,17 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
     }
     protected virtual void SearchTarget()
     {
-        targetPlayer = FindObjectOfType<ActorController>().gameObject;
+        //targetPlayer = FindObjectOfType<ActorController>().gameObject;
+        targetPlayer = BattleStageManager.Instance.GetPlayer();
+
+        if (targetPlayer == null)
+        {
+            targetPlayer = FindObjectOfType<ActorController>().gameObject;
+        }
+        
         viewerPlayer = targetPlayer;
         var players = GameObject.Find("Player");
+
         playerList.Clear();
         for (int i = 0; i < players.transform.childCount; i++)
         {
@@ -249,7 +262,6 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         if (enemyAttackManager == null)
             return;
         
-        
         StopAllCoroutines();
         enemyController.SetKBRes(999);
         enemyController.SetHitSensor(false);
@@ -269,6 +281,49 @@ public abstract class DragaliaEnemyBehavior : MonoBehaviour
         }
     }
 
+    protected void ResetBossActionsBeforeTransform()
+    {
+        isAction = true;
+        var enemyController = GetComponent<EnemyController>();
+        if(enemyController == null)
+            return;
+        var enemyAttackManager = GetComponent<EnemyMoveManager>();
+        if (enemyAttackManager == null)
+            return;
+        StopAllCoroutines();
+        
+        status.ResetAllStatusForced();
+        status.enabled = false;
+        
+        enemyController.OnAttackInterrupt?.Invoke();
+        enemyController.SetKBRes(999);
+        enemyController.SetHitSensor(false); 
+        enemyController.StopAllCoroutines();
+        enemyController.SetMove(0);
+        enemyController.SetCounter(false);
+        enemyController.SetFlashBody(false);
+        
+        enemyAttackManager.StopAllCoroutines();
+        enemyController.SetActionUnable(false);
+        enemyController.anim.Play("idle");
+        
+        for(int i = 0; i < enemyAttackManager.MeeleAttackFXLayer.transform.childCount; i++)
+        {
+            Destroy(enemyAttackManager.MeeleAttackFXLayer.transform.GetChild(i).gameObject);
+        }
+
+
+    }
+
+    protected void InvokePartEvent(GameObject part, int id, bool isAdd)
+    {
+        if(isAdd)
+            OnPartAdded?.Invoke(part, id);
+        else
+        {
+            OnPartRemoved?.Invoke(part, id);
+        }
+    }
 
 
 }

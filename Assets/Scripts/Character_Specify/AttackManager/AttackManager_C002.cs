@@ -8,6 +8,13 @@ public class AttackManager_C002 : AttackManagerDagger
     private AttackContainer skill1Container;
 
     public GameObject skill1FX_2;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        UpdateSkillInfo(1);
+    }
+
     public override void Skill1(int eventID)
     {
         if (eventID == 1)
@@ -43,7 +50,7 @@ public class AttackManager_C002 : AttackManagerDagger
             MeeleAttackFXLayer.transform);
 
         _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.InfernoMode,
-            -1,20,1,0);
+            -1,skillUpgradeInfo[1]?25:20,1,0);
 
     }
 

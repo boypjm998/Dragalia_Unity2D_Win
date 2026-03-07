@@ -13,7 +13,17 @@ public class AudioScheduleManager : MonoBehaviour
     [SerializeField] private string loopClipAssetName;
     private AudioSource extraBGMSource;
     
+    public static AudioScheduleManager Instance;
     
+    private Tween loopTween1;
+    private Tween loopTween2;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+
     IEnumerator Start()
     {
         yield return null;
@@ -101,12 +111,12 @@ public class AudioScheduleManager : MonoBehaviour
         double totalTime = introDuration;
 
 
-        DOVirtual.DelayedCall(clip.length - 0.1f - currentTime, () =>
+        loopTween1 = DOVirtual.DelayedCall(clip.length - 0.05f - currentTime, () =>
         {
             PlayLoop();
         });
 
-        DOVirtual.DelayedCall(clip.length - currentTime, () =>
+        loopTween2 = DOVirtual.DelayedCall(clip.length - currentTime, () =>
         {
             SetMainBGMSource();
         });
@@ -119,6 +129,9 @@ public class AudioScheduleManager : MonoBehaviour
     private void OnDestroy()
     {
         CancelInvoke();
+        StopTween();
+        if(Instance == this)
+            Instance = null;
     }
 
     void PlayLoop()
@@ -130,6 +143,12 @@ public class AudioScheduleManager : MonoBehaviour
     void SetMainBGMSource()
     { //BattleEffectManager.Instance.PlayBGM(false);
         BattleEffectManager.Instance.SetOtherBGMSource(extraBGMSource);
+    }
+
+    public void StopTween()
+    {
+        loopTween1?.Kill();
+        loopTween2?.Kill();
     }
 
 

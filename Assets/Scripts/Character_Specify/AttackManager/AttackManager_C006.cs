@@ -53,6 +53,8 @@ public class AttackManager_C006 : AttackManagerMeeleWithFS
         _statusManager.OnBuffEventDelegate += GrantImmunityToControl;
         _statusManager.OnBuffDispelledEventDelegate += CancelImmunityToControl;
         _statusManager.OnBuffExpiredEventDelegate += CancelImmunityToControl;
+        
+        (_statusManager as PlayerStatusManager).SetSPChargeRate(2,0);
     }
 
     private void OnDestroy()
@@ -137,12 +139,12 @@ public class AttackManager_C006 : AttackManagerMeeleWithFS
 
     }
 
-    public override void ForceStrikeRelease(int currentFSLV)
+    public override GameObject ForceStrikeRelease(int currentFSLV)
     {
         if(currentFSLV <= 0)
-            return;
+            return null;
         
-        base.ForceStrikeRelease(currentFSLV);
+        return base.ForceStrikeRelease(currentFSLV);
         // (ac as ActorControllerMeeleWithFS).BladeForceStrikeMove();
         // (ac as ActorController_c006).PlayAttackVoice(9);
     }
@@ -470,6 +472,7 @@ public class AttackManager_C006 : AttackManagerMeeleWithFS
         {
             var projAtk = InstantiateMeele(skillFX[1], transform.position,
                 InitContainer(true,1,true)).GetComponent<AttackFromPlayer>();
+            projAtk.AddMeeleTimeStopEffect(0.25f);
             projAtk.attackInfo[0].dmgModifier[0] *= (1 + 0.33f * (ac as ActorController_c006).skill1Increment);
         }
 

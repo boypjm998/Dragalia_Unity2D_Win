@@ -608,13 +608,7 @@ namespace GameMechanics
             {
                 endPos = endNode.platform.rightBorderPos;
             }
-
             
-            
-
-
-            
-
             var distanceY = endPos.y - startPos.y;
             var distanceX = Mathf.Abs(endPos.x - startPos.x);
             

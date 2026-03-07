@@ -6,8 +6,11 @@ using UnityEngine;
 public class HomingAttack : MonoBehaviour
 {
     public Transform target;
+
     [Header("Projectile Basic Attributes")]
-    
+
+    private Collider2D _targetHitsensor;
+
     public Vector2 angle = Vector2.zero;
     [SerializeField]
     protected float speed;
@@ -60,6 +63,18 @@ public class HomingAttack : MonoBehaviour
         smoothPoint = transform.position + smoothRotateVector;
         
         Destroy(gameObject,lifeTime);
+        
+        if(target ==null)
+            return;
+
+        if (target.GetComponent<Collider2D>() == null)
+        {
+            _targetHitsensor = target.GetComponent<ActorBase>().HitSensor;
+        }
+        else
+        {
+            _targetHitsensor = GetComponent<Collider2D>();
+        }
     }
 
     protected void FixedUpdate()

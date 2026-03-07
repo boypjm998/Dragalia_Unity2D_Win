@@ -1,0 +1,198 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "Nihil",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingCandies",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GroundBurst",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CrossCandies",
+          "args": [ 1.5, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Combo",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Smash",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BounceCandies",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingCandies",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CrossCandies",
+          "args": [ 1.5, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Rush",
+          "args": [ 0.1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Rush",
+          "args": [ 2, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GroundBurst",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 1,
+      "loopStartPoint": 5,
+      "args": [ 75, 7 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "Buff",
+          "args": [ 25, 1 ],
+          "jump_action": "conditional",
+          "jump_args": ["hp", 0.6, 1, 2]
+        },
+        {
+          "action_name": "SweetStockade",
+          "args": [ 1500, 1 ],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "Corrosion",
+          "args": [ 1500, 2 ],
+          "jump_action": "to+",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "WandGroup",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Combo",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CrossCandies",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Smash",
+          "args": [ 1.5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Buff",
+          "args": [ 25, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CombinedRush",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Combo",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingCandies",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BounceCandies",
+          "args": [ 0.5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Rush",
+          "args": [ 0.1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Rush",
+          "args": [ 3, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "GroundBurst",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CrossCandies",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Combo",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Smash",
+          "args": [ 1.5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BounceCandies",
+          "args": [ 0.5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "CombinedRush",
+          "args": [ 0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Rush",
+          "args": [ 0.1,1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Corrosion",
+          "args": [ 1500, 1 ],
+          "jump_action": "next",
+          "jump_args": [1]
+        },
+        {
+          "action_name": "GroundBurst",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 0,
+      "loopStartPoint": 3,
+      "args": [ 0 ]
+    }
+  ]
+}

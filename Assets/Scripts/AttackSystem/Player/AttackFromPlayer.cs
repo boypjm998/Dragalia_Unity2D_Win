@@ -10,6 +10,7 @@ public class AttackFromPlayer : AttackBase
     public GameObject self;
     public ActorBase ac;
     public int attackId { get; protected set; }
+    public bool DestroyOnActorInterrupt => isMeele;
 
     [Header("Damage Basic Attributes")] 
 
@@ -19,16 +20,13 @@ public class AttackFromPlayer : AttackBase
     [SerializeField] protected bool isMeele;
 
 
-    //public List<BasicCalculation.BasicAttackInfo> nextAttackSet;
     
-    // public List<int> withConditionChance;
-    // public List<int> withConditionNum; //一次上几个debuff？
-    //
-    // public List<int> withConditionFlags; //遍历敌人做一个数组，每个敌人代表一个condflag
     public List<int> hitFlags = new(); //遍历敌人做一个数组，每个敌人代表一个hitflag
+    public List<int> hitConnectedFlags = new();
 
 
     public GameObject hitConnectEffect;
+    [SerializeField] protected BasicCalculation.HitConnectEffectType hitConnectEffectType = BasicCalculation.HitConnectEffectType.Default;
     public Collider2D attackCollider;
     public Transform playerpos;
     public bool forcedShake = false;
@@ -39,8 +37,8 @@ public class AttackFromPlayer : AttackBase
     [Range(0,1)]public float hitSoundVolume = 1;
     protected BattleStageManager battleStageManager;
     private Coroutine ConnectCoroutine;
-
     
+
 
     //public List<BattleCondition> withConditions { get; protected set; }
     
@@ -95,6 +93,8 @@ public class AttackFromPlayer : AttackBase
         var enemyLayer = BattleStageManager.Instance.EnemyLayer;
         for (var i = 0; i < enemyLayer.transform.childCount; i++)
             hitFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
+        
+        hitConnectedFlags.Clear();
     }
 
     public override void ResetWithConditionFlags()
@@ -218,6 +218,8 @@ public class AttackFromPlayer : AttackBase
             if (enemyLayer.transform.GetChild(i).gameObject.activeSelf)
                 hitFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
         return hitFlags;
+        
+        hitConnectedFlags.Clear();
     }
 
     public virtual void DamageCheckRaycast(RaycastHit2D hitinfo)
@@ -337,12 +339,14 @@ public class AttackFromPlayer : AttackBase
     public virtual void CauseDamage(Collider2D collision)
     {
         hitFlags.Remove(collision.gameObject.transform.parent.GetInstanceID());
-        //withConditionFlags.Remove(target.transform.parent.GetInstanceID());
+        hitConnectedFlags.Add(collision.gameObject.transform.parent.GetInstanceID());
+        print("RemoveHitFlag");
         
         if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
             return;
 
         int attackSource = 0;
+
         if (playerpos.GetComponent<PlayerStatusManager>()==null)
         {
             attackSource = 2;
@@ -372,15 +376,24 @@ public class AttackFromPlayer : AttackBase
         //BeforeAttackHit?.Invoke(this,collision.gameObject.transform.parent.gameObject);
 
 
-        var dmg = battleStageManager.CalculateHit(collision.gameObject.transform.parent.gameObject, playerpos.gameObject,this,attackSource);
+        var dmg = BattleStageManager.Instance.CalculateHit(collision.gameObject.transform.parent.gameObject, playerpos.gameObject,this,attackSource);
 
 
 
         if (hitConnectEffect != null)
         {
-            Instantiate(hitConnectEffect,
-                new Vector3(collision.ClosestPoint(collision.transform.position).x,transform.position.y),
-                Quaternion.identity);
+            if (hitConnectEffectType == BasicCalculation.HitConnectEffectType.Default)
+            {
+                Instantiate(hitConnectEffect, new Vector3(collision.ClosestPoint(collision.transform.position).x,transform.position.y),
+                    Quaternion.identity,BattleStageManager.Instance.RangedAttackFXLayer.transform);
+            }
+            else if(hitConnectEffectType == BasicCalculation.HitConnectEffectType.TargetPosition)
+            {
+                Instantiate(hitConnectEffect,
+                    new Vector3(collision.ClosestPoint(collision.transform.position).x,collision.ClosestPoint(collision.transform.position).y),
+                    Quaternion.identity,BattleStageManager.Instance.RangedAttackFXLayer.transform);
+            }
+            
         }
 
         
@@ -530,8 +543,36 @@ public class AttackFromPlayer : AttackBase
             Debug.Log("CheckedInspirationLevel");
         }
     }
-    
 
+
+    protected override void ClearComposite(int instanceID)
+    {
+        if (compositeAttackList.Count > 0)
+        {
+            foreach (var composite in compositeAttackList)
+            {
+                (composite as AttackFromPlayer).hitFlags.Remove(instanceID);
+            }
+        }
+    }
+
+    public void SetMeeleProperty(bool flag)
+    {
+        if(ac == null)
+            return;
+
+
+            if (isMeele && !flag)
+        {
+            isMeele = false;
+            ac.OnAttackInterrupt -= DestroyContainer;
+        }
+        else if(!isMeele && flag)
+        {
+            isMeele = true;
+            ac.OnAttackInterrupt += DestroyContainer;
+        }
+    }
 
 
 }

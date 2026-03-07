@@ -118,7 +118,7 @@ public class AttackManager_C032 : AttackManagerMeeleWithFS
             (ConditionalAttackEffect.ConditionType.TargetHasCondition,
                 ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
                 new string[] {"1", "404"},
-                new string[] {"0.5"}));
+                new string[] {"0.3"}));
         }
         
         DOVirtual.DelayedCall(1.3f, () =>
@@ -208,7 +208,7 @@ public class AttackManager_C032 : AttackManagerMeeleWithFS
         (ConditionalAttackEffect.ConditionType.TargetHasCondition,
             ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
             new string[] {"1", "404"},
-            new string[] {"0.5"}));
+            new string[] {"0.2"}));
 
     }
 

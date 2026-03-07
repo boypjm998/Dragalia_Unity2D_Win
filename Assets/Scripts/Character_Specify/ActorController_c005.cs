@@ -16,7 +16,10 @@ public class ActorController_c005 : ActorControllerDagger
 
     private TimerBuff buffWhileSkill;
     
+    //public bool skill3BuffProtected = false;
+    
     public bool skillBoosted = false;
+    public bool useBoostSkill = false;
 
 
     protected override void CheckSkill()
@@ -126,13 +129,17 @@ public class ActorController_c005 : ActorControllerDagger
             case 5:
                 pi.isSkill = true;
                 anim.Play("s1_boost");
+                print("Play s1_boost");
                 _statusManager.currentSP[0] = 0;
+                DOVirtual.DelayedCall(0.01f,()=>useBoostSkill = true,false);
                 break;
 
             case 6:
                 pi.isSkill = true;
                 anim.Play("s2_boost");
+                print("Play s2_boost");
                 _statusManager.currentSP[1] = 0;
+                DOVirtual.DelayedCall(0.01f,()=>useBoostSkill = true,false);
                 break;
             
 
@@ -517,6 +524,11 @@ public class ActorController_c005 : ActorControllerDagger
                 {
                     targetX = Mathf.Clamp(warpCheckGO.transform.position.x - 8,
                         col.bounds.min.x, col.bounds.max.x);
+                    
+                    if(targetX < transform.position.x)
+                        targetX = transform.position.x;
+                    
+                    
                     transform.position = new Vector3(targetX,
                         transform.position.y, transform.position.z).SafePosition(Vector2.zero);
                 }
@@ -524,6 +536,10 @@ public class ActorController_c005 : ActorControllerDagger
                 {
                     targetX = Mathf.Clamp(warpCheckGO.transform.position.x + 8,
                         col.bounds.min.x, col.bounds.max.x);
+                    
+                    if(targetX > transform.position.x)
+                        targetX = transform.position.x;
+                    
                     transform.position = new Vector3(targetX,
                         transform.position.y, transform.position.z).SafePosition(Vector2.zero);
                 }
@@ -628,6 +644,10 @@ public class ActorController_c005 : ActorControllerDagger
                 {
                     targetX = Mathf.Clamp(warpCheckGO.transform.position.x - 5,
                         currentPlatform.bounds.min.x, currentPlatform.bounds.max.x);
+                    
+                    if(targetX < transform.position.x)
+                        targetX = transform.position.x;
+
                     transform.position = new Vector3(targetX,
                         transform.position.y, transform.position.z);
                 }
@@ -635,6 +655,10 @@ public class ActorController_c005 : ActorControllerDagger
                 {
                     targetX = Mathf.Clamp(warpCheckGO.transform.position.x + 5,
                         currentPlatform.bounds.min.x, currentPlatform.bounds.max.x);
+
+                    if(targetX > transform.position.x)
+                        targetX = transform.position.x;
+
                     transform.position = new Vector3(targetX,
                         transform.position.y, transform.position.z);
                 }
@@ -932,12 +956,27 @@ public class ActorController_c005 : ActorControllerDagger
 
     public override void OnSkillExit()
     {
+        
+        
         _statusManager.RemoveSpecificTimerbuff((int)BasicCalculation.BattleCondition.DamageCut,
             100501, false);
+        
+        
+        
+        if (useBoostSkill)
+        {
+            _statusManager.RemoveAllConditionWithSpecialID(100504);
+            useBoostSkill = false;
+            print("OnSkillExitBoost");
+        }
+        
+        
+        //skill3BuffProtected = false;
         _statusManager.knockbackRes = 0;
         base.OnSkillExit();
         Invoke("CancelSkillBoost",0.5f);
         ResetGravityScale();
+        
     }
 
     public void SkillPrepCheck(int skillID)

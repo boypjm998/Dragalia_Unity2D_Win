@@ -13,7 +13,41 @@ public class EnemyAttackHintBarTopDownChaser : MonoBehaviour
     [SerializeField] private float moveSpeedY;
     [SerializeField] private float offsetY;
     public GameObject target;
+    
+    private Collider2D raycastedPlatform;
+    public Collider2D RaycastedPlatform => raycastedPlatform;
 
+    public void SetLockTime(float time)
+    {
+        lockTime = time;
+    }
+    
+    public void SetHardLock(bool isHardLock)
+    {
+        hardLock = isHardLock;
+    }
+    
+    public void SetUseCastPlatformY(bool useCast)
+    {
+        useCastPlatformY = useCast;
+    }
+    
+    public void SetMoveSpeedX(float speed)
+    {
+        moveSpeedX = speed;
+    }
+    
+    public void SetMoveSpeedY(float speed)
+    {
+        moveSpeedY = speed;
+    }
+    
+    public void SetOffsetY(float offset)
+    {
+        offsetY = offset;
+    }
+    
+    
     private void FixedUpdate()
     {
         if(target == null)
@@ -29,6 +63,7 @@ public class EnemyAttackHintBarTopDownChaser : MonoBehaviour
                 {
                     transform.position = new Vector3(target.transform.position.x,
                         BasicCalculation.GetRaycastedPlatformY(target)+offsetY);
+                    raycastedPlatform = target.RaycastedPlatform();
                 }else
                 {
                     transform.position = target.transform.position + new Vector3(0,offsetY);
@@ -38,9 +73,9 @@ public class EnemyAttackHintBarTopDownChaser : MonoBehaviour
             {
                 //对X轴进行追踪
                 var distanceX = target.transform.position.x - transform.position.x;
-                if (distanceX > moveSpeedX * 0.1f)
+                if (distanceX > moveSpeedX * Time.fixedDeltaTime)
                     transform.position += new Vector3(moveSpeedX, 0) * Time.fixedDeltaTime;
-                else if (distanceX < -moveSpeedX * 0.1f)
+                else if (distanceX < -moveSpeedX * Time.fixedDeltaTime)
                     transform.position -= new Vector3(moveSpeedX, 0) * Time.fixedDeltaTime;
                 else
                 {
@@ -54,8 +89,9 @@ public class EnemyAttackHintBarTopDownChaser : MonoBehaviour
                 {
                     transform.position = new Vector3(transform.position.x,
                         BasicCalculation.GetRaycastedPlatformY(target) + offsetY);
+                    raycastedPlatform = target.RaycastedPlatform();
                 }
-                else
+                else if(moveSpeedY>0)
                 {
                     if (distanceY > moveSpeedY * 0.1f)
                         transform.position += new Vector3(0, moveSpeedY) * Time.fixedDeltaTime;

@@ -222,6 +222,7 @@ public class AnimationEventSender : MonoBehaviour
     {
         _playerInput.SetInputAttack(signal);
     }
+    
 
     #endregion
 
@@ -242,6 +243,11 @@ public class AnimationEventSender : MonoBehaviour
     protected void AirDashAttack()
     {
         _attackManager.AirDashAttack();
+    }
+    
+    protected void StopVerticalMovement()
+    {
+        (ActorController as ActorController).rigid.velocity = new Vector2((ActorController as ActorController).rigid.velocity.x, 0);
     }
 
     protected void SetGravityScale(int scale)

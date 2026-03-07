@@ -1285,6 +1285,10 @@ public class StorySceneManager : MonoBehaviour
             
             storyComponent.dialog.voiceSource.Play();
             //TestWaveDetect();
+
+            currentSpeakingChara.mouthImage.sprite = currentSpeakingChara.portraitParts.
+                GetMouthSprite(int.Parse(args[2]));
+            
             
             currentSpeakingChara.portraitParts.speakingAnimationRoutine = StartCoroutine
             (CharacterSpeakAnimation(int.Parse(args[2]), int.Parse(args[3]),
@@ -1854,6 +1858,23 @@ public class StorySceneManager : MonoBehaviour
                 character.baseImage.color = Color.white;
                 character.faceImage.color = Color.white;
                 character.mouthImage.color = Color.white;
+            });
+        }
+        else if (args[1] == "BLACKOUT")
+        {
+            character.baseImage.color = new Color(0, 0, 0, 1);
+            _tweener = character.baseImage.DOColor(Color.clear, ObjectExtensions.ParseInvariantFloat(args[2]));
+            
+            _tweener.OnComplete(() =>
+            {
+                taskRunning = false;
+                if (ObjectExtensions.ParseInvariantFloat(args[3]) == 0)
+                {
+                    moveNext = true;
+                }
+                character.baseImage.color = Color.clear;
+                character.faceImage.color = Color.clear;
+                character.mouthImage.color = Color.clear;
             });
         }
         else

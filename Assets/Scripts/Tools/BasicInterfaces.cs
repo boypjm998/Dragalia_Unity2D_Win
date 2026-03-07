@@ -177,3 +177,4 @@ public interface ISpeedControllable
     public void SetRate(int ComponentID, float rate);
     public void GetTargetComponents();
 }
+

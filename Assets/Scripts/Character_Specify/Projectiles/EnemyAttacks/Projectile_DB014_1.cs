@@ -31,6 +31,7 @@ namespace CharacterSpecificProjectiles
         {
             for (int i = minions.Count - 1; i >=0 ; i--)
             {
+                minions[i].GetComponent<DragonPointEnemy>()?.DisableAll();
                 minions[i].currentHp = 0;
                 minions[i].OnHPBelow0?.Invoke();
             }
@@ -51,6 +52,17 @@ namespace CharacterSpecificProjectiles
             {
                 waterfallRoutine = StartCoroutine(Waterfall());
             }
+        }
+
+        public void InterruptWaterfall()
+        {
+            if(hintBarInstance != null)
+                Destroy(hintBarInstance);
+            
+            if(waterfallRoutine != null)
+                StopCoroutine(waterfallRoutine);
+            waterfallRoutine = null;
+            KillAllMinions();
         }
 
         /// <summary>

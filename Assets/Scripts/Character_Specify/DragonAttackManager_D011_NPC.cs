@@ -39,6 +39,10 @@ public class DragonAttackManager_D011_NPC : AttackManager
             InitContainer(false),1);
         proj.GetComponent<AttackFromPlayer>().playerpos = ac_sp.transform;
         voice?.PlayAttackVoice(2);
+        
+        proj.GetComponent<AttackFromPlayer>().AddWithConditionAll(
+            new TimerBuff((int)BasicCalculation.BattleCondition.Dispell),100);
+        
     }
     
     private void Combo3()

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MenuUIManager : MonoBehaviour
@@ -45,6 +46,20 @@ public class MenuUIManager : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        //如果没有UI在动画中，且任何UI都没有被选中，则选中第一个UI
+        if (GUIAnimCount == 0 && EventSystem.current.currentSelectedGameObject == null)
+        {
+            if(Selectable.allSelectablesArray.Length>0)
+                EventSystem.current.SetSelectedGameObject(Selectable.allSelectablesArray[0].gameObject);
+        }
+        else
+        {
+            //print(EventSystem.current.currentSelectedGameObject);
+        }
+    }
+
     public void InitAllChildrenElements()
     {
         UIDict = new Dictionary<string, UISortingGroup>();
@@ -68,6 +83,28 @@ public class MenuUIManager : MonoBehaviour
 
 
 
+    public IEnumerator HideGUI2(GameObject obj, Vector2 absolutePosition, float animStartTime, float animDuration)
+    {
+        GUIAnimCount++;
+
+        ActiveGUI(obj,false);
+
+        yield return new WaitForSecondsRealtime(animStartTime);
+
+        var rectTransform = obj.GetComponent<RectTransform>();
+        
+        rectTransform.DOAnchorPos(absolutePosition, animDuration).SetUpdate(UpdateType.Late);
+        
+        //obj.transform.DOMove(absolutePosition, animDuration).SetUpdate(UpdateType.Late);
+        
+        yield return new WaitForSecondsRealtime(animDuration);
+        
+        //_sequence.Append(obj.transform.DOLocalMove(localPosition, 0.5f));
+        
+        //print("UI因为hideGUI而被关闭");
+
+        GUIAnimCount--;
+    }
 
     public IEnumerator HideGUI(GameObject obj,Vector3 localPosition, float animStartTime,float animDuration,bool disable = true)
     {
@@ -77,8 +114,10 @@ public class MenuUIManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(animStartTime);
 
-        //obj.transform.localPosition = obj.GetComponent<UISortingGroup>().initialLocalPosition;
-        obj.transform.DOLocalMove(obj.transform.localPosition - localPosition, animDuration);
+        obj.transform.DORewind();
+        //obj.transform.DOMove()
+        
+        obj.transform.DOLocalMove(obj.transform.localPosition - localPosition, animDuration).SetUpdate(UpdateType.Late);
         
         yield return new WaitForSecondsRealtime(animDuration);
         
@@ -136,8 +175,27 @@ public class MenuUIManager : MonoBehaviour
         
         yield return new WaitForSecondsRealtime(animStartTime);
 
-        //obj.transform.localPosition = obj.GetComponent<UISortingGroup>()._hideLocalPosition;
-        obj.transform.DOLocalMove(obj.transform.localPosition - localPosition, animDuration);
+        obj.transform.DORewind();
+        obj.transform.DOLocalMove(obj.transform.localPosition - localPosition, animDuration).SetUpdate(UpdateType.Late);
+
+        yield return new WaitForSecondsRealtime(animDuration);
+        
+        ActiveGUI(obj,true);
+        GUIAnimCount--;
+
+    }
+    
+    public IEnumerator DisplayGUI2(GameObject obj,Vector2 absolutePosition, float animStartTime,float animDuration)
+    {
+        GUIAnimCount++;
+        
+        
+        obj.SetActive(true);
+        
+        yield return new WaitForSecondsRealtime(animStartTime);
+
+        var rectTransform = obj.GetComponent<RectTransform>();
+        rectTransform.DOAnchorPos(absolutePosition, animDuration).SetUpdate(UpdateType.Late);
 
         yield return new WaitForSecondsRealtime(animDuration);
         
@@ -233,6 +291,10 @@ public class MenuUIManager : MonoBehaviour
             StartCoroutine
             (HideGUI
                 (_parent.gameObject, _parent._hideLocalPosition, startTime, duration));
+            // StartCoroutine(
+            //     HideGUI
+            //     (_parent.gameObject, _parent.hideAbsolutePosition, startTime, duration
+            // ));
         }
 
         
@@ -250,6 +312,11 @@ public class MenuUIManager : MonoBehaviour
         StartCoroutine
         (HideGUI
             (_parent.gameObject, _parent._hideLocalPosition, startTime, duration,false));
+        
+        // StartCoroutine(
+        //     HideGUI2
+        //     (_parent.gameObject, _parent.hideAbsolutePosition, startTime, duration
+        // ));
         
     }
 
@@ -281,6 +348,25 @@ public class MenuUIManager : MonoBehaviour
 
 
     }
+    
+    // public void DisplayLevelPanel(UISortingGroup _parent, float startTime,float duration)
+    // {
+    //     if(_parent.isActive)
+    //         return;
+    //
+    //     //var _parent = obj.GetComponent<UISortingGroup>();
+    //     _parent.isActive = true;
+    //
+    //     
+    //     
+    //     StartCoroutine
+    //         (DisplayGUI
+    //             (_parent.gameObject,_parent.initialAbsolutePosition, startTime, duration));
+    //     
+    //
+    //
+    // }
+    
 
     public void DisplayInstant(UISortingGroup _parent)
     {
@@ -433,13 +519,17 @@ public class MenuUIManager : MonoBehaviour
         GUIAnimCount++;
         var menuObj = UIDict["LevelSelection"].gameObject;
         RefreshLevelPage(menuObj.GetComponent<UISortingGroup>(), 0, 0.15f);
-        yield return new WaitForSecondsRealtime(0.15f);
+        //yield return new WaitForSecondsRealtime(0.15f);
+        yield return new WaitForSeconds(0.15f);
         
         menuObj.GetComponent<UI_LevelSelection>().Reload(menuID);
         yield return null;
         
         Display(menuObj.GetComponent<UISortingGroup>(), 0, 0.15f);
-        yield return new WaitForSecondsRealtime(0.15f);
+        //DisplayLevelPanel(menuObj.GetComponent<UISortingGroup>(), 0, 0.15f);
+        yield return new WaitForSeconds(0.15f);
+        //yield return new WaitForSecondsRealtime(0.15f);
+        
         GUIAnimCount--;
     }
 
@@ -625,7 +715,7 @@ public class MenuUIManager : MonoBehaviour
 
     private void DOUIState(string[] actives, string[] inactives, bool animation)
     {
-        UISortingGroup selectedUI;
+        UISortingGroup selectedUI = null;
         float animTime = 0;
         var activeList = actives.ToList();
         var inactiveList = inactives.ToList();
@@ -698,7 +788,20 @@ public class MenuUIManager : MonoBehaviour
 
 
         }
-        
+
+        try
+        {
+            DOVirtual.DelayedCall(selectedUI.hideTime + animTime, () =>
+            {
+                if (EventSystem.current.alreadySelecting == false)
+                {
+                    EventSystem.current.SetSelectedGameObject(Selectable.allSelectablesArray[0].gameObject);
+                }
+            },false);
+        }catch(Exception e)
+        {
+            Debug.LogWarning(e);
+        }
         
         
     }

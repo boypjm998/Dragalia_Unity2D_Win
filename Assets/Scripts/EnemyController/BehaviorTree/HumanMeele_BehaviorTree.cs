@@ -67,6 +67,33 @@ public class HumanMeele_BehaviorTree : EnemyBehaviorManager
                 currentAction = StartCoroutine(ACT_SWD_CMB_03(interval,element));
                 break;
             }
+            case DragaliaEnemyActionTypes.HECommon.axe_1:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                int element = 0;
+                if(_currentActionStage.args.Length > 1)
+                    element = Convert.ToInt32(_currentActionStage.args[1]);
+                currentAction = StartCoroutine(ACT_AXE_CMB_01(interval,element));
+                break;
+            }
+            case DragaliaEnemyActionTypes.HECommon.axe_2:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                int run = 0;
+                if(_currentActionStage.args.Length > 1)
+                    run = 1;
+                currentAction = StartCoroutine(ACT_AXE_Spin(interval,run));
+                break;
+            }
+            case DragaliaEnemyActionTypes.HECommon.axe_3:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                int element = 0;
+                if(_currentActionStage.args.Length > 1)
+                    element = Convert.ToInt32(_currentActionStage.args[1]);
+                currentAction = StartCoroutine(ACT_AXE_CMB_03(interval,element));
+                break;
+            }
             case DragaliaEnemyActionTypes.HECommon.lan_hi_1:
             {
                 float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
@@ -178,6 +205,81 @@ public class HumanMeele_BehaviorTree : EnemyBehaviorManager
         enemyController.SetKBRes(999);
         currentAttackAction =
             StartCoroutine(enemyAttackManager.HE01_SWD_Action03());
+        
+        yield return new WaitUntil(()=>(currentAttackAction == null));
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        yield return new WaitForSeconds(interval);
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AXE_CMB_01(float interval, int element = 0)
+    {
+        ActionStart();
+        SetTarget(ClosestTarget);
+        
+        currentMoveAction = 
+            StartCoroutine
+            (enemyController.MoveToSameGround
+                (targetPlayer, 99, 3 + Random.Range(-0.25f, 0.25f)));
+        
+        yield return new WaitUntil(() => (currentMoveAction == null));
+        
+        enemyController.SetKBRes(999);
+        currentAttackAction =
+            StartCoroutine(enemyAttackManager.HE01_AXE_Action01());
+        
+        yield return new WaitUntil(()=>(currentAttackAction == null));
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        yield return new WaitForSeconds(interval);
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AXE_CMB_03(float interval, int element = 0)
+    {
+        ActionStart();
+        SetTarget(ClosestTarget);
+        
+        currentMoveAction = 
+            StartCoroutine
+            (enemyController.MoveToSameGround
+                (targetPlayer, 99, 5f+ Random.Range(-0.5f, 0f)) );
+        
+        yield return new WaitUntil(() => (currentMoveAction == null));
+        
+        enemyController.SetKBRes(999);
+        currentAttackAction =
+            StartCoroutine(enemyAttackManager.HE01_AXE_Action03());
+        
+        yield return new WaitUntil(()=>(currentAttackAction == null));
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        yield return new WaitForSeconds(interval);
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AXE_Spin(float interval, int move = 0)
+    {
+        ActionStart();
+        SetTarget(ClosestTarget);
+
+        if (move == 1)
+        {
+            currentMoveAction = 
+                StartCoroutine
+                (enemyController.MoveToSameGround
+                    (targetPlayer, 99, 4f+ Random.Range(-0.5f, 0f)) );
+        
+            yield return new WaitUntil(() => (currentMoveAction == null));
+        }
+        
+        enemyController.SetKBRes(999);
+        currentAttackAction =
+            StartCoroutine(enemyAttackManager.HE01_AXE_Action04());
         
         yield return new WaitUntil(()=>(currentAttackAction == null));
         

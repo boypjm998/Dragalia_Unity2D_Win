@@ -39,11 +39,20 @@ public class ActorController_c012 : ActorControllerMeeleWithFS
 
     protected override void CheckSkill()
     {
+        if (pi.isSkill)
+        {
+            Debug.Log("is Using Skill");
+        }
+        
+        
         if (pi.skill[0] && anim.GetBool("isGround") && !pi.hurt && !pi.isSkill &&
             currentSP >= SpecialSkillGauge_C012.MaxSPPerLevel)
         {
             _skillGauge.ConsumeOneLevel();
             UseSkill(1);
+        }else if(currentSP < SpecialSkillGauge_C012.MaxSPPerLevel)
+        {
+            Debug.LogWarning("Not enough SP to use skill 1");
         }
 
         if (pi.skill[1] && (anim.GetBool("isGround") || canPerformInAir[1]) && !pi.hurt && !pi.isSkill
@@ -51,6 +60,9 @@ public class ActorController_c012 : ActorControllerMeeleWithFS
         {
             _skillGauge.ConsumeOneLevel();
             UseSkill(2);
+        }else if(currentSP < SpecialSkillGauge_C012.MaxSPPerLevel)
+        {
+            Debug.LogWarning("Not enough SP to use skill 2");
         }
 
         // if (pi.skill[2] && (anim.GetBool("isGround") || canPerformInAir[2]) && !pi.hurt && !pi.isSkill)

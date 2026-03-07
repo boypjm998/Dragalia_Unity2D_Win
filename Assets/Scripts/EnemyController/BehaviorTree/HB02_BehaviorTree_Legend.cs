@@ -60,8 +60,8 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
 
         if (difficulty == 5)
         {
-            BattleStageManager.Instance.RemoveFieldAbility(20034);
-            BattleStageManager.Instance.RemoveFieldAbility(20033);
+            BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DefenseIgnoreWorld);
+            BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.ReflectionWorld);
         }
         
         yield return new WaitForSeconds(awakeTime);
@@ -388,8 +388,8 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
         p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
         ActionEnd();
         yield return null;
-        BattleStageManager.Instance.RemoveFieldAbility(20034);
-        BattleStageManager.Instance.RemoveFieldAbility(20033);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DefenseIgnoreWorld);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.ReflectionWorld);
         
         
         Destroy(gameObject);
@@ -426,11 +426,12 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
 
     protected IEnumerator ACT_GloriousSanctuaryG(float interval)
     {
+        enemyController.SetKBRes(999);
         ActionStart();
         status.ImmuneToAllControlAffliction = true;
         
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
-        enemyController.SetKBRes(999);
+        //enemyController.SetKBRes(999);
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action17());
         yield return new WaitUntil(()=>currentAttackAction == null);
         enemyController.SetKBRes(status.knockbackRes);
@@ -441,11 +442,12 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
     
     protected IEnumerator ACT_GloriousSanctuaryC(float interval)
     {
+        enemyController.SetKBRes(999);
         ActionStart();
         status.ImmuneToAllControlAffliction = true;
         
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
-        enemyController.SetKBRes(999);
+        
         currentAttackAction = StartCoroutine(enemyAttackManager_legend.HB02_Action18());
         yield return new WaitUntil(()=>currentAttackAction == null);
         enemyController.SetKBRes(status.knockbackRes);
@@ -565,6 +567,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
 
     protected IEnumerator ACT_HolyCrownFWithFullScreenAttack(float interval)
     {
+        enemyController.SetKBRes(999);
         breakable = false;
         controllAfflictionProtect = true;
         ActionStart();
@@ -586,6 +589,7 @@ public class HB02_BehaviorTree_Legend : HB02_BehaviorTree_2
     
     protected IEnumerator ACT_FullScreenAttack(float interval)
     {
+        enemyController.SetKBRes(999);
         breakable = false;
         controllAfflictionProtect = true;
         ActionStart();

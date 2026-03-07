@@ -78,37 +78,50 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
                   
                   targetCollider = BasicCalculation.CheckRaycastedPlatform(target);
                   
-                  if (((transform.position.y - GetActorHeight()) -
-                       target.transform.position.y - targetHeight) > allowDistanceY)
+                  var distanceDiff = (transform.position.y - GetActorHeight()) - (target.transform.position.y - targetHeight);
+                  
+                  if (distanceDiff > allowDistanceY)
                   {
                         endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.1f;
                         //endPoint.y = transform.position.y + 0.5f;
+                        //print($"目标脚部高度低于自己高度,{distanceDiff}");
                   }
                   else if (((target.transform.position.y) - targetHeight) - (transform.position.y - GetActorHeight()) >
                              0)
                    {
+                         //print($"目标脚部高度高于自己高度,{distanceDiff}");
+                         //如果目标的脚下高度高于自己的脚下高度，那么自己的脚下高度就等于目标的脚下高度
                          //endpoint -> 0
                          endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.1f;
                    }
+                  else if(((transform.position.y - GetActorHeight()) -
+                           target.transform.position.y - targetHeight) >= 0)
+                  {
+                        endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.1f;
+                        //print($"目标脚部高度低于自己高度2,{distanceDiff}");
+                        
+                  }
                   else
                   {
-                        //endPoint.y = targetCollider.bounds.max.y + GetActorHeight() + 0.5f;
                         endPoint.y = transform.position.y;
-                        print("set y with target collider");
+                        //print($"目标脚部高度不做更改,{distanceDiff}");
                   }
+                  
+                  //print(distanceDiff);
+                  //print($"目标高度:{target.transform.position.y - targetHeight}，自身高度:{transform.position.y - GetActorHeight()}");
 
 
                   if (Mathf.Abs(target.transform.position.x - transform.position.x) < arriveDistanceX)
                   {
                         if (target.transform.position.x > transform.position.x)
                         {
-                              print("目标在右边，且x轴到达范围");
+                              //print("目标在右边，且x轴到达范围");
                               endPoint.x = Mathf.Max(transform.position.x, targetCollider.bounds.min.x);
                         }
                         else
                         {
                               endPoint.x = Mathf.Min(transform.position.x, targetCollider.bounds.max.x);
-                              print("目标在左边，且x轴到达范围");
+                              //print("目标在左边，且x轴到达范围");
                         }
                   }
                   else if(target.transform.position.x > transform.position.x)
@@ -210,6 +223,7 @@ public class EnemyControllerFlyingHigh : EnemyControllerFlying
       protected override IEnumerator BreakWait(float time, float recoverTime = 1.67f)
       {
             SetKBRes(999);
+            recoverTime = (_statusManager as SpecialStatusManager).breakRecoverTime;
             yield return new WaitForSeconds(time - recoverTime);
             anim.Play("break_exit");
             yield return new WaitForSeconds(recoverTime);

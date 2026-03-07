@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using BehaviorDesigner.Runtime.Tasks;
 using Cinemachine;
 using DG.Tweening;
 using LitJson;
@@ -12,6 +13,7 @@ using GameMechanics;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -81,11 +83,17 @@ public class GlobalController : MonoBehaviour
     public static KeyCode keySkill4 = KeyCode.H;
     public static KeyCode keyEscape = KeyCode.Escape;
     public static KeyCode keyUpNew = KeyCode.W;
+    public static KeyCode keyZoomIn = KeyCode.Q;
+    public static KeyCode keyZoomOut = KeyCode.E;
     
     public InputActionAsset inputActionAsset;
     public bool gamepadEnable = false;
     public static InputActionMap gamepadMap;
-    //public static string[] gamepadButtonStr = new string[12];
+    /// <summary>
+    /// 最大的ActionMap容量
+    /// </summary>
+    public const int CurrentActionMapCapacity = 14;
+    
     
 
     #endregion
@@ -102,6 +110,7 @@ public class GlobalController : MonoBehaviour
 
     [SerializeField] protected CharacterAssetInfo CharaAssetData;
     [SerializeField] protected TextAsset SkillTreeNodeInfoData;
+    [SerializeField] protected TextAsset tutorialDictData;
     protected UI_ManaCircleMenu.SkillTreeInfo _skillTreeInfoData;
 
     #endregion
@@ -114,7 +123,7 @@ public class GlobalController : MonoBehaviour
     [SerializeField] private GameObject clickEff;
     
     public static string questID = "000000";
-    public static int viewerID = 0;
+    private int lastCharacterID = -1;
     public bool loadingEnd = true;
 
     public bool debug;
@@ -167,13 +176,13 @@ public class GlobalController : MonoBehaviour
         SceneManager.sceneLoaded += ResetAllAudioSources;
         
         ResetAllAudioSources(SceneManager.GetActiveScene(),LoadSceneMode.Single);
-        
+
         if (GetBundle("iconsmall") == null || GetBundle("allin1") == null)
         {
             var ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/iconsmall");
-            loadedBundles.Add("iconsmall",ab);
+            loadedBundles.Add("iconsmall", ab);
             ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/allin1");
-            loadedBundles.Add("allin1",ab);
+            loadedBundles.Add("allin1", ab);
             try
             {
                 ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/eff/eff_general");
@@ -181,20 +190,35 @@ public class GlobalController : MonoBehaviour
             }
             catch
             {
-                
+
             }
 
             try
             {
                 ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/animation/anim_common");
-                loadedBundles.Add("animation/anim_common",ab);
+                loadedBundles.Add("animation/anim_common", ab);
             }
             catch
             {
                 print("重复加载animation/anim_common");
             }
 
-        }
+            try
+            {
+                var newInputSystemUI = FindObjectOfType<InputSystemUIInputModule>();
+                if (newInputSystemUI != null)
+                {
+                    //newInputSystemUI.actionsAsset = inputActionAsset;
+                    print(newInputSystemUI.move.action.actionMap);
+                    
+                }
+            }
+            catch
+            {
+                print("新输入系统UI模块未找到");
+            }
+
+    }
         cameraTransform = GameObject.Find("Main Camera").transform;
         currentGameState = GameState.Outbattle;
         onGlobalControllerAwake?.Invoke();
@@ -511,9 +535,36 @@ public class GlobalController : MonoBehaviour
         var Chara_UI = GameObject.Find("CharacterInfo");
         Chara_UI.SetActive(false);
         
-        
-        
         var enemyDependencies = battleStageManager.GetEnemyDependencies();
+
+        //训练场额外加载视频
+        if (questID == "09001")
+        {
+            var tutorialAssetDict =
+                JsonConvert.DeserializeObject<List<CharacterTutorialAssetManager>>(tutorialDictData.text);
+
+            try
+            {
+                var bundlePathList = tutorialAssetDict.Find(x =>
+                    x.charaID == GlobalController.currentCharacterID).assetBundleList;
+                
+                if (bundlePathList != null)
+                {
+                    foreach (var bundle in bundlePathList)
+                    {
+                        enemyDependencies.Add("training_bundle/"+bundle);
+                    }
+                }
+            }
+            catch
+            {
+                Debug.LogWarning("No tutorial video found for this character.");
+            }
+            
+
+            
+        }
+        
         
         foreach (var abpath in enemyDependencies)
         {
@@ -529,8 +580,7 @@ public class GlobalController : MonoBehaviour
             {
                 assetBundles.Add(loadedBundles[abpath]);
             }
-
-            //index++;
+            
         }
         
         
@@ -873,6 +923,7 @@ public class GlobalController : MonoBehaviour
         }
 
         UpdateQuestSaveData();
+        ResetFixedCharacter();
         yield return null;
 
         loadingScreen.transform.position = Vector3.zero;
@@ -1188,6 +1239,21 @@ public class GlobalController : MonoBehaviour
         
     }
 
+    public void ResetFixedCharacter()
+    {
+        if (lastCharacterID > 0)
+        {
+            currentCharacterID = lastCharacterID;
+            lastCharacterID = -1;
+        }
+    }
+    
+    public void SetFixedCharacter(int characterID)
+    {
+        lastCharacterID = currentCharacterID;
+        currentCharacterID = characterID;
+    }
+
     protected virtual void LoadPlayer(int characterID)
     {
         var assetBundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "c001"));
@@ -1311,6 +1377,9 @@ public class GlobalController : MonoBehaviour
             keySpecial = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keySpecial"].ToString());
             keyRoll = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyRoll"].ToString());
             keyDown = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyDown"].ToString());
+            keyUpNew = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyUp"].ToString());
+            keyZoomIn = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyZoomIn"].ToString());
+            keyZoomOut = (KeyCode)Enum.Parse(typeof(KeyCode),keySettings["keyZoomOut"].ToString());
             
             // keySkill1 = keySettings["keySkill1"].ToString();
             // keySkill2 = keySettings["keySkill2"].ToString();
@@ -1323,9 +1392,10 @@ public class GlobalController : MonoBehaviour
             // keyRoll = keySettings["keyRoll"].ToString();
             // keyDown = keySettings["keyDown"].ToString();
         }
-        catch 
+        catch(Exception e)
         {
-            
+            //Debug.LogWarning("Error when loading player settings");
+            Debug.LogWarning(e);
         }
     }
 
@@ -1346,6 +1416,8 @@ public class GlobalController : MonoBehaviour
         SettingsInfo["key_settings"]["keyDown"] = keyDown.ToString();
         SettingsInfo["key_settings"]["keyEscape"] = keyEscape.ToString();
         SettingsInfo["key_settings"]["keyUp"] = keyUpNew.ToString();
+        SettingsInfo["key_settings"]["keyZoomIn"] = keyZoomIn.ToString();
+        SettingsInfo["key_settings"]["keyZoomOut"] = keyZoomOut.ToString();
         
         var path = Application.persistentDataPath + "/PlayerSettings.json";
         print(keySpecial);
@@ -1365,6 +1437,8 @@ public class GlobalController : MonoBehaviour
         newSettings["key_settings"]["keyDown"] = keyDown.ToString();
         newSettings["key_settings"]["keyEscape"] = keyEscape.ToString();
         newSettings["key_settings"]["keyUp"] = keyUpNew.ToString();
+        newSettings["key_settings"]["keyZoomIn"] = keyZoomIn.ToString();
+        newSettings["key_settings"]["keyZoomOut"] = keyZoomOut.ToString();
         print(newSettings);
         
         var jsonStr = JsonMapper.ToJson(newSettings);
@@ -1435,7 +1509,7 @@ public class GlobalController : MonoBehaviour
     public List<QuestSave> GetQuestInfo()
     {
         //print(questSaveDataString);
-        print(questSaveDataString);
+        //print(questSaveDataString);
         var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
         return questSaveDataList.quest_info;
     }
@@ -1456,6 +1530,42 @@ public class GlobalController : MonoBehaviour
         }
     }
 
+    public int CheckQuestClearNum(params string[] exceptArray)
+    {
+        if (questSaveDataString == null)
+            return 0;
+        var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
+
+        int sum = questSaveDataList.quest_info.Count;
+
+        foreach (var info in questSaveDataList.quest_info)
+        {
+            if (exceptArray.Contains(info.quest_id))
+            {
+                sum--;
+            }
+        }
+
+        return sum;
+
+    }
+
+    public List<string> GetAllFullClearedQuestID()
+    {
+        List<string> clearedQid = new();
+        if (questSaveDataString == null)
+            return clearedQid;
+
+        var questSaveDataList = JsonMapper.ToObject<QuestDataList>(questSaveDataString);
+
+        foreach (var info in questSaveDataList.quest_info)
+        {
+            if(info.IsFullCleared())
+                clearedQid.Add(info.quest_id);
+        }
+
+        return clearedQid;
+    }
     public List<string> GetAllClearedQuestID()
     {
         List<string> clearedQid = new();
@@ -1479,8 +1589,12 @@ public class GlobalController : MonoBehaviour
         int count = 0;
         foreach (var questSave in questSaveDataList.quest_info)
         {
-            if(questSave.quest_id == "100001")
+            if (questSave.quest_id == "100001")
+            {
+                count += 20;
                 continue;
+            }
+                
             
             if (questSave.crown_1 != 0)
             {
@@ -1539,6 +1653,24 @@ public class GlobalController : MonoBehaviour
             inputActionAsset.LoadFromJson(str);
             
             gamepadMap = inputActionAsset.actionMaps[0];
+            //print(gamepadMap.Count());
+            if (gamepadMap.Count() < CurrentActionMapCapacity)
+            {
+                var initialSavedataPaths =
+                    Path.Combine(Application.streamingAssetsPath, "savedata/GamepadSettings.json");
+                var saveDataFilePaths = Path.Combine
+                    (Application.persistentDataPath, "GamepadSettings.json");
+                File.Copy(initialSavedataPaths, saveDataFilePaths, true);
+                //重新读取
+                StreamReader sr2 = new StreamReader(saveDataFilePaths);
+                str = sr2.ReadToEnd();
+                sr2.Close();
+                inputActionAsset.LoadFromJson(str);
+                gamepadMap = inputActionAsset.actionMaps[0];
+            }
+            
+            
+            
             gamepadMap.Enable();
             
         }
@@ -1550,19 +1682,7 @@ public class GlobalController : MonoBehaviour
 
     }
 
-    public void ReloadAndSaveGameadOption(string str)
-    {
-        //var path = Application.streamingAssetsPath + "/savedata/GamepadSettings.json";
-        
-        inputActionAsset.LoadFromJson(str);
-        gamepadMap = inputActionAsset.actionMaps[0];
-        gamepadMap.Enable();
-        
-        
-        
-            
-        
-    }
+    
 
     protected void CheckSaveDataFile()
     {
@@ -1596,8 +1716,6 @@ public class GlobalController : MonoBehaviour
         print(CharaAssetData.Infos[0].resources_name);
         return CharaAssetData.GetResources(charaID);
     }
-
-
     public void ChangeLayoutHintKeyboardOrGamepad(bool isKeyboard)
     {
         if (isKeyboard)
@@ -1719,6 +1837,7 @@ public class GlobalController : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        ResetFixedCharacter();
         gameOptions.last_adventurer_id = currentCharacterID;
         WriteGameOptionToFile();
     }

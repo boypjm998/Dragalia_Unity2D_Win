@@ -465,4 +465,9 @@ public class ActorControllerRangedWithFS : ActorController, IForceAttackable
 
           }
      }
+
+     public virtual void FaceDirectionAutoFixWithManual(int moveID)
+     {
+          
+     }
 }

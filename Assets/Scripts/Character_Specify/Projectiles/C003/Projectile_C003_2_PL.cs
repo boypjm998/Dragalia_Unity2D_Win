@@ -65,7 +65,7 @@ namespace CharacterSpecificProjectiles
 
             if (other.CompareTag("Enemy"))
             {
-                print(contactTarget.name);
+                //print(contactTarget.name);
                 var statusEnemy = other.GetComponentInParent<EnemyController>();
                 if (statusEnemy != null)
                 {

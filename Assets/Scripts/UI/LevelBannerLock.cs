@@ -8,14 +8,14 @@ using UnityEngine.UI;
 public class LevelBannerLock : MonoBehaviour
 {
     [SerializeField] private string prequisiteLevelID;
-    [SerializeField] private bool hideIfLocked = true;
+    [SerializeField] protected bool hideIfLocked = true;
     
-    private List<QuestSave> questSaveList = new();
-    private Image bannerImage;
-    private Button enterButton;
-    private TextMeshProUGUI unlockText;
-    private GlobalController.Language currentLanguage;
-    private bool _locked = false;
+    protected List<QuestSave> questSaveList = new();
+    protected Image bannerImage;
+    protected Button enterButton;
+    protected TextMeshProUGUI unlockText;
+    protected GlobalController.Language currentLanguage;
+    protected bool _locked = false;
 
     public string PreID => prequisiteLevelID;
 
@@ -48,14 +48,14 @@ public class LevelBannerLock : MonoBehaviour
 
     }
 
-    private void InitAllElements()
+    protected void InitAllElements()
     {
         bannerImage = transform.Find("Image").GetComponent<Image>();
         enterButton = GetComponentInChildren<Button>();
         unlockText = GetComponentInChildren<TextMeshProUGUI>();
     }
     
-    private void SetElementsToLocked()
+    protected virtual void SetElementsToLocked()
     {
         
         bannerImage.color = Color.gray;
@@ -78,7 +78,7 @@ public class LevelBannerLock : MonoBehaviour
         unlockText.fontSizeMin = 15;
     }
     
-    private bool CheckUnLock()
+    protected virtual bool CheckUnLock()
     {
         if (questSaveList == null)
         {

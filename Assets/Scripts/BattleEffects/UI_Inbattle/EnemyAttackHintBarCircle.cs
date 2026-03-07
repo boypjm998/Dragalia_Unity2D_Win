@@ -9,7 +9,7 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
     private SpriteRenderer fillRenderer;
 
     [SerializeField] private bool doScale = false;
-    
+    public Ease ease = Ease.Linear;
     
     // Start is called before the first frame update
     protected override IEnumerator Start()
@@ -23,7 +23,7 @@ public class EnemyAttackHintBarCircle : EnemyAttackHintBar
         
         _tweener = DOTween.To(() => fillRenderer.size,
             x => fillRenderer.size = x,
-            maxFillSize, warningTime);
+            maxFillSize, warningTime).SetEase(ease);
 
         if (doScale)
         {

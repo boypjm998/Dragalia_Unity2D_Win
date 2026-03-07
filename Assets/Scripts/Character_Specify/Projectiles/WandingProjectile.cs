@@ -64,7 +64,6 @@ namespace CharacterSpecificProjectiles
 
         private void FixedUpdate()
         {
-
             DoProjectileMove();
         }
 

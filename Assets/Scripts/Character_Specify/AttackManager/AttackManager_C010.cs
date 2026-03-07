@@ -22,7 +22,7 @@ public class AttackManager_C010 : AttackManager
 
 
     protected Vector2 tempPosition;
-    private bool skill3Boosted = false;
+    //private bool skill3Boosted = false;
     
     protected override void Awake()
     {
@@ -31,7 +31,8 @@ public class AttackManager_C010 : AttackManager
         ta = GetComponentInChildren<TargetAimer>();
         ac = GetComponent<ActorBase>();
         _statusManager = GetComponent<StatusManager>();
-        skill3Boosted = UI_AdventurerSelectionMenu.CheckSkillUpgradable(10, 3) == 2;
+        
+        UpdateSkillInfo(3);
     }
     
     public void ComboAttack1_Rush()
@@ -128,11 +129,15 @@ public class AttackManager_C010 : AttackManager
     
     public virtual void Skill4(int eventID)
     {
-        if (skill3Boosted)
+        if (skillUpgradeInfo[3])
         {
-            _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.AtkBuff,
-                15, 60, 1, 101004);
+            var faerieSunrise = new TimerBuff((int)BasicCalculation.BattleCondition.FaerieSunrise,
+                1, 40, 1, 101004);
+            faerieSunrise.extra_iconID = 1;
+            faerieSunrise.dispellable = false;
+            _statusManager.ObtainTimerBuff(faerieSunrise);
         }
+        
         _statusManager.HPRegenImmediately(0,10,true);
         BattleEffectManager.Instance.SpawnHealEffect(gameObject);
         _statusManager.ObtainHealOverTimeBuff(10,15,true);

@@ -1,0 +1,34 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "Dash",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ClawAttack",
+          "args": [ 1 ],
+          "jump_action": "random",
+          "jump_args": [ 2, 3 ]
+        },
+        {
+          "action_name": "FrontStrike",
+          "args": [ 1 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "ClawAttack",
+          "args": [ 1 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 0,
+      "args": []
+    }
+  ]
+}

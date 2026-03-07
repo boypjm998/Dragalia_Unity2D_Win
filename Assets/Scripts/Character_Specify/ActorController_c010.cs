@@ -101,6 +101,19 @@ public class ActorController_c010 : ActorControllerDagger
         dodging = true;
     }
 
+    public override void onRollEnter()
+    {
+        base.onRollEnter();
+        SetGravityScale(1f);
+        rigid.velocity = new Vector2(rigid.velocity.x, 0);
+    }
+
+    public override void onRollExit()
+    {
+        base.onRollExit();
+        ResetGravityScale();
+    }
+
     public override void OnSkillEnter()
     {
         ta.FaceDirectionAutofixWithMarking();

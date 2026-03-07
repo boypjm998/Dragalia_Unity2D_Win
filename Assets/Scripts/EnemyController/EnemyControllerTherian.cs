@@ -47,6 +47,7 @@ public class EnemyControllerTherian : EnemyController
     protected override IEnumerator BreakWait(float time, float recoverTime = 1.67f)
     {
         SetKBRes(999);
+        recoverTime = (_statusManager as SpecialStatusManager).breakRecoverTime;
         yield return new WaitForSeconds(time - recoverTime);
         anim.Play("break_exit");
         yield return new WaitForSeconds(recoverTime);

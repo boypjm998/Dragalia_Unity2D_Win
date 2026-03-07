@@ -61,7 +61,8 @@ public class PlayerStatusManager : StatusManager
     
     public int remainReviveTimes = 9;
     public int currentReviveTimes = 0;
-    public bool debug;
+
+    
 
 
     public event StatusManagerVoidDelegate OnShapeshiftingEnter;
@@ -76,8 +77,8 @@ public class PlayerStatusManager : StatusManager
     {
         get => GetSkillHasteBuff();
     }
-
-
+    
+    
 
 
 
@@ -118,6 +119,13 @@ public class PlayerStatusManager : StatusManager
         {
             if (ac.dc == null || ac.dc.requiredDSP.Length <= id)
                 return false;
+
+            if (ac.dc.dragondrive)
+            {
+                return currentSP[id] >= requiredSP[id];
+            }
+            
+            
             return ac.dc.currentDSP[id] >= ac.dc.requiredDSP[id];
         }
         else
@@ -163,12 +171,6 @@ public class PlayerStatusManager : StatusManager
         SpGainInStatus(2, spRegenPerSecond[2] * Time.deltaTime,true);
         SpGainInStatus(3, spRegenPerSecond[3] * Time.deltaTime,true);
         ShapeShiftingCDTick();
-
-        if (debug)
-        {
-            debug = false;
-            print(conditionList.Count);
-        }
 
 
     }
@@ -267,6 +269,7 @@ public class PlayerStatusManager : StatusManager
             
             lastComboRemainTime = 0;
             _comboIndicator?.HideComboNum();
+            OnComboReset?.Invoke();
         }
     }
 
@@ -286,6 +289,11 @@ public class PlayerStatusManager : StatusManager
         requiredSP[sidFromZero] = sp;
     }
 
+    /// <summary>
+    /// 固定SP充能
+    /// </summary>
+    /// <param name="skillID">技能id，从0开始</param>
+    /// <param name="sp">SP充能量</param>
     public void ChargeSP(int skillID, float sp)
     {
         currentSP[skillID] += sp;
@@ -299,6 +307,11 @@ public class PlayerStatusManager : StatusManager
         }
     }
 
+    /// <summary>
+    /// 百分比SP充能
+    /// </summary>
+    /// <param name="skillID">技能id，从0开始</param>
+    /// <param name="sp">SP充能百分比</param>
     public void FillSP(int skillID, int percent)
     {
         currentSP[skillID] += requiredSP[skillID] * percent * 0.01f;
@@ -402,7 +415,7 @@ public class PlayerStatusManager : StatusManager
         if(DModeGauge > MaxDModeGauge)
             DModeGauge = MaxDModeGauge;
         
-        print("获得DP"+quantity * MaxDModeGauge / 100+"点,max:"+MaxDModeGauge);
+        //print("获得DP"+quantity * MaxDModeGauge / 100+"点,max:"+MaxDModeGauge);
         //todo: 需要新增一个事件，当dp充能时Invoke
     }
     

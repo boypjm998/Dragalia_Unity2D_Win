@@ -94,6 +94,9 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
     //todo: 在场地结束时，添加stopBuffTick
     private void CheckBuff()
     {
+        var fx = GetProjectileOfName("fx_hb004_prayer");
+        
+        
         foreach (var controller in controllers)
         {
             var atkInfo = controller.CheckReceivedAttack(true);
@@ -136,10 +139,14 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
                 if (success)
                 {
                     controller.attachedStatus.ObtainTimerBuff(new TimerBuff(_spBuff));
+                    Instantiate(fx, controller.transform.position,
+                        Quaternion.identity, RangedAttackFXLayer.transform);
                 }
                 else
                 {
                     atkInfo.Item2.ObtainTimerBuff(new TimerBuff(_spBuff));
+                    Instantiate(fx, atkInfo.Item2.transform.position,
+                        Quaternion.identity, RangedAttackFXLayer.transform);
                 }
             }
             else
@@ -208,9 +215,10 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
     }
     private void AddEventToStatusManager(StatusManager statusManager)
     {
-        statusManager.SpecialDamageCutEffectFunc += SpecialDamageCutBuffTemporaryEvent;
+        statusManager.AddEffectFunction(SpecialDamageCutBuffTemporaryEvent, AbilityCalculation.ProductArea.DMGCUT);
+        //statusManager.SpecialDamageCutEffectFunc += SpecialDamageCutBuffTemporaryEvent;
     }
-    private Tuple<float, float> SpecialDamageCutBuffTemporaryEvent(StatusManager source
+    private (float, float) SpecialDamageCutBuffTemporaryEvent(StatusManager source
         , AttackBase atk, StatusManager target)
     {
         float buffModifier = 0;
@@ -252,7 +260,7 @@ public class EnemyMoveController_HB04_Legend : EnemyMoveController_HB04
         
         
         
-        return new Tuple<float, float>(buffModifier, 0);
+        return (buffModifier, 0);
     }
     
     

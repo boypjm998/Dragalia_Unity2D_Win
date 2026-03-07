@@ -1,0 +1,329 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "TargetingPillar",
+          "args": [ 2 ],
+          "jump_action": "random+", 
+          "jump_args": [ 1, 2 ]
+        },
+        {
+          "action_name": "SummonChild",
+          "args": [ 6,
+            1,-12,7,19500,750,
+            1,12,7,19500,750,
+            2,-9,0,10000,900,
+            2,9,0,10000,900,
+            1,-6,7,19500,750,
+            1,6,7,19500,750,
+            4],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "SummonChild",
+          "args": [ 6,
+            1,-12,0,19500,750,
+            1,12,0,19500,750,
+            2,-9,7,10000,900,
+            2,9,7,10000,900,
+            1,-6,0,19500,750,
+            1,6,0,19500,750,
+            4],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "Buff",
+          "args": [ 20, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingPillar",
+          "args": [ 2 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Corrosion",
+          "args": [ 1500, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Buff",
+          "args": [ 20, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 1,
+      "loopStartPoint": 0,
+      "args": [ 80 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "SummonElite",
+          "args": [ 5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingPillar",
+          "args": [ 3 ],
+          "jump_action": "random+",
+          "jump_args": [ 1, 2 ]
+        },
+        {
+          "action_name": "SummonChild",
+          "args": [ 6,
+            1,-12,7,19500,750,
+            1,12,7,19500,750,
+            2,-9,0,10000,900,
+            2,9,0,10000,900,
+            1,-6,7,19500,750,
+            1,6,7,19500,750,
+            4],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "SummonChild",
+          "args": [ 6,
+            1,-12,0,19500,750,
+            1,12,0,19500,750,
+            2,-9,7,10000,900,
+            2,9,7,10000,900,
+            1,-6,0,19500,750,
+            1,6,0,19500,750,
+            4],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "Buff",
+          "args": [ 20, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 4 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Corrosion",
+          "args": [ 1500, 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ChasingPillar",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingPillar",
+          "args": [ 4 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 3,
+      "loopStartPoint": 0,
+      "args": ["part_break"]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "Executioners",
+          "args": [ 19500, 750, 10000, 900, 5 ],
+          "jump_action": "random+",
+          "jump_args": [ 1, 1 ]
+        },
+        {
+          "action_name": "HealSimultaneously",
+          "args": [ 40235,19500,750,10000,900,2 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "ElementSwitch",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Buff",
+          "args": [ 20, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingPillar",
+          "args": [ 2 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ChasingPillar",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "SummonChild",
+          "args": [ 6,
+            1,-12,7,19500,750,
+            1,12,7,19500,750,
+            2,-20,13,10000,900,
+            2,20,13,10000,900,
+            1,-6,7,19500,750,
+            1,6,7,19500,750,
+            4],
+          "jump_action": "to+",
+          "jump_args": [2]
+        },
+        {
+          "action_name": "SummonChild",
+          "args": [ 6,
+            1,-12,0,19500,750,
+            1,12,0,19500,750,
+            2,-20,13,10000,900,
+            2,20,13,10000,900,
+            1,-6,0,19500,750,
+            1,6,0,19500,750,
+            4],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "HealOnebyOne",
+          "args": [ 23167, 3 ],
+          "jump_action": "random+",
+          "jump_args": [ 1, 2 ]
+        },
+        {
+          "action_name": "Corrosion",
+          "args": [ 1500, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Buff",
+          "args": [ 20, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "TargetingPillar",
+          "args": [ 2 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "ChasingPillar",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "Laser",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "BouncingOrb",
+          "args": [ 3 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jumpOutCondition": 0,
+      "loopStartPoint": 1,
+      "args": [ ]
+    }
+  ]
+  
+  
+}

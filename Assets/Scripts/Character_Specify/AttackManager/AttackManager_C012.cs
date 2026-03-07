@@ -16,7 +16,7 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
     private TimerBuff _defDebuff = new((int)BasicCalculation.BattleCondition.DefDebuff,
         5, 15, 1, 101201);
     
-    private const int SkillChainTime = 3;
+    private const int SkillChainTime = 4;
     private Tween _skillChainTimer;
 
     /// <summary>
@@ -34,15 +34,24 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
 
 
     private Tween poisonTriggerTimer;
-    private const float PoisonTriggerTime = 30f;
+    private const float PoisonTriggerTime = 20f;
     private bool posionTriggerActive = true;
     
     private Tween defDebuffTriggerTimer;
-    private const float DefDebuffTriggerTime = 30f;
+    private const float DefDebuffTriggerTime = 20f;
     private bool defDebuffTriggerActive = true;
     
     TimerBuff _timerBuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff,
         15, 30, 2,101202);
+    
+    TimerBuff _forceBuff = new TimerBuff((int)BasicCalculation.BattleCondition.AlteredStrikeAlex,
+        1, -1, 1,101203);
+    
+    TimerBuff _overdriveAccBuff = new TimerBuff((int)BasicCalculation.BattleCondition.OverdriveAccerlerator,
+        10, 90,1,101204);
+    
+    
+    
 
     protected override void Start()
     {
@@ -52,6 +61,9 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
         _statusManager.OnAfflictionInflict += TriggerBuffPoison;
         _statusManager.OnConditionInflict += TriggerBuffDefdown;
         _timerBuff.dispellable = false;
+        _forceBuff.extra_iconID = (int)BasicCalculation.BattleCondition.ForceStrikeDmgBuff;
+        UpdateSkillInfo(3);
+        (_statusManager as PlayerStatusManager).SetSPChargeRate(2,0);
     }
 
     private void InitCAF()
@@ -84,9 +96,9 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
         
         skillChainEffect3 = new ConditionalAttackEffect(conditionalFunc1,
             ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
-            new string[] {},new string[] {"0.3"});
+            new string[] {},new string[] {"0.5"});
 
-
+        
 
 
     }
@@ -129,16 +141,7 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
     {
         
     }
-    // protected void OnStandardAttackExit()
-    // {
-    //     if (weaponType == BasicCalculation.MeeleWeaponType.Lance ||
-    //         weaponType == BasicCalculation.MeeleWeaponType.Sword ||
-    //         weaponType == BasicCalculation.MeeleWeaponType.Axe)
-    //     {
-    //         _statusManager.ResetKBRes();
-    //     }
-    // }
-    
+
     public void Combo5()
     {
         InstantiateRanged(comboFX[4], transform.position, InitContainer(false), ac.facedir);
@@ -172,8 +175,6 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
         }
 
     }
-
-    
     
     public void Skill1_Slash()
     {
@@ -293,7 +294,35 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
             atk.OnAttackDealDamage += handler;
         }
     }
-    
+
+    public override void Skill4()
+    {
+        if (skillUpgradeInfo[3])
+        {
+            base.Skill4();
+            _forceBuff.dispellable = false;
+            _statusManager.ObtainTimerBuff(new TimerBuff(_forceBuff), false);
+            _statusManager.ObtainTimerBuff(new TimerBuff(_overdriveAccBuff), false);
+        }
+        else
+        {
+            base.Skill4();
+        }
+    }
+
+    public override GameObject ForceStrikeRelease(int currentFSLV)
+    {
+        var go = base.ForceStrikeRelease(currentFSLV);
+
+        if (skillUpgradeInfo[3] && _statusManager.HasCondition((int)BasicCalculation.BattleCondition.AlteredStrikeAlex))
+        {
+            go.GetComponent<AttackFromPlayer>().BeforeAttackHit += ForceStrikeAddExtraEffects;
+            
+        }
+
+        return go;
+    }
+
     private void AddLastHitEnemyStatus(StatusManager self,
         StatusManager enemy, AttackBase atk, float damage)
     {
@@ -450,6 +479,26 @@ public class AttackManager_C012 : AttackManagerMeeleWithFS
     private void ResetSkillChain()
     {
         acSP._skill1EffectNext = acSP._skill2EffectNext = ActorController_c012.SkillChainState.None;
+    }
+
+    private void ForceStrikeAddExtraEffects(AttackBase atk, GameObject enemy)
+    {
+        var ssm = enemy.GetComponent<SpecialStatusManager>();
+        if (ssm)
+        {
+            if (ssm.broken && 
+                _statusManager.HasCondition((int)BasicCalculation.BattleCondition.AlteredStrikeAlex))
+            {
+                _statusManager.RemoveAllConditionWithSpecialID(101203);
+                atk.AddWithConditionAll(new TimerBuff(_defDebuff),100);
+                atk.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.Poison,58.2f,
+                    15,100),120 + 30,1);
+                (atk as AttackFromPlayer).SetSpGain(1129);
+                atk.BeforeAttackHit -= ForceStrikeAddExtraEffects;
+            }
+        }
+        
+            
     }
     
 }

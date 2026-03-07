@@ -19,6 +19,16 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T: MonoSingleton<T>
         }
     }
 
+    
+    protected virtual void OnDestroy()
+    {
+        if (instance == this) 
+        {
+            instance = null; // 销毁时置空
+        }
+    }
+    
+
     protected virtual void Awake()
     {
         if (instance != null)

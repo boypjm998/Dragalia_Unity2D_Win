@@ -74,6 +74,9 @@ public class UI_HB004_Legend_01 : MonoBehaviour
 
     private void EventOnHurt(StatusManager src, StatusManager attacker, AttackBase atk, float dmg)
     {
+        if(atk.attackType == BasicCalculation.AttackType.ABILITY)
+            return;
+
         receivedDamageInPeriod = true;
         lastReceivedAttack = new Tuple<BasicCalculation.AttackType, StatusManager>(atk.attackType,attacker);
     }

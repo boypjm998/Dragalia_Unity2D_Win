@@ -37,6 +37,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
     [SerializeField] protected GameObject[] projectilePoolEX;
     protected GameObject[] projectilePool = new GameObject[10];
 
+    protected VoiceControllerEnemy _voiceController;
     protected StatusManager _statusManager;
     protected BattleStageManager _stageManager;
     protected BattleEffectManager _effectManager;
@@ -83,6 +84,7 @@ public abstract class EnemyMoveManager : MonoBehaviour
         _stageManager = BattleStageManager.Instance;
         attackContainer = _stageManager.attackContainerEnemy;
         CopyProjectilesToPool();
+        _voiceController = GetComponentInChildren<VoiceControllerEnemy>();
     }
 
     // Update is called once per frame

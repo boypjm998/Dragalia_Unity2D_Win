@@ -35,6 +35,7 @@ public class EnemyAttackTriggerController : MonoBehaviour
         public float time;
         public AttackFromEnemy.AvoidableProperty AvoidablePropertyType;
         public BasicCalculation.AttackType AttackType = BasicCalculation.AttackType.STANDARD;
+        public float shakeIntensity;
     }
 
 
@@ -144,7 +145,7 @@ public class EnemyAttackTriggerController : MonoBehaviour
         {
             _attackFromEnemy.ChangeAvoidability(changePropertyTime[0].AvoidablePropertyType);
             
-            
+            _attackFromEnemy.hitShakeIntensity = changePropertyTime[0].shakeIntensity;
             _attackFromEnemy.attackType = changePropertyTime[0].AttackType;
             
             changePropertyTime.RemoveAt(0);

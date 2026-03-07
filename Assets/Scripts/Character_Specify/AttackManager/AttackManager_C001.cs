@@ -42,7 +42,7 @@ public class AttackManager_C001 : AttackManager
     private TargetAimer ta;
     
     protected new ActorController_c001 ac;
-    private bool s3_upgraded = false;
+    //private bool s3_upgraded = false;
     private Tween s3_tween;
     
     //private PlayerStatusManager _statusManager;
@@ -56,7 +56,7 @@ public class AttackManager_C001 : AttackManager
         Shotpoints = GameObject.Find("Shotpoints");
         ac = GetComponent<ActorController_c001>();
         _statusManager = GetComponent<PlayerStatusManager>();
-        s3_upgraded = UI_AdventurerSelectionMenu.CheckSkillUpgradable(1, 2) == 2;
+        UpdateSkillInfo(2);
     }
 
     // Update is called once per frame
@@ -294,7 +294,7 @@ public class AttackManager_C001 : AttackManager
         //Inits are in the prefab.
         
         //2023.12.21
-        if (s3_upgraded)
+        if (skillUpgradeInfo[2])
         {
             if (s3_tween != null)
             {
@@ -360,7 +360,7 @@ public class AttackManager_C001 : AttackManager
             new Vector3(shotpoint.position.x,shotpoint.position.y+.5f),
              container.transform,ac.facedir);
 
-        if (s3_upgraded)
+        if (skillUpgradeInfo[2])
         {
             proj.GetComponent<AttackFromPlayer>().AddWithConditionAll
                 (new TimerBuff((int)BasicCalculation.BattleCondition.DefDebuff,

@@ -73,6 +73,8 @@ public class VoiceControllerPlayer : AudioManagerPlayer
         }
     }
 
+    
+
 
     public override void PlayAttackVoice(int id,bool ignoreCD = false)
     {

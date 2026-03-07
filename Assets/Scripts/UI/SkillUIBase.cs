@@ -118,7 +118,14 @@ public class SkillUIBase : MonoBehaviour
             sm.OnShapeshiftingExit += ShowCanvas;
         }
 
-        
+        BattleStageManager.Instance.OnSkillIconSwapEvent += IconSwapCheck;
+
+
+    }
+
+    private void OnDestroy()
+    {
+        BattleStageManager.Instance.OnSkillIconSwapEvent -= IconSwapCheck;
     }
 
     // Update is called once per frame
@@ -152,6 +159,12 @@ public class SkillUIBase : MonoBehaviour
     }
 
 
+    private void IconSwapCheck(int sid, int iconID)
+    {
+        if(sid == this.sid)
+            SwapSkillIcon(iconID);
+    }
+    
     protected virtual void SwapSkillIcon(int iconID)
     {
         Transform _parent = skillIcon.transform.parent;

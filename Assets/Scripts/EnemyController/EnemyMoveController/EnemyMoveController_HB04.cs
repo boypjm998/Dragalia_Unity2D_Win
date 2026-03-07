@@ -47,7 +47,8 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
     protected virtual void OnInit()
     {
         _statusManager.OnHPDecrease += CheckHealBuff;
-        BattleStageManager.Instance.AddFieldAbility(20111);
+        
+        BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.BondforgedAuspex);
         _statusManager.OnReviveOrDeath += (()=>voice?.BroadCastMyVoice((int) MyVoiceGroup.Defeat));
     }
 
@@ -58,7 +59,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
         if (_statusManager.currentHp < (int)_statusManager.maxHP * 0.3f)
         {
             timeTick = 0;
-            BattleStageManager.Instance.RemoveFieldAbility(20111);
+            BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.BondforgedAuspex);
 
             var buffNum = _statusManager.GetConditionStackNumber((int)BasicCalculation.BattleCondition.PowerOfBonds);
 
@@ -69,7 +70,7 @@ public class EnemyMoveController_HB04 : EnemyMoveManager
             _tween = DOVirtual.DelayedCall(60, () =>
             {
                 timeTick = 1;
-                BattleStageManager.Instance.AddFieldAbility(20111);
+                BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.BondforgedAuspex);
                 _statusManager.OnHPDecrease?.Invoke(0,null);
             },false);
         }

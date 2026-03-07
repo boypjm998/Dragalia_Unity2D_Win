@@ -5,6 +5,7 @@ using CharacterSpecificProjectiles;
 using DG.Tweening;
 using GameMechanics;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class EnemyMoveController_HB05 : EnemyMoveManager
@@ -24,7 +25,11 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
         Dash,
         ExtraSkill,
         Defeat,
-        Buff
+        Buff,
+        ToPhase2,
+        World,
+        Ultimate,
+        Heal
     }
     protected override void Awake()
     {
@@ -344,12 +349,22 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
         ac.TurnMove(_behavior.targetPlayer);
         ac.OnAttackEnter(999);
         //bossBanner?.PrintSkillName("HB05_Action03");
-        
 
-        var position = EnemyAttackPrefabGenerator.GenerateCircEnemyHintBar(ac,
-            _behavior.targetPlayer.transform.position, RangedAttackFXLayer.transform,
-            5, Vector2.zero, false, true, 1.2f + extraInterval, 0.1f,
-            0.5f, true, false, true).transform.position;
+        Vector3 position;
+        if (_behavior is HB05_BehaviorTree_Legend)
+        {
+            position = _behavior.targetPlayer.transform.position;
+            BattleEffectManager.Instance.SpawnTargetLockIndicator(position,
+                RangedAttackFXLayer.transform,1.2f + extraInterval);
+        }
+        else
+        {
+            position = EnemyAttackPrefabGenerator.GenerateCircEnemyHintBar(ac,
+                _behavior.targetPlayer.transform.position, RangedAttackFXLayer.transform,
+                5, Vector2.zero, false, true, 1.2f + extraInterval, 0.1f,
+                0.5f, true, false, true).transform.position;
+        }
+        
         
         anim.Play("fs_enter");
         
@@ -374,7 +389,7 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
     /// 强袭
     /// </summary>
     /// <returns></returns>
-    public IEnumerator HB05_Action06()
+    public virtual IEnumerator HB05_Action06()
     {
         yield return new WaitUntil(() => !ac.hurt && anim.GetBool("isGround"));
         ac.TurnMove(_behavior.targetPlayer);
@@ -641,6 +656,120 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
         QuitAttack();
     }
     
+    
+    public IEnumerator HB05_Action14()
+    {
+        ac.SetActionUnable(false);
+        ac.SetHitSensor(false);
+        yield return new WaitUntil(() => !ac.hurt);
+        ac.TurnMove(_behavior.targetPlayer);
+        ac.OnAttackEnter(999);
+
+        if (Projectile_C007_2_Boss.Instance != null)
+        {
+            Projectile_C007_2_Boss.Instance.StopStorm();
+            Projectile_C007_2_Boss.Instance.StopFogEffect();
+        }
+        
+        StageCameraController.SwitchMainCamera();
+        
+        
+        WarpEffect();
+        yield return new WaitForSeconds(0.3f);
+        HB05_Action06_C();
+        DisappearRenderer();
+        
+        ac.SwapWeaponVisibility(false);
+
+        transform.position = new Vector3(0, transform.position.y);
+        
+        yield return new WaitUntil(()=>voiceController.voice.isPlaying==false);
+        
+        voiceController?.BroadCastSpecificVoice((int)MyVoiceGroup.ToPhase2,0);
+        
+        yield return new WaitForSeconds(5);
+        StageCameraController.SwitchMainCameraFollowObject(gameObject);
+
+        WarpEffect();
+        yield return new WaitForSeconds(0.3f);
+        AppearRenderer();
+        ac.SwapWeaponVisibility(true);
+        ac.TurnMove(_behavior.targetPlayer);
+        var aura = AuraEffect(new Vector2(0, 1));
+        anim.Play("fs_enter");
+        
+        voiceController?.BroadCastSpecificVoice((int)MyVoiceGroup.ToPhase2,1);
+        
+        yield return new WaitForSeconds(3.5f);
+
+        var ring = WaterRingEffect();
+        
+        yield return new WaitForSeconds(3f);
+        
+        var rain = RainEffect();
+        
+        yield return new WaitForSeconds(.5f);
+        
+        voiceController?.BroadCastSpecificVoice((int)MyVoiceGroup.ToPhase2,2);
+        
+        yield return new WaitForSeconds(1f);
+        
+        var fx = ForcingEffect();
+        bossBanner?.PrintSkillName("HB05_Action14");
+        
+        yield return new WaitForSeconds(0.5f);
+        
+        GroundFrostEffect();
+        var bg1 = 
+            BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Background1");
+        (bg1 as SpriteRenderer).DOColor(Color.black, 2f);
+        
+        yield return new WaitForSeconds(3.5f);
+        
+        anim.Play("fs_exit");
+        Destroy(fx,0.3f);
+
+        yield return new WaitForSeconds(0.5f);
+        
+        Destroy(aura);
+        Destroy(ring);
+        GroundFrostBlast();
+        StageCameraController.SwitchMainCameraFollowObject(BattleStageManager.Instance.GetPlayer());
+        
+        yield return new WaitForSeconds(0.5f);
+        
+        var whiteScreenImage = GameObject.Find("FullScreenEffect").transform.Find("BlackIn").GetComponent<Image>();
+        whiteScreenImage.color = new Color(1, 1, 1, 0);
+        whiteScreenImage.DOFade(1, 1f).SetUpdate(true);
+        
+        //BattleStageManager.Instance.TimeScaleEffect(0.1f,0.3f,true);
+        
+        
+        yield return new WaitForSeconds(1f);
+        
+        if (Projectile_C007_2_Boss.Instance != null)
+        {
+            Projectile_C007_2_Boss.Instance.StopStorm();
+            //Projectile_C007_2_Boss.Instance.StopFogEffect();
+        }
+        
+        (bg1 as SpriteRenderer).color=Color.clear;
+        
+        var phase1 = BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Phase1");
+        var phase2 = BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Phase2");
+        
+        phase1.gameObject.SetActive(false);
+        phase2.gameObject.SetActive(true);
+
+        whiteScreenImage.DOFade(0, 1f).SetUpdate(true);
+        var emission = rain.GetComponent<ParticleSystem>().emission;
+        emission.rateOverTime = 20;
+        
+        yield return null;
+        
+        QuitAttack();
+    }
+    
 
     protected void ComboAttack(params Vector2[] offset)
     {
@@ -668,7 +797,7 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
         }
     }
 
-    protected void ComboAttackBoostedType1(int num = 1)
+    protected virtual void ComboAttackBoostedType1(int num = 1)
     {
         var muzzleFX = Instantiate(GetProjectileOfFormatName("action01_2"),
             transform.position + new Vector3(ac.facedir, 0), Quaternion.identity,
@@ -691,7 +820,7 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
         }
     }
 
-    protected void ComboAttackBoostType2()
+    protected virtual void ComboAttackBoostType2()
     {
         var muzzleFX = Instantiate(GetProjectileOfFormatName("action01_2"),
             transform.position + new Vector3(ac.facedir, 0), Quaternion.identity,
@@ -789,7 +918,7 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
 
     }
 
-    protected void AcheronFountAttack(List<Vector3> posList,bool avoidable)
+    protected virtual void AcheronFountAttack(List<Vector3> posList,bool avoidable)
     {
         var moveDir = Random.Range(0, 2) == 0 ? 1 : -1;
         if (_behavior.targetPlayer.transform.position.x < BattleStageManager.Instance.mapBorderL + 10)
@@ -863,6 +992,49 @@ public class EnemyMoveController_HB05 : EnemyMoveManager
         }
         
     }
+
+    protected GameObject AuraEffect(Vector2 pos)
+    {
+        return Instantiate(GetProjectileOfFormatName("action14_1",true),
+            pos,Quaternion.identity,
+            RangedAttackFXLayer.transform);
+        
+    }
     
+    protected GameObject RainEffect()
+    {
+        return Instantiate(GetProjectileOfFormatName("action14_2",true),
+            new Vector3(0,0,5),Quaternion.identity,
+            RangedAttackFXLayer.transform);
+    }
+    
+    protected GameObject WaterRingEffect()
+    {
+        return Instantiate(GetProjectileOfFormatName("action14_3",true),
+            transform.position,Quaternion.identity,
+            RangedAttackFXLayer.transform);
+        
+    }
+    
+    private GameObject ForcingEffect()
+    {
+        var fx = Instantiate(GetProjectileOfFormatName("action14_6",true),
+            transform.position,Quaternion.identity,
+            BuffFXLayer.transform);
+        return fx;
+    }
+    
+    private void GroundFrostEffect()
+    {
+        var fx = Instantiate(GetProjectileOfFormatName("action14_4",true),
+            new Vector3(0,0),Quaternion.identity,
+            RangedAttackFXLayer.transform);
+    }
+    
+    private void GroundFrostBlast()
+    {
+        var fx = InstantiateRanged(GetProjectileOfFormatName("action14_5"),
+            new Vector3(0,0),InitContainer(false),1);
+    }
     
 }

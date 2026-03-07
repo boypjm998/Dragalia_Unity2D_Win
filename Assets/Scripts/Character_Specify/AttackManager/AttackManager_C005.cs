@@ -21,13 +21,13 @@ public class AttackManager_C005 : AttackManagerDagger
     protected GameObject combo4Container;
     protected GameObject skill1BoostContainer;
     
-    private bool s3Boosted = false;
+    //private bool s3Boosted = false;
 
 
     protected override void Awake()
     {
         base.Awake();
-        s3Boosted = UI_AdventurerSelectionMenu.CheckSkillUpgradable(5, 2) == 2;
+        UpdateSkillInfo(2);
     }
 
     public void RollAttack()
@@ -241,13 +241,14 @@ public class AttackManager_C005 : AttackManagerDagger
                 shadowController.s1FX = skill1FX;
                 shadowController.s2FX = skill2FX;
                 
-                if (s3Boosted)
+                if (skillUpgradeInfo[2])
                 {
                     TimerBuff critBuff = Random.Range(0, 2) == 0
                         ? new TimerBuff((int)(BasicCalculation.BattleCondition.CritRateBuff),
-                            50, 3, 100, -1)
+                            40, 8, 1, 100504)
                         : new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
-                            80, 3, 100, -1);
+                            60, 8, 1, 100504);
+                    //(ac as ActorController_c005).skill3BuffProtected = true;
                     _statusManager.ObtainTimerBuff(critBuff);
                     shadowController.modifier = 0.9f;
                 }

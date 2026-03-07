@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UISortingGroup : MonoBehaviour
@@ -28,6 +29,13 @@ public class UISortingGroup : MonoBehaviour
 
     public HideDirection _hideDirection = HideDirection.Free;
     public Vector2 _hideLocalPosition = Vector2.zero;
+    
+    private Vector2 _initialAbsolutePosition;
+    private Vector2 _hideAbsolutePosition;
+    
+    public Vector2 initialAbsolutePosition => _initialAbsolutePosition;
+    public Vector2 hideAbsolutePosition => _hideAbsolutePosition;
+    
     private void Awake()
     {
         //print(gameObject.name + transform.localPosition);
@@ -37,6 +45,19 @@ public class UISortingGroup : MonoBehaviour
             _hideLocalPosition.x = 0;
         if (_hideDirection == HideDirection.Horizontal)
             _hideLocalPosition.y = 0;
+        
+        var rectTransform = GetComponent<RectTransform>();
+        
+        if (!isActive)
+        {
+            _initialAbsolutePosition = (Vector2)rectTransform.anchoredPosition + _hideLocalPosition;
+            _hideAbsolutePosition = (Vector2)rectTransform.anchoredPosition;
+        }else
+        {
+            _initialAbsolutePosition = (Vector2)rectTransform.anchoredPosition;
+            _hideAbsolutePosition = (Vector2)rectTransform.anchoredPosition - _hideLocalPosition;
+        }
+        
     }
 
     private void Start()
@@ -58,6 +79,8 @@ public class UISortingGroup : MonoBehaviour
                 transform.localPosition= _hideLocalPosition;
             }
         }
+
+        
 
     }
 
@@ -116,6 +139,8 @@ public class UISortingGroup : MonoBehaviour
         if(_menuUIManager.GUIAnimCount>0)
             return;
         if(UI_GameOption.isSettingKey == true)
+            return;
+        if(UI_GameOption.isConflict && Gamepad.current != null)
             return;
         
         

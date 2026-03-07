@@ -17,6 +17,10 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
     public bool dragonDrive = false;
     public bool sealRemoved = false;
     //protected Tween dragondriveTween;
+    [SerializeField] private GameObject p2Prefab;
+    [SerializeField] private AudioClip p2BGM;
+    
+    protected bool supermoveAdvanced = false;
     
     protected override void Awake()
     {
@@ -32,13 +36,30 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
         sealReleaseBuff = new TimerBuff((int)BasicCalculation.BattleCondition.DemonSealReleased,
             1, -1, 1, -1);
         OnBehaviorStart += GrantDemonSeal;
+        
+        if (enemyController.canDeath == false)
+        {
+            controllAfflictionProtect = true;
+            
+            status.OnHPBelow0 += () =>
+            {
+                status.ResetAllStatusForced();
+                enemyController.StopAllCoroutines();
+                ResetHumanActionsBeforeTransform();
+        
+                currentAction = StartCoroutine(ChangePhaseAnimationRoutine());
+                
+                status.OnHPBelow0 = null;
+            };
+            
+        }
 
     }
 
-    protected void GrantDemonSeal()
+    protected virtual void GrantDemonSeal()
     {
         OnBehaviorStart -= GrantDemonSeal;
-        print(demonSealDebuff.duration);
+        
         status.ObtainTimerBuff(new TimerBuff(demonSealDebuff));
         
         status.OnBuffExpiredEventDelegate += SealReleased;
@@ -104,6 +125,33 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
                     return false;
                 }
             }
+            case "hp_below":
+            {
+                if (status.currentHp < status.maxHP * float.Parse(args[1],CultureInfo.InvariantCulture))
+                {
+                    dest_state = int.Parse(args[2],CultureInfo.InvariantCulture);
+                    return true;
+                }
+                else
+                {
+                    dest_state = int.Parse(args[3],CultureInfo.InvariantCulture);
+                    return false;
+                }
+            }
+            case "advanced":
+            {
+                
+                if (supermoveAdvanced)
+                {
+                    dest_state = int.Parse(args[1],CultureInfo.InvariantCulture);
+                    return true;
+                }
+                else
+                {
+                    dest_state = int.Parse(args[2],CultureInfo.InvariantCulture);
+                    return false;
+                }
+            }
             default:
             {
                 dest_state = substate + 1;
@@ -157,7 +205,7 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
             case DragaliaEnemyActionTypes.HB1005.CocytusWhirl:
             {
                 float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
-                currentAction = StartCoroutine(ACT_CocytusWhirl(interval));
+                currentAction = StartCoroutine(ACT_CocytusWhirl(interval,_currentActionStage.args.Length==1));
                 break;
             }
             case DragaliaEnemyActionTypes.HB1005.ConquestEvil:
@@ -348,7 +396,7 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
         ActionEnd();
     }
 
-    protected IEnumerator ACT_CocytusWhirl(float interval)
+    protected IEnumerator ACT_CocytusWhirl(float interval, bool move = true)
     {
         ActionStart();
         
@@ -356,12 +404,15 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
 
         if (dragonDrive)
         {
-            currentMoveAction = StartCoroutine
-            (enemyController.MoveToSameGround(
-                targetPlayer,3,18));
+            if (move)
+            {
+                currentMoveAction = StartCoroutine
+                (enemyController.MoveToSameGround(
+                    targetPlayer,3,18));
         
-            yield return _moveIsNull;
-            
+                yield return _moveIsNull;
+            }
+
             enemyController.SetKBRes(999);
             currentAttackAction = StartCoroutine(enemyAttackManager.HB05_Action03_B());
         }
@@ -393,6 +444,8 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
     {
         ActionStart();
 
+        controllAfflictionProtect = true;
+
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
 
         if (dragonDrive)
@@ -408,19 +461,14 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
         }
         else
         {
-            // currentMoveAction = StartCoroutine
-            // (enemyController.MoveToSameGround(
-            //     targetPlayer,3,5));
-            //
-            // yield return _moveIsNull;
-
             enemyController.SetKBRes(999);
             currentAttackAction = StartCoroutine(enemyAttackManager.HB05_Action04_N());
+            
         }
         
-        
-        
         yield return _attackIsNull;
+        
+        controllAfflictionProtect = false;
         
         enemyController.SetKBRes(status.knockbackRes);
 
@@ -433,7 +481,7 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
     protected IEnumerator ACT_Dragondrive(float interval)
     {
         ActionStart();
-        
+
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
 
         if (!dragonDrive)
@@ -462,8 +510,9 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
     protected IEnumerator ACT_AcheronFount(float interval)
     {
         ActionStart();
+        enemyController.SetActionUnable(false);
         
-        yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
+        yield return new WaitUntil(() => !enemyController.hurt);
         
         enemyController.SetKBRes(999);
         if (dragonDrive)
@@ -521,6 +570,10 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
     protected IEnumerator ACT_TopdownIce(float interval)
     {
         ActionStart();
+        breakable = false;
+        enemyController.SetKBRes(999);
+        enemyController.SetActionUnable(false);
+
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
 
         enemyController.SetKBRes(999);
@@ -530,16 +583,26 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
         enemyController.SetKBRes(status.knockbackRes);
 
         yield return new WaitForSeconds(interval);
+        breakable = true;
         ActionEnd();
     }
     
     protected IEnumerator ACT_NiflheimMist(float interval)
     {
+        enemyController.SetKBRes(999);
         ActionStart();
         yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
 
+        if (difficulty >= 4)
+        {
+            var superAtk = new TimerBuff(1, 50, status is SpecialStatusManager ? 15:90, 4, 8105401);
+            superAtk.dispellable = false;
+            status.ObtainTimerBuff(superAtk);
+        }
+
         if (!Projectile_C007_2_Boss.Instance.FogStarted)
         {
+            enemyController.SetActionUnable(false);
             enemyController.SetKBRes(999);
             currentAttackAction = StartCoroutine(enemyAttackManager.HB05_Action11());
             yield return _attackIsNull;
@@ -555,18 +618,18 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
     protected IEnumerator ACT_SnowStorm(float interval)
     {
         ActionStart();
-        yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
-
-        
+        breakable = false;
         enemyController.SetKBRes(999);
+        
+        yield return new WaitUntil(() => !enemyController.hurt && enemyController.grounded);
+        
         currentAttackAction = StartCoroutine(enemyAttackManager.HB05_Action12());
         yield return _attackIsNull;
         
         enemyController.SetKBRes(status.knockbackRes);
 
         yield return new WaitForSeconds(interval);
-        
-
+        breakable = true;
         ActionEnd();
     }
     protected IEnumerator ACT_PowerUp(float interval)
@@ -585,6 +648,43 @@ public class HB05_BehaviorTree : EnemyBehaviorManager
         
 
         ActionEnd();
+    }
+    
+    protected IEnumerator ChangePhaseAnimationRoutine()
+    {
+        ActionStart();
+        enemyController.SetHitSensor(false);
+        enemyController.SetActionUnable(false);
+        yield return new WaitUntil(() => !enemyController.hurt);
+        yield return null;
+        
+        print("startPhaseChange");
+        currentAttackAction = 
+            StartCoroutine(enemyAttackManager.HB05_Action14());
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        if (Projectile_C007_2_Boss.Instance != null)
+        {
+            //Destroy(Projectile_C007_2_Boss.Instance.gameObject);
+        }
+        
+        print("转P2");
+        
+        var p2_boss = Instantiate(p2Prefab,transform.position,Quaternion.identity,transform.parent);
+        p2_boss.GetComponent<EnemyController>().TurnMove(targetPlayer);
+        
+        BattleStageManager.currentDisplayingBossInfo = 2;
+        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss,1);
+        p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
+        BattleEffectManager.Instance.PlayBGM(false);
+        ActionEnd();
+        yield return null;
+        
+        BattleEffectManager.Instance.SetBGM(p2BGM);
+        BattleEffectManager.Instance.PlayBGM(true);
+        //BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.BlessingWorld);
+
+        Destroy(gameObject);
     }
     
     

@@ -283,7 +283,7 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         }
 
 
-        yield return new WaitForSeconds(3.6f);
+        yield return new WaitForSeconds(1.6f);
         anim.Play("s1");
 
         yield return null;
@@ -314,6 +314,7 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         if (_behavior.difficulty == 5)
         {
             _statusManager.ObtainTimerBuff(legendPlusBuff);
+            _statusManager.SpeedUpGeneral(7, 10, 20,false);
         }
         StageCameraController.SwitchOverallCamera();
         ac.SetHitSensor(false);
@@ -347,7 +348,7 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         AppearRenderer();
         ac.SetHitSensor(true);
 
-        yield return new WaitForSeconds(3.6f);
+        yield return new WaitForSeconds(1.6f);
         anim.Play("s1");
 
         yield return null;
@@ -383,8 +384,9 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         ChangeSkyColor(Color.black, 1f);
         yield return new WaitForSeconds(1.2f);
         BattleStageManager.Instance.ClearAllFieldAbility();
-        BattleStageManager.Instance.RemoveFieldAbility(20034);
-        BattleStageManager.Instance.AddFieldAbility(20033);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DefenseIgnoreWorld);
+        BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.ReflectionWorld);
+        
         currentWorld = 1;
         
         ChangeSkyColor(worldColor1, 1f);
@@ -413,8 +415,8 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         ChangeSkyColor(Color.black, 1f);
         yield return new WaitForSeconds(1.2f);
         BattleStageManager.Instance.ClearAllFieldAbility();
-        BattleStageManager.Instance.RemoveFieldAbility(20033);
-        BattleStageManager.Instance.AddFieldAbility(20034);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.ReflectionWorld);
+        BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.DefenseIgnoreWorld);
         currentWorld = 2;
         
         ChangeSkyColor(worldColor2, 1f);
@@ -547,8 +549,8 @@ public class EnemyMoveController_HB02_Legend : EnemyMoveController_HB02
         
         ChangeSkyColor(Color.black, 1f);
         yield return new WaitForSeconds(1.2f);
-        BattleStageManager.Instance.RemoveFieldAbility(20034);
-        BattleStageManager.Instance.RemoveFieldAbility(20033);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DefenseIgnoreWorld);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.ReflectionWorld);
         currentWorld = 0;
         
         ChangeSkyColor(originColor, 1f);

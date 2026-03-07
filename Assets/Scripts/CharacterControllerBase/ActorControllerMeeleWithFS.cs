@@ -202,7 +202,7 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
           //      anim.SetInteger("combo",0);
      }
 
-     protected void OnIdleEnter()
+     protected virtual void OnIdleEnter()
      {
           if (comboStageResetRoutine != null)
           {
@@ -309,6 +309,8 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
           pi.isSkill = false;
           pi.stdAtk = false;
           speedModifier = 1f;
+          
+          
      }
 
 
@@ -547,6 +549,21 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
                     }
                     break;
                }
+               case 11:
+               {
+                    if (ta.GetNearestTargetInRangeDirection
+                        (facedir, 20f, 7f,
+                             LayerMask.GetMask("Enemies")) == null
+                        &&
+                        ta.GetNearestTargetInRangeDirection
+                        (-facedir, 20f, 7f,
+                             LayerMask.GetMask("Enemies")) != null)
+                    {
+                         SetFaceDir(-facedir);
+                    }
+
+                    break;
+               }
           }
      }
 
@@ -611,12 +628,59 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
           
           targetPos = BattleStageManager.Instance.OutOfPlatformBoundsCheck(gameObject,targetPos);
 
-
+          
 
           _tweener = rigid.DOMoveX(targetPos, 
                duration * Mathf.Abs(transform.position.x - targetPos) / moveDistance);
 
           
+          
+     }
+
+     public float GetHorizontalMovementPositionX(float moveDistance, float reachDistance, float height,
+          float duration, Ease easeType = Ease.OutSine)
+     {
+          var bogModifier = isBog ? 0.5f : 1;
+          
+          //向前方4格内Enemies层的敌人发一道射线
+          // var hit = Physics2D.OverlapArea(transform.position + new Vector3(0, height, 0),
+          //      transform.position + new Vector3(reachDistance, -height, 0), LayerMask.GetMask("Enemies"));
+        
+          var hitInfo = Physics2D.Raycast(transform.position, 
+               Vector2.right * facedir, reachDistance + moveDistance,
+               LayerMask.GetMask("Enemies"));
+        
+          //如果射线击中的敌人不为空且和自身距离小于1.5,return
+          float targetPos;
+
+          if (hitInfo.collider != null)
+          {
+               //玩家距离目标的距离
+               var distance = Mathf.Abs(hitInfo.point.x - transform.position.x);
+               //如果玩家距离目标过近，则不移动
+               if (distance <= reachDistance)
+                    return transform.position.x;
+
+               var moveableDistance = distance - reachDistance;
+
+               if (moveableDistance < moveDistance)
+               { 
+                    targetPos = hitInfo.point.x - facedir * reachDistance;
+               }
+               else
+               {
+                    targetPos = transform.position.x + facedir * bogModifier * moveDistance;
+               }
+               
+          }
+          else
+               targetPos = transform.position.x + facedir * moveDistance * bogModifier;
+
+          targetPos = BattleStageManager.Instance.OutOfRangeCheck(new Vector2(targetPos, transform.position.y)).x;
+          
+          targetPos = BattleStageManager.Instance.OutOfPlatformBoundsCheck(gameObject,targetPos);
+
+          return targetPos;
      }
 
 
@@ -655,47 +719,51 @@ public class ActorControllerMeeleWithFS : ActorController, IForceAttackable
      
      public void BladeForwardStep()
      {
-          var targetPosition = (transform.position + new Vector3(facedir * 2f, 0)).SafePosition(Vector2.zero);
-
-          var rayCastedPlatform = gameObject.RaycastedPlatform();
-
-          var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
-               rayCastedPlatform.bounds.max.x);
-          
-          _tweener = rigid.DOMoveX(endPos, 0.2f).SetEase(Ease.OutSine);
+          // var targetPosition = (transform.position + new Vector3(facedir * 2f, 0)).SafePosition(Vector2.zero);
+          //
+          // var rayCastedPlatform = gameObject.RaycastedPlatform();
+          //
+          // var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
+          //      rayCastedPlatform.bounds.max.x);
+          //
+          // _tweener = rigid.DOMoveX(endPos, 0.2f).SetEase(Ease.OutSine);
+          GeneralHorizontalMovementWithEnemyCheck(2f,2.5f,1.5f,0.2f);
           
      }
 
      public void LanceForceStrikeMove()
      {
-          var bogModifier = isBog ? 0.5f : 1;
           
-          var targetPosition = (transform.position + new Vector3(facedir * 8 * bogModifier, 0)).SafePosition(Vector2.zero);
-
-          var enemyReached = 
-               ta.GetNearestTargetInRangeDirection
-                    (facedir, 8, 1, LayerMask.GetMask("Enemies"));
-
-          if (enemyReached != null)
-          {
-               if (Mathf.Abs(enemyReached.position.x - transform.position.x) > 2)
-               {
-                    targetPosition.x = enemyReached.position.x - facedir * 2;
-               }
-               else
-               {
-                    targetPosition.x = transform.position.x;
-               }
-          }
-
-          var rayCastedPlatform = gameObject.RaycastedPlatform();
-
-          var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
-               rayCastedPlatform.bounds.max.x);
+          GeneralHorizontalMovementWithEnemyCheck(8f,2.5f,1.5f,0.5f);
           
-          print(endPos);
-
-          _tweener = rigid.DOMoveX(endPos, 0.5f * Mathf.Abs(transform.position.x - endPos) / 8f).SetEase(Ease.OutSine);
+          // var bogModifier = isBog ? 0.5f : 1;
+          //
+          // var targetPosition = (transform.position + new Vector3(facedir * 8 * bogModifier, 0)).SafePosition(Vector2.zero);
+          //
+          // var enemyReached = 
+          //      ta.GetNearestTargetInRangeDirection
+          //           (facedir, 8, 1, LayerMask.GetMask("Enemies"));
+          //
+          // if (enemyReached != null)
+          // {
+          //      if (Mathf.Abs(enemyReached.position.x - transform.position.x) > 2)
+          //      {
+          //           targetPosition.x = enemyReached.position.x - facedir * 2;
+          //      }
+          //      else
+          //      {
+          //           targetPosition.x = transform.position.x;
+          //      }
+          // }
+          //
+          // var rayCastedPlatform = gameObject.RaycastedPlatform();
+          //
+          // var endPos = Mathf.Clamp(targetPosition.x, rayCastedPlatform.bounds.min.x,
+          //      rayCastedPlatform.bounds.max.x);
+          //
+          // print(endPos);
+          //
+          // _tweener = rigid.DOMoveX(endPos, 0.5f * Mathf.Abs(transform.position.x - endPos) / 8f).SetEase(Ease.OutSine);
           
 
      }

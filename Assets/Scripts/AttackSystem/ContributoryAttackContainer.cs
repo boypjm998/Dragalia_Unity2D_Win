@@ -10,7 +10,7 @@ public class ContributoryAttackContainer : AttackContainerEnemy, IEnemySealedCon
     
     private ForcedAttackFromEnemy enemyAttack;
     private Action<StatusManager> OnEnemyEnterAttack;
-    private bool isTriggeredForEnemy=false;
+    private int currentTriggeredEnemy = 0;
     private int characterNum = 0;
     private List<float> _enemyDmgModifier;
     private List<AttackInfo> _enemyAttackInfo;
@@ -73,9 +73,6 @@ public class ContributoryAttackContainer : AttackContainerEnemy, IEnemySealedCon
     {
         characterNum = _collider2Ds.Count;
         
-        
-        
-        
         for (int k = 0; k < enemyAttack.attackInfo.Count;k++)
         {
                 
@@ -101,12 +98,13 @@ public class ContributoryAttackContainer : AttackContainerEnemy, IEnemySealedCon
             }
             else if (other.CompareTag("Enemy"))
             {
-                //characterNum += 1;
+                print(other.transform.position);
             
-                if(isTriggeredForEnemy)
-                    return;
-                isTriggeredForEnemy = true;
-                OnEnemyEnterAttack?.Invoke(enemyAttack.enemySource.GetComponentInParent<StatusManager>());
+                // if(currentTriggeredEnemy + 1 > characterNum)
+                //     break;
+                currentTriggeredEnemy += 1;
+                OnEnemyEnterAttack?.Invoke(other.GetComponentInParent<StatusManager>());
+                //OnEnemyEnterAttack?.Invoke(enemyAttack.enemySource.GetComponentInParent<StatusManager>());
             }
         }
 

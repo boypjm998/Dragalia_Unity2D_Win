@@ -69,6 +69,7 @@ public class UI_AdventurerStatusInfo : MonoBehaviour
         
         
         _shieldSlider = transform.Find("Shield").GetComponent<Slider>();
+        _shieldSlider.direction = Slider.Direction.LeftToRight;
         
         statusManager.OnBuffEventDelegate += UpdateShield;
         statusManager.OnBuffDispelledEventDelegate += UpdateShield;

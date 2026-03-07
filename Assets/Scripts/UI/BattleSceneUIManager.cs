@@ -31,7 +31,7 @@ public class BattleSceneUIManager : MonoBehaviour
     private IEnumerator Start()
     {
         yield return new WaitUntil(() => GlobalController.currentGameState == GlobalController.GameState.Inbattle);
-        pi = FindObjectOfType<PlayerInput>();
+        pi = BattleStageManager.Instance.GetPlayer().GetComponent<PlayerInput>();
     }
 
     private void Update()
@@ -51,6 +51,16 @@ public class BattleSceneUIManager : MonoBehaviour
                 OpenPauseMenu();
             }
         }
+
+        if (pi.buttonZoomIn.OnPressed)
+        {
+            StageCameraController.Instance?.MainCameraZoom(-1);
+        }
+        else if(pi.buttonZoomOut.OnPressed)
+        {
+            StageCameraController.Instance?.MainCameraZoom(1);
+        }
+        
     }
 
     public void OpenPauseMenu()

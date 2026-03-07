@@ -51,6 +51,7 @@ public class CustomMeeleFromEnemy : AttackFromEnemy
                 if (knockbackable.GetDodge())
                 {
                     knockbackable.InvokeDodge(this,enemySource);
+                    OnAttackBeingDodge?.Invoke(this, collision.transform.parent.gameObject);
                     return;
                 }
 

@@ -8,8 +8,10 @@ public class DrasticForce : MonoSingleton<DrasticForce>
 {
     public float duration = 40f;
     
-    public static int MaxCount = 10;
+    public int MaxCount = 10;
     
+    public event Action<float> OnResetDuration; 
+
     public int StackCount => leftTimeList.Count;
 
     public float LeftTime
@@ -24,6 +26,12 @@ public class DrasticForce : MonoSingleton<DrasticForce>
     }
     
     private List<float> leftTimeList = new List<float>();
+
+    public void SetDuration(float duration)
+    {
+        this.duration = duration;
+        OnResetDuration?.Invoke(duration);
+    }
     private void Update()
     {
         TickLeftTime();
@@ -33,6 +41,14 @@ public class DrasticForce : MonoSingleton<DrasticForce>
     {
         leftTimeList.Add(duration);
         if (leftTimeList.Count > MaxCount)
+        {
+            leftTimeList.RemoveAt(0);
+        }
+    }
+    
+    public void RemoveOneDrasticForce()
+    {
+        if (leftTimeList.Count > 0)
         {
             leftTimeList.RemoveAt(0);
         }

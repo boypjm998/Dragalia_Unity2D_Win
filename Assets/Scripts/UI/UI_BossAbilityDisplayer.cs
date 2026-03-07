@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,14 +10,16 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
     private GameObject abilityInfo;
     private Image iconImage;
     public int abilityID;
+    public StatusManager stat;
 
-    
     private bool mouseIsFollowing = false;
-
     private RectTransform _rectTransform;
-
     private Vector3 offset = Vector2.zero;
-    // Start is called before the first frame update
+
+    [SerializeField] private TextMeshProUGUI abilityExtraMessage;
+    
+    public TextMeshProUGUI AbilityExtraMessage => abilityExtraMessage;
+    
     void Start()
     {
         abilityInfo = transform.Find("Info").gameObject;
@@ -24,7 +27,10 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
         iconImage = GetComponent<Image>();
         BattleStageManager.Instance.OnFieldAbilityAdd += CheckAbilityActive;
         BattleStageManager.Instance.OnFieldAbilityRemove += CheckAbilityInactive;
+        BattleStageManager.Instance.OnFieldAbilityEvent += DoIconEvent;
+        
         _rectTransform = abilityInfo.GetComponent<RectTransform>();
+        abilityExtraMessage = GetComponentInChildren<TextMeshProUGUI>();
     }
 
     
@@ -54,6 +60,7 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
     {
         BattleStageManager.Instance.OnFieldAbilityAdd -= CheckAbilityActive;
         BattleStageManager.Instance.OnFieldAbilityRemove -= CheckAbilityInactive;
+        BattleStageManager.Instance.OnFieldAbilityEvent -= DoIconEvent;
     }
 
     // Update is called once per frame
@@ -113,4 +120,84 @@ public class UI_BossAbilityDisplayer : MonoBehaviour
             iconImage.color = Color.gray;
         }
     }
+
+    protected void DoIconEvent(int id, StatusManager stat, EnemyAbilityIconEvent @event)
+    {
+        if (abilityExtraMessage == null)
+            return;
+        
+        
+        if (id != this.abilityID)
+        {
+            return;
+        }
+        
+        if(this.stat!= null && stat != this.stat)
+        {
+            return;
+        }
+
+        switch (@event.Type)
+        {
+            case EnemyAbilityIconEvent.EventType.DisplayOrHide:
+            {
+                if (@event.Message == "0")
+                {
+                    abilityExtraMessage.color = Color.clear;
+                }
+                else
+                {
+                    abilityExtraMessage.color = Color.white;
+                }
+                break;
+            }
+            case EnemyAbilityIconEvent.EventType.PlusOrMinus:
+            {
+                try
+                {
+                    int value = int.Parse(@event.Message);
+                    int current = int.Parse(abilityExtraMessage.text);
+                    int final = Mathf.Clamp(current + value,0,999);
+                    
+                    abilityExtraMessage.text = final.ToString();
+                }
+                catch(Exception e)
+                {
+                    abilityExtraMessage.text = "0";
+                    Debug.LogWarning("Error in parsing message to int");
+                    return;
+                }
+                break;
+            }
+            case EnemyAbilityIconEvent.EventType.SetNumber:
+            {
+                int value = int.Parse(@event.Message);
+                abilityExtraMessage.text = value.ToString();
+                break;
+            }
+            case EnemyAbilityIconEvent.EventType.SetText:
+            {
+                abilityExtraMessage.text = @event.Message;
+                break;
+            }
+            case EnemyAbilityIconEvent.EventType.Custom:
+            {
+                @event.DoAction(this);
+                break;
+            }
+            case EnemyAbilityIconEvent.EventType.IconActive:
+            {
+                SetIconActive(@event.Message == "0" ? false : true);
+                break;
+            }
+            default:break;
+        }
+        
+        
+        
+    }
+    
+    
+    
+    
 }

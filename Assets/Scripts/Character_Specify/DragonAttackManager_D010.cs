@@ -11,7 +11,7 @@ public class DragonAttackManager_D010 : AttackManager
     public DragonControllerSpecial_D010 dc;
     private AttackContainer skill2Container;
 
-    private bool skill3Boosted = false;
+    //private bool skill3Boosted = false;
     
 
     protected override void Awake()
@@ -21,7 +21,7 @@ public class DragonAttackManager_D010 : AttackManager
         MeeleAttackFXLayer = ac.transform.Find("MeeleAttackFX").gameObject;
         BuffFXLayer = ac.transform.Find("BuffLayer").gameObject;
         dc = GetComponent<DragonControllerSpecial_D010>();
-        skill3Boosted = UI_AdventurerSelectionMenu.CheckSkillUpgradable(10, 3) == 2;
+        //skill3Boosted = UI_AdventurerSelectionMenu.CheckSkillUpgradable(10, 3) == 2;
     }
 
     protected override void Start()
@@ -128,9 +128,10 @@ public class DragonAttackManager_D010 : AttackManager
     protected void Skill1(int eventID)
     {
         
-        if (skill3Boosted)
+        if (_statusManager.HasCondition((int)BasicCalculation.BattleCondition.FaerieSunrise))
         {
             (ac as ActorController)._statusManager.FillSP(3,10);
+            _statusManager.HPRegenImmediately(0, 10, false);
         }
         
         var container = Instantiate(attackContainer,
@@ -167,9 +168,10 @@ public class DragonAttackManager_D010 : AttackManager
     {
         if (eventID == 1)
         {
-            if (skill3Boosted)
+            if (_statusManager.HasCondition((int)BasicCalculation.BattleCondition.FaerieSunrise))
             {
-                (ac as ActorController_c010)._statusManager.FillSP(3,10);
+                (ac as ActorController)._statusManager.FillSP(3,10);
+                _statusManager.HPRegenImmediately(0, 10, false);
             }
             
             var container = Instantiate(attackContainer, ac.transform.position, Quaternion.identity, MeeleAttackFXLayer.transform);
@@ -193,6 +195,21 @@ public class DragonAttackManager_D010 : AttackManager
                 new string[] {"0.5"});
             
             projSkill.GetComponent<AttackFromPlayer>().AddConditionalAttackEffect(conditional_eff);
+            
+            AttackBase.AttackBaseDelegate handler = null;
+        
+            handler = (atk, tar) =>
+            {
+                if ((atk as AttackFromPlayer).attackId < 1)
+                {
+                    return;
+                }
+                atk.OnAttackHit -= handler;
+                if(GlobalController.currentGameState == GlobalController.GameState.Inbattle)
+                    BattleStageManager.Instance.TimeScaleEffect(0.1f,0.25f);
+            };
+        
+            projSkill.GetComponent<AttackFromPlayer>().OnAttackHit += handler;
 
 
         }else if (eventID == 2)

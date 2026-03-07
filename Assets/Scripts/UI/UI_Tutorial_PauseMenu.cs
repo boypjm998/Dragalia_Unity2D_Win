@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class UI_Tutorial_PauseMenu : UI_PauseMenu
 {
-    public static UI_Tutorial_PauseMenu Instance { get; private set; }
+    public static UI_Tutorial_PauseMenu Instance { get; protected set; }
     
     // Start is called before the first frame update
     private TutorialLevelManager _tutorialLevelManager;

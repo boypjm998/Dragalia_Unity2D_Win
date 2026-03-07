@@ -26,6 +26,9 @@ public class UI_BattleInfoCaster : MonoBehaviour
 
     protected JsonData BossSkillNameData;
     protected JsonData BossVoiceTextData;
+    
+    private Color _color1 = new Color(0.56f, 0.56f, 0.56f);
+    private Color _color2 = new Color(0.1f, 0.9f, 1f);
 
     private void Awake()
     {
@@ -59,13 +62,22 @@ public class UI_BattleInfoCaster : MonoBehaviour
         
     }
 
-    public void PrintSkillName(string actionName)
+    public void PrintSkillName(string actionName, int colorType = 1)
     {
         string txt;
         string title;
         //title为actionName第一个_前的字符串
         title = actionName.Substring(0, actionName.IndexOf("_"));
         //print(title);
+        if (colorType == 1)
+        {
+            _banner.color = new Color(_color1.r, _color1.g, _color1.b, 0);
+        }
+        else
+        {
+            _banner.color = new Color(_color2.r, _color2.g, _color2.b, 0);
+        }
+        
         
         switch (_globalController.GameLanguage)
         {

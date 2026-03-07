@@ -40,6 +40,9 @@ public class TutorialLevelManager : MonoBehaviour
     public KeyCode keySpecial = KeyCode.None;
     public KeyCode keyEsc = KeyCode.Escape;
     public KeyCode keyUp = KeyCode.None;
+    public KeyCode keyZoomIn = KeyCode.None;
+    public KeyCode keyZoomOut = KeyCode.None;
+    
     private bool moveNext = false;
     
     [Header("Debug")]
@@ -187,22 +190,23 @@ public class TutorialLevelManager : MonoBehaviour
         keyDown = KeyCode.S;
         keyLeft = KeyCode.A;
         keyRight = KeyCode.D;
-        keySpecial = KeyCode.Space;
+        keyZoomIn = KeyCode.Q;
+        keyZoomOut = KeyCode.E;
+        keyUp = KeyCode.W;
         
         if (defaultSettingGroupID == 1)
         {
-            keyJump = KeyCode.W;
-            keyUp = KeyCode.None;
+            keyJump = KeyCode.Space;
             keyAttack = KeyCode.H;
             keyRoll = KeyCode.LeftShift;
             keySkill1 = KeyCode.J;
             keySkill2 = KeyCode.K;
             keySkill3 = KeyCode.L;
             keySkill4 = KeyCode.C;
+            keySpecial = KeyCode.V;
         }
         else
         {
-            keyUp = KeyCode.W;
             keyJump = KeyCode.K;
             keyAttack = KeyCode.J;
             keyRoll = KeyCode.L;
@@ -210,10 +214,11 @@ public class TutorialLevelManager : MonoBehaviour
             keySkill2 = KeyCode.I;
             keySkill3 = KeyCode.O;
             keySkill4 = KeyCode.H;
+            keySpecial = KeyCode.Space;
         }
         var playerInput = FindObjectOfType<PlayerInput>();
         
-        var settings = new[] {keyAttack, keySkill1, keySkill2, keySkill3, keySkill4, keyLeft, keyRight, keySpecial, keyDown, keyRoll, keyJump, keyEsc};
+        var settings = new[] {keyAttack, keySkill1, keySkill2, keySkill3, keySkill4, keyLeft, keyRight, keySpecial, keyDown, keyRoll, keyJump, keyEsc, keyUp, keyZoomIn, keyZoomOut};
         
         playerInput.SetKeySetting(settings);
         print(playerInput.keyLeft);
@@ -231,6 +236,8 @@ public class TutorialLevelManager : MonoBehaviour
         GlobalController.keyRoll = keyRoll;
         GlobalController.keyJump = keyJump;
         GlobalController.keyUpNew = keyUp;
+        GlobalController.keyZoomIn = keyZoomIn;
+        GlobalController.keyZoomOut = keyZoomOut;
         
         GlobalController.Instance.WritePlayerSettingsToFile();
         
@@ -771,6 +778,12 @@ public class TutorialLevelManager : MonoBehaviour
         yield return new WaitUntil(() => !bossBehavior.isAction);
         
         bossBehavior.SetState(3);
+        
+        playerStat.OnSpecialBuffDelegate?.
+            Invoke(UI_BuffLogPopManager.SpecialConditionType.AutoChargeRateUp.ToString());
+        (playerStat as PlayerStatusManager).SetSPChargeRateAll(500);
+
+
         //PlayStoryVoiceWithDialog(30,8003,sharedVoice);
         //bossStatusManager.baseBreak *= 2;
         //Dotween将float类型的bossStatusManager.currentBreak增加到baseBreak的数值

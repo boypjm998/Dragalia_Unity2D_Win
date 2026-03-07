@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CharacterSpecificProjectiles
 {
-    public class Projectile_C003_6_PL : MonoBehaviour
+    public class Projectile_C003_6_PL : MonoSingleton<Projectile_C003_6_PL>
     {
         protected List<GameObject> stars = new();
         List<Animator> startAnimators = new();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DG.Tweening;
@@ -34,7 +35,8 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
     [SerializeField] private GameObject DPS_PauseMenu;
     [SerializeField] private GameObject DPS_PauseMenuEN;
     
-    
+    [SerializeField] private GameObject TutorialPauseMenu;
+    [SerializeField] private GameObject TutorialPauseMenuEN;
     
     
     
@@ -46,6 +48,7 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         ac = GetComponent<EnemyControllerHumanoid>();
         _statusManager.OnHPChange += TurnMoveToTarget;
         _statusManager.OnHPDecrease += AddTotalDamage;
+        _statusManager.ImmuneToAllControlAffliction = true;
         BattleStageManager.Instance.OnGameStart += ResetTime;
     }
 
@@ -76,6 +79,32 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         
         var ui = Instantiate(prefab, GameObject.Find("UI").transform);
         ui.GetComponent<UI_DPS_PauseMenu>().dmgSource = this;
+        return ui;
+    }
+    
+    public GameObject InstantiateNewTutorialMenu()
+    {
+        var prefab = GlobalController.Instance.GameLanguage == GlobalController.Language.EN ? TutorialPauseMenuEN : TutorialPauseMenu;
+        
+        var ui = Instantiate(prefab, GameObject.Find("UI").transform);
+        
+        /*var UI_DetailedCharacterTutorial = ui.GetComponent<UI_DetailedCharacterTutorial>();
+        
+        var tutorialAssetDict = UI_DetailedCharacterTutorial.tutorialAssetDict;
+        
+        var bundlePathList = tutorialAssetDict.
+            Find(x =>
+                x.charaID == GlobalController.currentCharacterID).assetBundleList;
+        
+        //异步加载AssetBundle
+        foreach (var bundlePath in bundlePathList)
+        {
+            var truePath = $"training_bundle/{bundlePath}";
+            var bundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, truePath));
+            print(bundle.name);
+            GlobalController.Instance.loadedBundles.Add(truePath, bundle);
+        }*/
+        
         return ui;
     }
 
@@ -275,6 +304,8 @@ public class EnemyMoveController_E9001 : EnemyMoveManager
         yield return new WaitForSeconds(4f);
 
         UI_DialogDisplayer.Instance.EnqueueDialogShared(10101,90013,null);
+
+        _statusManager.ImmuneToAllControlAffliction = false;
     }
 
 

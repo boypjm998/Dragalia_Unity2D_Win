@@ -1,0 +1,199 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "buff",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "nihil",
+          "args": [ 1000, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_chase",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "cross",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "fireball",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_chase",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_mixed",
+          "args": [ 3 , 2 ],
+          "jump_action": "next",
+          "jump_args": [ 1 ]
+        },
+        {
+          "action_name": "buff",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 2,
+      "args": [ 80, 5 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "explosion",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_mixed",
+          "args": [ 2 , 1 ],
+          "jump_action": "next",
+          "jump_args": [ 1 ]
+        },
+        {
+          "action_name": "cross",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_chase",
+          "args": [ 0.5 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_chase",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "explosion",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "buff",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_mixed",
+          "args": [ 1 , 2 ],
+          "jump_action": "next",
+          "jump_args": [ 1 ]
+        },
+        {
+          "action_name": "around",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_fixed",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "cross",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "wave",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_mixed",
+          "args": [ 3 , 1 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "wave",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_fixed",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "fireball",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "nihil",
+          "args": [ 1000, 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "crystal_mixed",
+          "args": [ 2 , 1 ],
+          "jump_action": "loop",
+          "jump_args": []
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 2,
+      "args": []
+    }
+  ]
+}

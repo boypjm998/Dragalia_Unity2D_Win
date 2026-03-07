@@ -12,6 +12,7 @@ public class EnemyController : ActorBase
     //Stats of Enemy
     [SerializeField] protected bool isSummonEnemy = false;
     public GameObject rendererObject;
+    public bool notTarget = false;
 
     //public Animator anim;
     public Coroutine ActionTask = null;
@@ -20,17 +21,21 @@ public class EnemyController : ActorBase
     protected DragaliaEnemyBehavior _behavior;
 
     public delegate void OnTask(bool success);
+
     public delegate void OnVoidTask();
-    public delegate void OnAttackTask(AttackBase attack,GameObject source);
+
+    public delegate void OnAttackTask(AttackBase attack, GameObject source);
+
     //public delegate void OnHurt();
     //委托
     public OnTask OnMoveFinished;
     public OnVoidTask OnBeingCountered;
+
     public OnAttackTask OnDodgeSuccess;
     //public OnHurt OnAttackInterrupt;
     //public OnTask OnAttackFinished;
-    
-    
+
+
     //public Rigidbody2D rigid;
     private int enemyid;
     private bool isBoss;
@@ -38,18 +43,20 @@ public class EnemyController : ActorBase
     public float disappearTimeAfterDeath = 0;
 
     public bool displayHPBar = false;
+
     public Vector2 HPBarOffset = new Vector2(0, 0);
+
     //public int facedir = 1;
     public bool hurt;
     public bool grounded => anim.GetBool("isGround");
     public StandardGroundSensor _groundSensor;
-    
+
     public bool counterOn = false;
     protected float isMove = 0;
 
     //Hurt Effect
-    [SerializeField]
-    protected GameObject flashBody; //FlashTarget
+    [SerializeField] protected GameObject flashBody; //FlashTarget
+
     //protected SpriteRenderer spriteRenderer;
     //[SerializeField]private SpriteRenderer animRenderer;
     //protected Material originMaterial;
@@ -60,15 +67,14 @@ public class EnemyController : ActorBase
     protected Coroutine KnockbackRoutine;
     public Coroutine VerticalMoveRoutine;
     protected Coroutine breakRoutine;
-    
-    [SerializeField]
-    protected float hurtEffectDuration = 0.1f;
+
+    [SerializeField] protected float hurtEffectDuration = 0.1f;
 
     protected StatusManager _statusManager;
     protected BattleEffectManager _effectManager;
-    
+
     public int currentKBRes;
-    
+
 
 
 
@@ -82,11 +88,11 @@ public class EnemyController : ActorBase
         currentKBRes = _statusManager.knockbackRes;
         rigid = GetComponent<Rigidbody2D>();
         shadowCaster = GetComponentInChildren<MyShadowCaster>();
-        var attackfromplayers = FindObjectsOfType<AttackFromPlayer>();
-        foreach (var attackfromplayer in attackfromplayers)
-        {
-            attackfromplayer.hitFlags.Add(gameObject.GetInstanceID());
-        }
+        // var attackfromplayers = FindObjectsOfType<AttackFromPlayer>();
+        // foreach (var attackfromplayer in attackfromplayers)
+        // {
+        //     attackfromplayer.hitFlags.Add(gameObject.GetInstanceID());
+        // }
 
         if (_statusManager is SpecialStatusManager)
         {
@@ -97,21 +103,23 @@ public class EnemyController : ActorBase
         {
             InitSimpleHealthBar();
         }
+
         BattleStageManager.Instance.InvokeEnemyOnAwake(gameObject);
         _statusManager.OnReceiveControlAffliction += OnReceiveControlAffliction;
 
 
     }
+
     protected override void Awake()
     {
         base.Awake();
         anim = GetComponentInChildren<Animator>();
-        
+
     }
 
     // Update is called once per frame
-    
-    
+
+
     protected virtual void CheckFaceDir()
     {
         if (facedir == 1)
@@ -127,52 +135,52 @@ public class EnemyController : ActorBase
             //rigid.transform.eulerAngles = new Vector3(0, 180, 0);
         }
     }
-    
+
     public override void SetFaceDir(int dir)
     {
         facedir = dir;
         CheckFaceDir();
     }
 
-    public override void TakeDamage(float kbpower, float kbtime,float kbForce, Vector2 kbDir) 
+    public override void TakeDamage(float kbpower, float kbtime, float kbForce, Vector2 kbDir)
     {
         //anim = GetComponent<Animator>();
         //Debug.Log(anim.name);
         //anim.SetTrigger("hurt");
         Flash();
     }
-    
+
     public override void TakeDamage(AttackBase atkBase, Vector2 kbdir)
     {
         Flash();
-        
+
         var kbpower = atkBase.attackInfo[0].knockbackPower;
         var kbtime = atkBase.attackInfo[0].knockbackTime;
         var kbForce = atkBase.attackInfo[0].knockbackForce;
-        
+
         // if (currentKBRes - kbpower >= 100)
         // {
         //     return;
         // }
 
         var rand = Random.Range(0, 100);
-        if (rand > kbpower-currentKBRes || currentKBRes - kbpower >= 100)
+        if (rand >= kbpower - currentKBRes || currentKBRes - kbpower >= 100)
         {
-            if(_statusManager is not SpecialStatusManager)
+            if (_statusManager is not SpecialStatusManager)
                 return;
-            
+
             if (counterOn && kbpower > currentKBRes)
             {
                 if (atkBase.GetComponentInParent<AttackContainer>().IfODCounter == false)
                 {
-                    DamageNumberManager.GenerateCounterText(transform, true);
+                    DamageNumberManager.GenerateCounterText(transform, true, _statusManager.height);
                     atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
                 }
             }
 
             return;
         }
-        
+
 
         if (KnockbackRoutine != null)
         {
@@ -180,42 +188,50 @@ public class EnemyController : ActorBase
         }
         else
         {
-            currentKBRes += (int)(kbtime*5)+1;
+            currentKBRes += (int)(kbtime * 5) + 1;
         }
+
         if (counterOn)
         {
-            //_effectManager.DisplayCounterIcon(gameObject,false);
-             DamageNumberManager.GenerateCounterText(transform);
-            
-             _statusManager.ObtainUnstackableTimerBuff
-             ((int)BasicCalculation.BattleCondition.Vulnerable,
-                 10,10,9999);
-             _statusManager.ObtainUnstackableTimerBuff
-             ((int)BasicCalculation.BattleCondition.AtkDebuff,
-                 30,7,9999);
-            atkBase.GetComponentInParent<AttackContainer>().IfODCounter = true;
-            //counterOn = false;
+            var container = atkBase.GetComponentInParent<AttackContainer>();
+
+            if (container.IfSuccessODCounter == false)
+                DamageNumberManager.GenerateCounterText(transform, false, _statusManager.height);
+
+            _statusManager.ObtainUnstackableTimerBuff
+            ((int)BasicCalculation.BattleCondition.Vulnerable,
+                10, 10, 9999);
+            _statusManager.ObtainUnstackableTimerBuff
+            ((int)BasicCalculation.BattleCondition.AtkDebuff,
+                30, 7, 9999);
+            container.IfODCounter = true;
+            container.IfSuccessODCounter = true;
+
+            OnBeingCountered?.Invoke();
+
+            //SetCounter(false);
         }
     }
+
     public override void TakeDamage(AttackInfo attackInfo, Vector2 kbdir)
     {
         Flash();
-        
+
         var kbpower = attackInfo.knockbackPower;
         var kbtime = attackInfo.knockbackTime;
         var kbForce = attackInfo.knockbackForce;
-        
+
         // if (currentKBRes - kbpower >= 100)
         // {
         //     return;
         // }
 
         var rand = Random.Range(0, 100);
-        if (rand > kbpower-currentKBRes || currentKBRes - kbpower >= 100)
+        if (rand > kbpower - currentKBRes || currentKBRes - kbpower >= 100)
         {
-            if(_statusManager is not SpecialStatusManager)
+            if (_statusManager is not SpecialStatusManager)
                 return;
-            
+
             // if (counterOn && kbpower > currentKBRes)
             // {
             //     if (atkBase.GetComponentInParent<AttackContainer>().IfODCounter == false)
@@ -227,7 +243,7 @@ public class EnemyController : ActorBase
 
             return;
         }
-        
+
 
         if (KnockbackRoutine != null)
         {
@@ -235,10 +251,10 @@ public class EnemyController : ActorBase
         }
         else
         {
-            currentKBRes += (int)(kbtime*5)+1;
+            currentKBRes += (int)(kbtime * 5) + 1;
         }
     }
-    
+
     public void EnemyActionStart(int actionID)
     {
         //MoveManager.UseMove(actionID);
@@ -255,6 +271,7 @@ public class EnemyController : ActorBase
             //spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,100);
             yield return null;
         }
+
         flashBody.SetActive(false);
         //spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
         hurtEffectCoroutine = null;
@@ -267,15 +284,18 @@ public class EnemyController : ActorBase
             StopCoroutine(hurtEffectCoroutine);
 
         }
+
         hurtEffectCoroutine = StartCoroutine(HurtEffectCoroutine());
     }
 
-    public virtual IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistance, float startFollowDistance)
+    public virtual IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistance,
+        float startFollowDistance)
     {
         throw new NotImplementedException();
     }
-    
-    public virtual IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX, float arriveDistanceY, float startFollowDistance,bool continueThoughConditionOK=false)
+
+    public virtual IEnumerator MoveTowardTarget(GameObject target, float maxFollowTime, float arriveDistanceX,
+        float arriveDistanceY, float startFollowDistance, bool continueThoughConditionOK = false)
     {
         throw new NotImplementedException();
     }
@@ -284,7 +304,7 @@ public class EnemyController : ActorBase
     /// 不安全的方法，使用了反射机制
     /// </summary>
     /// <returns></returns>
-    public virtual bool GetConditionByCheckTarget(string functionName,GameObject target)
+    public virtual bool GetConditionByCheckTarget(string functionName, GameObject target)
     {
         var enemyAttackManager = GetComponent<EnemyMoveManager>();
         // 获取包含该函数的类的类型
@@ -297,8 +317,8 @@ public class EnemyController : ActorBase
             Debug.LogError("Function " + functionName + " does not exist");
             return false;
         }
-        
-        
+
+
         // 调用该函数并获取返回值
         bool result = (bool)methodInfo.Invoke(enemyAttackManager, new object[] { target });
 
@@ -310,34 +330,41 @@ public class EnemyController : ActorBase
     /// </summary>
     /// <param name="target"></param>
     /// <returns></returns>
-    public void TurnMove(GameObject target)
+    public void TurnMove(GameObject target, bool toward = true)
     {
         if (target.transform.position.x > transform.position.x)
         {
-            SetFaceDir(1);
+            if (toward)
+                SetFaceDir(1);
+            else SetFaceDir(-1);
         }
+
         if (target.transform.position.x < transform.position.x)
         {
-            SetFaceDir(-1);
+            if (toward)
+                SetFaceDir(-1);
+            else SetFaceDir(1);
         }
-        
+
     }
+
     protected float GetTargetDistanceX(GameObject target)
     {
         return target.transform.position.x - transform.position.x;
     }
+
     protected float GetTargetDistanceY(GameObject target)
     {
         return target.transform.position.y - transform.position.y;
     }
-    
+
     protected float GetTargetGroundDistanceY(GameObject target)
     {
         var box = target.GetComponent<Collider2D>();
-        
+
         //2023.10
         //print("targetPosY:"+target.transform.position.y);
-        
+
         //return target.RaycastedPosition().y + GetActorHeight() - transform.position.y;
         return box.bounds.max.y - (transform.position.y - 1.5f);
     }
@@ -346,18 +373,20 @@ public class EnemyController : ActorBase
     {
         return;
     }
-    
+
     public virtual void OnAttackEnter(int newKnockbackRes)
     {
         return;
     }
-    
+
     public virtual void OnAttackExit()
     {
         return;
     }
 
-    public virtual void OnHurtEnter()
+    
+
+public virtual void OnHurtEnter()
     {
         try
         {
@@ -388,7 +417,7 @@ public class EnemyController : ActorBase
                     if (!(_statusManager as SpecialStatusManager).broken)
                     {
                         _effectManager.DisplayCounterIcon(gameObject,false);
-                        DamageNumberManager.GenerateCounterText(transform);
+                        DamageNumberManager.GenerateCounterText(transform,false,_statusManager.height);
             
                         _statusManager.ObtainUnstackableTimerBuff
                         ((int)BasicCalculation.BattleCondition.Vulnerable,
@@ -401,7 +430,7 @@ public class EnemyController : ActorBase
                 else
                 {
                     _effectManager.DisplayCounterIcon(gameObject,false);
-                    DamageNumberManager.GenerateCounterText(transform);
+                    DamageNumberManager.GenerateCounterText(transform,false,_statusManager.height);
             
                     _statusManager.ObtainUnstackableTimerBuff
                     ((int)BasicCalculation.BattleCondition.Vulnerable,
@@ -580,7 +609,15 @@ public class EnemyController : ActorBase
         rigid.gravityScale = DefaultGravity;
     }
 
-    protected void SetGroundCollision(bool on)
+    public void SetFlashBody(bool flag)
+    {
+        if (flashBody != null)
+        {
+            flashBody.SetActive(flag);
+        }
+    }
+
+    public void SetGroundCollision(bool on)
     {
         
     var pltformCol = transform.Find("Platform Sensor")?.GetComponent<Collider2D>();

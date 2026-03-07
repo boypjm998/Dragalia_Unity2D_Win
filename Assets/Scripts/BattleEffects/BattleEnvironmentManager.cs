@@ -26,7 +26,10 @@ public class BattleEnvironmentManager : MonoBehaviour
     private GameObject globalSceneVolumeGO;
     private Light2D globalLight;
     [SerializeField] private List<Renderer> environmentRenderers = new List<Renderer>();
+    [SerializeField] private List<ParticleSystem> environmentParticleSystems = new List<ParticleSystem>();
+
     private Dictionary<string, Renderer> environmentRendererDict = new Dictionary<string, Renderer>();
+    private Dictionary<string, ParticleSystem> environmentParticleSystemDict = new Dictionary<string, ParticleSystem>();
 
     private void Awake()
     {
@@ -61,6 +64,12 @@ public class BattleEnvironmentManager : MonoBehaviour
         {
             environmentRendererDict.Add(renderer.gameObject.name, renderer);
         }
+        
+        //把environmentParticleSystems中的元素放到environmentParticleSystemDict中
+        foreach (var particleSystem in environmentParticleSystems)
+        {
+            environmentParticleSystemDict.Add(particleSystem.gameObject.name, particleSystem);
+        }
 
 
     }
@@ -80,6 +89,36 @@ public class BattleEnvironmentManager : MonoBehaviour
     public List<Renderer> GetAllEnvironmentRenderer()
     {
         return environmentRendererDict.Values.ToList();
+    }
+    
+    public void AddEnvironmentRenderer(Renderer renderer)
+    {
+        if (!environmentRenderers.Contains(renderer))
+        {
+            environmentRenderers.Add(renderer);
+            environmentRendererDict.Add(renderer.gameObject.name, renderer);
+        }
+    }
+    
+    private ParticleSystem GetParticleSystem(string name)
+    {
+        if (environmentParticleSystemDict.ContainsKey(name))
+        {
+            return environmentParticleSystemDict[name];
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    private void AddParticleSystem(ParticleSystem particleSystem)
+    {
+        if (!environmentParticleSystems.Contains(particleSystem))
+        {
+            environmentParticleSystems.Add(particleSystem);
+            environmentParticleSystemDict.Add(particleSystem.gameObject.name, particleSystem);
+        }
     }
 
 

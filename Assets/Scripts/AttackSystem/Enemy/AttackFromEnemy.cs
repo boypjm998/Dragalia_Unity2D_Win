@@ -22,7 +22,7 @@ public class AttackFromEnemy : AttackBase
     // public List<int> withConditionChance;
     // public List<int> withConditionNum; //一次上几个debuff？
     // public List<int> withConditionFlags;// 友军
-    [HideInInspector]public List<int> hitFlags;//遍历玩家做一个数组，每个玩家代表一个hitflag
+    public List<int> hitFlags;//遍历玩家做一个数组，每个玩家代表一个hitflag
 
 
     public GameObject hitConnectEffect;
@@ -166,7 +166,9 @@ public class AttackFromEnemy : AttackBase
             attack.withConditions.Add(conditionInfo);
         }
     }
+
     
+
     public void CauseDamage(Collider2D collision)
     {
         
@@ -273,11 +275,6 @@ public class AttackFromEnemy : AttackBase
     
     public override void ResetWithConditionFlags()
     {
-        // withConditionFlags.Clear();
-        //
-        // var enemyLayer = GameObject.Find("Player");
-        // for (var i = 0; i < enemyLayer.transform.childCount; i++)
-        //     withConditionFlags.Add(enemyLayer.transform.GetChild(i).GetInstanceID());
 
         var container = GetComponentInParent<AttackContainer>();
         container.checkedConditions?.Clear();

@@ -34,6 +34,8 @@ public class UI_ResultPage : MonoBehaviour
     private int getCrownLimitTime = 300;
 
     protected BattleStageManager battleManager;
+    
+    [SerializeField] UI_PopMenuAfterQuest popMenuPrefab;
 
     private void Awake()
     {
@@ -106,13 +108,71 @@ public class UI_ResultPage : MonoBehaviour
 
         bool isNewRecord = false;
         
+        var skillInfoBefore = UI_AdventurerSelectionMenu.CheckSkillUpgradeInfo();
         
-        battleManager.UpdateQuestSaveData
+        
+        var clearInfo = battleManager.UpdateQuestSaveData
             (new QuestSave(battleManager.quest_id,battleManager.currentTime,
                 ConditionCheck(1)?1:0,
                 ConditionCheck(2)?1:0,
                 ConditionCheck(3)?1:0),
                 ref isNewRecord);
+        GlobalController.Instance.UpdateQuestSaveData();
+        
+        var skillInfoAfter = UI_AdventurerSelectionMenu.CheckSkillUpgradeInfo();
+
+        var upgradedSkills = UI_AdventurerSelectionMenu.
+            CheckNewlyUpgradeSkillInfo(skillInfoBefore, skillInfoAfter);
+
+        var falldownQuests = QuestSeriesInfo.GetFalldownQuests(GlobalController.questID);
+        var fullClearedQuests = GlobalController.Instance.GetAllFullClearedQuestID();
+        
+        falldownQuests.RemoveAll(questID => fullClearedQuests.Contains(questID));
+        
+        if(!ConditionCheck(1) || !ConditionCheck(2) || !ConditionCheck(3))
+        {
+            falldownQuests.Clear();
+        }
+        
+        if (falldownQuests.Count > 0 || upgradedSkills.Count > 0)
+        {
+            var popMenu = Instantiate(popMenuPrefab, transform).GetComponent<UI_PopMenuAfterQuest>();
+            Debug.Log(skillInfoBefore.Count);
+            Debug.Log(skillInfoAfter.Count);
+            Debug.Log(falldownQuests.Count);
+            
+            if (falldownQuests.Count > 0)
+            {
+                
+                popMenu.AddNewQuestQuickClearPanel(falldownQuests);
+                foreach (var quest in falldownQuests)
+                {
+                    Debug.LogWarning(quest);
+                    //bool isNewRecord2 = false;
+                    battleManager.UpdateQuestSaveData
+                    (new QuestSave(quest,999,
+                            1,
+                            1,
+                            1));
+                    GlobalController.Instance.UpdateQuestSaveData();
+                    
+                }
+                
+                skillInfoAfter = UI_AdventurerSelectionMenu.CheckSkillUpgradeInfo();
+                upgradedSkills = UI_AdventurerSelectionMenu.
+                    CheckNewlyUpgradeSkillInfo(skillInfoBefore, skillInfoAfter);
+            }
+
+            for (int i = 0; i < upgradedSkills.Count; i++)
+            {
+                popMenu.AddNewSkillUpgradePanel(upgradedSkills[i].cid, upgradedSkills[i].sid);
+            }
+
+            
+            
+            popMenu.StartDisplayRoutine();
+        }
+        
 
         if (!isNewRecord)
         {

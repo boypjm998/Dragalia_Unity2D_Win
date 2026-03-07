@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UI_TutorialMenuAfterPrologue : MonoBehaviour
@@ -33,6 +34,9 @@ public class UI_TutorialMenuAfterPrologue : MonoBehaviour
         _canvasGroup.alpha = 1;
         _canvasGroup.blocksRaycasts = true;
         _canvasGroup.interactable = true;
+        gameObject.SetActive(true);
+        
+        EventSystem.current.SetSelectedGameObject(returnBtn.gameObject);
     }
 
     public void SetPanelInactive()
@@ -40,6 +44,9 @@ public class UI_TutorialMenuAfterPrologue : MonoBehaviour
         _canvasGroup.alpha = 0;
         _canvasGroup.blocksRaycasts = false;
         _canvasGroup.interactable = false;
+        gameObject.SetActive(false);
+        
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void NextPage()

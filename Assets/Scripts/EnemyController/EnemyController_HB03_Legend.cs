@@ -323,7 +323,7 @@ public class EnemyController_HB03_Legend : EnemyControllerHumanoidHigh
         StopExtraMove();
         
         SetGroundCollision(true);
-        anim.GetComponent<AnimationEventSender_Enemy>()?.ChangeFaceExpression(0.75f);
+        
         
 
         if (Projectile_C001_6_Boss.Instance != null)
@@ -348,6 +348,8 @@ public class EnemyController_HB03_Legend : EnemyControllerHumanoidHigh
         {
             spStat.breakDefRate -= 0.1f;
         }
+        
+        anim.GetComponent<AnimationEventSender_Enemy>()?.ChangeFaceExpression(0.75f);
         
         _floatEffectInstance.SetActive(false);
         

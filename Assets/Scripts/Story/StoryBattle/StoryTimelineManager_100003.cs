@@ -126,8 +126,11 @@ public class StoryTimelineManager_100003 : StoryBattleTimelineManager
         rawImg.texture = Texture;
         
         RTScene.SetActive(true);
-        
-        
+
+        if (StageCameraController.Instance != null)
+        {
+            StageCameraController.Instance.zoomLock = true;
+        }
         
         //FakeLoadStoryInfoForDebug();
         
@@ -137,7 +140,7 @@ public class StoryTimelineManager_100003 : StoryBattleTimelineManager
 
     private IEnumerator CutScene_01()
     {
-        GlobalController.currentCharacterID = 33;
+        GlobalController.Instance.SetFixedCharacter(33);
         
         //todo: Destory掉Loading Screen。
         var loadingScreen = GameObject.Find("LoadingScreen");
@@ -471,7 +474,7 @@ public class StoryTimelineManager_100003 : StoryBattleTimelineManager
         UI_MultiBossManager.Instance.GetComponentInChildren<UI_BossStatus>().visible = false;
         
         GlobalController.Instance.EndGame();
-        StageCameraController.SwitchMainCameraFollowObject(boss);
+        StageCameraController.SwitchMainCameraFollowObject(boss,false);
         StageCameraController.SetMainCameraSize(6);
         Time.timeScale = .5f;
         if (EC_minion != null)
@@ -484,7 +487,7 @@ public class StoryTimelineManager_100003 : StoryBattleTimelineManager
         SetCharacterUIAlpha(0);
         Time.timeScale = 1;
         StageCameraController.SetMainCameraSize(8);
-        StageCameraController.SwitchMainCameraFollowObject(GO_player);
+        StageCameraController.SwitchMainCameraFollowObject(GO_player,false);
         AC_player.TurnMove(boss);
         PI_player.DisableAndIdle();
         

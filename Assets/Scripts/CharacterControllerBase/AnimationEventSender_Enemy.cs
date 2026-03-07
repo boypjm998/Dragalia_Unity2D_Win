@@ -68,10 +68,10 @@ public class AnimationEventSender_Enemy : MonoBehaviour
     {
         //transform.rotation = Quaternion.Euler(0, 102, 0);
         if(_enemyController.facedir ==1)
-            transform.rotation = Quaternion.Euler(0, 102, 0);
+            transform.localRotation = Quaternion.Euler(0, 102, 0);
         else
         {
-            transform.rotation = Quaternion.Euler(0, -102, 0);
+            transform.localRotation = Quaternion.Euler(0, 102, 0);
         }
     }
     

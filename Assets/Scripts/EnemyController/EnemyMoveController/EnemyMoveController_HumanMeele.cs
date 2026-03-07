@@ -68,8 +68,92 @@ public class EnemyMoveController_HumanMeele : EnemyMoveManager
         anim.Play("idle");
         QuitAttack();
     }
+    
+    
+    /// <summary>
+    /// Sword Combo 1
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator HE01_AXE_Action01()
+    {
+        yield return _canActionOnGround;
+        
+        ac.OnAttackEnter(_statusManager.knockbackRes);
+
+        yield return new WaitForSeconds(0.5f);
+        
+        anim.Play("action01");
+
+        yield return null;
+        
+        yield return new WaitUntil(()=>
+            anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.3f);
+
+        InstantiateMeele(GetProjectileStartWithName("fx_e_axe_01"),
+            transform.position, InitContainer(true));
+        
+        yield return new WaitUntil(()=>
+            anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
+        
+        anim.Play("idle");
+        
+        QuitAttack();
+    }
+    
+    public IEnumerator HE01_AXE_Action03()
+    {
+        yield return _canActionOnGround;
+        
+        ac.OnAttackEnter(_statusManager.knockbackRes);
+        anim.Play("action03");
+
+        yield return null;
+        
+        yield return new WaitUntil(()=>
+            anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.35f);
+
+        InstantiateMeele(GetProjectileStartWithName("fx_e_axe_03"),
+            transform.position, InitContainer(true));
+        
+        yield return new WaitUntil(()=>
+            anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
+        
+        anim.Play("idle");
+        QuitAttack();
+    }
+
+    /// <summary>
+    /// 疯狂旋转
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator HE01_AXE_Action04()
+    {
+        yield return _canActionOnGround;
+        
+        ac.OnAttackEnter(999);
+
+        EnemyAttackPrefabGenerator.GenerateRectEnemyHintBar(ac, transform.position - new Vector3(0,1.5f),
+            MeeleAttackFXLayer.transform, new Vector2(3, 12), Vector2.zero, true,
+            1, 2, 90, 1, true, true);
 
 
+        yield return new WaitForSeconds(2f);
+        
+        anim.Play("float_entire");
+        
+        yield return new WaitUntil(()=>
+            anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.15f);
+        
+
+        InstantiateMeele(GetProjectileStartWithName("fx_e_axe_04"),
+            transform.position, InitContainer(true));
+        
+        yield return new WaitUntil(()=>
+            anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f);
+        
+        anim.Play("idle");
+        QuitAttack();
+    }
 
     public IEnumerator HE01_LAN_HI_Action01()
     {

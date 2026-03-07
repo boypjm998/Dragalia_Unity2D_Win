@@ -11,7 +11,7 @@ public class AttackManager_C043 : AttackManagerMeeleWithFS
     private GameObject skill2Container;
 
     private TimerBuff _forceStrikeBuff = new TimerBuff((int)BasicCalculation.BattleCondition.ForceStrikeDmgBuff,
-        50, 15, 1, 104301);
+        50, 20, 1, 104301);
     
     private TimerBuff _lastOffenseBuff = new TimerBuff((int)BasicCalculation.BattleCondition.AtkBuff,
         50, 20, 1, 104302);
@@ -216,7 +216,7 @@ public class AttackManager_C043 : AttackManagerMeeleWithFS
         buff.dispellable = false;
 
         _statusManager.ObtainTimerBuff(buff);
-        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.DefBuff, 30, 5);
+        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.DefBuff, 50, 5);
     }
     
     

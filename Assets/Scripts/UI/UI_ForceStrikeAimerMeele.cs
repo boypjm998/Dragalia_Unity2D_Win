@@ -21,7 +21,7 @@ public class UI_ForceStrikeAimerMeele : MonoBehaviour
 
     protected Transform fx;
 
-    public int forceDirection { get; private set; }
+    public int forceDirection { get; protected set; }
 
     private void Awake()
     {
@@ -111,7 +111,7 @@ public class UI_ForceStrikeAimerMeele : MonoBehaviour
         currentFSLV = ac.forceLevel;
     }
 
-    public void SetActorController(ActorControllerMeeleWithFS ac)
+    public virtual void SetActorController(ActorControllerMeeleWithFS ac)
     {
         this.ac = ac;
         _attackManager = ac.GetComponent<AttackManagerMeeleWithFS>();

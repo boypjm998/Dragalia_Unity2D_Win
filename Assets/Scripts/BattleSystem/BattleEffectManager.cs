@@ -41,6 +41,7 @@ public class BattleEffectManager : MonoBehaviour
     [SerializeField] private GameObject debuffFXPrefab;
     [SerializeField] private GameObject reviveFXPrefab;
     [SerializeField] private GameObject breakFXPrefab;
+    [SerializeField] private GameObject bleedingFXPrefab;
 
     [Header("ShapeShifting Effect")] 
     public GameObject shapeShiftPurgeFXPrefab;
@@ -70,6 +71,7 @@ public class BattleEffectManager : MonoBehaviour
     public AudioSource sharedVoiceSource;
     protected AudioSource bgmVoiceSource;
     public bool BGMHasSet { get => bgmVoiceSource.clip != null; }
+    public bool BGMIsPlaying { get => bgmVoiceSource.isPlaying; }
     public AudioClip BGMClip { get => bgmVoiceSource.clip; }
 
     public event Action<AudioClip,float> OnBGMClipPlay;
@@ -245,6 +247,7 @@ public class BattleEffectManager : MonoBehaviour
         var width = hitsensor.bounds.size.x;
         var height = hitsensor.bounds.size.y;
         var scaleFactor = Mathf.Min(width, height);
+        scaleFactor = Mathf.Clamp(scaleFactor, 1, 10);
         if (scaleFactor > 2f)
         {
             fx.transform.localScale = new Vector3(1, 1, 1) * (scaleFactor*0.5f);
@@ -330,6 +333,12 @@ public class BattleEffectManager : MonoBehaviour
         var prefab = Resources.Load<GameObject>("UI/InBattle/BattleHint/WeakPoint");
 
         return prefab;
+    }
+
+    public void PlayBleedingEffect(Vector2 position)
+    {
+        Instantiate(bleedingFXPrefab, position,
+            Quaternion.identity,BattleStageManager.Instance.RangedAttackFXLayer.transform);
     }
 
     public void PlayBreakEffect()

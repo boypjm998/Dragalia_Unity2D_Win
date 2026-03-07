@@ -38,6 +38,19 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
         }
     }
 
+    public GameObject SetDoScale(int axis)
+    {
+        doScale = true;
+        if (axis == 0)
+        {
+            transform.localScale = new Vector3(transform.localScale.x * 0.1f, transform.localScale.y, transform.localScale.z);
+        }else if (axis == 1)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * 0.1f, transform.localScale.z);
+        }
+
+        return gameObject;
+    }
 
     protected override IEnumerator Start()
     {
@@ -59,7 +72,7 @@ public class EnemyAttackHintBarRect2D : EnemyAttackHintBar
 
         _tweener = DOTween.To(() => fillRenderer.size,
             x => fillRenderer.size = x,
-            maxFillSize, warningTime);
+            maxFillSize, warningTime).SetEase(Ease.Linear);
 
         if (doScale)
         {

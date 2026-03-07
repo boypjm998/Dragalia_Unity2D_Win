@@ -36,6 +36,7 @@ public class CustomRangedFromPlayer : AttackFromPlayer
 
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
+            ClearComposite(collision.transform.parent.GetInstanceID());
             CauseDamage(collision);
         }
         

@@ -19,10 +19,7 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
         // if(attackCollider==null)
         //     attackCollider = GetComponent<Collider2D>();
         //selfpos = transform.parent.parent.parent;
-        if (isMeele)
-        {
-            ac.OnAttackInterrupt += DestroyContainer;
-        }
+        
     }
 
     protected override void Start()
@@ -31,6 +28,12 @@ public class ForcedAttackFromEnemy : AttackFromEnemy
         if (isAoE)
         {
             extraTargets.AddRange(DragaliaEnemyBehavior.GetPlayerList());
+        }
+        if (isMeele)
+        {
+            if(!ac)
+                ac = enemySource.GetComponent<EnemyController>();
+            ac.OnAttackInterrupt += DestroyContainer;
         }
 
 

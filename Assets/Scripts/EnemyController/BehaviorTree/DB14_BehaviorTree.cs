@@ -9,6 +9,9 @@ public class DB14_BehaviorTree : EnemyBehaviorManager
 {
     protected EnemyMoveController_DB14 enemyAttackManager;
     protected EnemyControllerFlyingHigh enemyController;
+    
+    [SerializeField] private GameObject phase2Prefab;
+    [SerializeField] private AudioClip phase2BGM;
 
     protected override void Awake()
     {
@@ -17,6 +20,11 @@ public class DB14_BehaviorTree : EnemyBehaviorManager
         enemyController = GetComponent<EnemyControllerFlyingHigh>();
         enemyController.OnMoveFinished += FinishMove;
         GetBehavior();
+        
+        if (enemyController.canDeath == false)
+        {
+            status.OnHPBelow0 += ToPhase2;
+        }
     }
 
     protected override void DoAction(int state, int substate)
@@ -389,6 +397,49 @@ public class DB14_BehaviorTree : EnemyBehaviorManager
     }
 
 
+    private void ToPhase2()
+    {
+        status.OnHPBelow0 -= ToPhase2;
+        
+        enemyController.StopAllCoroutines();
+        
+        ResetBossActionsBeforeTransform();
+        
+        currentAction = StartCoroutine(ChangePhaseAnimationRoutine());
+    }
+    
+    protected IEnumerator ChangePhaseAnimationRoutine()
+    {
+        
+        ActionStart();
+        
+        currentMoveAction = 
+            StartCoroutine(enemyAttackManager.DB14_Action11());
+        yield return new WaitUntil(()=>currentMoveAction == null);
+        
+        
+        var p2_boss = Instantiate(phase2Prefab,transform.position,Quaternion.identity,transform.parent);
+        p2_boss.GetComponent<EnemyController>().TurnMove(targetPlayer);
+        
+        BattleStageManager.currentDisplayingBossInfo = 2;
+        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss,1);
+        p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
+        BattleEffectManager.Instance.PlayBGM(false);
+        AudioScheduleManager.Instance.StopTween();
+        ActionEnd();
+        
+        yield return null;
+        
+        BattleEffectManager.Instance.SetBGM(phase2BGM);
+        BattleEffectManager.Instance.PlayBGM(true);
+        
+        p2_boss.GetComponentInChildren<Animator>()?.Play("intro");
+        p2_boss.GetComponentInChildren<VoiceControllerEnemy>()?.PlayIntroVoiceManually();
+        
+        
+        Destroy(gameObject);
+        
+    }
 
 
 }

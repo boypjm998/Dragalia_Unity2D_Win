@@ -1,0 +1,126 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "corrosion",
+          "args": [ 1500,2,0 ],
+          "jump_action": "random",
+          "jump_args": [1, 2]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-12,7,19500,750,
+            "e_9003_01",12,7,19500,750,
+            "e_9004_01",-9,0,10000,900,
+            "e_9004_01",9,0,10000,900,
+            "e_9003_01",-6,7,19500,750,
+            "e_9003_01",6,7,19500,750,
+            3],
+          "jump_action": "to",
+          "jump_args": [ 3 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",9,0,19500,750,
+            "e_9003_01",-9,0,19500,750,
+            "e_9004_01",-12,7,10000,900,
+            "e_9004_01",12,7,10000,900,
+            "e_9003_01",-6,7,19500,750,
+            "e_9003_01",6,7,19500,750,
+            3],
+          "jump_action": "to",
+          "jump_args": [ 3 ]
+        },
+        {
+          "action_name": "buff",
+          "args": [ 20, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "prison",
+          "args": [ 0,1 ],
+          "jump_action": "random+",
+          "jump_args": [1, 2]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 1, 1 ],
+          "jump_action": "to+",
+          "jump_args": [ 2 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 1, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "target_pillar",
+          "args": [ 2 ],
+          "jump_action": "next",
+          "jump_args": []
+        },
+        {
+          "action_name": "charge",
+          "args": [ 17500, 3, 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3 ],
+          "jump_action": "random+",
+          "jump_args": [1, 2]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",-12,7,19500,750,
+            "e_9003_01",12,7,19500,750,
+            "e_9004_01",-9,0,10000,900,
+            "e_9004_01",9,0,10000,900,
+            "e_9003_01",-6,7,19500,750,
+            "e_9003_01",6,7,19500,750,
+            3],
+          "jump_action": "to",
+          "jump_args": [ 3 ]
+        },
+        {
+          "action_name": "summon_monster",
+          "args": [ 6,
+            "e_9003_01",9,0,19500,750,
+            "e_9003_01",-9,0,19500,750,
+            "e_9004_01",-12,7,10000,900,
+            "e_9004_01",12,7,10000,900,
+            "e_9003_01",-6,7,19500,750,
+            "e_9003_01",6,7,19500,750,
+            3],
+          "jump_action": "to",
+          "jump_args": [ 3 ]
+        },
+        {
+          "action_name": "multi_around",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "platform_splash",
+          "args": [ 3 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "around",
+          "args": [ 3 ],
+          "jump_action": "random",
+          "jump_args": [1, 2]
+        }
+      ],
+      "jump_condition": "none",
+      "loopStartPoint": 0,
+      "args": []
+    }
+    
+  ]
+}

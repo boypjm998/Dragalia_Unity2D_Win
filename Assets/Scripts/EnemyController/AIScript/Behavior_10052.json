@@ -188,7 +188,7 @@
               },
               {
                   "action_name": "ComboB",
-                  "state": 0,
+                  "state": 7,
                   "args": [
                       "2"
                   ],
@@ -199,7 +199,7 @@
               },
               {
                   "action_name": "Dragondrive",
-                  "state": 0,
+                  "state": 8,
                   "args": [
                       
                   ],
@@ -242,18 +242,29 @@
                   "jump_args": []
               },
               {
-                  "action_name": "ConquestEvil",
+                  "action_name": "Dragondrive",
                   "state": 12,
                   "args": [
                       "2"
                   ],
                   "lock_phase": false,
                   "unbreakable": false,
-                  "jump_action": "next",
-                  "jump_args": []
+                  "jump_action": "random+",
+                  "jump_args": [1,2]
               },
               {
                   "action_name": "CocytusWhirl",
+                  "state": 13,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [2]
+              },
+              {
+                  "action_name": "ConquestEvil",
                   "state": 13,
                   "args": [
                       "2"

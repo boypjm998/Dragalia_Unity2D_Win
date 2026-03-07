@@ -17,6 +17,7 @@ public class UI_BossStatus : MonoBehaviour
     protected UI_BossHPBar _HPbar;
     protected GameObject _abilityIcons;
     [SerializeField] private GameObject bossAbilityPrefab;
+    [SerializeField] private GameObject bossPartUIPrefab;
     private TextMeshProUGUI _bossName;
 
     protected CanvasGroup _canvasGroup;
@@ -26,6 +27,9 @@ public class UI_BossStatus : MonoBehaviour
     protected BattleStageManager _battleStageManager;
 
     public int bossIndex;
+
+    private DragaliaEnemyBehavior _behavior;
+    private UI_BodyPartStatus _bodyPartStatus;
 
     public bool visible
     {
@@ -140,18 +144,20 @@ public class UI_BossStatus : MonoBehaviour
         {
             AddBossAbility(ability);
         }
-        
-        // AddBossAbility("BOSS_ABILITY_20011");
-        // AddBossAbility("BOSS_ABILITY_20021");
-        
-        
-        //这里写死了 应该引入questInfo.json动态加载的！
-        
-        
-        
-        
-        
-        
+
+        _behavior = bossStat.GetComponent<DragaliaEnemyBehavior>();
+        if (_behavior != null)
+        {
+            _behavior.OnPartAdded += AddPart;
+            _behavior.OnPartRemoved += RemovePart;
+            _behavior.OnPartBroken += PartBroken;
+        }
+
+
+
+
+
+
     }
 
     /// <summary>
@@ -162,7 +168,17 @@ public class UI_BossStatus : MonoBehaviour
     {
         //
         var bundle = _globalController.GetBundle("boss_ability_icon");
-        var abilityData = bossAbilityDetailData[bossAbilityIndex];
+        JsonData abilityData;
+        try
+        {
+            abilityData = bossAbilityDetailData[bossAbilityIndex];
+        }
+        catch
+        {
+            Debug.LogWarning("No boss ability info");
+            return;
+        }
+        
         var imageSprite = bundle.LoadAsset<Sprite>(abilityData["ICON_PATH"].ToString());
         var newIcon = Instantiate(bossAbilityPrefab, _abilityIcons.transform);
 
@@ -175,6 +191,8 @@ public class UI_BossStatus : MonoBehaviour
         var abilityIndex = bossAbilityIndex.Substring(bossAbilityIndex.LastIndexOf('_') + 1);
         var index = int.Parse(abilityIndex);
         newIcon.GetComponent<UI_BossAbilityDisplayer>().abilityID = index;
+        newIcon.GetComponent<UI_BossAbilityDisplayer>().stat = bossStat;
+        
 
 
 
@@ -196,6 +214,117 @@ public class UI_BossStatus : MonoBehaviour
 
     private void OnDestroy()
     {
-        
+        if(_behavior != null)
+        {
+            _behavior.OnPartAdded -= AddPart;
+            _behavior.OnPartRemoved -= RemovePart;
+            _behavior.OnPartBroken -= PartBroken;
+        }
     }
+
+    protected void AddPart(GameObject partGameObject, int partID)
+    {
+        var partGO = Instantiate(bossPartUIPrefab, transform.Find("Parts"));
+        _bodyPartStatus = partGO.GetComponent<UI_BodyPartStatus>();
+        _bodyPartStatus.partStat = partGameObject.GetComponent<PartStatusManager>();
+        //_bodyPartStatus.
+    }
+    
+    protected void RemovePart(GameObject partGameObject, int partID)
+    {
+        if (_bodyPartStatus != null)
+        {
+            Destroy(_bodyPartStatus.gameObject);
+            _bodyPartStatus = null;
+        }
+    }
+    
+    protected void PartBroken(GameObject partGameObject, int partID)
+    {
+        //_bodyPartStatus
+    }
+    
+    
+}
+
+
+public class EnemyAbilityIconEvent
+{
+    public enum EventType
+    {
+        DisplayOrHide = 0,
+        PlusOrMinus = 1,
+        SetNumber = 3,
+        SetText = 7,
+        Custom = 15,
+        IconActive = 31
+    }
+
+    public EventType Type { get; private set; }
+    private string _stringInfo;
+    private int _intInfo = 0;
+    private Action<UI_BossAbilityDisplayer> _customAction = null;
+
+    public string Message
+    {
+        get
+        {
+            if(Type == EventType.PlusOrMinus)
+            {
+                return _intInfo.ToString();
+            }
+            else if (Type == EventType.SetNumber || Type == EventType.DisplayOrHide || Type == EventType.IconActive)
+            {
+                return _intInfo.ToString();
+            }
+            else
+            {
+                return _stringInfo;
+            }
+        }
+    }
+
+    public void DoAction(UI_BossAbilityDisplayer displayer)
+    {
+        if(_customAction != null)
+        {
+            _customAction(displayer);
+            Debug.Log("Custom action done");
+        }
+    }
+
+    public EnemyAbilityIconEvent(EventType type, string stringInfo)
+    {
+        _stringInfo = stringInfo;
+        Type = type;
+    }
+
+    public EnemyAbilityIconEvent(EventType type, int intInfo)
+    {
+        Type = type;
+        _intInfo = intInfo;
+    }
+
+    public EnemyAbilityIconEvent(bool active)
+    {
+        Type = EventType.DisplayOrHide;
+        _intInfo = active ? 1 : 0;
+    }
+
+    public EnemyAbilityIconEvent(int iconActive)
+    {
+        Type = EventType.IconActive;
+        //_stringInfo = "";
+        _intInfo = iconActive == 0 ? 0 : 1;
+    }
+    
+    public EnemyAbilityIconEvent(Action<UI_BossAbilityDisplayer> customAction)
+    {
+        Type = EventType.Custom;
+        _customAction = customAction;
+        _stringInfo = customAction.ToString();
+    }
+
+
+
 }

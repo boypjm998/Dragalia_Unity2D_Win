@@ -24,6 +24,10 @@ public class DamageNumberManager : MonoBehaviour
 
     private Transform totalDamageLayer;
 
+    private GameObject counterText;
+    private GameObject resistText;
+    private GameObject dodgeText;
+
     public static DamageNumberManager Instance { get; private set; }
     
 
@@ -62,16 +66,16 @@ public class DamageNumberManager : MonoBehaviour
 
     }
 
-    public void HealPop(int dmg,Transform targetTrans)
+    public void HealPop(int dmg,Transform targetTrans, float heightModifier)
     {
         Transform dmgNumParent = transform.GetChild(0);
-        GenerateHealNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent);
+        GenerateHealNumber(dmg,targetTrans.position + transform.localPosition + new Vector3(0,heightModifier),dmgNumParent);
     }
     
-    public void DotPop(int dmg,Transform targetTrans, BasicCalculation.BattleCondition condition)
+    public void DotPop(int dmg,Transform targetTrans, BasicCalculation.BattleCondition condition, float heightModifier)
     {
         Transform dmgNumParent = transform.GetChild(0);
-        GenerateDotDmgNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent,condition);
+        GenerateDotDmgNumber(dmg,targetTrans.position + transform.localPosition+ new Vector3(0,heightModifier),dmgNumParent,condition);
     }
 
     public void IndirectDamagePop(int dmg, Transform targetTrans)
@@ -80,7 +84,9 @@ public class DamageNumberManager : MonoBehaviour
         GenerateIndirectDmgNumber(dmg,targetTrans.position + transform.localPosition,dmgNumParent);
     }
 
-    public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType, float sizeModifier = 1f, float heightModifier = 0f)
+    public void DamagePopEnemy(Transform enemyPos,int dmg, int dmgType,
+        float sizeModifier, StatusManager targetStatus, AttackBase atkStat,
+        float heightModifier = 0f)
     {
         
         //Vector3 newPosition = new Vector3(enemyPos.position.x + Random.Range(-1f, 1f), enemyPos.position.y + Random.Range(-0.5f, 0.5f) + 3f, enemyPos.position.z);
@@ -90,9 +96,26 @@ public class DamageNumberManager : MonoBehaviour
 
         Transform dmgNumParent = transform.GetChild(dmgNumPos);
         //搜寻上一步找到的子物体的Transform。
+        
+        Vector3 enemyPosVec = enemyPos.position;
+        
+        if (targetStatus && atkStat)
+        {
+            if (targetStatus.GetAbility((int)BasicCalculation.EnemyAbility.HugeEnemy))
+            {
+                enemyPosVec.y = atkStat.transform.position.y;
+                enemyPosVec.x = 0.5f * (atkStat.transform.position.x + enemyPos.transform.position.x);
+            }
+        }
+        
 
-        Vector3 newDmgNumPosVec = PositionSelectByChild(enemyPos, dmgNumPos);
+        Vector3 newDmgNumPosVec = PositionSelectByChild(enemyPosVec, dmgNumPos);
         //确定伤害数字实例化的位置基准
+
+        
+        
+        
+        
 
         if (dmgType == 1)
         {
@@ -196,7 +219,7 @@ public class DamageNumberManager : MonoBehaviour
         return count;
     }
 
-    private Vector3 PositionSelectByChild(Transform oldPos, int childID)
+    private Vector3 PositionSelectByChild(Vector3 oldPos, int childID)
     {
         //返回一个向量：新位置
         float offsetX=0;
@@ -241,7 +264,7 @@ public class DamageNumberManager : MonoBehaviour
                 break;
 
         }
-        return new Vector3(oldPos.position.x+offsetX, oldPos.position.y+offsetY,oldPos.position.z);
+        return new Vector3(oldPos.x+offsetX, oldPos.y+offsetY,oldPos.z);
     }
 
     private void GenerateNormalDamageNumber(int dmg, Vector3 newDmgNumPosVec, Transform enemyPos, Transform dmgNumParent,float sizeModifier = 1f)
@@ -447,25 +470,30 @@ public class DamageNumberManager : MonoBehaviour
 
     }
 
-    public static void GenerateCounterText(Transform targetTransform, bool notSuccess = false)
+    public static void GenerateCounterText(Transform targetTransform, bool notSuccess = false, float height = 0)
     {
-        var CounterText = Resources.Load<GameObject>("UI/InBattle/General/Counter/CounterText");
+        GameObject CounterText = null;
+
+        if (Instance == null || Instance.counterText == null)
+        {
+            CounterText = Resources.Load<GameObject>("UI/InBattle/General/Counter/CounterText");
+            Instance.counterText = CounterText;
+        }else
+        {
+            CounterText = Instance.counterText;
+        }
         
 
         GameObject txt =
             Instantiate(CounterText,
-                targetTransform.position,
+                targetTransform.position + Vector3.up * height,
                 Quaternion.identity);
 
         if (notSuccess)
         {
-            try
-            {
-                txt.GetComponentInChildren<TextMeshPro>().color = Color.blue;
-            }
-            catch
-            {
-            }
+            
+            txt.GetComponentInChildren<TextMeshPro>().color = Color.blue;
+            
         }
 
     }
@@ -475,14 +503,23 @@ public class DamageNumberManager : MonoBehaviour
     /// </summary>
     /// <param name="targetTransform"></param>
     /// <param name="colorType">0为白字 1为黄字</param>
-    public static void GenerateResistText(Transform targetTransform, int colorType = 0)
+    public static void GenerateResistText(Transform targetTransform, int colorType = 0, float height = 0)
     {
-        var CounterText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/ResistText");
+        GameObject ResistText = null;
+        
+        if (Instance == null || Instance.resistText == null)
+        {
+            ResistText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/ResistText");
+            Instance.resistText = ResistText;
+        }else
+        {
+            ResistText = Instance.resistText;
+        }
         
 
         GameObject txt =
-            Instantiate(CounterText,
-                targetTransform.position+Vector3.up*3+Random.Range(-.5f,.5f)*new Vector3(1,0),
+            Instantiate(ResistText,
+                targetTransform.position+Vector3.up*(3+height)+Random.Range(-.5f,.5f)*new Vector3(1,0),
                 Quaternion.identity);
         
         if(colorType == 1)
@@ -492,12 +529,23 @@ public class DamageNumberManager : MonoBehaviour
     
     public static void GenerateDodgeText(Transform targetTransform)
     {
-        var CounterText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/DodgeText");
+        GameObject DodgeText = null;
+        
+        if (Instance == null || Instance.dodgeText == null)
+        {
+            DodgeText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/DodgeText");
+            Instance.dodgeText = DodgeText;
+        }else
+        {
+            DodgeText = Instance.dodgeText;
+        }
+        
+        //var CounterText = Resources.Load<GameObject>("UI/InBattle/Number/Prefabs/DodgeText");
         
 
         GameObject txt =
-            Instantiate(CounterText,
-                targetTransform.position+Vector3.up*3+Random.Range(-.5f,.5f)*new Vector3(1,0),
+            Instantiate(DodgeText,
+                targetTransform.position+Vector3.up*(3)+Random.Range(-.5f,.5f)*new Vector3(1,0),
                 Quaternion.identity);
         
         

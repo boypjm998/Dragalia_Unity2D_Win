@@ -108,7 +108,7 @@ public class TargetAimer : MonoBehaviour
 
         if (StageCameraController.Instance.MainCameraFollowObject != transform.parent)
         {
-            print("不是主摄像头");
+            //print("不是主摄像头");
             cinemachineCameraOffset.m_Offset = new Vector3(0, 0,cinemachineCameraOffset.m_Offset.z);
             return;
         }
@@ -267,6 +267,12 @@ public class TargetAimer : MonoBehaviour
             stopFlagX = true;
         }
 
+        
+        cinemachineCameraOffset.m_Offset = new
+            Vector3(Mathf.Clamp(cinemachineCameraOffset.m_Offset.x,-lookAheadDistanceX/2,
+                    lookAheadDistanceX/2),
+                Mathf.Clamp(cinemachineCameraOffset.m_Offset.y,-lookAheadDistanceY,lookAheadDistanceY),
+                cinemachineCameraOffset.m_Offset.z);
 
 
     }
@@ -460,15 +466,15 @@ public class TargetAimer : MonoBehaviour
             return null;
 
         Transform target = AttackRangeAreaInfo[0].transform;
-        float minDistance = Vector3.Distance(transform.parent.position, target.position);
+        float minDistance = Vector2.Distance(transform.parent.position, target.position);
 
         for (int i = 1; i < AttackRangeAreaInfo.Length; i++)
         {
-            float tempDistance = Vector3.Distance(transform.parent.position, AttackRangeAreaInfo[i].transform.position);
+            float tempDistance = Vector2.Distance(transform.parent.position, AttackRangeAreaInfo[i].transform.position);
             if (tempDistance < minDistance)
             {
                 target = AttackRangeAreaInfo[i].transform;
-                minDistance = Vector3.Distance(transform.parent.position, target.position);
+                minDistance = Vector2.Distance(transform.parent.position, target.position);
             }
         }
 
@@ -508,15 +514,15 @@ public class TargetAimer : MonoBehaviour
 
 
         Transform target = AttackRangeAreaInfo[0].transform;
-        float minDistance = Vector3.Distance(transform.parent.position, target.position);
+        float minDistance = Vector2.Distance(transform.parent.position, target.position);
 
         for (int i = 1; i < AttackRangeAreaInfo.Length; i++)
         {
-            float tempDistance = Vector3.Distance(transform.parent.position, AttackRangeAreaInfo[i].transform.position);
+            float tempDistance = Vector2.Distance(transform.parent.position, AttackRangeAreaInfo[i].transform.position);
             if (tempDistance < minDistance)
             {
                 target = AttackRangeAreaInfo[i].transform;
-                minDistance = Vector3.Distance(transform.parent.position, target.position);
+                minDistance = Vector2.Distance(transform.parent.position, target.position);
             }
             
         }
@@ -669,6 +675,10 @@ public class TargetAimer : MonoBehaviour
     public bool HasMarking(Transform transform)
     {
         var status = transform.GetComponentInParent<StatusManager>();
+        if (!status)
+        {
+            return false;
+        }
         if (status.GetConditionStackNumber((int)BasicCalculation.BattleCondition.Taunt) > 0)
             return true;
         return false;
@@ -708,6 +718,7 @@ public class TargetAimer : MonoBehaviour
         List<T> result = new List<T>();
         foreach (T obj in list)
         {
+            
             if (HasMarking(obj.transform))
             {
                 result.Add(obj);

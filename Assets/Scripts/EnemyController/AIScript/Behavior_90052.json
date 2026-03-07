@@ -1,0 +1,153 @@
+﻿{
+  "phasePattern":
+  [
+    {
+      "action_list": [
+        {
+          "action_name": "lan_hi_5",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_03", -3,0,28000,2300,
+            "e_9002_06", 3,0,37000,1560,
+            2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_03", -3,0,28000,2300,
+            "e_9002_06", 3,0,37000,1560,
+            2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_1",
+          "args": [ 1,"fx_e_9002_06",2,0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_5",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_1",
+          "args": [ 2,"fx_e_9002_06",3,1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_2",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "hp",
+      "loopStartPoint": 3,
+      "args": [ 55, 2 ]
+    },
+    {
+      "action_list": [
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_03", -3,0,28000,2300,
+            "e_9002_06", 3,0,37000,1560,
+            1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_2",
+          "args":
+          [ 2, "fx_e_9002_07",2.5],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_5",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_3",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_1",
+          "args": [ 1,"fx_e_9002_06",2,0 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_03", -2,0,28000,2300,
+            "e_9002_06", 2,0,37000,1560,
+            1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_1",
+          "args": [ 1,"fx_e_9002_06",3,1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_2",
+          "args":
+          [ 2, "fx_e_9002_07",2.5,9],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_3",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "summon_1",
+          "args":
+          [ "e_9002_03", -2,0,28000,2300,
+            "e_9002_06", 2,0,37000,1560,
+            1 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_1",
+          "args": [ 2 ],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "phantom_2",
+          "args":
+          [ 2, "fx_e_9002_07",2.5,-9],
+          "jump_action": "next"
+        },
+        {
+          "action_name": "lan_hi_2",
+          "args": [ 2 ],
+          "jump_action": "loop"
+        }
+      ],
+      "jump_condition": "none",
+      "loop_start_point": 0,
+      "loopStartPoint": 1,
+      "args": [ ]
+    }
+  ]
+}

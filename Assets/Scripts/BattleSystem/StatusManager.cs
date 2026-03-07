@@ -6,6 +6,7 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using GameMechanics;
+using Random = UnityEngine.Random;
 
 
 public class StatusManager : MonoBehaviour
@@ -54,6 +55,7 @@ public class StatusManager : MonoBehaviour
     public bool LifeStealBlock { get; set; } = false;
     public int DebuffResistance { get; set; } = 0;
 
+    [HideInInspector] public int healCap = 9999999;
     
 
 
@@ -74,30 +76,31 @@ public class StatusManager : MonoBehaviour
 
     public delegate void TestDelegate(BattleCondition condition);
 
-    public delegate Tuple<float,float> SpecialEffectFunc(StatusManager sourceStat, AttackBase attackStat, StatusManager targetStat);
+    public delegate (float, float) SpecialEffectFunc(StatusManager sourceStat, AttackBase attackStat, StatusManager targetStat);
     
     
     
-    public SpecialEffectFunc SpecialAttackEffectFunc; //攻击
-    public SpecialEffectFunc SpecialDefenseEffectFunc; //防御
-    public SpecialEffectFunc SpecialDamageEffectFunc; //伤害
+    /*protected event SpecialEffectFunc SpecialAttackEffectFunc; //攻击
+    protected event SpecialEffectFunc SpecialDefenseEffectFunc; //防御
+    protected event SpecialEffectFunc SpecialDamageEffectFunc; //伤害
     /// <summary>
     /// 防御向，防御方为targetStat
     /// </summary>
-    public SpecialEffectFunc SpecialDamageCutEffectFunc; //伤害减免/易伤
-    public SpecialEffectFunc SpecialCritEffectFunc; //暴击率
-    public SpecialEffectFunc SpecialCritDamageEffectFunc; //暴击伤害
-    public SpecialEffectFunc SpecialSkillDamageEffectFunc; //技能伤害
-    public SpecialEffectFunc SpecialForceStrikeDamageEffectFunc; //蓄力攻击伤害
-    public SpecialEffectFunc SpecialSkillRateEffectFunc; //技能槽上升率
-    public SpecialEffectFunc SpecialPunisherEffectFunc; //特攻类
-    public SpecialEffectFunc SpecialBreakPunisherEffectFunc; //破防特攻类
-    public SpecialEffectFunc SpecialRecoveryPotencyEffectFunc; //回复量
-    
-    public SpecialEffectFunc SpecialDebuffRateEffectFunc; //减益状态概率
-    public SpecialEffectFunc SpecialODAcceralatorEffectFunc; //OD加速
-    
-    
+    protected event SpecialEffectFunc SpecialDamageCutEffectFunc; //伤害减免/易伤
+    protected event SpecialEffectFunc SpecialCritEffectFunc; //暴击率
+    protected event SpecialEffectFunc SpecialCritDamageEffectFunc; //暴击伤害
+    protected event SpecialEffectFunc SpecialSkillDamageEffectFunc; //技能伤害
+    protected event SpecialEffectFunc SpecialForceStrikeDamageEffectFunc; //蓄力攻击伤害
+    protected event SpecialEffectFunc SpecialSkillRateEffectFunc; //技能槽上升率
+    protected event SpecialEffectFunc SpecialPunisherEffectFunc; //特攻类
+    protected event SpecialEffectFunc SpecialBreakPunisherEffectFunc; //破防特攻类
+    protected event SpecialEffectFunc SpecialRecoveryPotencyEffectFunc; //回复量
+     
+    protected event SpecialEffectFunc SpecialDebuffRateEffectFunc; //减益状态概率
+    protected event SpecialEffectFunc SpecialODAcceralatorEffectFunc; //OD加速*/
+     
+    protected Dictionary<AbilityCalculation.ProductArea, List<SpecialEffectFunc>>
+        _effectFuncDict = new();
 
 
 
@@ -168,6 +171,7 @@ public class StatusManager : MonoBehaviour
     public StatusManagerVoidDelegate OnReviveOrDeath;
     public StatusManagerVoidDelegate BeforeReviveOrDeath;
     public StatusManagerVoidDelegate OnComboConnect;
+    public StatusManagerVoidDelegate OnComboReset;
 
     /// <summary>
     /// 当受到直接伤害时触发
@@ -179,7 +183,8 @@ public class StatusManager : MonoBehaviour
     /// </summary>
     public Action<StatusManager,StatusManager,AttackBase,float> OnTakeDirectDamageFrom;
     public DualStatusManagerDelegate BeforeTakeDirectDamageFrom;
-    
+    public Action<AttackBase, int> OnCriticalHit;
+
 
     /// <summary>
     /// 当HP减少时触发
@@ -502,7 +507,7 @@ public class StatusManager : MonoBehaviour
         get
         {
             return (int)(frostbiteRes +
-                         GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes) +
+                         GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteRes) -
                          GetConditionTotalValue((int)BasicCalculation.BattleCondition.FrostbiteResDown));
         }
         set => frostbiteRes = value;
@@ -617,7 +622,9 @@ public class StatusManager : MonoBehaviour
     
 
     public List<BattleCondition> conditionList = new();
-
+    
+    [Tooltip("Only have effect if the script is attached to a boss who has multiple parts.")]
+    public List<GameObject> partList = new();
 
 
 
@@ -627,6 +634,7 @@ public class StatusManager : MonoBehaviour
         conditionList = new List<BattleCondition>();
         dotRoutineDict = new Dictionary<int, Tween>();
         initialKnockbackRes = knockbackRes;
+        InitAbilityEffectFunctionDict();
         InitDisplayedName();
         ConvertAbilitiesToDict();
         RegisterAbilityEventAll();
@@ -685,6 +693,7 @@ public class StatusManager : MonoBehaviour
     public virtual void ComboConnect()
     {
         comboHitCount++;
+        OnComboConnect?.Invoke();
 
         lastComboRemainTime = comboConnectMaxInterval;
         if (comboRoutine != null)
@@ -743,7 +752,10 @@ public class StatusManager : MonoBehaviour
 
             if (condition.buffID == (int)BasicCalculation.BattleCondition.MaxHPBuff)
             {
-                hpBuff += condition.effect ;
+                hpBuff += condition.effect;
+            }else if (condition.buffID == (int)BasicCalculation.BattleCondition.MaxHPDebuff)
+            {
+                hpBuff -= condition.effect;
             }
 
             if (condition.buffID == (int)BasicCalculation.BattleCondition.ManaOverloaded)
@@ -1007,8 +1019,8 @@ public class StatusManager : MonoBehaviour
             return debuff;
         }
 
-
-
+        
+        print("减伤: "+(buff - debuff));
         return buff - debuff;
 
         //return damageCut > 100 ? 1 : (0.01f * (float)damageCut);
@@ -1349,11 +1361,37 @@ public class StatusManager : MonoBehaviour
         return totalbuff / 100f;
     }
 
-    protected float GetFlashburnPunisher()
+    protected float GetFlashburnPunisher(int type = 0)
     {
-        float totalbuff = 0;
-        totalbuff += GetConditionTotalValue((int)(BasicCalculation.BattleCondition.FlashburnPunisher));
-        return totalbuff / 100f;
+        float buff = 0, debuff = 0;
+        foreach (var condition in conditionList)
+        {
+            if (condition.buffID == (int)BasicCalculation.BattleCondition.FlashburnPunisher)
+            {
+                buff += (int)condition.effect;
+            }
+
+            if(condition.buffID == (int)(BasicCalculation.BattleCondition.Overclock))
+            {
+                buff += 15;
+            }
+        }
+
+        if (buff > BasicCalculation.BattleConditionLimit((int)BasicCalculation.BattleCondition.FlashburnPunisher))
+        {
+            buff = BasicCalculation.BattleConditionLimit((int)BasicCalculation.BattleCondition.FlashburnPunisher);
+        }
+        
+        buff = buff / 100f;
+        debuff = debuff / 100f;
+
+        if (type == 1)
+            return buff;
+        if (type == 2)
+            return debuff;
+
+
+        return (buff - debuff);
     }
 
     protected float GetScorchrendPunisher(int type = 0)
@@ -1594,6 +1632,10 @@ public class StatusManager : MonoBehaviour
             {
                 debuff += (int)condition.effect;
             }
+            else if (condition.buffID == (int)(BasicCalculation.BattleCondition.Resonance))
+            {
+                debuff += 5;
+            }
         }
         
         if(buff > 500)
@@ -1692,15 +1734,17 @@ public class StatusManager : MonoBehaviour
             {
                 buff += (int)condition.effect;
             }
-
-            if (condition.buffID == (int)BasicCalculation.BattleCondition.ScorchrendResDown)
+            else if (condition.buffID == (int)BasicCalculation.BattleCondition.ScorchrendResDown)
             {
                 debuff += (int)condition.effect;
             }
-            
-            if(condition.buffID == (int)(BasicCalculation.BattleCondition.ScorchingEnergy))
+            else if(condition.buffID == (int)(BasicCalculation.BattleCondition.ScorchingEnergy))
             {
                 debuff += (int)(80+condition.effect*20);
+            }
+            else if (condition.buffID == (int)(BasicCalculation.BattleCondition.Resonance))
+            {
+                debuff += 5;
             }
             
             
@@ -1835,18 +1879,22 @@ public class StatusManager : MonoBehaviour
         {
             return 999;
         }
-        if(GetConditionStackNumber((int)(BasicCalculation.BattleCondition.HolyFaith))> 0)
+        else if (GetConditionStackNumber((int)(BasicCalculation.BattleCondition.HolyFaith))> 0)
         {
             return 999;
         }
-
-        for (int i = 0; i < conditionList.Count; i++)
+        
+        if (GetConditionTotalValue((int)(BasicCalculation.BattleCondition.FacelessMoon))> 0)
         {
-            // if (IsControlAffliction(conditionList[i].buffID))
-            // {
-            //     return 999;
-            // }
+            var effect = GetConditionTotalValue((int)(BasicCalculation.BattleCondition.FacelessMoon));
+            if (effect == 1)
+                totalbuff+=30;
+            else if (effect == 2)
+                totalbuff+=50;
+            else totalbuff+=70;
         }
+
+        
 
         return totalbuff;
     }
@@ -1879,6 +1927,11 @@ public class StatusManager : MonoBehaviour
     public void ResetKBRes()
     {
         knockbackRes = initialKnockbackRes;
+    }
+
+    public void SetInitialKBRes(int value)
+    {
+        initialKnockbackRes = value;
     }
 
     /// <summary>
@@ -2127,6 +2180,20 @@ public class StatusManager : MonoBehaviour
                 return 30;
             case 114:
                 return 40;
+            case (int)BasicCalculation.BattleCondition.FaerieSunrise:
+                return 15;
+            case (int)BasicCalculation.BattleCondition.AbyssalConnection:
+                return 30;
+            case (int)BasicCalculation.BattleCondition.FacelessMoon:
+            {
+                var effect = GetConditionTotalValue(buffID);
+                if (effect == 3)
+                {
+                    return 10;
+                }
+                else return 0;
+                break;
+            }
             default:
                 return 0;
         }
@@ -2143,6 +2210,22 @@ public class StatusManager : MonoBehaviour
         {
             case 114:
                 return 60;
+            case (int)BasicCalculation.BattleCondition.FacelessMoon:
+            {
+                var effect = GetConditionTotalValue(conditionBuffID);
+                if (effect == 1)
+                {
+                    return 10;
+                }else if (effect == 2)
+                {
+                    return 30;
+                }else if (effect == 3)
+                {
+                    return 40;
+                }
+                else return 0;
+                break;
+            }
             default:
                 return 0;
         }
@@ -2166,7 +2249,12 @@ public class StatusManager : MonoBehaviour
 
     protected float GetSpecialCritDamageBuff(int conditionBuffID)
     {
-        return 0;
+        switch (conditionBuffID)
+        {
+            case (int)BasicCalculation.BattleCondition.BladeFormation:
+                return 30;
+            default: return 0;
+        }
     }
     
     protected float GetSpecialFSDamageBuff(int conditionBuffID)
@@ -2291,7 +2379,7 @@ public class StatusManager : MonoBehaviour
     /// <para>关于sp_id:角色特化以1+角色id+2位序号作为标识符。如（1003）01/关卡特化以8+关卡id+2位序号作为标识符。
     /// 如泽娜的试炼绝级为8(1024)01</para>
     public virtual TimerBuff ObtainTimerBuff(int buffID, float effect, float duration,
-        int maxStack, int spID, bool dispellable = true)
+        int maxStack, int spID, bool dispellable = true, float effect2 = -1, float effect3 = 0)
     {
         //检测虚无状态
         if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
@@ -2316,6 +2404,7 @@ public class StatusManager : MonoBehaviour
         }
         
         buff.ApplyBuffTime(this);
+        
 
         if (IsDotAffliction(buffID) && GetConditionsOfType(buffID).Count == 0)
         {
@@ -2344,12 +2433,33 @@ public class StatusManager : MonoBehaviour
             //print("is not affliction");
             BattleEffectManager.Instance.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
         }
+        
+        if (effect2 >= 0)
+        {
+            var advancedTimerbuff = new AdvancedTimerBuff(buffID,
+                effect, effect2, effect3, duration, maxStack, spID);
 
+            advancedTimerbuff?.SetEffect(2, effect2);
+            advancedTimerbuff?.SetEffect(3, effect3);
+            advancedTimerbuff.dispellable = buff.dispellable;
+
+            if (buffID == ((int)BasicCalculation.BattleCondition.Bleeding) &&
+                !dotRoutineDict.ContainsKey(buffID))
+            {
+                var newTween = StartBleedingTick();
+                dotRoutineDict.Add(buffID, newTween);
+            }
+            
+            conditionList.Add(advancedTimerbuff);
+
+        }
+        else
+        {
+            conditionList.Add(buff);
+        }
         
         
-        conditionList.Add(buff);
-        
-        
+
 
         if ((GetRecoveryPotency() > 0 || GetRecoveryPotencyPercentage() > 0) && healRoutine == null)
         {
@@ -2536,7 +2646,7 @@ public class StatusManager : MonoBehaviour
     ///   <para>给自身附加多层同类BUFF.</para>
     /// </summary>
     public virtual void ObtainTimerBuffs(int buffID, float duration,
-        int stackNum, int maxStack, int spID)
+        int stackNum, int maxStack, int spID, bool dispellable = true,int extraIconId = -1)
     {
         if (GetConditionStackNumber((int)BasicCalculation.BattleCondition.Nihility) > 0)
         {
@@ -2547,6 +2657,16 @@ public class StatusManager : MonoBehaviour
         }
 
         var buff = new TimerBuff(buffID, 0, duration, maxStack, spID);
+
+        if (extraIconId > 0)
+        {
+            buff.extra_iconID = extraIconId;
+        }
+        
+        if(dispellable == false)
+        {
+            buff.dispellable = false;
+        }
 
         _battleEffectManager.SpawnEffect(gameObject, (BasicCalculation.BattleCondition)buffID);
 
@@ -2678,7 +2798,13 @@ public class StatusManager : MonoBehaviour
         {
             if (conditionList[i].dispellable && conditionList[i].buffID <= 100)
             {
-
+                RemoveConditionWithLog(conditionList[i]);
+                //驱散特效
+                _battleEffectManager.SpawnEffect(gameObject, BasicCalculation.BattleCondition.Dispell);
+                return true;
+            }
+            else if (conditionList[i].buffID == (int)BasicCalculation.BattleCondition.Dissonance)
+            {
                 RemoveConditionWithLog(conditionList[i]);
                 //驱散特效
                 _battleEffectManager.SpawnEffect(gameObject, BasicCalculation.BattleCondition.Dispell);
@@ -2703,7 +2829,7 @@ public class StatusManager : MonoBehaviour
         
     }
 
-    public void AddLifeShield(int maxShield, int amount)
+    public void AddLifeShield(int maxShield, int amount, bool dispellable = true)
     {
         var lifeShield = GetConditionOfTypeWithMaxEffect((int)BasicCalculation.BattleCondition.LifeShield);
 
@@ -2711,6 +2837,7 @@ public class StatusManager : MonoBehaviour
         {
             lifeShield = new TimerBuff((int)BasicCalculation.BattleCondition.LifeShield, 
                 amount, -1, 1,-1);
+            lifeShield.dispellable = dispellable;
             ObtainTimerBuff(lifeShield);
         }
         else
@@ -2731,10 +2858,7 @@ public class StatusManager : MonoBehaviour
         if(level <= 0)
             return;
         
-        if(dotRoutineDict.Count > 0)
-            return;
-        
-        if(controlRoutine != null)
+        if(HasAffliction())
             return;
 
         var currentEnergyLevels =
@@ -2786,10 +2910,13 @@ public class StatusManager : MonoBehaviour
         if(level <= 0)
             return;
         
-        if(dotRoutineDict.Count > 0)
-            return;
+        // if(dotRoutineDict.Count > 0)
+        //     return;
+        //
+        // if(controlRoutine != null)
+        //     return;
         
-        if(controlRoutine != null)
+        if(HasAffliction())
             return;
 
         var currentInspirationLevels =
@@ -2992,6 +3119,18 @@ public class StatusManager : MonoBehaviour
 
         OnSpecialBuffDelegate?.Invoke(UI_BuffLogPopManager.SpecialConditionType.ReliefAllDebuff.ToString());
     }
+    
+    public void ReliefAllDebuffAndAfflictions()
+    {
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (conditionList[i].buffID < 500 && conditionList[i].buffID > 200 && conditionList[i].dispellable)
+            {
+                RemoveCondition(conditionList[i]);
+            }
+        }
+        OnSpecialBuffDelegate?.Invoke(UI_BuffLogPopManager.SpecialConditionType.ReliefAllDebuff.ToString());
+    }
 
     public int RemoveAllConditionWithSpecialID(int spID)
     {
@@ -3000,8 +3139,22 @@ public class StatusManager : MonoBehaviour
         {
             if (conditionList[i].specialID == spID)
             {
-                //OnBuffDispelledEventDelegate?.Invoke(conditionList[i]);
                 RemoveCondition(conditionList[i]);
+                cnt++;
+            }
+        }
+
+        return cnt;
+    }
+    
+    public int DispellAllConditionWithSpecialID(int spID)
+    {
+        int cnt = 0;
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (conditionList[i].specialID == spID)
+            {
+                DispellConditionForced(conditionList[i]);
                 cnt++;
             }
         }
@@ -3035,6 +3188,18 @@ public class StatusManager : MonoBehaviour
         conditionList.Remove(buff);
         _conditionBar?.OnConditionRemove(buff.buffID);
         OnBuffExpiredEventDelegate?.Invoke(buff);
+        buff.OnBuffRemove?.Invoke(this);
+    }
+    
+    /// <summary>
+    /// 触发OnBuffDispelled
+    /// </summary>
+    /// <param name="buff"></param>
+    public virtual void DispellConditionForced(BattleCondition buff)
+    {
+        conditionList.Remove(buff);
+        _conditionBar?.OnConditionRemove(buff.buffID);
+        OnBuffDispelledEventDelegate?.Invoke(buff);
         buff.OnBuffRemove?.Invoke(this);
     }
     
@@ -3087,6 +3252,11 @@ public class StatusManager : MonoBehaviour
         }
         return false;
     }
+    
+    public bool HasAffliction()
+    {
+        return conditionList.Any(buff => IsAffliction(buff.buffID));
+    }
 
     public bool HasDispellableBuff()
     {
@@ -3138,6 +3308,10 @@ public class StatusManager : MonoBehaviour
         return conditionList.Where(t => (t.buffID == buffID)).ToList();
     }
 
+    /// <summary>
+    /// 总增益层数
+    /// </summary>
+    /// <returns></returns>
     public int GetBuffStackNum()
     {
         return conditionList.Count(t => IsBuff(t.buffID));
@@ -3187,6 +3361,29 @@ public class StatusManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 触发OnBuffDispelled
+    /// </summary>
+    /// <param name="buffID"></param>
+    /// <param name="log"></param>
+    /// <returns></returns>
+    public int RemoveAllConditionOfType(int buffID)
+    {
+        int cnt = 0;
+        TimerBuff buff = null;
+        for (int i = conditionList.Count - 1; i >= 0; i--)
+        {
+            if (conditionList[i].buffID == buffID)
+            {
+                buff = conditionList[i] as TimerBuff;
+                RemoveCondition(conditionList[i]);
+                cnt++;
+            }
+        }
+
+        return cnt;
+    }
+    
     /// <summary>
     ///   <para>移除角色一个最早的Condition，，和RemoveSpecificTimerBuff是完全一样的方法</para>
     /// </summary>
@@ -3449,18 +3646,21 @@ public class StatusManager : MonoBehaviour
         return healAmount;
     }
 
-    public void HPRegenImmediately(StatusManager statusManager, float potency, float potency2)
+    public int HPRegenImmediately(StatusManager statusManager, float potency, float potency2, GameObject target)
     {
-        _battleStageManager.TargetHeal(statusManager,potency,potency2,true);
+        return _battleStageManager.TargetHeal(statusManager,
+            potency,potency2,true, 
+            target.GetComponent<StatusManager>());
     }
 
 
     /// <summary>
     ///   <para>目标立即回复生命值（float 回复倍率，float 百分比回复倍率）</para>
     /// </summary>
-    public void HPRegenImmediatelyWithoutRandom(float potency,float potency2)
+    public void HPRegenImmediatelyWithoutRandom(float potency,float potency2,bool ignoreCap = false)
     {
-        _battleStageManager.TargetHeal(gameObject,potency, potency2,false);
+        _battleStageManager.TargetHeal
+            (gameObject,potency, potency2,false,ignoreCap);
         //_battleEffectManager.SpawnHealEffect(gameObject);
         
         //var fx = GetComponent<AttackManager>().healbuff;
@@ -3588,7 +3788,7 @@ public class StatusManager : MonoBehaviour
         OnHPChange?.Invoke();
         OnHPDecrease?.Invoke(dmg, null);
         
-        DamageNumberManager.Instance.DotPop(dmg,transform,BasicCalculation.BattleCondition.Corrosion);
+        DamageNumberManager.Instance.DotPop(dmg,transform,BasicCalculation.BattleCondition.Corrosion,height);
         
         //Effect1: Heal required to remove corrosion
         //Effect2: Corrosion Modifier
@@ -3604,6 +3804,73 @@ public class StatusManager : MonoBehaviour
         
 
     }
+    
+    protected void DoBleedingDamage()
+    {
+        var conditions = GetConditionsOfType((int)(BasicCalculation.BattleCondition.Bleeding));
+
+        int stack = conditions.Count;
+        float totalDamage = 0;
+        var critRate = conditions.Max(x => (x as AdvancedTimerBuff).effect2);
+        bool isCrit = Random.Range(0, 100) < critRate;
+        foreach( var condition in conditions)
+        {
+            //print(condition is AdvancedTimerBuff);
+            if(!isCrit)
+            {
+                totalDamage += condition.effect * 0.01f;
+            }
+            else
+            {
+                totalDamage += (condition as AdvancedTimerBuff).effect3 * 0.01f;
+            }
+        }
+
+        var dmg = Mathf.CeilToInt(totalDamage * Random.Range(0.95f, 1.05f) * (0.5f + stack * 0.5f));
+
+        if (currentHp <= dmg)
+        {
+            dmg = currentHp - 1;
+        }
+
+        currentHp -= dmg;
+        OnHPChange?.Invoke();
+        OnHPDecrease?.Invoke(dmg, null);
+
+        DamageNumberManager.Instance.DotPop(dmg, transform, BasicCalculation.BattleCondition.Bleeding, height );
+
+        BattleEffectManager.Instance.PlayBleedingEffect(transform.position);
+        //Effect1: Damage without critical hit
+        //Effect2: Critical rate
+        //Effect3: Critical Damage
+
+
+    }
+
+    protected Tween StartBleedingTick()
+    {
+        float tickInterval = 4.9f;
+
+        Tween tween = null;
+
+        tween = DOVirtual.DelayedCall(tickInterval, () =>
+        {
+            if (GetConditionsOfType((int)BasicCalculation.BattleCondition.Bleeding).Count > 0)
+            {
+                DoBleedingDamage();
+                tween.Restart();
+            }
+            else
+            {
+                tween.Kill();
+                dotRoutineDict.Remove((int)BasicCalculation.BattleCondition.Bleeding);
+                //将Tween从字典中移除，并且Kill掉
+            }
+        }, false);
+
+        return tween;
+    }
+
 
 
 
@@ -3618,6 +3885,15 @@ public class StatusManager : MonoBehaviour
         if (nameStr != String.Empty)
         {
             displayedName = nameStr;
+        }
+    }
+
+    protected void InitAbilityEffectFunctionDict()
+    {
+        foreach (AbilityCalculation.ProductArea area in
+                 Enum.GetValues(typeof(AbilityCalculation.ProductArea)))
+        {
+            _effectFuncDict[area] = new List<SpecialEffectFunc>();
         }
     }
 
@@ -3641,9 +3917,72 @@ public class StatusManager : MonoBehaviour
         }
     }
 
-    protected void RegisterAbilityEvent(int abilityID)
+    public void AddEffectFunction(SpecialEffectFunc func, AbilityCalculation.ProductArea area)
     {
-        this.GetEffectFunc(abilityID);
+        if (_effectFuncDict.TryGetValue(area, out var list))
+        {
+            list.Add(func);
+            Debug.Log($"已添加{func.Method.Name}");
+        }
+        else
+        {
+            Debug.LogError($"未知的乘区类型: {area}");
+        }
+    }
+    
+    public void AddEffectFunctions(AbilityCalculation.ProductArea area, params SpecialEffectFunc[] funcs)
+    {
+        if (_effectFuncDict.TryGetValue(area, out var list))
+        {
+            list.AddRange(funcs);
+        }
+        else
+        {
+            Debug.LogError($"未知的乘区类型: {area}");
+        }
+    }
+    
+    public void RemoveEffectFunc(SpecialEffectFunc func, AbilityCalculation.ProductArea area)
+    {
+        if (_effectFuncDict.TryGetValue(area, out var list))
+        {
+            list.Remove(func);
+            Debug.Log($"已移除{func.Method.Name}");
+        }
+    }
+    
+    public void ClearEffectFunc(AbilityCalculation.ProductArea area)
+    {
+        if (_effectFuncDict.TryGetValue(area, out var list))
+        {
+            list.Clear();
+        }
+    }
+    
+    public void UpdateEffectFuncs(List<SpecialEffectFunc> funcs, AbilityCalculation.ProductArea area)
+    {
+        if (_effectFuncDict.TryGetValue(area, out var list))
+        {
+            list.Clear();
+            list.AddRange(funcs);
+        }else
+        {
+            Debug.LogError($"未知的乘区类型: {area}");
+        }
+    }
+
+    public List<SpecialEffectFunc> GetInvocationList(AbilityCalculation.ProductArea productArea)
+    {
+        if (_effectFuncDict.TryGetValue(productArea, out var list))
+        {
+            return list;
+        }
+        else
+        {
+            Debug.LogWarning($"未知的乘区类型: {productArea}");
+            //返回一个空的List
+            return new List<SpecialEffectFunc>();
+        }
     }
 
     public bool GetAbility(int abilityID)

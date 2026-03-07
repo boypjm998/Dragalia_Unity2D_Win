@@ -40,6 +40,7 @@ public class UI_HelpAndAboutMenu : MonoBehaviour
         {
             buttonGameObject.transform.GetChild(i).GetComponentInChildren<TextMeshProUGUI>().text =
                 _helpMenuInfoList.help_list[i].title;
+            buttonGameObject.transform.GetChild(i).gameObject.AddComponent<SelectableTools>().ScrollViewAdjust = true;
         }
         
         if(_helpMenuInfoList.help_list.Count > buttonGameObject.transform.childCount)
@@ -52,6 +53,8 @@ public class UI_HelpAndAboutMenu : MonoBehaviour
                 //btn.onClick = new Button.ButtonClickedEvent();
                 int index = i;
                 btn.onClick.AddListener(()=>ReloadPanel(index));
+                
+                newButton.AddComponent<SelectableTools>().ScrollViewAdjust = true;
             }
         
     }

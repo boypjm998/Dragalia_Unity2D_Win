@@ -131,6 +131,18 @@ public abstract class ActorBase : MonoBehaviour
         }
         
     }
+
+    public void TurnMove(Vector3 position)
+    {
+        if (position.x > transform.position.x)
+        {
+            SetFaceDir(1);
+        }
+        if (position.x < transform.position.x)
+        {
+            SetFaceDir(-1);
+        }
+    }
     
     public virtual void SetFaceDir(int dir)
     {

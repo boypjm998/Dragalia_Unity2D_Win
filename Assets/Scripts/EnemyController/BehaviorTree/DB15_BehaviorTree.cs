@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using GameMechanics;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
     private EnemyControllerFlyingHigh enemyController;
     private EnemyMoveController_DB15 enemyAttackManager;
     
+    [SerializeField] private GameObject phase2Prefab;
+    [SerializeField] private AudioClip phase2BGM;
+    
     
     protected override void Awake()
     {
@@ -22,6 +26,11 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
         GetBehavior();
         enemyController.OnMoveFinished += FinishMove;
         enemyAttackManager.OnAttackFinished += FinishAttack;
+        
+        if (enemyController.canDeath == false)
+        {
+            status.OnHPBelow0 += ToPhase2;
+        }
     }
     
     protected override void DoAction(int state, int substate)
@@ -45,6 +54,12 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
 
         switch (actionType)
         {
+            case DragaliaEnemyActionTypes.DB2015.around:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                currentAction = StartCoroutine(ACT_AroundAttack(interval));
+                break;
+            }
             case DragaliaEnemyActionTypes.DB2015.crystal_chase:
             {
                 float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
@@ -53,20 +68,71 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
             }
             case DragaliaEnemyActionTypes.DB2015.crystal_fixed:
             {
-                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
-                currentAction = StartCoroutine(ACT_CrystalFixed(interval));
+                if (_currentActionStage.args.Length == 1)
+                {
+                    float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    currentAction = StartCoroutine(ACT_CrystalFixed(interval));
+                }
+                else
+                {
+                    float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[^1]);
+                    float[] arr = new float[_currentActionStage.args.Length - 1];
+                    for (int i = 0; i < arr.Length; i++)
+                    {
+                        arr[i] = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[i]);
+                    }
+                    currentAction = StartCoroutine(ACT_CrystalFixedMultiple(arr, interval));
+                }
+                
                 break;
+            }
+            case DragaliaEnemyActionTypes.DB2015.crystal_mixed:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                int type = int.Parse(_currentActionStage.args[0]);
+                if (type == 1)
+                {
+                    currentAction = StartCoroutine(ACT_AllRangedAttackI(interval));
+                }
+                else if (type == 2)
+                {
+                    currentAction = StartCoroutine(ACT_AllRangedAttackII(interval));
+                }
+                else
+                {
+                    currentAction = StartCoroutine(ACT_AimingAttack(interval));
+                }
+
+                break;
+
+
             }
             case DragaliaEnemyActionTypes.DB2015.nihil:
             {
-                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
-                currentAction = StartCoroutine(ACT_Nihil(interval));
+                if (_currentActionStage.args.Length == 1)
+                {
+                    float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                    currentAction = StartCoroutine(ACT_Nihil(interval));
+                }
+                else
+                {
+                    int effect = int.Parse(_currentActionStage.args[0]);
+                    float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[1]);
+                    currentAction = StartCoroutine(ACT_NihilCorrosion(effect,interval)); 
+                }
+                
                 break;
             }
             case DragaliaEnemyActionTypes.DB2015.combo:
             {
                 float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_Combo(interval));
+                break;
+            }
+            case DragaliaEnemyActionTypes.DB2015.cross:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                currentAction = StartCoroutine(ACT_FlameCrossing(interval));
                 break;
             }
             case DragaliaEnemyActionTypes.DB2015.buff:
@@ -79,6 +145,18 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
             {
                 float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
                 currentAction = StartCoroutine(ACT_BouncingFireball(interval));
+                break;
+            }
+            case DragaliaEnemyActionTypes.DB2015.wave:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                currentAction = StartCoroutine(ACT_WaveAttack(interval));
+                break;
+            }
+            case DragaliaEnemyActionTypes.DB2015.explosion:
+            {
+                float interval = ObjectExtensions.ParseInvariantFloat(_currentActionStage.args[0]);
+                currentAction = StartCoroutine(ACT_ClearingExpolosion(interval));
                 break;
             }
 
@@ -95,18 +173,18 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
         SetTarget(viewerPlayer);
         ActionStart();
         yield return new WaitUntil(() => !enemyController.hurt);
-
-
-        // currentMoveAction = StartCoroutine
-        //     (enemyController.FlyTowardTargetOnSamePlatform
-        //         (targetPlayer, 5, 2, 5));
-        //
-        //         
-        // yield return new WaitUntil(()=>currentMoveAction == null);
+        
                 
         enemyController.SetKBRes(999);
-        
-        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action01());
+
+        if (difficulty > 1)
+        {
+            currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action01V());
+        }
+        else
+        {
+            currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action01());
+        }
 
         yield return new WaitUntil(()=>currentAttackAction == null);
         
@@ -141,6 +219,28 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
         ActionEnd();
     }
     
+    protected IEnumerator ACT_CrystalFixedMultiple(float[] info,float interval)
+    {
+        ActionStart();
+        breakable = false;
+        yield return new WaitUntil(() => !enemyController.hurt);
+
+
+        yield return new WaitUntil(()=>currentMoveAction == null);
+                
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action02(info));
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+
+        enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
     protected IEnumerator ACT_Nihil(float interval)
     {
         SetTarget(viewerPlayer);
@@ -150,6 +250,25 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
         enemyController.SetKBRes(999);
         
         currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action03());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_NihilCorrosion(float eff, float interval)
+    {
+        SetTarget(viewerPlayer);
+        ActionStart();
+        yield return new WaitUntil(() => !enemyController.hurt);
+
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action03V(eff));
 
         yield return new WaitUntil(()=>currentAttackAction == null);
         
@@ -226,6 +345,217 @@ public class DB15_BehaviorTree : EnemyBehaviorManager
         yield return new WaitForSeconds(interval);
         
         ActionEnd();
+    }
+    
+    protected IEnumerator ACT_WaveAttack(float interval)
+    {
+        ActionStart();
+        SetTarget(ClosestTarget);
+        yield return new WaitUntil(() => !enemyController.hurt);
+        currentMoveAction = StartCoroutine
+        (enemyController.FlyTowardTargetOnSamePlatform
+            (targetPlayer, 35, 1, 3));
+        
+                
+        yield return new WaitUntil(()=>currentMoveAction == null);
+                
+        enemyController.SetKBRes(999);
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action07());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+
+        enemyController.SetKBRes(status.knockbackRes);
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AroundAttack(float interval)
+    {
+        ActionStart();
+        SetTarget(ClosestTarget);
+        yield return new WaitUntil(() => !enemyController.hurt);
+        currentMoveAction = StartCoroutine
+        (enemyController.FlyTowardTargetOnSamePlatform
+            (targetPlayer, 3, 1, 4));
+        
+                
+        yield return new WaitUntil(()=>currentMoveAction == null);
+                
+        enemyController.SetKBRes(999);
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action08());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+
+        enemyController.SetKBRes(status.knockbackRes);
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AllRangedAttackI(float interval)
+    {
+        SetTarget(viewerPlayer);
+        breakable = false;
+        status.ImmuneToAllControlAffliction = true;
+        ActionStart();
+        yield return new WaitUntil(() => !enemyController.hurt);
+
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action09());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
+        status.ImmuneToAllControlAffliction = false;
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AllRangedAttackII(float interval)
+    {
+        SetTarget(viewerPlayer);
+        status.ImmuneToAllControlAffliction = true;
+        breakable = false;
+        ActionStart();
+        yield return new WaitUntil(() => !enemyController.hurt);
+
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action10());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
+        status.ImmuneToAllControlAffliction = false;
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_AimingAttack(float interval)
+    {
+        SetTarget(viewerPlayer);
+        breakable = false;
+        status.ImmuneToAllControlAffliction = true;
+        ActionStart();
+        yield return new WaitUntil(() => !enemyController.hurt);
+
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action11());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
+        status.ImmuneToAllControlAffliction = false;
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_ClearingExpolosion(float interval)
+    {
+        SetTarget(viewerPlayer);
+        breakable = false;
+        status.ImmuneToAllControlAffliction = true;
+        ActionStart();
+        yield return new WaitUntil(() => !enemyController.hurt);
+
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action13());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
+        status.ImmuneToAllControlAffliction = false;
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    protected IEnumerator ACT_FlameCrossing(float interval)
+    {
+        
+        ActionStart();
+        yield return new WaitUntil(() => !enemyController.hurt);
+        
+        currentMoveAction = StartCoroutine
+        (enemyController.FlyTowardTargetOnSamePlatform
+            (targetPlayer, 8, 1, 4));
+        
+                
+        yield return new WaitUntil(()=>currentMoveAction == null);
+
+        enemyController.SetKBRes(999);
+        
+        currentAttackAction = StartCoroutine(enemyAttackManager.DB15_Action12());
+
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        enemyController.SetKBRes(status.knockbackRes);
+        
+        yield return new WaitForSeconds(interval);
+        
+        ActionEnd();
+    }
+    
+    private void ToPhase2()
+    {
+        status.OnHPBelow0 -= ToPhase2;
+        
+        enemyController.StopAllCoroutines();
+        
+        ResetBossActionsBeforeTransform();
+        
+        currentAction = StartCoroutine(ChangePhaseAnimationRoutine());
+    }
+    
+    protected IEnumerator ChangePhaseAnimationRoutine()
+    {
+        
+        ActionStart();
+        
+        currentMoveAction = 
+            StartCoroutine(enemyAttackManager.DB15_Action14());
+        yield return new WaitUntil(()=>currentMoveAction == null);
+        
+        
+        var p2_boss = Instantiate(phase2Prefab,transform.position,Quaternion.identity,transform.parent);
+        p2_boss.GetComponent<EnemyController>().TurnMove(targetPlayer);
+        
+        BattleStageManager.currentDisplayingBossInfo = 2;
+        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss,1);
+        p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
+        BattleEffectManager.Instance.PlayBGM(false);
+        AudioScheduleManager.Instance.StopTween();
+        ActionEnd();
+        
+        yield return null;
+        
+        BattleEffectManager.Instance.SetBGM(phase2BGM);
+        BattleEffectManager.Instance.PlayBGM(true);
+        
+        p2_boss.GetComponentInChildren<Animator>()?.Play("roar");
+        p2_boss.GetComponentInChildren<VoiceControllerEnemy>()?.PlayIntroVoiceManually();
+
+        DOVirtual.DelayedCall(1f, 
+            () => CineMachineOperator.Instance.CamaraShake(15f, 0.4f));
+        
+        Destroy(gameObject);
+        
     }
 
 }

@@ -134,8 +134,8 @@ public class UI_ManaCircleMenu : MonoBehaviour
             }
             else
             {
-                iconBtn.interactable = false;
-                //iconBtn.GetComponent<Image>().color = new Color(0, 0, 0,1);
+                // iconBtn.interactable = false; 2024.5.8更改
+                iconBtn.image.color = new Color(0.4f, 0.4f, 0.4f, 1);
             }
 
         }
@@ -176,7 +176,7 @@ public class UI_ManaCircleMenu : MonoBehaviour
             crownNeedDispalyTMP.text = $"所需{node.crownCost}/{currentCrownCount}";
         }
 
-        if (_skillTreeNodes[id] == 1)
+        if (_skillTreeNodes[id] == 1) //可解锁
         {
             crownNeedDispalyTMP.color = Color.black;
             upgradedCompletedGameObject.SetActive(true);
@@ -194,6 +194,23 @@ public class UI_ManaCircleMenu : MonoBehaviour
             upgradeRequirementGameObject.SetActive(true);
             upgradeOrDegradationButton.onClick.RemoveAllListeners();
             upgradeOrDegradationButton.onClick.AddListener(()=>UnlockNewNode(id));
+            
+            if (CheckUnlock(node) == false)
+            {
+                crownNeedDispalyTMP.color = Color.red;
+                upgradeOrDegradationButton.gameObject.SetActive(false);
+                upgradedCompletedGameObject.SetActive(false);
+                upgradeRequirementGameObject.SetActive(true);
+                //upgradeRequirementGameObject.transform.GetChild(0).gameObject.SetActive(false);
+                if (gameLanguage == GlobalController.Language.EN)
+                {
+                    crownNeedDispalyTMP.text = "You need to unlock all previous nodes.";
+                }
+                else
+                {
+                    crownNeedDispalyTMP.text = "未激活前置节点";
+                }
+            }
         }
         else
         {
@@ -201,8 +218,22 @@ public class UI_ManaCircleMenu : MonoBehaviour
             upgradeOrDegradationButton.gameObject.SetActive(false);
             upgradedCompletedGameObject.SetActive(false);
             upgradeRequirementGameObject.SetActive(true);
-            //upgradeOrDegradationButton.interactable = false;
+
+            if (CheckUnlock(node) == false)
+            {
+                if (gameLanguage == GlobalController.Language.EN)
+                {
+                    crownNeedDispalyTMP.text = "You need to unlock all previous nodes.";
+                }
+                else
+                {
+                    crownNeedDispalyTMP.text = "未激活前置节点";
+                }
+            }
         }
+        
+        
+        
 
 
         currentSelectedNodeID = id;

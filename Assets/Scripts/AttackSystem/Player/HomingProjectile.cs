@@ -8,7 +8,9 @@ public class HomingProjectile : AttackFromPlayer
 
     private TargetAimer ta;
     
-    private Transform target;
+    private Collider2D target;
+    //private Collider2D targetCollider;
+    
     [Header("Projectile Basic Attributes")]
     public LayerMask targetLayers;
     public Vector2 angle;
@@ -49,11 +51,6 @@ public class HomingProjectile : AttackFromPlayer
     protected override void Awake()
     {
         base.Awake();
-        
-        
-
-        //hitFlags = SearchEnemyList();
-
     }
 
     protected override void Start()
@@ -84,7 +81,12 @@ public class HomingProjectile : AttackFromPlayer
             
         }
         else if(target == null) {
-            target = GetNearestTargetInRangeDirection(GetFaceDir(), targetRangeX, targetRangeY, targetLayers);
+            
+            var nearsetTarget = GetNearestTargetInRangeDirection
+                (GetFaceDir(), targetRangeX, targetRangeY, targetLayers);
+
+            if (nearsetTarget != null)
+                target = nearsetTarget.GetComponent<Collider2D>();
         }
 
 
@@ -130,7 +132,7 @@ public class HomingProjectile : AttackFromPlayer
             if (target != null)
             {
                 transform.right =
-                    Vector3.Slerp(transform.right, target.position - transform.position,
+                    Vector3.Slerp(transform.right, target.bounds.center - transform.position,
                     angularSpeed / Vector2.Distance(transform.position, target.transform.position));
                 angularSpeed += angularAcceleration * Time.fixedDeltaTime;
                 if (angularSpeed > 5)

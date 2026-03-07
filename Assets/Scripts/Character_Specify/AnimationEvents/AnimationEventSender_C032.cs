@@ -32,23 +32,8 @@ public class AnimationEventSender_C032 : AnimationEventSenderNew
             case 105:
                 _attackManagerMeeleWithFs.Combo5();
                 break;
-            // case 106:
-            //     _attackManagerMeeleWithFs.Combo6();
-            //     break;
-            // case 107:
-            //     _attackManagerMeeleWithFs.Combo7();
-            //     break;
-            // case 108:
-            //     _attackManagerMeeleWithFs.Combo8();
-            //     break;
-            // case 1091:
-            //     _attackManagerMeeleWithFs.Combo9A();
-            //     break;
-            // case 1092:
-            //     _attackManagerMeeleWithFs.Combo9B();
-            //     break;
-            //
-            //
+            
+            
             case 2011:
                 _attackManagerMeeleWithFs.Skill1_AroundAttack();
                 break;

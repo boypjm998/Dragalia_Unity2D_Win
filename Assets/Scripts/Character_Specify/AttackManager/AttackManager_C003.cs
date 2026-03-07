@@ -6,24 +6,26 @@ using UnityEngine;
 public class AttackManager_C003 : AttackManagerRanged
 {
     protected GameObject skill3Container;
-    private bool skillBoosted = false;
+    //private bool skillBoosted = false;
+    private ConditionalAttackEffect crisisCaf;
 
     protected override void Awake()
     {
         base.Awake();
-        skillBoosted = UI_AdventurerSelectionMenu.CheckSkillUpgradable(3, 2)==2;
+        UpdateSkillInfo(2);
+        crisisCaf = new ConditionalAttackEffect(0.75f);
     }
 
 
     public void TwilightMoon()
     {
         //TODO:check twilight moon
-        
-        
-        
-        
 
-        var fsPrefab = FindObjectOfType<Projectile_C003_6_PL>();
+
+
+
+        var fsPrefab = Projectile_C003_6_PL.Instance;
+        //var fsPrefab = FindObjectOfType<Projectile_C003_6_PL>();
 
         if (fsPrefab != null)
         {
@@ -415,11 +417,14 @@ public class AttackManager_C003 : AttackManagerRanged
         
             _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.RecoveryBuff,20,10);
 
-            if (skillBoosted)
+            if (skillUpgradeInfo[2])
             {
                 var buffTimeBuff = new TimerBuff((int)BasicCalculation.BattleCondition.BuffTimeExtend,
                     30f, 5f, 1,100303);
                 _statusManager.ObtainTimerBuff(buffTimeBuff,false);
+                var atk = proj.GetComponent<AttackFromPlayer>();
+                atk.attackInfo[0].dmgModifier[0] *= 1.5f;
+                atk.AddConditionalAttackEffect(crisisCaf);
             }
 
             skill3Container = container;
@@ -427,6 +432,14 @@ public class AttackManager_C003 : AttackManagerRanged
         {
             var proj = InstantiateMeele(skill3FX[1], transform.position,
                 skill3Container);
+
+            if (skillUpgradeInfo[2])
+            {
+                var atk = proj.GetComponent<AttackFromPlayer>();
+                atk.attackInfo[0].dmgModifier[0] *= 1.5f;
+                atk.AddConditionalAttackEffect(crisisCaf);
+            }
+            
         }
     }
 

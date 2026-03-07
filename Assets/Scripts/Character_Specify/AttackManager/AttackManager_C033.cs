@@ -184,7 +184,7 @@ public class AttackManager_C033 : AttackManagerMeeleWithFS
                     InitContainer(true,1,true));
                 if(_statusManager.ReliefOneAffliction());
                 {
-                    ReduceSigilTime(12);
+                    ReduceSigilTime(9);
                 }
                 
                 break;

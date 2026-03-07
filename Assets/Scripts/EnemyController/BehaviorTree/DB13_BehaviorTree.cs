@@ -17,6 +17,9 @@ public class DB13_BehaviorTree : EnemyBehaviorManager
     /// </summary>
     private int _lastSkillUsed = 0;
 
+    [SerializeField] private GameObject phase2Prefab;
+    [SerializeField] private AudioClip phase2BGM;
+
     private List<int> _skillUsedTimes = new List<int>()
     {
         0,0,0,0
@@ -33,6 +36,12 @@ public class DB13_BehaviorTree : EnemyBehaviorManager
         if(drasticForceApplied == false)
             AddDrasticForceEffect();
         GetBehavior();
+        
+        if (enemyController.canDeath == false)
+        {
+            status.OnHPBelow0 += ToPhase2;
+        }
+        
     }
     
     protected override void DoAction(int state, int substate)
@@ -56,7 +65,7 @@ public class DB13_BehaviorTree : EnemyBehaviorManager
             return;
         }
         
-        print("Doing: "+action_name);
+        
         
         DragaliaEnemyActionTypes.DB2013 actionType = 
             (DragaliaEnemyActionTypes.DB2013) Enum.Parse(typeof(DragaliaEnemyActionTypes.DB2013), action_name);
@@ -455,6 +464,58 @@ public class DB13_BehaviorTree : EnemyBehaviorManager
 
         ActionEnd();
     }
+    
+    protected IEnumerator ChangePhaseAnimationRoutine()
+    {
+        
+        ActionStart();
+
+        yield return null;
+        
+        currentAttackAction = 
+            StartCoroutine(enemyAttackManager.DB13_Action10());
+        yield return new WaitUntil(()=>currentAttackAction == null);
+        
+        
+        var p2_boss = Instantiate(phase2Prefab,new Vector3(0,transform.position.y),
+            Quaternion.identity,transform.parent);
+        //p2_boss.GetComponent<EnemyController>().TurnMove(1);
+        
+        BattleStageManager.currentDisplayingBossInfo = 2;
+        FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss,1);
+        p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
+        BattleEffectManager.Instance.PlayBGM(false);
+        AudioScheduleManager.Instance.StopTween();
+        ActionEnd();
+        
+        yield return null;
+        
+        BattleEffectManager.Instance.SetBGM(phase2BGM);
+        BattleEffectManager.Instance.PlayBGM(true);
+        
+        p2_boss.GetComponentInChildren<Animator>()?.Play("intro");
+        p2_boss.GetComponentInChildren<VoiceControllerEnemy>()?.PlayIntroVoiceManually();
+
+        // DOVirtual.DelayedCall(0.3f, 
+        //     () => CineMachineOperator.Instance.CamaraShake(12f, 0.4f));
+        
+        Destroy(gameObject);
+        
+    }
+    
+    
+    
+    private void ToPhase2()
+    {
+        status.OnHPBelow0 -= ToPhase2;
+        
+        enemyController.StopAllCoroutines();
+        
+        ResetBossActionsBeforeTransform();
+        
+        currentAction = StartCoroutine(ChangePhaseAnimationRoutine());
+    }
+    
 
     private void AddUIToPlayers()
     {

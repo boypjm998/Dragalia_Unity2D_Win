@@ -40,6 +40,8 @@ public class PlayerInput : MonoBehaviour
     public KeyCode keySkill4 = KeyCode.H;
     public KeyCode keyEsc = KeyCode.Escape;
     public KeyCode keyUpNew = KeyCode.W;
+    public KeyCode keyZoomIn = KeyCode.Q;
+    public KeyCode keyZoomOut = KeyCode.E;
     
     
     public Dictionary<string, InputBinding> gamepadButtonDict = new();
@@ -59,6 +61,8 @@ public class PlayerInput : MonoBehaviour
     
     //新添加：
     public MyInputMoudle buttonUpNew = new MyInputMoudle();
+    public MyInputMoudle buttonZoomIn = new MyInputMoudle();
+    public MyInputMoudle buttonZoomOut = new MyInputMoudle();
 
 
     [Header("Output Signal")]
@@ -147,6 +151,9 @@ public class PlayerInput : MonoBehaviour
         if(ControlEnable(keyEsc))
             buttonEsc.Tick(Input.GetKey(keyEsc) || GamePadInput.GetButton("Escape"));
         
+        buttonZoomIn.Tick(Input.GetKey(keyZoomIn) || GamePadInput.GetButton("ZoomIn"));
+        buttonZoomOut.Tick(Input.GetKey(keyZoomOut) || GamePadInput.GetButton("ZoomOut"));
+        
         if(BattleStageManager.Instance.isGamePaused)
             return;
         
@@ -208,19 +215,11 @@ public class PlayerInput : MonoBehaviour
         }
 
 
-
-
-        //print(buttonDown.IsPressing && buttonDown.isExtending);
-
-        
-        
         checkMovement();    
         checkJump();
         checkRoll();
         checkStdAttack();
         
-        //PlayerInput.CheckSkill() -> ActorController.CheckSkill() -> ActorController.UseSkill(id)
-        //CheckSpecialMove();
         CheckSkill1();
         CheckSkill2();
         CheckSkill3();
@@ -623,6 +622,8 @@ public class PlayerInput : MonoBehaviour
         keyRoll = GlobalController.keyRoll;
         keyJump = GlobalController.keyJump;
         keyUpNew = GlobalController.keyUpNew;
+        keyZoomIn = GlobalController.keyZoomIn;
+        keyZoomOut = GlobalController.keyZoomOut;
         
         if(Input.GetJoystickNames().Length == 0)
             return;
@@ -647,7 +648,9 @@ public class PlayerInput : MonoBehaviour
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
         var moveU = actions[11].bindings[0];
-        
+        var zoomIn = actions[12].bindings[0];
+        var zoomOut = actions[13].bindings[0];
+
         gamepadButtonDict = new()
         {
             {"MoveL",moveL},
@@ -656,7 +659,9 @@ public class PlayerInput : MonoBehaviour
             {"Attack",attack},{"Jump",jump},{"Dodge",roll},{"Special",special},
             {"Skill1",skill1},{"Skill2",skill2},{"Skill3",skill3},{"Skill4",skill4},
             {"Escape",escape},
-            {"MoveU",moveU}
+            {"MoveU",moveU},
+            {"ZoomIn",zoomIn},
+            {"ZoomOut",zoomOut}
         };
 
         
@@ -668,7 +673,7 @@ public class PlayerInput : MonoBehaviour
     /// <param name="keys">0:Attack / 1-4:Skills / 5:Left / 6:Right / 7:Special / 8:Down / 9:Roll / 10:Jump</param>
     public void SetKeySetting(KeyCode[] keys)
     {
-        if(keys.Length != 13)
+        if(keys.Length != 15)
         {
             return;
         }
@@ -685,17 +690,11 @@ public class PlayerInput : MonoBehaviour
         keyRoll =  keys[9];
         keyJump =  keys[10];
         keyEsc =  keys[11];
+        keyUpNew = keys[12];
+        keyZoomIn = keys[13];
+        keyZoomOut = keys[14];
 
-        // keySkill1 = keys[1];
-        // keySkill2 = keys[2];
-        // keySkill3 = keys[3];
-        // keySkill4 = keys[4];
-        // keyLeft = keys[5];
-        // keyRight = keys[6];
-        // keyUp = keys[7]; //special
-        // keyDown = keys[8];
-        // keyRoll = keys[9];
-        // keyJump = keys[10];
+        
     }
 
     public void InvokeAttackSignal()
@@ -752,6 +751,8 @@ public class PlayerInput : MonoBehaviour
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
         var moveU = actions[11].bindings[0];
+        var zoomIn = actions[12].bindings[0];
+        var zoomOut = actions[13].bindings[0];
         
         Dictionary<string,InputBinding> gamepadButtonDict = new()
         {
@@ -761,7 +762,9 @@ public class PlayerInput : MonoBehaviour
             {"Attack",attack},{"Jump",jump},{"Dodge",roll},{"Special",special},
             {"Skill1",skill1},{"Skill2",skill2},{"Skill3",skill3},{"Skill4",skill4},
             {"Escape",escape},
-            {"MoveU",moveU}
+            {"MoveU",moveU},
+            {"ZoomIn",zoomIn},
+            {"ZoomOut",zoomOut}
         };
         var binding = gamepadButtonDict[name];
 
@@ -811,7 +814,11 @@ public class PlayerInput : MonoBehaviour
                 
                 case "Escape":
                     return GlobalController.keyEscape.ToString();
-                
+                case "ZoomIn":
+                    return GlobalController.keyZoomIn.ToString();
+                case "ZoomOut":
+                    return GlobalController.keyZoomOut.ToString();
+
                 default: return "";
 
             }

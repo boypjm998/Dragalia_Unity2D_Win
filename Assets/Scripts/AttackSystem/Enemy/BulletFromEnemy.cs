@@ -50,6 +50,7 @@ public class BulletFromEnemy : AttackFromEnemy
                     if (knockbackable.GetDodge())
                     {
                         knockbackable.InvokeDodge(this,enemySource);
+                        OnAttackBeingDodge?.Invoke(this, hitinfo.collider.transform.parent.gameObject);
                         transform.Translate(Vector2.right * speed * lifeTime);
                         return;
                     }

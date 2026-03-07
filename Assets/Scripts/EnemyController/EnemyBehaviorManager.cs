@@ -48,8 +48,11 @@ public class EnemyBehaviorManager : DragaliaEnemyBehavior
     protected EnemyActionPattern.PhasePattern _currentPhase;
     
     [SerializeField] TextAsset behaviorTextAsset;
-    
-    
+
+    public string GetCurrentActionName()
+    {
+        return _currentActionStage.action_name;
+    }
     
     protected override void CheckPhase()
     {

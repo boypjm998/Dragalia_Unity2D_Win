@@ -13,7 +13,7 @@ public class MuzzleSESender : MonoBehaviour
     public bool withContainer = false;
     AudioSource _audioSource;
     public bool playEvenNotInView = false;
-    private void Start()
+    private void OnEnable()
     {
         if (SEClip!=null)
         {
@@ -28,6 +28,11 @@ public class MuzzleSESender : MonoBehaviour
             }
         }
         
+    }
+
+    private void OnDisable()
+    {
+        CancelInvoke();
     }
 
     private void OnDestroy()

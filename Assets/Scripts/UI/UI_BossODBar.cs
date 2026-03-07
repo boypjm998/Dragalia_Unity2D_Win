@@ -64,6 +64,7 @@ public class UI_BossODBar : MonoBehaviour
         {
             transform.GetChild(2).gameObject.SetActive(true);
             displayBroken = true;
+            ODBar.value = 0;
         }
         else
         {
@@ -73,15 +74,15 @@ public class UI_BossODBar : MonoBehaviour
 
     public void ODBarRecharge()
     {
-        print(ODBar);
-        print(ODBar.value);
-        print(bossStat);
-        print(bossStat.currentBreak);
+        
         
         var twc = DOTween.To(() => ODBar.value,
             x => ODBar.value = x,
             bossStat.currentBreak / bossStat.baseBreak, 1f);
         twc.OnComplete(() =>
+        {
+            displayBroken = false;
+        }).OnKill(()=>
         {
             displayBroken = false;
         });

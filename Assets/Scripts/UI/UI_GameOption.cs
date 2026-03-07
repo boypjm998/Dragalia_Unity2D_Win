@@ -44,6 +44,7 @@ public class UI_GameOption : MonoBehaviour
     // private string defaultKeyEscape = "escape";
 
     public static bool isSettingKey = false;
+    public static bool isConflict = false; 
     
     [SerializeField] private TextMeshProUGUI notFoundGamepadText;
 
@@ -63,8 +64,8 @@ public class UI_GameOption : MonoBehaviour
 
     private void Awake()
     {
-        keySettingButton = new Button[13];
-        keyText = new TextMeshProUGUI[13];
+        keySettingButton = new Button[15];
+        keyText = new TextMeshProUGUI[15];
 
         var keyBoardSetting = transform.Find("KeyboardSettings");
         keySettingCanvasGroup = keyBoardSetting.GetComponent<CanvasGroup>();
@@ -79,8 +80,8 @@ public class UI_GameOption : MonoBehaviour
 
         var gamePadSetting = transform.Find("GamepadSettings");
         gamepadSettingCanvasGroup = gamePadSetting.GetComponent<CanvasGroup>();
-        gamepadSettingButton = new Button[13];
-        gamepadText = new TextMeshProUGUI[13];
+        gamepadSettingButton = new Button[15];
+        gamepadText = new TextMeshProUGUI[15];
         i = 0;
         foreach (Transform item in gamePadSetting)
         {
@@ -190,7 +191,7 @@ public class UI_GameOption : MonoBehaviour
 
     private void ResetPanels()
     {
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
             
             keySettingButton[i].image.color = Color.white;
@@ -198,7 +199,7 @@ public class UI_GameOption : MonoBehaviour
             keySettingButton[i].interactable = true;
 
         }
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
             
             gamepadSettingButton[i].image.color = Color.white;
@@ -211,7 +212,7 @@ public class UI_GameOption : MonoBehaviour
     {
         isSettingKey = true;
 
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
 
             keySettingButton[i].interactable = false;
@@ -247,7 +248,7 @@ public class UI_GameOption : MonoBehaviour
 
         keyText[keyID].text = newKey;
 
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
             if (keyID != i && keyText[i].text == newKey)
             {
@@ -255,7 +256,7 @@ public class UI_GameOption : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
             if (keyID == i)
             {
@@ -268,6 +269,8 @@ public class UI_GameOption : MonoBehaviour
         }
 
         ReloadKeySetting();
+
+        yield return null;
         isSettingKey = false;
 
 
@@ -300,18 +303,19 @@ public class UI_GameOption : MonoBehaviour
         var skill3 = actions[8].bindings[0];
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
-        
         var moveU = actions[11].bindings[0];
+        var zoomIn = actions[12].bindings[0];
+        var zoomOut = actions[13].bindings[0];
 
         var actionBindings = new List<InputBinding>()
         {
-            moveL, moveR, moveD, attack, jump, roll, special, skill1, skill2, skill3, skill4, escape, moveU
+            moveL, moveR, moveD, attack, jump, roll, special, skill1, skill2, skill3, skill4, escape, moveU, zoomIn, zoomOut
         };
         
         isSettingKey = true;
         string newPath = "";
         
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
 
             gamepadSettingButton[i].interactable = false;
@@ -403,7 +407,7 @@ public class UI_GameOption : MonoBehaviour
         ReloadInputActionAssetData(newJsonData);
         
         
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 15; i++)
         {
             if (keyID == i)
             {
@@ -416,7 +420,30 @@ public class UI_GameOption : MonoBehaviour
         }
         
         ReloadGamepadInfo(actionMap);
+        
+        yield return null;
+        
         isSettingKey = false;
+    }
+
+    private void CheckGamepadConflict()
+    {
+        //查找gamepadText[..].text中是否有重复的按键，如果有将其置为红色
+        isConflict = false;
+        
+        for (int i = 0; i < 15; i++)
+        {
+            for (int j = 0; j < 15; j++)
+            {
+                if (i != j && gamepadText[i].text == gamepadText[j].text && gamepadText[i].text != "")
+                {
+                    gamepadText[i].color = Color.red;
+                    gamepadText[j].color = Color.red;
+                    isConflict = true;
+                }
+            }
+        }
+        
     }
     
     private bool IsKeyUsed(InputActionMap actionMap, string newKeyPath)
@@ -467,6 +494,8 @@ public class UI_GameOption : MonoBehaviour
         GlobalController.keySkill4 = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[10].text==""? "None":keyText[10].text);
         GlobalController.keyEscape = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[11].text==""? "None":keyText[11].text);
         GlobalController.keyUpNew = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[12].text==""? "None":keyText[12].text);
+        GlobalController.keyZoomIn = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[13].text==""? "None":keyText[13].text);
+        GlobalController.keyZoomOut = (KeyCode)Enum.Parse(typeof(KeyCode),keyText[14].text==""? "None":keyText[14].text);
         
         
         GlobalController.Instance.WritePlayerSettingsToFile();
@@ -605,6 +634,9 @@ public class UI_GameOption : MonoBehaviour
         if(isSettingKey)
             return;
         
+        if(isConflict && Gamepad.current != null)
+            return;
+        
         if (flag)
         {
             keySettingCanvasGroup.alpha = 1;
@@ -632,6 +664,8 @@ public class UI_GameOption : MonoBehaviour
         keyText[10].text = GlobalController.keySkill4.ToString();
         keyText[11].text = GlobalController.keyEscape.ToString();
         keyText[12].text = GlobalController.keyUpNew.ToString();
+        keyText[13].text = GlobalController.keyZoomIn.ToString();
+        keyText[14].text = GlobalController.keyZoomOut.ToString();
     }
 
     private void DisplayGamepadSettingText()
@@ -664,6 +698,8 @@ public class UI_GameOption : MonoBehaviour
         var skill4 = actions[9].bindings[0];
         var escape = actions[10].bindings[0];
         var moveU = actions[11].bindings[0];
+        var zoomIn = actions[12].bindings[0];
+        var zoomOut = actions[13].bindings[0];
         
         
         gamepadText[0].text = SimplifyInputActionName(moveL.path);
@@ -679,7 +715,15 @@ public class UI_GameOption : MonoBehaviour
         gamepadText[10].text = SimplifyInputActionName(skill4.path);
         gamepadText[11].text = SimplifyInputActionName(escape.path);
         gamepadText[12].text = SimplifyInputActionName(moveU.path);
+        gamepadText[13].text = SimplifyInputActionName(zoomIn.path);
+        gamepadText[14].text = SimplifyInputActionName(zoomOut.path);
 
+        foreach (var VARIABLE in gamepadText)
+        {
+            VARIABLE.color = Color.black;
+        }
+
+        CheckGamepadConflict();
 
     }
 

@@ -10,10 +10,15 @@ using UnityEngine.SceneManagement;
 public class StageCameraController : MonoBehaviour
 {
     public static StageCameraController Instance;
-
+    public static float cameraSize = 8f;
+    public static float maxCameraSize = 11f;
+    
+    public float currentMainCameraSize;
+    public float cameraSizeOverall;
     public Vector2 startPosition = Vector2.zero;
     
     protected Tweener cameraTweener;
+    protected bool isTweening = false;
 
     protected CinemachineVirtualCamera cmMain;
     protected CinemachineVirtualCamera cmOverall;
@@ -38,8 +43,9 @@ public class StageCameraController : MonoBehaviour
 
     private static GameObject mainCameraGameObject;
     // Start is called before the first frame update
-    public bool testFlag = false;
+    public bool zoomLock = false;
     private static int currentCamera = 1;
+    public float MinCameraSize { get; private set; } = 8;
 
     private void Awake()
     {
@@ -59,6 +65,8 @@ public class StageCameraController : MonoBehaviour
         cmMain = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
         cmOverall = overallCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
         AddOtherCamera();
+        currentMainCameraSize = MinCameraSize;
+        cameraSizeOverall = cmOverall.m_Lens.OrthographicSize;
     }
 
     private void Update()
@@ -93,6 +101,9 @@ public class StageCameraController : MonoBehaviour
         
         CineMachineOperator.Instance.StopCameraShake();
         overallCameraGameObject.GetComponentInChildren<CineMachineOperator>()?.SetInstance();
+        
+        
+        
     }
     public static void SwitchMainCamera()
     {
@@ -126,7 +137,7 @@ public class StageCameraController : MonoBehaviour
         }
     }
 
-    public static void SwitchMainCameraFollowObject(GameObject target)
+    public static void SwitchMainCameraFollowObject(GameObject target,bool resize = true)
     {
         CinemachineVirtualCamera camera;
         if(Instance != null && Instance.cmMain != null)
@@ -139,6 +150,18 @@ public class StageCameraController : MonoBehaviour
         
         camera.Follow = target.transform;
 
+        if (resize)
+        {
+            if (target == BattleStageManager.Instance.GetPlayer())
+            {
+                Instance.ResizeCameraForce((int)Instance.currentMainCameraSize);
+            }else
+            {
+                Instance.ResizeCameraForce((int)Instance.MinCameraSize);
+            }
+        }
+        
+        
     }
 
     public static void SwitchOverallCameraFollowObject(GameObject target)
@@ -151,13 +174,138 @@ public class StageCameraController : MonoBehaviour
             camera.Follow = target.transform;
         }
         
+        
+        
     }
 
     public static void SetMainCameraSize(int size)
     {
         var camera = mainCameraGameObject.GetComponentInChildren<CinemachineVirtualCamera>();
         camera.m_Lens.OrthographicSize = size;
+        //Instance.currentMainCameraSize = size;
     }
+
+    
+    public void SetMinCameraSize(int size)
+    {
+        MinCameraSize = size;
+        if(currentMainCameraSize < MinCameraSize)
+        {
+            MainCameraZoomAuto(size);
+        }
+    }
+
+    private void MainCameraZoomAuto(int endValue)
+    {
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
+        var camera = cmMain;
+
+        if (camera.Follow != BattleStageManager.Instance.GetPlayer().transform)
+        {
+            Debug.Log("Camera not following player");
+            return;
+        }
+        
+        var newSize = camera.m_Lens.OrthographicSize;
+
+        newSize = endValue;
+
+        var minSize = MinCameraSize;
+        var maxSize = Mathf.Min(maxCameraSize, cameraSizeOverall);
+
+        if (newSize <= minSize)
+        {
+            newSize = MinCameraSize;
+        }
+        else if (newSize > maxSize)
+        {
+            newSize = cmMain.m_Lens.OrthographicSize;
+        }
+        
+        
+        currentMainCameraSize = newSize;
+        isTweening = true;
+        cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
+            x => camera.m_Lens.OrthographicSize = x, newSize,
+            0.3f * Mathf.Abs(newSize - cmMain.m_Lens.OrthographicSize)).
+            OnComplete(()=>isTweening = false);
+    }
+    
+
+    public void MainCameraZoom(int increment)
+    {
+        if(GlobalController.currentGameState != GlobalController.GameState.Inbattle)
+            return;
+        var camera = cmMain;
+
+        if (isTweening || zoomLock)
+        {
+            return;
+        }
+
+        if (camera.Priority <= 0)
+        {
+            return;
+        }
+
+        if (camera.Follow != BattleStageManager.Instance.GetPlayer().transform)
+        {
+            Debug.Log("Camera not following player");
+            return;
+        }
+        
+        var newSize = camera.m_Lens.OrthographicSize;
+        
+        if (increment > 0)
+            newSize = cmMain.m_Lens.OrthographicSize + 1;
+        else if(increment < 0)
+            newSize = cmMain.m_Lens.OrthographicSize - 1;
+        else newSize = cmMain.m_Lens.OrthographicSize;
+        
+        
+        var minSize = MinCameraSize;
+        var maxSize = Mathf.Min(maxCameraSize, cameraSizeOverall);
+
+        if (newSize <= minSize)
+        {
+            newSize = MinCameraSize;
+        }
+        else if (newSize > maxSize)
+        {
+            newSize = cmMain.m_Lens.OrthographicSize;
+        }
+        
+        
+        currentMainCameraSize = newSize;
+        isTweening = true;
+        cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
+            x => camera.m_Lens.OrthographicSize = x, newSize,
+            0.3f).OnComplete(()=>isTweening = false);
+        
+    }
+
+    private void ResizeCameraForce(int newSize = 8)
+    {
+        if (newSize != MinCameraSize)
+        {
+            newSize = (int)currentMainCameraSize;
+        }
+
+        var camera = cmMain;
+        isTweening = true;
+        
+        var tweenTime = Mathf.Clamp(Mathf.Abs(currentMainCameraSize - newSize) * 0.3f,0.3f,0.75f);
+        
+        cameraTweener?.Kill();
+        
+        cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
+            x => camera.m_Lens.OrthographicSize = x, newSize,
+            tweenTime).OnComplete(()=>isTweening = false);
+        
+        currentMainCameraSize = newSize;
+    }
+    
 
     public void ToShapeshiftingView()
     {
@@ -165,9 +313,18 @@ public class StageCameraController : MonoBehaviour
             return;
         var camera = cmMain;
         //0.5s内将摄像机的m_Lens.OrthographicSize变为9
+
+        var endValue = Mathf.Max(MinCameraSize + 1, cmMain.m_Lens.OrthographicSize);
+        
+        if(isTweening)
+            return;
+        
+        isTweening = true;
+        currentMainCameraSize = endValue;
         cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
-            x => camera.m_Lens.OrthographicSize = x, 9,
-            0.5f);
+            x => camera.m_Lens.OrthographicSize = x, endValue,
+            0.5f).OnComplete(()=>isTweening = false);
+        
     }
     
     public void DoViewTween(float endValue, float duration = 0.5f)
@@ -176,9 +333,16 @@ public class StageCameraController : MonoBehaviour
             return;
         var camera = cmMain;
         //0.5s内将摄像机的m_Lens.OrthographicSize变为9
+        
+        
+        if(isTweening)
+            return;
+        
+        isTweening = true;
+        currentMainCameraSize = endValue;
         cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
             x => camera.m_Lens.OrthographicSize = x, endValue,
-            duration);
+            duration).OnComplete(()=>isTweening = false);
     }
     public void ToNormalView()
     {
@@ -186,9 +350,16 @@ public class StageCameraController : MonoBehaviour
             return;
         var camera = cmMain;
         //0.5s内将摄像机的m_Lens.OrthographicSize变为9
+        var endValue = Mathf.Max(MinCameraSize, cmMain.m_Lens.OrthographicSize);
+        
+        if(isTweening)
+            return;
+        
+        isTweening = true;
+        currentMainCameraSize = endValue;
         cameraTweener = DOTween.To(() => camera.m_Lens.OrthographicSize,
-            x => camera.m_Lens.OrthographicSize = x, 8,
-            0.5f);
+            x => camera.m_Lens.OrthographicSize = x, endValue,
+            0.5f).OnComplete(()=>isTweening = false);
     }
 
     protected void AddOtherCamera()

@@ -58,7 +58,7 @@ public class ActorController_c002 : ActorControllerDagger
             skillBoosted = true;
             voiceController?.PlaySkillVoice(1);
             //speedModifier = 0.2f;
-            StartCoroutine(HorizontalMove(movespeed * 0.15f, 3f, "s1"));
+            StartCoroutine(HorizontalMoveSkill1(movespeed * 0.15f, 3f));
             //pi.moveEnabled = true;
             FaceDirectionAutoFix(4);
             pi.LockDirection(1);
@@ -176,4 +176,57 @@ public class ActorController_c002 : ActorControllerDagger
         base.OnHurtEnter();
         skillBoosted = false;
     }
+
+    public IEnumerator HorizontalMoveSkill1(float speed, float time)
+    {
+        var move = "s1";
+
+        var currentPlatform = gameObject.RaycastedPlatform();
+        var left = currentPlatform.bounds.min.x;
+        var right = currentPlatform.bounds.max.x;
+        
+        while (time > 0)
+        {
+            var bogModifier = isBog ? 0.5f : 1;
+
+            if (facedir == 1 && transform.position.x > right)
+            {
+                
+            }
+            else if(facedir == -1 && transform.position.x < left)
+            {
+                
+            }
+            else
+            {
+                rigid.position = new Vector3(transform.position.x + facedir * speed * bogModifier * Time.fixedDeltaTime,
+                    transform.position.y, transform.position.z);
+            }
+            
+
+            if (transform.position.y < currentPlatform.bounds.max.y)
+            {
+                currentPlatform = gameObject.RaycastedPlatform();
+                left = currentPlatform.bounds.min.x;
+                right = currentPlatform.bounds.max.x;
+            }
+            
+            
+            time -= Time.fixedDeltaTime;
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName(move) == false)
+            {
+                //print("interrupt");
+                if (Mathf.Abs(rigid.velocity.x) > movespeed && hurt==false)
+                    rigid.velocity = new Vector2(movespeed, rigid.velocity.y);
+                //pi.SetMoveEnabled();
+                yield break;
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
+        
+    }
+    
+    
+    
 }

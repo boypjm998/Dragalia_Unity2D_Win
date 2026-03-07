@@ -76,7 +76,7 @@ public class EnemyControllerFlying : EnemyController
     {
         if (flag)
         {
-            anim.SetBool("hurt",true);
+            anim?.SetBool("hurt",true);
             
             hurt = true;
             moveEnable = false;
@@ -85,7 +85,7 @@ public class EnemyControllerFlying : EnemyController
         }
         else
         {
-            anim.SetBool("hurt",false);
+            anim?.SetBool("hurt",false);
             hurt = false;
             moveEnable = true;
             //_behavior.isAction = false;
@@ -225,7 +225,7 @@ public class EnemyControllerFlying : EnemyController
         isMove = 0;
         BattleEffectManager.Instance.PlayBreakEffect();
         SetCounter(false);
-        //StageCameraController.SwitchMainCamera();
+        //_behavior.breakable = false;
         breakRoutine = StartCoroutine(BreakWait((_statusManager as SpecialStatusManager).breakTime));
         UI_BossODBar.Instance?.ODBarClear();
     }
@@ -240,13 +240,20 @@ public class EnemyControllerFlying : EnemyController
             spStatus.currentBreak = spStatus.baseBreak;
         else spStatus.currentBreak = 0.1f;
         
-        spStatus.broken = false;
-        isAction = false;
         _behavior.ActionEnd(false);
+        spStatus.broken = false;
+        
+        //todo: 6/24修改：
+        spStatus.OnRecoverFromBroken?.Invoke();
+        
+        isAction = false;
         _behavior.isAction = false;
         _behavior.controllAfflictionProtect = false;
+        
         UI_BossODBar.Instance?.ODBarRecharge();
     }
+    
+    
 
     protected override void OnDeath()
     {

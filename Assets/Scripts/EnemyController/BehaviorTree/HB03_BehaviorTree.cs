@@ -898,10 +898,6 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
     {
         ActionStart();
         print("startPhaseChange");
-        
-        
-        
-        
         currentMoveAction = 
             StartCoroutine(enemyAttackManager.HB03_Action14());
         yield return new WaitUntil(()=>currentMoveAction == null);
@@ -933,8 +929,8 @@ public class HB03_BehaviorTree : EnemyBehaviorManager
         p2_boss.transform.position = new Vector3(0, 5);
         BattleStageManager.Instance.SetCameraTopBorder(32);
         BattleStageManager.Instance.RefreshCameraBorder();
-        // BattleStageManager.Instance.RemoveFieldAbility(20081);
-        BattleStageManager.Instance.RemoveFieldAbility(20181);
+        // BattleStageManager.Instance.RemoveFieldAbility(20181);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.JumpBoostWorld);
         BattleEffectManager.Instance.SetBGM(p2_bgm);
         BattleEffectManager.Instance.PlayBGM(true);
         

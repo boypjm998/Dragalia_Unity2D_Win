@@ -68,8 +68,9 @@ namespace CharacterSpecificProjectiles
             {
                 
                 isUsed = true;
-                playerGameObject.GetComponent<StatusManager>().HPRegenImmediately(snappedStatusManager,basePotency,0);
-                //Destroy(gameObject);
+                var healed = playerGameObject.GetComponent<StatusManager>().
+                    HPRegenImmediately(snappedStatusManager,basePotency,0,playerGameObject);
+                //playerGameObject.GetComponent<PlayerStatusManager>().OnHPIncrease?.Invoke(healed);
                 transform.Find("laser").gameObject.SetActive(true);
                 Destroy(gameObject,0.5f);
             }

@@ -15,6 +15,11 @@ public class UI_RingSlider : MonoBehaviour
     public Color normalColor = Color.yellow;
     public Color warningColor = Color.red;
 
+    /// <summary>
+    /// Clear All Actions After Triggered
+    /// </summary>
+    public event Action<UI_RingSlider> OnCountdownEnd; 
+
     private void Awake()
     {
         block = new MaterialPropertyBlock();
@@ -38,6 +43,8 @@ public class UI_RingSlider : MonoBehaviour
         currentValue -= Time.deltaTime;
         if (currentValue < 0)
         {
+            OnCountdownEnd?.Invoke(this);
+            OnCountdownEnd = null;
             currentValue = 0;
         }
             

@@ -10,6 +10,7 @@ public class AttackContainer : MonoBehaviour
     public bool inspired = false;
     public int attackTotalNum { get; protected set; }
     public bool IfODCounter;
+    public bool IfSuccessODCounter = false;
     protected int currentFinishedNum;
     [SerializeField]private bool needTotalDisplay;
     protected int totalDamage;
@@ -17,6 +18,7 @@ public class AttackContainer : MonoBehaviour
     public List<int> conditionCheckDone;//已检查过的敌人InstanceID
     public HashSet<Tuple<int, int>> checkedConditions = new();
     public List<AttackSubContainer> SubContainers = new();
+    public bool isEternal = false;
     
     //public List<int> specialConditionCheckDone;
 
@@ -64,7 +66,16 @@ public class AttackContainer : MonoBehaviour
         if (totalDamage == 0)
             return;
 
-        GameObject.Find("DamageManager").GetComponent<DamageNumberManager>()?.SpawnTotalDamage(totalDamage);
+        if (DamageNumberManager.Instance == null)
+        {
+            GameObject.Find("DamageManager").GetComponent<DamageNumberManager>()?.SpawnTotalDamage(totalDamage);
+        }
+        else
+        {
+            DamageNumberManager.Instance.SpawnTotalDamage(totalDamage);
+        }
+
+        
         
     }
 
@@ -75,7 +86,14 @@ public class AttackContainer : MonoBehaviour
     }
     public virtual void FinishHit()
     {
-        currentFinishedNum++;
+        if (!isEternal)
+            currentFinishedNum++;
+        else
+        {
+            currentFinishedNum = 0;
+            if (totalDamage > 9999999)
+                totalDamage = 0;
+        }
     }
     public bool NeedTotalDisplay()
     {

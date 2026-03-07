@@ -51,7 +51,8 @@ namespace CharacterSpecificProjectiles
             if (col.transform.parent.gameObject == BossGameObject)
             {
                 isUsed = true;
-                BossGameObject.GetComponent<StatusManager>().HPRegenImmediately(snappedStatusManager,basePotency,0);
+                BossGameObject.GetComponent<StatusManager>().HPRegenImmediately(
+                    snappedStatusManager,basePotency,0,BossGameObject);
                 Destroy(gameObject);
             }
     

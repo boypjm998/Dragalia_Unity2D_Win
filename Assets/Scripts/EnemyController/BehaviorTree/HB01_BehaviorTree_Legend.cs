@@ -652,8 +652,8 @@ public class HB01_BehaviorTree_Legend : DragaliaEnemyBehavior
         BattleEffectManager.Instance.PlayBGM(false);
         ActionEnd();
         yield return null;
-        BattleStageManager.Instance.RemoveFieldAbility(20081);
-        BattleStageManager.Instance.RemoveFieldAbility(20091);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DowngradeWorld);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.UpgradeWorld);
         BattleEffectManager.Instance.SetBGM(p2_bgm);
         BattleEffectManager.Instance.PlayBGM(true);
         

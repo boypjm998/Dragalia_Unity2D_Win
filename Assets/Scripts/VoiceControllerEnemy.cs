@@ -47,6 +47,11 @@ public class VoiceControllerEnemy : AudioManagerGeneral
             speakerID = statusManager.dialogIconID;
         
     }
+    
+    public void PlayIntroVoiceManually()
+    {
+        PlayIntroVoice();
+    }
 
     private void PlayIntroVoice()
     {
@@ -93,12 +98,12 @@ public class VoiceControllerEnemy : AudioManagerGeneral
         
         var moveID = voiceGroup.clipIndexID[internalID];
         
-        
+        var clip = moveID >= 0 ? myClips[moveID] : null;
 
         if (voiceGroup.clipTextID[internalID] >= 0)
         {
             _dialogDisplayer.EnqueueDialog
-                (speakerID, voiceGroup.clipTextID[internalID],voice, myClips[moveID]);
+                (speakerID, voiceGroup.clipTextID[internalID],voice, clip);
         }
     }
 
@@ -110,8 +115,6 @@ public class VoiceControllerEnemy : AudioManagerGeneral
             Debug.LogWarning("VoiceGroupID is out of range.");
             return;
         }
-
-        
 
         var voiceGroup = voiceGroups[voiceGroupID];
         
@@ -126,8 +129,7 @@ public class VoiceControllerEnemy : AudioManagerGeneral
             _dialogDisplayer.EnqueueDialog
                         (speakerID, voiceGroup.clipTextID[randomIndex],voice, clip);
         }
-
-        
+ 
     }
 
     public void PlayMyVoice(int voiceGroupID)

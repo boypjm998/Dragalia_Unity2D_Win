@@ -22,6 +22,7 @@ public class EnemyMoveController_DB14 : EnemyMoveManager
     {
         base.Awake();
         _voiceController = GetComponentInChildren<VoiceControllerEnemy>();
+        GetAllAnchors();
     }
 
     /// <summary>
@@ -119,8 +120,6 @@ public class EnemyMoveController_DB14 : EnemyMoveManager
         
         QuitAttack();
     }
-
-
 
 
     /// <summary>
@@ -400,6 +399,61 @@ public class EnemyMoveController_DB14 : EnemyMoveManager
         QuitAttack();
 
     }
+
+    /// <summary>
+    /// transform to p2
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator DB14_Action11()
+    {
+        yield return null;
+        
+        anim.Play("knockback_enter");
+
+        if (Projectile_DB014_1.Instance != null)
+        {
+            Projectile_DB014_1.Instance.InterruptWaterfall();
+        }
+        
+        StageCameraController.SwitchMainCamera();
+        StageCameraController.SwitchMainCameraFollowObject(gameObject);
+
+        var fx1 = Instantiate(GetProjectileOfFormatName("action11_1", true),
+            transform.position, Quaternion.identity, RangedAttackFXLayer.transform);
+
+        yield return new WaitForSeconds(2);
+        
+        DisappearRenderer();
+        
+        yield return new WaitForSeconds(1);
+
+        transform.position = new Vector3(0, BattleStageManager.Instance.mapBorderB + 1);
+        StageCameraController.SwitchMainCameraFollowObject(GetAnchoredSensorOfName("GroundM"));
+        
+        var fx2 = Instantiate(GetProjectileOfFormatName("action11_2", true),
+            transform.position, Quaternion.identity, RangedAttackFXLayer.transform);
+        
+        yield return new WaitForSeconds(1);
+        
+        //AppearRenderer();
+        CineMachineOperator.Instance.CamaraShake(8f,2f);
+        
+        (BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Background1") as SpriteRenderer).DOColor(
+            Color.clear, 1.5f);
+
+        yield return new WaitForSeconds(1.8f);
+        
+        DOVirtual.DelayedCall(1.35f,()=>
+            StageCameraController.SwitchMainCameraFollowObject(_behavior.viewerPlayer),false);
+        
+        yield return null;
+        
+        QuitAttack();
+        _behavior.currentMoveAction = null;
+
+
+    }
+    
     
     
     
@@ -444,9 +498,6 @@ public class EnemyMoveController_DB14 : EnemyMoveManager
         
         fx.GetComponent<AttackFromEnemy>().AddWithConditionAll(corrosionEff,200);
 
-
-
-        //_statusManager.InflictCorrosion(healNeeded,1);
     }
 
 

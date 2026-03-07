@@ -565,7 +565,7 @@ public class EnemyMoveController_HB03_Legend : EnemyMoveManager
         
         AstralSurge_Projectiles();
         
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3f);
         StageCameraController.SwitchMainCamera();
         QuitAttack();
 
@@ -593,7 +593,7 @@ public class EnemyMoveController_HB03_Legend : EnemyMoveManager
         
         _orbGenerationTween?.Kill();
         GenerateOrbsNormal(1);
-        BattleStageManager.Instance.AddFieldAbility(20181);
+        BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.JumpBoostWorld);
         BackgroundTweener(Color.white);
         
         yield return new WaitForSeconds(0.5f);
@@ -620,7 +620,7 @@ public class EnemyMoveController_HB03_Legend : EnemyMoveManager
         
         //_orbGenerationTween?.Kill();
         GenerateOrbsNormal(0);
-        BattleStageManager.Instance.RemoveFieldAbility(20181);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.JumpBoostWorld);
         BackgroundTweener(Color.white);
         
         yield return new WaitForSeconds(0.5f);
@@ -813,6 +813,11 @@ public class EnemyMoveController_HB03_Legend : EnemyMoveManager
 
         var controller = PlayerPrepareDash();
         actorController.SetHitSensor(false);
+        //成就
+        BattleStageManager.Instance.
+            TriggerSpecialEvent
+                (actorController._statusManager.
+                    GetConditionWithSpecialID(DamageCutSPID).Count);
 
         yield return new WaitForSeconds(1.5f);
         
@@ -912,7 +917,7 @@ public class EnemyMoveController_HB03_Legend : EnemyMoveManager
             bossBanner?.PrintSkillName("HB03_Action21");
             _orbGenerationTween?.Kill();
             currentWorld = 1;
-            BattleStageManager.Instance.AddFieldAbility(20181);
+            BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.JumpBoostWorld);
             BackgroundTweener(Color.white);
         
             yield return new WaitForSeconds(0.5f);
@@ -1091,7 +1096,7 @@ public class EnemyMoveController_HB03_Legend : EnemyMoveManager
             DestroyAllPlatforms();
             _orbGenerationTween?.Kill();
             currentWorld = 0;
-            BattleStageManager.Instance.RemoveFieldAbility(20181);
+            BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.JumpBoostWorld);
 
             if (reached == false)
             {

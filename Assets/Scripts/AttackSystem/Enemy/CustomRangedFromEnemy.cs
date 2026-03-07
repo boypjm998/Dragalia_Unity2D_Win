@@ -53,6 +53,7 @@ public class CustomRangedFromEnemy : AttackFromEnemy
                 if (knockbackable.GetDodge())
                 {
                     knockbackable.InvokeDodge(this, enemySource);
+                    OnAttackBeingDodge?.Invoke(this, collision.transform.parent.gameObject);
                     //如果是红圈并且角色在技能中
                     return;
                 }

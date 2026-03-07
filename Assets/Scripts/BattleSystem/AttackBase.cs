@@ -29,12 +29,19 @@ public abstract class AttackBase : MonoBehaviour
     public AttackBaseDelegate OnAttackHit;
     public AttackBaseDelegate BeforeAttackHit;
     /// <summary>
+    /// Triggered when the attack is dodged, arg1: attack, arg2: target
+    /// </summary>
+    public AttackBaseDelegate OnAttackBeingDodge;
+    
+    
+    /// <summary>
     /// 当造成伤害时(前)触发，arg1:自身 arg2:目标 ,arg3:攻击 arg4:造成的伤害
     /// </summary>
     public Action<StatusManager, StatusManager, AttackBase, float> OnAttackDealDamage;
 
     
-
+    protected List<AttackBase> compositeAttackList = new();
+    
     protected void DestroyContainer()
     {
         var container = GetComponentInParent<AttackContainer>();
@@ -129,6 +136,14 @@ public abstract class AttackBase : MonoBehaviour
         conditionalAttackEffects.Add(conditionalAttackEffect);
     }
 
+    public virtual void RemoveAllWithConditions()
+    {
+        foreach (var attack in attackInfo)
+        {
+            attack.withConditions.Clear();
+        }
+    }
+
     /// <summary>
     /// Method is unimplemented
     /// </summary>
@@ -178,8 +193,16 @@ public abstract class AttackBase : MonoBehaviour
         
     }
 
-
-
+    
+    protected virtual void ClearComposite(int instanceID)
+    {
+        
+    }
+    
+    public virtual void AddCompositeAttack(AttackBase atk)
+    {
+        compositeAttackList.Add(atk);
+    }
 
 
 }
@@ -313,6 +336,26 @@ public class ConditionalAttackEffect
         this.extraEffect = extraEffect;
         this.args1 = args1;
         this.args2 = args2;
+        ParseArguments();
+    }
+
+    /// <summary>
+    /// 当ConditionType为TargetHasCondition时的快捷构造函数
+    /// </summary>
+    public ConditionalAttackEffect(ExtraEffect extraEffect, float effectAmount,
+        params BasicCalculation.BattleCondition[] conditions)
+    {
+        this.conditionType = ConditionType.TargetHasCondition;
+        this.extraEffect = extraEffect;
+        this.args1 = new string[conditions.Length + 1];
+        this.args1[0] = conditions.Length.ToString();
+        for (int i = 0; i < conditions.Length; i++)
+        {
+            this.args1[i + 1] = ((int)conditions[i]).ToString();
+        }
+        
+        this.args2 = new string[1];
+        this.args2[0] = effectAmount.ToString();
         ParseArguments();
     }
     
@@ -542,5 +585,7 @@ public class ConditionalAttackEffect
 
 
     }
+    
+    
 
 }

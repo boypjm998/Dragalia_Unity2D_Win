@@ -545,6 +545,7 @@ public class HB04_BehaviorTree_Legend : HB04_BehaviorTree
     protected IEnumerator ACT_SetWorld(int worldID, float interval)
     {
         ActionStart();
+        breakable = false;
         
         yield return new WaitUntil(() => !enemyController.hurt);
 
@@ -560,6 +561,7 @@ public class HB04_BehaviorTree_Legend : HB04_BehaviorTree
 
         yield return _attackIsNull;
         enemyController.SetKBRes(status.knockbackRes);
+        breakable = true;
 
         yield return new WaitForSeconds(interval);
 
@@ -649,19 +651,17 @@ public class HB04_BehaviorTree_Legend : HB04_BehaviorTree
         
         var p2_boss = Instantiate(p2_prefab,transform.position,Quaternion.identity,transform.parent);
         p2_boss.GetComponent<EnemyController>().TurnMove(targetPlayer);
-        //UI_BossStatus.Instance.RedirectBoss(p2_boss);
-        //BattleEffectManager.Instance.bgmVoiceSource.Stop();
+        
         BattleStageManager.currentDisplayingBossInfo = 2;
         FindObjectOfType<UI_BossStatus>().RedirectBoss(p2_boss,1);
         p2_boss.GetComponent<StatusManager>()?.OnHPChange?.Invoke();
         BattleEffectManager.Instance.PlayBGM(false);
         ActionEnd();
         yield return null;
-        // BattleStageManager.Instance.RemoveFieldAbility(20081);
-        // BattleStageManager.Instance.RemoveFieldAbility(20091);
+        
         BattleEffectManager.Instance.SetBGM(p2_bgm);
         BattleEffectManager.Instance.PlayBGM(true);
-        BattleStageManager.Instance.RemoveFieldAbility(20151);
+        BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.BlessingWorld);
 
         Destroy(gameObject);
     }

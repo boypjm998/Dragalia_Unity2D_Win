@@ -27,6 +27,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
     private bool hint4Displayed = false;
 
     private TimerBuff legendPlusBuff;
+    
+    private bool routeDisplayed = false;
 
     protected enum VoiceGroupEnum
     {
@@ -64,8 +66,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         {
             DOVirtual.DelayedCall(3f, () =>
             {
-                BattleStageManager.Instance.RemoveFieldAbility(20081);
-                BattleStageManager.Instance.RemoveFieldAbility(20091);
+                BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DowngradeWorld);
+                BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.UpgradeWorld);
             },false);
             
         }
@@ -1280,6 +1282,11 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
         rawImg.texture = null;
         RTScene.SetActive(false);
         InheritorOfBlazewolf_Charging();
+        if (!towardsFirstArea)
+        {
+            SetHintUI();
+        }
+        
 
         yield return new WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("throw_loop"));
 
@@ -2045,8 +2052,9 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
                 {
                     backGroundSpriteRenderer.color = (_behavior as HB01_BehaviorTree_Legend2).brightColor;
                 });
-                BattleStageManager.Instance.RemoveFieldAbility(20091);
-                BattleStageManager.Instance.AddFieldAbility(20081);
+                BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.UpgradeWorld);
+                BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.DowngradeWorld);
+                
                 break;
             }
             case 2:
@@ -2055,8 +2063,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
                     (_behavior as HB01_BehaviorTree_Legend2).catastrophicColor,
                     0.5f).
                     OnKill(()=>backGroundSpriteRenderer.color = (_behavior as HB01_BehaviorTree_Legend2).catastrophicColor);;
-                BattleStageManager.Instance.RemoveFieldAbility(20081);
-                BattleStageManager.Instance.AddFieldAbility(20091);
+                BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DowngradeWorld);
+                BattleStageManager.Instance.AddFieldAbility((int)BasicCalculation.EnemyAbility.UpgradeWorld);
                 break;
             }
             default:
@@ -2065,8 +2073,8 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
                     (_behavior as HB01_BehaviorTree_Legend2).originColor,
                     0.5f).
                     OnKill(() => backGroundSpriteRenderer.color = (_behavior as HB01_BehaviorTree_Legend2).originColor);
-                BattleStageManager.Instance.RemoveFieldAbility(20091);
-                BattleStageManager.Instance.RemoveFieldAbility(20081);
+                BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.UpgradeWorld);
+                BattleStageManager.Instance.RemoveFieldAbility((int)BasicCalculation.EnemyAbility.DowngradeWorld);
                 BattleStageManager.Instance.AddFieldAbility(-1);
                 BattleStageManager.Instance.RemoveFieldAbility(-1);
                 break;
@@ -2213,6 +2221,23 @@ public class EnemyMoveController_HB01_Legend2 : EnemyMoveManager
     {
         var fx = Instantiate(GetProjectileOfFormatName("action26_3"),
             transform.position, Quaternion.identity, MeeleAttackFXLayer.transform);
+    }
+
+    private void SetHintUI()
+    {
+        if (routeDisplayed == false)
+        {
+            routeDisplayed = true;
+            
+            var fx = Instantiate(GetProjectileOfFormatName("action26_9"),
+                Vector3.zero, Quaternion.identity, RangedAttackFXLayer.transform);
+
+            if (firstPositionOfFlameArea.x > 0)
+            {
+                fx.transform.localScale = new Vector3(-1,1,1);
+            }
+            
+        }
     }
 
     private void InheritorOfBlazewolf_ThrowTwinSword()

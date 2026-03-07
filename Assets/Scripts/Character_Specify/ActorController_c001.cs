@@ -361,7 +361,7 @@ public class ActorController_c001 : ActorController
         if (!alchemicGauge.IsCatridgeActive())
         {
             alchemicGauge.Charge(2);
-            if (_statusManager.comboHitCount > 30)
+            if (_statusManager.comboHitCount > 20)
             {
                 alchemicGauge.Charge(4);
             }
@@ -391,7 +391,7 @@ public class ActorController_c001 : ActorController
         if (!alchemicGauge.IsCatridgeActive())
         {
             alchemicGauge.Charge(1);
-            if (_statusManager.comboHitCount > 30)
+            if (_statusManager.comboHitCount > 20)
             {
                 alchemicGauge.Charge(2);
             }

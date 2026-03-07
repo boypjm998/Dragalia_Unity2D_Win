@@ -38,7 +38,7 @@ public class AchievementManager : MonoBehaviour
     public Action<Achievement> OnAchievementFinished;
 
     // Constants
-    private const float tickInterval = 0.1f;
+    private const float tickInterval = 0.5f;
     
     
     
@@ -112,12 +112,22 @@ public class AchievementManager : MonoBehaviour
         print(AchievementInfos.Count);
         foreach (var achievement in Achievements)
         {
-            var achievementInfo = AchievementInfos.Find(x => x.id == achievement.id);
+            AchievementInfo achievementInfo = null;
+
+            
+            achievementInfo = AchievementInfos.Find(x => x.id == achievement.id);
+            
+            
             if (achievementInfo == null)
             {
                 achievementInfo = new AchievementInfo(achievement.id, "QUJDREVGRw==");
                 AchievementInfos.Add(achievementInfo);
             }
+            
+            
+            // print(achievementInfo.id);
+            // print(achievement.id);
+            
             achievement.SetProgress(achievementInfo.progressStr);
         }
         GlobalController.Instance.WriteGameOptionToFile();
@@ -156,7 +166,17 @@ public class AchievementManager : MonoBehaviour
 
     private void CompleteAchievement(int id, object[] messages)
     {
-        var achievement = UnfinishedAchievements.Find(x => x.id == id);
+        Achievement achievement;
+        try
+        {
+            achievement = UnfinishedAchievements.Find(x => x.id == id);
+        }
+        catch(Exception e)
+        {
+            Debug.LogWarning(e);
+            return;
+        }
+        
 
         bool finished = false;
 
@@ -218,6 +238,11 @@ public class AchievementManager : MonoBehaviour
                 RegisterOnQuestClearEvent(achievement.id,"01044");
                 break;
             }
+            case 5:
+            {
+                RegisterOnQuestClearEvent(achievement.id,"01054");
+                break;
+            }
             case 6:
             {
                 RegisterOnQuestClearEventAny(achievement.id);
@@ -226,6 +251,18 @@ public class AchievementManager : MonoBehaviour
             case 7:
             {
                 RegisterOnQuestClearWithCharacterEvent(achievement.id);
+                break;
+            }
+            case 8:
+            {
+                RegisterOnQuestClearEvent(achievement.id,
+                    "01054","01044","01034","01024","01014");
+                break;
+            }
+            case 9:
+            {
+                RegisterOnQuestClearEvent(achievement.id,
+                    "02113","02123","02133","02143","02153");
                 break;
             }
 
@@ -237,6 +274,11 @@ public class AchievementManager : MonoBehaviour
             case 102:
             {
                 SpecialEvent_102();
+                break;
+            }
+            case 103:
+            {
+                SpecialEvent_103();
                 break;
             }
 
@@ -263,6 +305,11 @@ public class AchievementManager : MonoBehaviour
             case 208:
             {
                 SpecialEvent_208();
+                break;
+            }
+            case 209:
+            {
+                SpecialEvent_209();
                 break;
             }
 
@@ -384,6 +431,32 @@ public class AchievementManager : MonoBehaviour
         
         BattleStageManager.Instance.OnQuestQuit += handler;
     }
+    
+    /// <summary>
+    /// 使徒过关
+    /// </summary>
+    private void SpecialEvent_103()
+    {
+        var manager = BattleStageManager.Instance;
+        Action<string> handler = null;
+        
+        string[] sinisterIDs = {"02111","02112","02131","02132","02141","02142"};
+        int[] apostleIDs = {18,26,28,33};
+
+        if (sinisterIDs.Contains(GlobalController.questID) &&
+            apostleIDs.Contains(GlobalController.currentCharacterID))
+        {
+            
+        }else return;
+        
+        handler = (questID) =>
+        {
+            CompleteAchievement(103, new object[] {103});
+            BattleStageManager.Instance.OnQuestCleared -= handler;
+        };
+        
+        BattleStageManager.Instance.OnQuestCleared += handler;
+    }
 
     /// <summary>
     /// 席菈试炼绝级：3分钟dot
@@ -478,7 +551,7 @@ public class AchievementManager : MonoBehaviour
             BattleStageManager.Instance.GetPlayer().GetComponent<PlayerStatusManager>();
         
         Action<StatusManager,StatusManager,AttackBase,float> receiveDamageHandler = null;
-        //StatusManager.StatusManagerVoidDelegate cancleAllEventHandler = null;
+        
         Action<string> questClearEventHandler = null;
 
         int count = 0;
@@ -506,7 +579,7 @@ public class AchievementManager : MonoBehaviour
         questClearEventHandler = (qid) =>
         {
             playerStatusManager.OnTakeDirectDamageFrom -= receiveDamageHandler;
-            //playerStatusManager.OnReviveOrDeath -= cancleAllEventHandler;
+            
             BattleStageManager.Instance.OnQuestCleared -= questClearEventHandler;
 
             if (count >= 5)
@@ -637,10 +710,26 @@ public class AchievementManager : MonoBehaviour
 
     }
 
+    private void SpecialEvent_209()
+    {
+        if (GlobalController.questID != "01034")
+        {
+            return;
+        }
+        
+        //Action<int> cancelEventHandler = null;
+        Action<int> eventHandler = null;
 
-
-
-
-
+        eventHandler = (buffNum) =>
+        {
+            if (buffNum >= 5)
+            {
+                CompleteAchievement(209, null);
+                BattleStageManager.Instance.specialEventTriggered -= eventHandler;
+            }
+        };
+        
+        BattleStageManager.Instance.specialEventTriggered += eventHandler;
+    }
 
 }

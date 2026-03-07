@@ -102,5 +102,10 @@ public class EnemyAttackHintBarChaser : MonoBehaviour
     {
         lockTime = value;
     }
+
+    public void SetRotateSpeed(float value)
+    {
+        rotateSpeed = value;
+    }
     
 }

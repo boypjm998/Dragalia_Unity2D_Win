@@ -26,8 +26,8 @@ public class AttackManager_C039 : AttackManagerRanged
         if (condition.buffID == (int)BasicCalculation.BattleCondition.Paralysis)
         {
             _abilityReady = false;
-            _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff, 20, 10);
-            _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 20, 10);
+            _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.CritRateBuff, 13, 10);
+            _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 13, 10);
             _abilityCDTween = DOVirtual.DelayedCall(_abilityCD, () => _abilityReady = true,
                 false);
         }
@@ -53,7 +53,7 @@ public class AttackManager_C039 : AttackManagerRanged
             new ConditionalAttackEffect(ConditionalAttackEffect.ConditionType.TargetHasCondition,
                 ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
                 new string[] {"1", checkConditionString},
-                new string[] {"0.3"})
+                new string[] {"0.2"})
         );
     }
 
@@ -110,7 +110,7 @@ public class AttackManager_C039 : AttackManagerRanged
             new ConditionalAttackEffect(ConditionalAttackEffect.ConditionType.TargetHasCondition,
                 ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
                 new string[] {"1", checkConditionString},
-                new string[] {"0.2"})
+                new string[] {"0.3"})
         );
         
         atk.OnAttackDealDamage += (statusManagerSelf, statusManagerTarget, attack, dmg) =>
@@ -126,8 +126,8 @@ public class AttackManager_C039 : AttackManagerRanged
     {
         _statusManager.HPRegenImmediately(130,0,true);
         InstantiateBuff(skill4FX[0], transform.position);
-        _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 
-            15, 60,1,103901);
+        // _statusManager.ObtainTimerBuff((int)BasicCalculation.BattleCondition.AtkBuff, 
+        //     15, 60,1,103901);
         _statusManager.ReliefOneDoTAffliction();
         
         

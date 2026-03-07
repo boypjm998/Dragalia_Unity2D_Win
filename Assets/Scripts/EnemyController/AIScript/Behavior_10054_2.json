@@ -1,0 +1,1152 @@
+﻿{
+  "phasePattern": [
+      {
+          "action_list": [
+              {
+                  "action_name": "Dragondrive",
+                  "state": 0,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 1,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 2,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboC",
+                  "state": 3,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 4,
+                  "args": [
+                      "2",
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 5,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 6,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Forward",
+                  "state": 7,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "loopStartPoint": 0,
+          "loopCount": 0,
+          "args": []
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "Pact",
+                  "state": 0,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "GroundFrost",
+                  "state": 1,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Meteor",
+                  "state": 2,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Around",
+                  "state": 3,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 4,
+                  "args": [
+                      "3",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 5,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 6,
+                  "args": [
+                      "1",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["hp_below",0.3,1,2]
+              },
+              {
+                  "action_name": "Ultimate",
+                  "state": 7,
+                  "args": [
+                      "1","+"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Platform",
+                  "state": 8,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 9,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 10,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "WaterSpout",
+                  "state": 11,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 12,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 13,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboC",
+                  "state": 14,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 15,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["hp_below",0.5,1,2]
+              },
+              {
+                  "action_name": "Perish",
+                  "state": 16,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 17,
+                  "args": [
+                      "2",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 18,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Fog",
+                  "state": 19,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Forward",
+                  "state": 20,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Platform",
+                  "state": 21,
+                  "args": [
+                      "0.1",
+                      "0"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Cascade",
+                  "state": 22,
+                  "args": [
+                      "1.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 23,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 24,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random+",
+                  "jump_args": [1,2]
+              },
+              {
+                  "action_name": "CocytusWhirl",
+                  "state": 25,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [3]
+              },
+              {
+                  "action_name": "Around",
+                  "state": 26,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 27,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [1]
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 28,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["advanced",5,1]
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 29,
+                  "args": [
+                      "0",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Ultimate",
+                  "state": 30,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 31,
+                  "args": [
+                      "2",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["hp_below",0.5,1,2]
+              },
+              {
+                  "action_name": "Perish",
+                  "state": 32,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 33,
+                  "args": [
+                      "1","0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 34,
+                  "args": [
+                      "1","0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Meteor",
+                  "state": 35,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboC",
+                  "state": 36,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 37,
+                  "args": [
+                      "1",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SnowStorm",
+                  "state": 38,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 39,
+                  "args": [
+                      "3"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 40,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Forward",
+                  "state": 41,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 42,
+                  "args": [
+                      "1",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["advanced",1,2]
+              },
+              {
+                  "action_name": "Perish",
+                  "state": 43,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "GroundFrost",
+                  "state": 44,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "loopStartPoint": 0,
+          "loopCount": 0,
+          "args": []
+      },
+      {
+          "action_list": [
+              {
+                  "action_name": "Pact",
+                  "state": 0,
+                  "args": [
+                      "3",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Buff",
+                  "state": 1,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBreaker",
+                  "state": 2,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 3,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBlast",
+                  "state": 4,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 5,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Around",
+                  "state": 6,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Meteor",
+                  "state": 7,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "WaterSpout",
+                  "state": 8,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 9,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Cascade",
+                  "state": 10,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Around",
+                  "state": 11,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Fog",
+                  "state": 12,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 13,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 14,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Platform",
+                  "state": 15,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Forward",
+                  "state": 16,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Around",
+                  "state": 17,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 18,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 19,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "WaterSpout",
+                  "state": 20,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboA",
+                  "state": 21,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboB",
+                  "state": 22,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ConquestEvil",
+                  "state": 23,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random+",
+                  "jump_args": [1,2]
+              },
+              {
+                  "action_name": "Cascade",
+                  "state": 24,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 25,
+                  "args": [
+                      "1",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [2]
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 26,
+                  "args": [
+                      "3",
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IcePillar",
+                  "state": 27,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Meteor",
+                  "state": 28,
+                  "args": [
+                      "5","1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Cascade",
+                  "state": 29,
+                  "args": [
+                      "0.5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "IceBreaker",
+                  "state": 30,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SnowStorm",
+                  "state": 31,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 32,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 33,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Pact",
+                  "state": 34,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Forward",
+                  "state": 35,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "ComboC",
+                  "state": 36,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random+",
+                  "jump_args": [1,2]
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 37,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "random+",
+                  "jump_args": [1,2]
+              },
+              {
+                  "action_name": "SmashDown",
+                  "state": 38,
+                  "args": [
+                      "1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "to+",
+                  "jump_args": [2]
+              },
+              {
+                  "action_name": "Meteor",
+                  "state": 39,
+                  "args": [
+                      "1","5"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Platform",
+                  "state": 40,
+                  "args": [
+                      "0.1","0"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Ultimate",
+                  "state": 41,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "SetWorld",
+                  "state": 42,
+                  "args": [
+                      "1",
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "GroundFrost",
+                  "state": 43,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "Fog",
+                  "state": 44,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "conditional+",
+                  "jump_args": ["hp_below",0.3,1,2]
+              },
+              {
+                  "action_name": "Perish",
+                  "state": 45,
+                  "args": [
+                      "0.1"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "next",
+                  "jump_args": []
+              },
+              {
+                  "action_name": "AcheronFount",
+                  "state": 46,
+                  "args": [
+                      "2"
+                  ],
+                  "lock_phase": false,
+                  "unbreakable": false,
+                  "jump_action": "loop",
+                  "jump_args": []
+              }
+          ],
+          "jumpOutCondition": 0,
+          "loopStartPoint": 14,
+          "loopCount": 0,
+          "args": []
+      }
+  ]
+}

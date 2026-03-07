@@ -65,17 +65,17 @@ public class AttackManagerMeeleWithFS : AttackManager
     }
 
 
-    public virtual void ForceStrikeRelease(int currentFSLV){
+    public virtual GameObject ForceStrikeRelease(int currentFSLV){
         
         if(currentFSLV <= 0)
-            return;
+            return null;
         
         ac.OnAttackInterrupt?.Invoke();
 
         ac.SetFaceDir(forceStrikeIndicator.forceDirection);
         
         var container = Instantiate(attackContainer,transform.position, Quaternion.identity,MeeleAttackFXLayer.transform);
-        InstantiateMeele(forceFX[0],transform.position,container);
+        var proj = InstantiateMeele(forceFX[0],transform.position,container);
         
         //base.ForceStrikeRelease(currentFSLV);
         if (weaponType == BasicCalculation.MeeleWeaponType.Blade)
@@ -118,13 +118,12 @@ public class AttackManagerMeeleWithFS : AttackManager
 
         }
         (ac as ActorController).PlayAttackVoice(9);
-    
+        return proj;
+
     }
     
     public void OnForceStart()
     {
-        
-        
         
         if (forceStrikeIndicator == null)
         {
@@ -170,7 +169,7 @@ public class AttackManagerMeeleWithFS : AttackManager
         
     }
 
-    public void Skill4()
+    public virtual void Skill4()
     {
         _statusManager.HPRegenImmediately(0,10,true);
         BattleEffectManager.Instance.SpawnHealEffect(gameObject);
@@ -179,7 +178,7 @@ public class AttackManagerMeeleWithFS : AttackManager
         
     }
 
-    protected void OnStandardAttackEnter()
+    protected virtual void OnStandardAttackEnter()
     {
         if (weaponType == BasicCalculation.MeeleWeaponType.Lance ||
             weaponType == BasicCalculation.MeeleWeaponType.Axe)
@@ -191,6 +190,9 @@ public class AttackManagerMeeleWithFS : AttackManager
                  ac.anim.GetCurrentAnimatorStateInfo(0).IsName("combo5"))   )
         {
             _statusManager.knockbackRes = 200;
+        }else if (weaponType == BasicCalculation.MeeleWeaponType.Blade)
+        {
+            //(ac as ActorController).SetWeaponVisibility(true);
         }
     }
     protected void OnStandardAttackExit()
@@ -200,8 +202,13 @@ public class AttackManagerMeeleWithFS : AttackManager
             weaponType == BasicCalculation.MeeleWeaponType.Axe)
         {
             _statusManager.ResetKBRes();
+        }else if (weaponType == BasicCalculation.MeeleWeaponType.Blade)
+        {
+            //(ac as ActorController).SetWeaponVisibility(false);
         }
     }
+    
+    
     
     
 }

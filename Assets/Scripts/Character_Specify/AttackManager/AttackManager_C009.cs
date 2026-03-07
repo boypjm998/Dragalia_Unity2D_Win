@@ -183,6 +183,10 @@ public class AttackManager_C009 : AttackManagerRanged
             atk2.AddWithConditionAll(new TimerBuff((int)BasicCalculation.BattleCondition.AtkDebuff,20,20,-1),100,1);
         }
         
+        atk1.AddCompositeAttack(atk2);
+        atk2.AddCompositeAttack(atk1);
+        
+
     }
 
     public void Skill4()

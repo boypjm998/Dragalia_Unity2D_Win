@@ -40,6 +40,12 @@ public class DragonPointEnemy : MonoBehaviour
     {
         float currentHPInPercent = 100 * _statusManager.currentHp / _statusManager.maxBaseHP;
         
+        if (checkedCount >= checkedList.Count)
+        {
+            _statusManager.OnHPChange -= AddDModeGaugeToPlayer;
+            return;
+        }
+
         if (currentHPInPercent <= checkedList[checkedCount])
         {
             checkedCount++;

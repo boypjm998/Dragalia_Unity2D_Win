@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public abstract class Projectile_DB013_EnlightmentOrb : MonoBehaviour
 {
-    private StatusManager _statusManager;
+    protected StatusManager _statusManager;
     [SerializeField] protected GameObject protectionFX;
     [SerializeField] protected GameObject attackPrefab1;
     [SerializeField] protected GameObject attackPrefab2;
@@ -26,10 +26,11 @@ public abstract class Projectile_DB013_EnlightmentOrb : MonoBehaviour
     {
         _statusManager = GetComponent<StatusManager>();
         _statusManager.OnReviveOrDeath += GrantDrasticForceWhenKilled;
-        _statusManager.SpecialDamageCutEffectFunc += Ability.DrasticForceEffect;
+        _statusManager.AddEffectFunction(Ability.DrasticForceEffect, AbilityCalculation.ProductArea.DMGCUT);
+        //_statusManager.SpecialDamageCutEffectFunc += Ability.DrasticForceEffect;
     }
 
-    private void GrantDrasticForceWhenKilled()
+    protected virtual void GrantDrasticForceWhenKilled()
     {
         _statusManager.OnReviveOrDeath -= GrantDrasticForceWhenKilled;
         DrasticForce.Instance?.AddDrasticForce();
@@ -55,7 +56,8 @@ public abstract class Projectile_DB013_EnlightmentOrb : MonoBehaviour
 
     private void OnDestroy()
     {
-        _statusManager.SpecialDamageCutEffectFunc -= Ability.DrasticForceEffect;
+        _statusManager.RemoveEffectFunc(Ability.DrasticForceEffect, AbilityCalculation.ProductArea.DMGCUT);
+        //_statusManager.SpecialDamageCutEffectFunc -= Ability.DrasticForceEffect;
         if (_statusManager.currentHp > 0)
         {
             _statusManager.OnReviveOrDeath -= GrantDrasticForceWhenKilled;

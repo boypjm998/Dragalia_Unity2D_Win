@@ -75,7 +75,7 @@ public abstract class BattleCondition
     
     public void SetTickInterval(float value = 2.9f)
     {
-        tickTime = value;
+        TickInterval = value;
     }
 
     

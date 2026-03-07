@@ -40,6 +40,14 @@ public class TimerBuff : BattleCondition
             this.lastTime = duration;
             this.specialID = spID;
             this.DisplayType = GetDisplayType(buffID);
+
+            if (buffID == (int)BasicCalculation.BattleCondition.UrielsWrath)
+            {
+                OnBuffStart += RefreshOtherBuffs;
+                OnBuffRemove += RefreshOtherBuffs;
+            }
+            
+            
             
             if (buffID > 100 && buffID <= 200)
                 dispellable = false;
@@ -115,10 +123,20 @@ public class TimerBuff : BattleCondition
             
         }
 
-       
-       
 
 
+
+       protected void RefreshOtherBuffs(StatusManager statusManager)
+       {
+           //OnBuffRemove -= RefreshOtherBuffs;
+           foreach (var buff in statusManager.GetConditionsOfType(this.buffID))
+           {
+               if (buff != this)
+               {
+                   buff.lastTime = buff.duration;
+               }
+           }
+       }
        
 
         public override void BuffDispell()
@@ -170,7 +188,16 @@ public class AdvancedTimerBuff : TimerBuff
             effect3 = val;
     }
 
-    
+    public AdvancedTimerBuff(float bleedingModifier, float duration)
+    {
+        this.buffID = (int)BasicCalculation.BattleCondition.Bleeding;
+        this.duration = duration;
+        this.effect = bleedingModifier;
+        this.DisplayType = buffEffectDisplayType.StackNumber;
+        this.maxStackNum = 3;
+        this.lastTime = duration;
+        this.specialID = -1;
+    }
 
     public AdvancedTimerBuff(int buffID, float effect, float effect2, float effect3, float duration,
         int maxStack = 100, int spID = -1, float effectArg = 1)

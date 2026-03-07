@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,10 @@ public class SpecialStatusManager : StatusManager
     public bool ODLock = false;
     public StatusManagerVoidDelegate onBreak;
     public float breakTime = 10f;
+    public float breakRecoverTime = 1.67f;
     public float counterModifier = 0;
+
+    public Action OnRecoverFromBroken; 
 
     protected override void HPCheck()
     {
@@ -21,4 +25,6 @@ public class SpecialStatusManager : StatusManager
             onBreak?.Invoke();
         }
     }
+    
+    
 }

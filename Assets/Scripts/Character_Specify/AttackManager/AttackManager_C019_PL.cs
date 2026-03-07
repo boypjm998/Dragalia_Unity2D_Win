@@ -22,6 +22,7 @@ public class AttackManager_C019_PL : AttackManager
         _critDmgBuff = new TimerBuff((int)BasicCalculation.BattleCondition.CritDmgBuff,
             10, 90, 3, 101901);
         _critDmgBuff.dispellable = false;
+        UpdateSkillInfo(3);
     }
 
     public void Combo1()
@@ -372,19 +373,32 @@ public class AttackManager_C019_PL : AttackManager
 
         if (remainBuff > 0)
         {
-            _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.MaxHPBuff), remainBuff,
-                -1);
+            if (!skillUpgradeInfo[3])
+            {
+                _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.MaxHPBuff), remainBuff,
+                    -1);
+            }
+            else
+            {
+                var maxHpBuff = new TimerBuff((int)BasicCalculation.BattleCondition.MaxHPBuff, remainBuff,
+                    -1, 100);
+                maxHpBuff.dispellable = false;
+                _statusManager.ObtainTimerBuff(maxHpBuff);
+            }
+            
             _statusManager.GetMaxHP();
         }
         else
         {
-            _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.CritRateBuff), 13,
+            _statusManager.ObtainTimerBuff((int)(BasicCalculation.BattleCondition.CritRateBuff), 
+                skillUpgradeInfo[3] ? 15: 13,
                 30);
         }
         
         
         _statusManager.HPRegenImmediatelyWithoutRandomDirectly(_statusManager,
             (Mathf.CeilToInt(_statusManager.maxHP * 0.15f)));
+        _statusManager.ReliefOneDebuff();
 
 
     }

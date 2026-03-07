@@ -318,7 +318,7 @@ public class AchievementSystem
     
     private static string DecryptString(string encryptedText, byte[] key, byte[] iv)
     {
-        Debug.Log(encryptedText);
+        //Debug.Log(encryptedText);
         
         using (AesCryptoServiceProvider aes = new AesCryptoServiceProvider())
         {

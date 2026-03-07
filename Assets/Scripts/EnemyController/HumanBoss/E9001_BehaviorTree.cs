@@ -48,7 +48,7 @@ public class E9001_BehaviorTree : DragaliaEnemyBehavior
         baseAttackInStat = status.baseAtk;
         if (true)
         {
-            BattleSceneUIManager.Instance.ReplacePauseMenu(attackController.InstantiateNewPrefabMenu());
+            BattleSceneUIManager.Instance.ReplacePauseMenu(attackController.InstantiateNewTutorialMenu());
         }
 
     }

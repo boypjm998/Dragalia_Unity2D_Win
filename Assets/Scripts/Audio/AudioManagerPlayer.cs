@@ -117,6 +117,42 @@ public abstract class AudioManagerPlayer : MonoBehaviour, IVoice
             //voice.PlayOneShot(clip);
         }
     }
+    
+    public void PlaySkillVoice(int skillID, int clipID)
+    {
+        if (isSkillVoice == true)
+        {
+            return;
+        }
+        else
+        {
+            voice.Stop();
+            AudioClip clip;
+            switch (skillID)
+            {
+                case 1:
+                    clip = S1[clipID];
+                    break;
+                case 2:
+                    clip = S2[clipID];
+                    break;
+                case 3:
+                    clip = S3[clipID];
+                    break;
+                case 4:
+                    clip = S4[clipID];
+                    break;
+
+                default:
+                    clip = null;
+                    break;
+            }
+
+            voice.clip = clip;
+            voice.Play();
+            //voice.PlayOneShot(clip);
+        }
+    }
 
     public virtual void PlaySkillVoice(AudioClip clip)
     {
@@ -135,6 +171,7 @@ public abstract class AudioManagerPlayer : MonoBehaviour, IVoice
 
     public virtual void PlayHurtVoice(StatusManager statusManager)
     {
+        print("HurtVoice");
         if(Hurt.Length==0)
             return;
         voice.Stop();

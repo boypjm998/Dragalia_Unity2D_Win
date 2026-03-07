@@ -688,6 +688,69 @@ public class EnemyMoveController_DB11 : EnemyMoveManager
         QuitAttack();
     }
     
+    /// <summary>
+    /// 转阶段
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator DB11_Action13()
+    {
+        yield return null;
+        
+        anim.Play("knockdown_enter");
+
+        KillAllMinions();
+
+        yield return new WaitForSeconds(1);
+        
+        var warpFXPrefab = GetProjectileOfFormatName("action13_1",true);
+        
+        var fx1 = Instantiate(warpFXPrefab,
+            transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
+
+        yield return new WaitForSeconds(0.1f);
+        
+        DisappearRenderer();
+        yield return null;
+        ac.SetGroundCollision(true);
+        transform.position = new Vector3(0,5.75f);
+
+        yield return new WaitUntil(()=>voice.voice.isPlaying == false);
+        yield return new WaitForSeconds(0.9f);
+        
+        
+        var fx2 = Instantiate(warpFXPrefab,
+            transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
+        
+        StageCameraController.SwitchOverallCamera();
+        //StageCameraController.SwitchMainCameraFollowObject(gameObject);
+
+        yield return new WaitForSeconds(0.1f);
+        
+        AppearRenderer();
+
+        yield return new WaitForSeconds(1);
+        
+        var transformFx = Instantiate(GetProjectileOfFormatName("action13_2"),
+            transform.position,Quaternion.identity,RangedAttackFXLayer.transform);
+        
+        CineMachineOperator.Instance.CamaraShake(8f,2f);
+        
+        //todo: 改变场景
+        (BattleEnvironmentManager.Instance.GetEnvironmentSpriteRenderer("Background1") as SpriteRenderer).DOColor(
+            Color.clear, 1.5f);
+
+        yield return new WaitForSeconds(2f);
+        DOVirtual.DelayedCall(1.35f,()=>
+            StageCameraController.SwitchMainCamera(),false);
+        
+        yield return null;
+        
+        QuitAttack();
+        _behavior.currentMoveAction = null;
+
+
+
+    }
     
     
     

@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityTransform;
 using UnityEngine;
 using LitJson;
 using TMPro;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -32,6 +34,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
     
     private TextMeshProUGUI MaxHPValue;
     private TextMeshProUGUI AttackValue;
+    private TextMeshProUGUI DifficultyValue;
 
     private GlobalController _globalController;
     private Sprite[] iconSprites1;
@@ -104,6 +107,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
 
         MaxHPValue = transform.Find("StatInfo").Find("HP").Find("Value").GetComponent<TextMeshProUGUI>();
         AttackValue = transform.Find("StatInfo").Find("ATK").Find("Value").GetComponent<TextMeshProUGUI>();
+        DifficultyValue = transform.Find("StatInfo").Find("DIFF").Find("Value").GetComponent<TextMeshProUGUI>();
     }
 
     // Start is called before the first frame update
@@ -244,10 +248,21 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         var text2 = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["NAME"].ToString();
         characterName.text = text1 + text2;
 
+        //白值部分
+        
         MaxHPValue.text = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["HP"].ToString();
         AttackValue.text = CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["ATK"].ToString();
-
+        int useDiff = Convert.ToInt32(CharacterInfo[GetCharacterEntirePathUpper(currentSelectedCharaID)]["DIFF"].ToString());
+        StringBuilder diff = new StringBuilder();
+        int useDiffStar = Mathf.Clamp(useDiff, 0, 5);
+        for (int i = 0; i < useDiffStar; i++)
+        {
+            diff.Append("★");
+        }
+        DifficultyValue.text = diff.ToString();
         
+        //技能部分
+
         for (int i = 0; i < 4; i++)
         {
             var upgradeInfo = CheckSkillUpgradable(currentSelectedCharaID, i);
@@ -409,8 +424,8 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
             iconInDetailedInfoMenu.sprite = skillIcons[id - 1].sprite;
             description.text = descriptionString[id-1];
         }
-
-
+        
+        //EventSystem.current.SetSelectedGameObject(detailedInfoMenu.transform.Find("CloaseInfoButton").gameObject);
 
     }
 
@@ -419,7 +434,15 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         if (charaID == 1 && sid == 2)
         {
             //var questSaveList = GlobalController.Instance.GetQuestInfo();
-            if (GlobalController.Instance.CheckQuestClear("01033"))
+            if (GlobalController.Instance.CheckQuestClear("02013"))
+            {
+                return 2;
+            }else return 1;
+        }
+        else if (charaID == 2 && sid == 1)
+        {
+            //var questSaveList = GlobalController.Instance.GetQuestInfo();
+            if (GlobalController.Instance.CheckQuestClear("01013"))
             {
                 return 2;
             }else return 1;
@@ -427,7 +450,7 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         else if (charaID == 3 && sid == 2)
         {
             //var questSaveList = GlobalController.Instance.GetQuestInfo();
-            if (GlobalController.Instance.CheckQuestClear("01024"))
+            if (GlobalController.Instance.CheckQuestClear("02053"))
             {
                 return 2;
             }else return 1;
@@ -451,13 +474,59 @@ public class UI_AdventurerSelectionMenu : MonoBehaviour
         else if (charaID == 10 && sid == 3)
         {
             //var questSaveList = GlobalController.Instance.GetQuestInfo();
-            if (GlobalController.Instance.CheckQuestClear("02013"))
+            if (GlobalController.Instance.CheckQuestClearNum("") >= 3)
             {
                 return 2;
             }else return 1;
         }
+        else if (charaID == 12 && sid == 3)
+        {
+            if (GlobalController.Instance.CheckQuestClear("02122"))
+            {
+                return 2;
+            }else return 1;
+        }
+        else if (charaID == 19 && sid == 3)
+        {
+            if (GlobalController.Instance.CheckQuestClear("02043"))
+            {
+                return 2;
+            }else return 1;
+        }
+        
 
         return -1;
+    }
+
+    public static List<(int, int)> CheckSkillUpgradeInfo()
+    {
+        List<(int,int)> upgradeInfo = new List<(int, int)>();
+        
+        for (int i = 1; i <= 54; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (CheckSkillUpgradable(i, j) == 2)
+                {
+                    upgradeInfo.Add((i, j));
+                }
+            }
+        }
+
+        return upgradeInfo;
+    }
+
+    public static List<(int cid, int sid)> CheckNewlyUpgradeSkillInfo(List<(int cid, int sid)> before,
+        List<(int cid, int sid)> after)
+    {
+        //返回新解锁的技能
+        List<(int cid, int sid)> newlyUnlocked = new List<(int cid, int sid)>();
+        
+        //用System.Linq找到两个list的差集
+        newlyUnlocked = after.Except(before).ToList();
+        
+        return newlyUnlocked;
+        
     }
 
     

@@ -113,9 +113,9 @@ namespace CharacterSpecificProjectiles
             var tweenTime =
                 distance / initialSpeed;
             
-            print(distance);
-            print(tweenTime);
-            print(_targetPos);
+            //print(distance);
+            //print(tweenTime);
+            //print(_targetPos);
 
             _moveTweener = transform.DOMove(_targetPos, tweenTime).SetEase(Ease.InSine).OnComplete(() =>
             {

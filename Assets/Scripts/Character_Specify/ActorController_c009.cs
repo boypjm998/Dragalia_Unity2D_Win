@@ -13,12 +13,15 @@ public class ActorController_c009 : ActorControllerRangedWithFS
     private GameObject specialReflectionDamageFX;
 
     private ObjectPool<GameObject> reflectionFXPool;
+    private Vector2 _recordedPos;
+    
     private void Start()
     {
         canPerformInAir[3] = false;
         reflectionFXPool = new ObjectPool<GameObject>(() => Instantiate(specialReflectionDamageFX,
             BattleStageManager.Instance.RangedAttackFXLayer.transform));
         _statusManager.OnTakeDirectDamageFrom += ReflectionDamage;
+        _recordedPos = transform.position;
     }
 
     protected override void Update()
@@ -37,7 +40,7 @@ public class ActorController_c009 : ActorControllerRangedWithFS
 
         var modifier = atk.attackInfo[0].dmgModifier.Sum();
 
-        var damage = (1+atkBuff) * myStat.baseAtk * 0.3f * modifier;
+        var damage = (1+atkBuff) * myStat.baseAtk * 0.5f * modifier;
 
         BattleStageManager.Instance.CauseIndirectDamage(targetStat, 
             (int)Mathf.Ceil(damage), false, false);
@@ -56,13 +59,14 @@ public class ActorController_c009 : ActorControllerRangedWithFS
 
     public void Skill_FloatInfoAir()
     {
+        _recordedPos = transform.position;
         _tweener = rigid.DOMoveY(transform.position.y + 4f, 0.4f).SetEase(Ease.OutSine);
         SetGravityScale(0);
     }
     
     public void Skill_LandToGround()
     {
-        _tweener = rigid.DOMoveY(gameObject.RaycastedPosition().y + 1.3f, 0.7f).
+        _tweener = rigid.DOMoveY(_recordedPos.y, 0.55f).
             SetEase(Ease.InOutSine).OnKill(ResetGravityScale).OnComplete(ResetGravityScale);
         
     }

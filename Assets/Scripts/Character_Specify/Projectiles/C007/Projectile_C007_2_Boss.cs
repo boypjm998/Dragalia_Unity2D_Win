@@ -70,6 +70,8 @@ namespace CharacterSpecificProjectiles
         public void SetEnemySource(GameObject src)
         {
             _enemySource = src;
+            if(_stormAttack!=null)
+                _stormAttack.enemySource = src;
         }
 
         public void StopFogEffect()
@@ -174,6 +176,14 @@ namespace CharacterSpecificProjectiles
             
 
 
+        }
+        
+        public void DestroyAllIcePillars()
+        {
+            for (int i = icePillarList.Count - 1; i >= 0; i--)
+            {
+                icePillarList[i].DestroyInstance();
+            }
         }
         
         

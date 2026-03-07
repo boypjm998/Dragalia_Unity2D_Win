@@ -64,7 +64,7 @@ public class CustomMeeleFromPlayer : AttackFromPlayer
       
         if (collision.CompareTag("Enemy") && hitFlags.Contains(collision.transform.parent.GetInstanceID()))
         {
-
+            ClearComposite(collision.transform.parent.GetInstanceID());
             CauseDamage(collision);
             
             if(ConnectCoroutine==null && isMeele==true)

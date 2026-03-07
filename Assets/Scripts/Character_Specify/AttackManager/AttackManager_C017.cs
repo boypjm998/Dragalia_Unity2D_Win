@@ -33,7 +33,7 @@ public class AttackManager_C017 : AttackManagerRanged
         poisonCaf2 = new ConditionalAttackEffect(ConditionalAttackEffect.ConditionType.TargetHasCondition,
             ConditionalAttackEffect.ExtraEffect.ChangeDmgModifier,
             new string[] { "1", checkConditionString },
-            new string[] { "0.3" });
+            new string[] { "0.1" });
         
         
         crisisCaf = new ConditionalAttackEffect(0.5f);

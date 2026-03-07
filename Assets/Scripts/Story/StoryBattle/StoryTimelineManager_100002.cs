@@ -62,6 +62,7 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
         
         GO_Pinon.name = "PlayerHandle";
         BattleStageManager.Instance.SetPlayer(GO_Pinon);
+        StageCameraController.Instance.zoomLock = true;
         GO_Pinon.GetComponent<PlayerStatusManager>().remainReviveTimes = BattleStageManager.Instance.maxReviveTime;
         PI_Pinon = GO_Pinon.GetComponent<PlayerInput>();
         PI_Pinon.enabled = false;
@@ -107,12 +108,12 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
 
     private void Update()
     {
-        if (debug)
-        {
-            debug = false;
-            StartQuest();
-        }
-
+        // if (debug)
+        // {
+        //     debug = false;
+        //     StartQuest();
+        // }
+        //
         if (skip)
         {
             skip = false;
@@ -157,7 +158,10 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
         //赋值
         BattleStageManager.Instance.GetMapBorderInfo();
         UI_DialogDisplayer.Instance.LoadBasicStoryInfo("100002");
-        GlobalController.currentCharacterID = 18;
+        
+        GlobalController.Instance.SetFixedCharacter(18);
+        //GlobalController.currentCharacterID = 18;
+        
         AC_Nevin = GetNPCActor(GO_Nevin);
         AC_Ramiel = GetNPCFlyingActor(GO_Ramiel);
         AC_Gabriel = GetNPCFlyingActor(GO_Gabriel);
@@ -714,7 +718,7 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
         yield return new WaitForSeconds(1.2f);
         
         
-        SpawnMinonGroup(1,70000);
+        SpawnMinonGroup(1,30000);
         var ST_Pinon = PI_Pinon.GetComponent<StatusManager>();
 
         if (ST_Pinon.GetConditionStackNumber((int)BasicCalculation.BattleCondition.SigilReleased) > 0)
@@ -729,7 +733,7 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
             {
                 if (BattleStageManager.Instance.currentEnemyInLayerDeadAlive <= 0)
                 {
-                    SpawnMinonGroup(2,40000,true);
+                    SpawnMinonGroup(2,28000,true);
                 }
                 yield return null;
             }
@@ -748,11 +752,11 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
         GO_Gabriel.GetComponent<NpcControllerFlyingDragon>().enabled = true;
         
         
-        SpawnMinonGroup(2,120000);
+        SpawnMinonGroup(2,75000);
         
         yield return new WaitUntil(() => BattleStageManager.Instance.currentEnemyInLayerDeadAlive <= 2);
         
-        SpawnMinonGroup(1,110000);
+        SpawnMinonGroup(1,68000);
         
         //实例化BOSS
 
@@ -774,7 +778,7 @@ public class StoryTimelineManager_100002 : StoryBattleTimelineManager
             if(ST_FallenUriel==null)
                 break;
             
-            SpawnMinonGroup(2+(i%2),100000,true);
+            SpawnMinonGroup(2+(i%2),60000,true);
             
             yield return null;
             

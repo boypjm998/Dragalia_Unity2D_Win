@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+/// 静态类，包含了所有的敌人行为类型
+/// </summary>
 public class DragaliaEnemyActionTypes
 {
     public enum Default
@@ -140,7 +143,20 @@ public class DragaliaEnemyActionTypes
         IcePillar,
         SnowStorm,
         IceBreaker,
-        Buff
+        Buff,
+        Platform,
+        SetWorld,
+        SmashDown,
+        ComboC,
+        Forward,
+        Pact,
+        Meteor,
+        Around,
+        Cascade,
+        Ultimate,
+        WaterSpout,
+        Perish,
+        GroundFrost
     }
 
     public enum DB2001
@@ -167,6 +183,21 @@ public class DragaliaEnemyActionTypes
         tobias,
         gale,
         meene
+    }
+
+    public enum DB2002
+    {
+        Claw,
+        Pillar,
+        Inferno,
+        Fireball,
+        Breathe,
+        Whirlwind,
+        Chaser,
+        Muspelheim,
+        Shield,
+        Memories,
+        Summon
     }
     
     /// <summary>
@@ -203,14 +234,19 @@ public class DragaliaEnemyActionTypes
     public enum DB2005
     {
         Around,
+        Blast,
         Chaser,
         Claw,
         CursedFlame,
+        CursedFlame2,
+        GroundFire,
+        Memories,
         PoisonSide,
         PoisonFront,
         Spit,
         Sprint,
-        Tail,
+        Summon,
+        Tail
     }
 
     /// <summary>
@@ -228,6 +264,20 @@ public class DragaliaEnemyActionTypes
         prison,
         target_pillar,
         platform_splash
+    }
+
+    public enum DB2012
+    {
+        corrosion,
+        nihil,
+        sphere,
+        chasing,
+        buff,
+        spike,
+        slap,
+        multi_dash,
+        pizza,
+        jalapeno
     }
     
     /// <summary>
@@ -274,11 +324,145 @@ public class DragaliaEnemyActionTypes
     {
         crystal_fixed,
         crystal_chase,
+        crystal_mixed,
         around,
         buff,
         combo,
         fireball,
-        nihil
+        nihil,
+        wave,
+        cross,
+        explosion
+    }
+    
+    public enum DB2015V
+    {
+        Combo,
+        Buff,
+        AngeticWind,
+        Spike,
+        Throw,
+        Shield
+    }
+
+    /// <summary>
+    /// agni
+    /// </summary>
+    public enum DB2016
+    {
+        Dash,
+        FrontStrike,
+        ClawAttack,
+        Devastation
+    }
+    
+    
+    //Jaldabaoth
+    public enum H001
+    {
+        TargetingPillar,
+        SummonChild,
+        SummonElite,
+        Buff,
+        Laser,
+        BouncingOrb,
+        ChasingPillar,
+        Corrosion,
+        HealOnebyOne,
+        HealSimultaneously,
+        Executioners,
+        AbsoluteLaw,
+        ElementSwitch
+    }
+    
+    
+    //Lilith
+    public enum H002
+    {
+        Nihil,
+        Corrosion,
+        Buff,
+        Combo,
+        Rush,
+        Smash,
+        TargetingCandies,
+        CrossCandies,
+        SweetStockade,
+        CombinedRush,
+        WandGroup,
+        BounceCandies,
+        GroundBurst,
+        JamSpin
+    }
+    
+    /// <summary>
+    /// Asura
+    /// </summary>
+    public enum H003
+    {
+        Nihil,
+        Orbs,
+        Mine,
+        Wave,
+        Around,
+        /// 三业往生
+        Line,
+        Pizza,
+        Suppression,
+        WeakPoint,
+        Face,
+        Infight,
+        Ruin,
+        Thunder,
+        BalancePrepare,
+        Balance
+    }
+
+    public enum H004
+    {
+        Melody,
+        Nihil,
+        Corrosion,
+        Forward,
+        Rings,
+        Encore,
+        Buff,
+        Scatter,
+        Shuffle,
+        DpsCheck,
+        Follow,
+        Echo,
+        MultiWay,
+        Targeting,
+        WarpAttack,
+        Teleport,
+        Dissonance,
+        Fan,
+        Cross
+    }
+
+    public enum H005
+    {
+        Nihil,
+        Corrosion,
+        BurningOn,
+        PhoenixOn,
+        Wave,
+        TargetingCrystal,
+        Around,
+        Cross,
+        Chaser,
+        Refraction,
+        MixedCrystal,
+        StoneGroup,
+        LavaCarpet,
+        LavaTsunami,
+        Explosion,
+        CrystalInferno,
+        MovingBlocks,
+        CrystalBreaker
+        
+        
     }
 
     public enum HECommon
@@ -286,15 +470,21 @@ public class DragaliaEnemyActionTypes
         swd_1,
         swd_2,
         swd_3,
+        axe_1,
+        axe_2,
+        axe_3,
         lan_hi_1,
         lan_hi_2,
         lan_hi_3,
         lan_hi_4,
+        lan_hi_5,
         rod_1,
         rod_2,
         rod_3,
         fx_wroth,
-        summon_1
+        summon_1,
+        phantom_1,
+        phantom_2
     }
 
     public enum Goblin

@@ -59,6 +59,11 @@ public class UI_BossHPBar : MonoBehaviour
             currentHP = bossStat.currentHp;
             maxHP = bossStat.maxHP;
         }
+        
+        if (HPChangeRoutine == null)
+        {
+            yellowGauge.value = redGauge.value;
+        }
     }
 
     public void SetTarget(StatusManager target)
@@ -92,7 +97,10 @@ public class UI_BossHPBar : MonoBehaviour
         else
         {
             currentHP = bossStat.currentHp;
+
         }
+
+        
 
         GetHPValue();
     }

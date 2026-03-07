@@ -40,7 +40,9 @@ public class UI_BuffLogPopManager : MonoBehaviour
         DragondriveCharge,
         DragondrivePurged,
         BuffCount,
-        SkillChain
+        SkillChain,
+        SkillEnhanced,
+        ReliefDebuffAffliction
     }
 
     private void Awake()
@@ -128,6 +130,11 @@ public class UI_BuffLogPopManager : MonoBehaviour
                }
                else txt.fontSize = 5;
 
+               if (type.Item1 == (int)BasicCalculation.BattleCondition.Bleeding && type.Item2 > 1)
+               {
+                   txt.text += ("×" + type.Item2);
+               }
+
                anim.Play("pop");
                
            }
@@ -165,8 +172,9 @@ public class UI_BuffLogPopManager : MonoBehaviour
         }
         else if (condition.DisplayType == BattleCondition.buffEffectDisplayType.Level)
         {
+            var totalEffect = _statusManager.GetConditionTotalValue(condition.buffID);
             var formatStr = String.Format
-                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),$"Lv.{condition.effect}");
+                (BasicCalculation.ConditionInfo((BasicCalculation.BattleCondition)condition.buffID, _language),$"Lv.{totalEffect}");
             sb.Append(formatStr);
         }
         else
@@ -369,8 +377,16 @@ public class UI_BuffLogPopManager : MonoBehaviour
                 EnqueueNewCondition("技能链");
                 ConditionStrInfo.Enqueue(new(1015,0));
                 break;
-            
-            
+            case SpecialConditionType.SkillEnhanced:
+                EnqueueNewCondition("技能强化");
+                ConditionStrInfo.Enqueue(new(1016,0));
+                break;
+            case SpecialConditionType.ReliefDebuffAffliction:
+                EnqueueNewCondition("全异常/减益状态解除");
+                ConditionStrInfo.Enqueue(new(1017,0));
+                break;
+
+
             default:
                 EnqueueNewCondition("未知状态");
                 ConditionStrInfo.Enqueue(new(1006,0));//Other
@@ -488,6 +504,14 @@ public class UI_BuffLogPopManager : MonoBehaviour
             case SpecialConditionType.SkillChain:
                 EnqueueNewCondition("Skill Chain");
                 ConditionStrInfo.Enqueue(new(1015,0));
+                break;
+            case SpecialConditionType.SkillEnhanced:
+                EnqueueNewCondition("Skill Boost");
+                ConditionStrInfo.Enqueue(new(1016,0));
+                break;
+            case SpecialConditionType.ReliefDebuffAffliction:
+                EnqueueNewCondition("Recover from Debuffs & Afflictions");
+                ConditionStrInfo.Enqueue(new(1017,0));
                 break;
             
             

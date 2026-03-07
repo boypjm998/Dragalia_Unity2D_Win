@@ -306,8 +306,5 @@ public class ActorControllerDagger : ActorController
           comboStageResetRoutine = null;
      }
 
-     public void FaceDirectionAutoFix()
-     {
-          
-     }
+     
 }

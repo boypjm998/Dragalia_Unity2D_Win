@@ -2,16 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BlastProjectile : MonoBehaviour
 {
-    [SerializeField] private String tag;
-    [SerializeField] private GameObject _blastPrefab;
+    [FormerlySerializedAs("tag")] [SerializeField] protected String _tag;
+    [SerializeField] protected GameObject _blastPrefab;
 
-    private AttackFromEnemy _attackFromEnemy;
-    private AttackFromPlayer _attackFromPlayer;
+    protected AttackFromEnemy _attackFromEnemy;
+    protected AttackFromPlayer _attackFromPlayer;
 
-    private bool _destroyed;
+    protected bool _destroyed;
 
     private void Awake()
     {
@@ -21,7 +22,7 @@ public class BlastProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if ((other.CompareTag(tag) || (other.CompareTag("Ground")) && !_destroyed))
+        if ((other.CompareTag(_tag) || (other.CompareTag("Ground")) && !_destroyed))
         {
             _destroyed = true;
             

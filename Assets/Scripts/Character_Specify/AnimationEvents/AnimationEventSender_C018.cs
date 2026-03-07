@@ -91,6 +91,22 @@ public class AnimationEventSender_C018 : AnimationEventSender
             _attackManagerSP.Combo6Attack();
         }
     }
+    
+    protected void FaceDirectionAutoFixWithManual(int typeID)
+    {
+        if (_playerInput.buttonLeft.IsPressing && !_playerInput.buttonRight.IsPressing)
+        {
+            (ActorController as ActorController).SetFaceDir(-1);
+        }
+        else if (!_playerInput.buttonLeft.IsPressing && _playerInput.buttonRight.IsPressing)
+        {
+            (ActorController as ActorController).SetFaceDir(1);
+        }
+        else
+        {
+            ActorController.FaceDirectionAutoFix(typeID);
+        }
+    }
 
     protected void Skill1(int eventID)
     {

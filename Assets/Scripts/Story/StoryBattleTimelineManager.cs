@@ -44,8 +44,13 @@ public abstract class StoryBattleTimelineManager : MonoBehaviour
         Custom = 4
     }
     
-    public QuestClearCondition questClearCondition;
+    //public QuestClearCondition questClearCondition;
     public static StoryBattleTimelineManager Instance { get; protected set; }
+
+    protected PlayerInput _playerInput;
+    protected GameObject _playerGO;
+
+    protected GameObject _bossGO;
 
 
     private void Awake()

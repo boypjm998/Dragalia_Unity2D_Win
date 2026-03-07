@@ -19,6 +19,8 @@ public class AttackManager : MonoBehaviour
     protected BattleEffectManager _effectManager;
     protected StatusManager _statusManager;
     
+    protected bool[] skillUpgradeInfo = { false,false,false,false };
+    
     // Start is called before the first frame update
 
     protected virtual void Awake()
@@ -34,6 +36,17 @@ public class AttackManager : MonoBehaviour
     {
         attackContainer = BattleStageManager.Instance.attackContainer;
         RangedAttackFXLayer = GameObject.Find("AttackFXPlayer");
+    }
+
+    protected void UpdateSkillInfo(int sid)
+    {
+        var cid = GlobalController.currentCharacterID;
+        var upgradeInfo = UI_AdventurerSelectionMenu.CheckSkillUpgradable(cid, sid);
+        if (upgradeInfo >= 2)
+        {
+            skillUpgradeInfo[sid] = true;
+            print($"Skill{sid} of No.{cid} Adventurer is Upgraded.");
+        }
     }
 
     public virtual void AirDashAttack()

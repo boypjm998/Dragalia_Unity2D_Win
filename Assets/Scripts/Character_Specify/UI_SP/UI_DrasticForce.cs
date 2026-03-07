@@ -17,6 +17,7 @@ public class UI_DrasticForce : MonoBehaviour
         _ringSlider = ringGO.GetComponent<UI_RingSlider>();
         ringGO.SetActive(false);
         _ringSlider.maxValue = DrasticForce.Instance.duration;
+        DrasticForce.Instance.OnResetDuration += ResetDuration;
         _statusManager = GetComponentInParent<PlayerStatusManager>();
     }
 
@@ -26,6 +27,16 @@ public class UI_DrasticForce : MonoBehaviour
             return;
         
         SetRingSliderAttributes();
+    }
+
+    private void OnDestroy()
+    {
+        DrasticForce.Instance.OnResetDuration -= ResetDuration;
+    }
+
+    private void ResetDuration(float duration)
+    {
+        _ringSlider.maxValue = duration;
     }
 
     private void SetRingSliderAttributes()

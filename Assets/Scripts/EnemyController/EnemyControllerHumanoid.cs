@@ -781,7 +781,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
                 //在右边且距离大于最小距离
                 isMove = 0;
                 OnMoveFinished?.Invoke(true);
-                _behavior.currentMoveAction = null;
+                if(_behavior)
+                    _behavior.currentMoveAction = null;
                 isAction = false;
                 yield break;
             }
@@ -855,7 +856,8 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         
         isMove = 0;
         OnMoveFinished?.Invoke(false);
-        _behavior.currentMoveAction = null;
+        if(_behavior)
+            _behavior.currentMoveAction = null;
         isAction = false;
 
     }
@@ -1534,6 +1536,7 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
         if (_behavior.controllAfflictionProtect)
         {
             StageCameraController.SwitchMainCamera();
+            StageCameraController.SwitchMainCameraFollowObject(BattleStageManager.Instance.GetPlayer());
         }
 
 
@@ -1698,9 +1701,10 @@ public class EnemyControllerHumanoid : EnemyController , IKnockbackable, IHumanA
     protected override IEnumerator BreakWait(float time, float recoverTime = 1.67f)
     {
         SetKBRes(999);
-        yield return new WaitForSeconds(time - 1.67f);
+        recoverTime = (_statusManager as SpecialStatusManager).breakRecoverTime;
+        yield return new WaitForSeconds(time - recoverTime);
         anim.Play("break_exit");
-        yield return new WaitForSeconds(1.67f);
+        yield return new WaitForSeconds(recoverTime);
 
 
 

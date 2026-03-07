@@ -411,6 +411,10 @@ public class DragonController : MonoBehaviour
         pi.isSkill = false;
         ac.DModeIsOn = false;
         ac.anim.enabled = true;
+        
+        pi.jumpEnabled = true;
+        pi.attackEnabled = true;
+        pi.inputAttackEnabled = true;
 
         if (_statusManager.remainReviveTimes > 0 && _statusManager.currentHp > 0)
         {
@@ -463,6 +467,10 @@ public class DragonController : MonoBehaviour
         pi.isSkill = false;
         ac.DModeIsOn = false;
         ac.anim.enabled = true;
+        
+        pi.jumpEnabled = true;
+        pi.inputAttackEnabled = true;
+        pi.attackEnabled = true;
 
         if (_statusManager.remainReviveTimes > 0)
         {
@@ -606,6 +614,22 @@ public class DragonController : MonoBehaviour
         if (requiredDModeGauge <= _statusManager.DModeGauge)
             return true;
         return false;
+    }
+    
+    protected void FaceDirectionAutoFixWithManual(int typeID)
+    {
+        if (pi.buttonLeft.IsPressing && !pi.buttonRight.IsPressing)
+        {
+            ac.SetFaceDir(-1);
+        }
+        else if (!pi.buttonLeft.IsPressing && pi.buttonRight.IsPressing)
+        {
+            ac.SetFaceDir(1);
+        }
+        else
+        {
+            FaceDirectionAutoFix(typeID);
+        }
     }
 
 }
