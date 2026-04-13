@@ -101,7 +101,7 @@
 
 **Bug Fixes**
 
-1. When Bondforged Zethia(adventurer) uses In quest Zena's Trial: Legend
+1. In quest Zena's Trial: Legend, the stun affliction inflicted by Bondforged Zethia's skill "Resplendent Glare" could not trigger the effect of her ability "Rule of Creation: Causal Bond".
 
 ---
 
