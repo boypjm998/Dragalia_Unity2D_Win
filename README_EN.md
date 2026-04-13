@@ -2,6 +2,126 @@
 
 [中文版](./README.md)
 
+## v0.5.1 - v0.5.5
+
+**New Contents**
+1. New adventurers: Sazanka, Gala Laxi
+2. New story quests: Bloodstained Auspecalia, Exorcism En Masse
+3. New quests: Asura's Blinding Light (Master), Iblis's Surging Cascade (Master), Primal Brunhilda's Trial (Standard, Expert, Master)
+4. New achievement: Archdemon Slayer
+
+**Adjustments**
+1. Reduced the damage dealt by Louise's skill 1 to targets afflicted with Poison affliction.
+2. In quest Origa's Trial: Legend, the duration of the "Demon's Seal" effect from the boss's ability "Satan's Yoke+" has been extended to 240s (the duration remains unchanged in Legend+ difficulty).
+3. Slightly increased the maximum HP of the boss in Origa's Trial: Legend, while slightly reduced its attack power.
+4. Slightly increased the damage multiplier of Althe's skill 1 against targets afflicted with Paralysis affliction.
+5. Slightly reduced the damage multiplier of Louise's skill 1 against targets afflicted with Poison affliction.
+6. Adjusted the VFX of the Poison affliction.
+7. Adjusted the calculation method of adventurer abilities, changed multiple lists to dictionaries. (No changes to in-game effects.)
+8. Greatly reduced the HP of enemies in the quest "Demon's Footprints".
+9. In quest Zena's Trial: Legend, the cast speed of "Glorious Sanctuary" has been increased.
+10. Slightly increased the damage multipliers of Gala Cleo's skill 1 and skill 3.
+11. Reduced the boss's maximum HP and OD gauge limit in quest Sheila's Trial: Legend.
+12. Slightly reduced the damage dealt by Halloween Elisanne's skill "Mischief Maker" to enemies afflicted with Paralysis affliction.
+13. In quest Zena's Trial: Legend +, when the boss uses "Glorious Sanctuary", it will now also gain a movement speed increasing buff.
+14. Adjusted Ilia's ability "Enigma": The charge speed is now increased by 200% when the combo count is above 20, changed from 30.
+15. Increased the damage multiplier and maximum HP recovery of Heinwald's skill "Call of Chaos", extended the duration of the "Abyssal Connection" buff to 30 seconds, and also increased the bonus damage of his skill "Void Resonance" that based on missing HP.
+16. Adjusted the map scene of the quest "Asura's Blinding Light".
+17. Reduced the damage dealt by Fjorm's skills "Frigid Smash" and "Ice Mirror" to enemies afflicted with Frostbite affliction.
+18. Increased the cooldown of Fjorm's ability "Frostbite = User Strength & Critical Rate" (5s -> 8s).
+19. Adjusted Fjorm's ability "Last Bravery". The original effects "+40% Strength during quest" and "+30% Defense during quest" have been changed to: "+20% Defense during quest", "+20% Strength during quest", "+40% Defense for 30 seconds", "+20% Strength for 30 seconds". In addition, slightly reduced the damage reduction effect of this adventurer when their HP is low.
+20. Adjusted the damage reduction effect of Cleo's ability "Supreme Sorcerer": it now reduces damage by 20% when HP is above 30%. Meanwhile, the defense reduction effect of the reflect damage has been increased from 5% to 10%.
+21. Increased the damage multipliers of some enemy attacks in the quest "Primal Midgardsormr's Trial".
+22. Adjusted the required quest for upgrading Sheila's skill "Blazing Blitz II": you now need to clear "Primal Brunhilda's Trial (Master)".
+
+**Bug Fixes**
+1. Fixed the issue where the boss's skill "Frozen Blizzard" behaved abnormally in quest Origa's Trial: Legend.
+2. Fixed the issue where Origa could unconditionally use skills while in dragondrive.
+3. Fixed the issue where the quest guide button disappeared in the quest "Surtr's Devouring Flames".
+4. Fixed the issue where the boss would skip some actions after a part was broken in the quest "Asura's Blinding Light".
+5. Fixed the issue where the OD gauge reduction effect of Alex's skill chain damage was lower than expected.
+6. Fixed the issue where the attack reduction effect and damage reduction effect of Cleo's ability "Supreme Sorcerer" failed to work.
+
+---
+
+## v0.4.1 - v0.5.0
+
+**New Contents**
+1. New adventurers: Curran, Gala Alex, Louise, Ieyasu, Heinwald, Lathna, Grace, Fjorm, Eirene, Sarisse.
+2. New challenge quests: Primal Zodiark's Trial, Fallen Angle of Twilight, Lilith's Encroaching Shadow, Jaldabaoth's Piercing Gale, Surtr's Devouring Flames, Origa's Trial (Legend, Legend +).
+3. New story quest: Rally
+4. New skill upgrades: Bondforged Zethia (Healing Hand), Alex (Emergency Treatment).
+5. Other new contents:
+(1) Added new nodes to the Ability Tree, including new nodes for the weapon type "Axe".
+(2) Added some new achievements.
+(3) Added countdown warning in quests.
+(4) Added Quest Auto Clear (When you fully clear a high-difficulty quest, all lower-difficulty quests of this boss will be automatically considered as full-cleared).
+(5) Added camera zoom function in quests.
+(6) Added adventurer tutorials in the training mode.
+
+**Adjustments**
+1. Reduced the boss's Poison resistance in Zena's Trial. (Expert, Master: 100->0) (Legend and above: 200->99)
+2. Reduced the boss's Poison resistance in Sinister of Domination: Water Chapter. (100->80)
+3. Reduced the healing amount of the boss's skill "Healing Hand" in Zethia's Trial: Legend +.
+4. Slightly increased the difficulty of the quest Zethia's Trial: Legend +.
+5. Adjusted the balance of some adventurers, and adjusted the required quests for skill upgrades.
+6. Reduced the ability values of the adventurer Althe.
+7. Greatly increased the boss stats for Legend+ difficulty.
+8. Increased the cast speed of Curran's skill 2.
+9. Modified the 3-star clear conditions for some quests.
+10. Added UI prompt for skill upgrade after clearing a quest.
+11. Reset the visual effect of Bondforged Zethia's skill "Ring of Affection".
+12. Reduced the stats and difficulty of the quest Zethia's Trial: Master.
+13. Optimized UI scaling.
+14. Added new beginner guidance.
+15. You will now get an extra Crown after clearing the prologue.
+16. Increased the damage multiplier of Cleo's skill "Ancient Aegis" and the reflect damage multiplier of his ability "Supreme Sorcerer".
+17. Optimized the settings menu: Conflicting gamepad key bindings will now be marked in red.
+18. Reduced the HP of enemies in some quests.
+19. Adjusted the visual effect when gaining the "Prayer's Power" buff in the quest Zethia's Trial: Legend.
+20. Adjusted some of the boss's actions in the quest Zethia's Trial: Legend +, reduced the difficulty.
+21. Adjusted the UI display position of the Life Shield.
+22. Adjusted the dash distance of the force strike for the Lance weapon.
+23. You can now use keyboard or gamepad to switch key bindings in the main menu, but the adaptation is still not perfect, there are some issues with button navigation, and it can't adapt to scroll bars yet.
+24. Increased the hit range of Notte's normal attacks while in Metamorphosis.
+25. Greatly increased the HP of "Weak Point" in the quest Fallen Angle of Conflict.
+26. Adjusted the attack buff provided by Cleo's "Altered Strike", it will no longer be affected by "Nihility".
+27. Increased the OD gauge reduction multiplier of Alex's skills. (0.7->0.9)
+28. Adjusted the movement logic of Ezelith's skill "Howling Meteor", it will no longer fall off the platform when moving at the edge of the platform.
+29. Optimized the attack feel of Notte: when using her skill 2 in Metamorphosis form, you can control the attack direction with direction keys.
+30. Increased the HP of the first phase boss in the quest Lilith's Encroaching Shadow.
+31. Increased the OD gauge reduction multiplier of Alex's skills. (0.9->0.95)
+32. Increased the trigger window time of Alex's skill chain from 3s to 4s.
+33. Adjusted the quest "Demon's Footprints": the NPC Gabriel's normal attacks now also dispel enemy buffs.
+34. Slightly reduced the boss's HP in Jaldabaoth's Piercing Gale (Master).
+
+**Bug Fixes**
+1. Fixed the issue where the force strike of the Sword weapon dealt higher damage to the OD gauge than expected.
+2. Fixed the issue where the boss stopped all actions after using "Healing Hand" in the quest Zethia's Trial: Legend +.
+3. Fixed the issue where Energy and Inspiration effects failed to work when the player was afflicted with Creeping Corrosion affliction.
+4. Fixed the issue where gravity stopped working after dashing attack in the air and rolling.
+5. Fixed the issue where Cleo's Altered Strike buff area fell out of the map in the prologue quest.
+6. Fixed the issue where some of the boss's actions could be interrupted in the quest Zethia's Trial: Legend.
+7. Fixed the issue where the Drastic Force effect failed to work when "Weak Point" took damage in the quest Fallen Angle of Conflict.
+8. Fixed the issue where Cleo's skill "Ancient Aegis" could hit the same target multiple times.
+9. Fixed the issue where the facial animations of some story characters behaved abnormally.
+10. Fixed the abnormal gamepad key binding settings.
+11. Fixed the issue where the displayed quest details did not match the actual quest content in some quests.
+12. Fixed the issue where the boss ability menu was blocked.
+13. Fixed the issue where the damage taken increase effect worked incorrectly when the "Rule of Creation: Mana Amplification" effect was active in the quest Zena's Trial: Legend.
+14. Fixed the issue where the duration of the "Uriel's Wrath" debuff failed to refresh when enemies gained it repeatedly.
+15. Fixed the issue where the gamepad UI mapping was abnormal.
+16. Fixed the issue where the boss HP bar animation got stuck when the boss recovered HP while being attacked.
+17. Fixed the issue where the boss had abnormal actions in the quest Zena's Trial: Legend.
+18. Fixed the issue where the healing area left by Zena's "Glorious Sanctuary" could not remove the Creeping Corrosion debuff when healing the player's own HP.
+19. Fixed the issue where the orientation of some quest introductions was wrong.
+20. Fixed the issue where some attacks could not hit newly spawned enemies.
+21. Fixed the issue where some enemies had an extremely low chance to be counterattacked by normal attacks.
+22. Fixed the issue where some bosses would skip some actions when taking damage.
+23. Fixed the issue where the boss's skill "Frozen Blizzard" behaved abnormally in quest Origa's Trial: Legend.
+24. Fixed the issue where Origa could unconditionally use skills while in Dragondrive mode.
+
+
 ## v0.4.0
 
 **New Contents**
